@@ -1,0 +1,20 @@
+#+TITLE: TickerRush
+#+OPTIONS: toc:nil num:nil
+
+* Overview
+TickerRush is a real-time stock ladder simulator.
+Players start with equal virtual budgets and compete by trading stocks and ETFs.
+The goal: grow your portfolio faster than others and climb the leaderboard.
+
+* Status
+Early-stage prototype. Frontend base and minimal FastAPI skeleton are being developed.
+
+* Roadmap (short)
+- [ ] Basic Frontend (React+TS via Vite)
+- [ ] Basic FastAPI service
+- [ ] Connect frontend to backend (REST + WS)
+- [ ] Docker Compose setup
+- [ ] Add tests and CI
+
+* License
+Apache License 2.0 — see =LICENSE= and =NOTICE=.
