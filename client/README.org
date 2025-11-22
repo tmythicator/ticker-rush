@@ -1,0 +1,35 @@
+* Ticker Rush — Web Client
+
+A professional trading terminal interface for the *Ticker Rush* project. Built as a high-performance Single Page Application (SPA) using the modern React ecosystem.
+
+** Tech Stack
+
+- *Core:* React 19, Vite, TypeScript
+- *Styling:* Tailwind CSS
+- *State Management:* Zustand (WIP)
+- *Data Fetching:* TanStack Query (WIP)
+- *Charts:* [[https://github.com/tradingview/lightweight-charts][Lightweight Charts v5]]
+- *Icons:* [[https://lucide.dev][Lucide React]]
+
+**  Local Setup
+
+Ensure you have *Node.js 18+* installed.
+
+1. *Install dependencies:*
+   #+BEGIN_SRC bash
+   npm install
+   #+END_SRC
+
+2. *Start the development server:*
+   #+BEGIN_SRC bash
+   npm run dev
+   #+END_SRC
+
+3. *Open the application:*
+   Navigate to [[http://localhost:5173]] in your browser.
+
+**  Project Structure
+
+- ~src/components~ — Reusable UI components
+- ~src/App.tsx~ — Main application layout and composition layer
+- ~src/index.css~ — Global styles and Tailwind directives
