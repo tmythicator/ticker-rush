@@ -1,20 +1,47 @@
 #+TITLE: TickerRush
+#+AUTHOR: Ticker Rush Maintainer
 #+OPTIONS: toc:nil num:nil
 
 * Overview
-TickerRush is a real-time stock ladder simulator.
-Players start with equal virtual budgets and compete by trading stocks and ETFs.
-The goal: grow your portfolio faster than others and climb the leaderboard.
+Ticker Rush is a high-performance, real-time stock trading simulator with gamification elements.
+Participants start with equal virtual budgets and compete by trading stocks and ETFs against each other and an autonomous AI agent.
+
+The goal: maximize portfolio profit and climb the global leaderboard within a specific ladder season.
+
+* Architecture
+The project follows a polyglot microservices architecture to demonstrate scalability and modern engineering practices:
+
+- *Frontend (The Terminal):* React 19, TypeScript, Vite, Tailwind CSS, Lightweight Charts v5.
+- *Backend (The Exchange):* Go (Golang) using Gin framework for high-concurrency WebSocket handling and order matching.
+- *AI Agent (The Trader):* Python service for market analysis and automated trading strategies.
 
 * Status
-Early-stage prototype. Frontend base and minimal FastAPI skeleton are being developed.
+*Active Development / Prototype Phase*
+Current Focus: Connecting the React dashboard to the Go backend via REST/WebSockets.
 
-* Roadmap (short)
-- [ ] Basic Frontend (React+TS via Vite)
-- [ ] Basic FastAPI service
-- [ ] Connect frontend to backend (REST + WS)
-- [ ] Docker Compose setup
-- [ ] Add tests and CI
+* Roadmap
+- [X] *Phase 0: Foundation*
+  - [X] Monorepo setup
+  - [X] Tech stack selection (Go/TS/Python)
+- [X] *Phase 1: Core MVP*
+  - [X] Frontend Dashboard (React + Tailwind + Charts)
+  - [ ] Basic Backend API (Go/Gin)
+  - [ ] Real-time data feed (WebSockets)
+- [ ] *Phase 2: Gamification*
+  - [ ] Python AI Agent logic (Random Walk / Moving Average)
+  - [ ] Leaderboard system (Redis/Postgres)
+- [ ] *Phase 3: Production Ready*
+  - [ ] Docker Compose orchestration
+  - [ ] Unit & Integration Tests
+  - [ ] CI/CD Pipelines
+
+* Quick Start
+** Frontend
+#+BEGIN_SRC bash
+cd client
+npm install
+npm run dev
+#+END_SRC
 
 * License
 Apache License 2.0 — see =LICENSE= and =NOTICE=.

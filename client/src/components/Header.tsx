@@ -1,22 +1,50 @@
-import { Activity, Wallet } from 'lucide-react';
+import { Activity, Wallet, BarChart2, Trophy, User } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 
 export const Header = () => {
+    const getLinkStyle = (isActive: boolean): string => {
+        const baseStyles = "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors";
+
+        if (isActive) {
+            return `${baseStyles} bg-slate-100 text-blue-600`;
+        } else {
+            return `${baseStyles} text-slate-500 hover:text-slate-900 hover:bg-slate-50`;
+        }
+    };
+
     return (
-        <header className="h-14 bg-white border-b border-slate-200 flex items-center px-6 justify-between sticky top-0 z-50">
-            <div className="flex items-center gap-2">
-                <div className="bg-blue-600 p-1.5 rounded-lg shadow-blue-100">
-                    <Activity className="w-5 h-5 text-white" />
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center px-4 lg:px-8 justify-between sticky top-0 z-50">
+            <div className="flex items-center gap-8">
+                <div className="flex items-center gap-2">
+                    <div className="bg-blue-600 p-1.5 rounded-lg shadow-blue-100 shadow-sm">
+                        <Activity className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="font-bold text-lg tracking-tight text-slate-900 hidden sm:block">Ticker Rush</span>
                 </div>
-                <h1 className="font-bold text-lg tracking-tight text-slate-900">Ticker Rush</h1>
+
+                <nav className="hidden md:flex items-center gap-1">
+                    <NavLink to="/" className={(params) => getLinkStyle(params.isActive)}>
+                        <Trophy className="w-4 h-4" />
+                        Ladder
+                    </NavLink>
+                    <NavLink to="/profile" className={(params) => getLinkStyle(params.isActive)}>
+                        <User className="w-4 h-4" />
+                        Profile
+                    </NavLink>
+                    <NavLink to="/trade" className={(params) => getLinkStyle(params.isActive)}>
+                        <BarChart2 className="w-4 h-4" />
+                        Terminal
+                    </NavLink>
+                </nav>
             </div>
 
-            <div className="flex items-center gap-6 text-sm font-medium">
-                <div className="group flex items-center gap-2 text-slate-600 hover:text-blue-600 cursor-pointer transition-colors bg-white px-3 py-1.5 rounded-full border border-transparent hover:border-slate-200">
-                    <Wallet className="w-4 h-4 text-slate-400 group-hover:text-blue-500" />
-                    <span className="tabular-nums">$10,000.00</span>
+            <div className="flex items-center gap-4 text-sm font-medium">
+                <div className="group flex items-center gap-2 text-slate-600 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200">
+                    <Wallet className="w-4 h-4 text-slate-400" />
+                    <span className="tabular-nums font-mono">$10,000.00</span>
                 </div>
-                <div className="w-8 h-8 bg-slate-100 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 font-bold text-xs cursor-pointer hover:bg-slate-200 transition-colors">
-                    JD
+                <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full border-2 border-white shadow-sm flex items-center justify-center text-white font-bold text-xs cursor-pointer">
+                    AS
                 </div>
             </div>
         </header>
