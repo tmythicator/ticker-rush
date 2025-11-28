@@ -8,3 +8,6 @@ Thumbs.db
 *.swo
 *~
 \#*\#
+
+# Env vars and secrets
+.env
