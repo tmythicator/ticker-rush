@@ -1,5 +1,5 @@
 #+TITLE: TickerRush
-#+AUTHOR: Ticker Rush Maintainer
+#+AUTHOR: Alexandr Timchenko
 #+OPTIONS: toc:nil num:nil
 
 * Overview
@@ -11,32 +11,56 @@ The goal: maximize portfolio profit and climb the global leaderboard within a sp
 * Architecture
 The project follows a polyglot microservices architecture to demonstrate scalability and modern engineering practices:
 
-- *Frontend (The Terminal):* React 19, TypeScript, Vite, Tailwind CSS, Lightweight Charts v5.
-- *Backend (The Exchange):* Go (Golang) using Gin framework for high-concurrency WebSocket handling and order matching.
-- *AI Agent (The Trader):* Python service for market analysis and automated trading strategies.
+- *Frontend*: React 19, TypeScript, Vite, Tailwind CSS, Lightweight Charts v5.
+- *Backend:* Go (Golang) + Gin Framework. Implements a "Producer-Consumer" pattern:
+  - *Worker:* Background process that polls Finnhub API (respecting rate limits) and writes to cache.
+  - *API:* HTTP handler serving data from memory.
+- *Data Layer:* Valkey (Open Source Redis fork) for caching hot market data.
+- *AI Agent:* (Planned) Python service for automated trading strategies.
 
 * Status
-*Active Development / Prototype Phase*
-Current Focus: Connecting the React dashboard to the Go backend via REST/WebSockets.
+*Phase 1 Complete: Real-Time Data Pipeline*
+- [X] Live market data streaming (Finnhub API integration)
+- [X] In-memory caching layer (Valkey)
+- [X] "Safe Mode" rate limiting implementation (3s interval)
+- [X] Interactive Frontend Terminal with dynamic ticker switching
 
 * Roadmap
-- [X] *Phase 0: Foundation*
-  - [X] Monorepo setup
-  - [X] Tech stack selection (Go/TS/Python)
-- [X] *Phase 1: Core MVP*
-  - [X] Frontend Dashboard (React + Tailwind + Charts)
-  - [ ] Basic Backend API (Go/Gin)
-  - [ ] Real-time data feed (WebSockets)
 - [ ] *Phase 2: Gamification*
+  - [ ] Leaderboard system
+  - [ ] User Profiles & Transaction History
   - [ ] Python AI Agent logic (Random Walk / Moving Average)
-  - [ ] Leaderboard system (Redis/Postgres)
 - [ ] *Phase 3: Production Ready*
   - [ ] Docker Compose orchestration
   - [ ] Unit & Integration Tests
   - [ ] CI/CD Pipelines
 
 * Quick Start
-** Frontend
+** Prerequisites
+- Docker + Docker Compose
+- Go 1.23+
+- Node.js 18+
+- Finnhub.io API Key (Free)
+
+** 1. DB
+Start the Valkey (Redis) container:
+#+BEGIN_SRC bash
+docker-compose up -d
+#+END_SRC
+** 2. Backend
+Create a =.env= file in =server/= directory:
+#+BEGIN_SRC text
+FINNHUB_API_KEY=your_secret_key_here
+#+END_SRC
+
+Run the server:
+#+BEGIN_SRC bash
+cd server
+go mod tidy
+go run main.go
+#+END_SRC
+
+** 3. Frontend
 #+BEGIN_SRC bash
 cd client
 npm install

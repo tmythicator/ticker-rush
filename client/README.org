@@ -6,8 +6,8 @@ A professional trading terminal interface for the *Ticker Rush* project. Built a
 
 - *Core:* React 19, Vite, TypeScript
 - *Styling:* Tailwind CSS
-- *State Management:* Zustand (WIP)
-- *Data Fetching:* TanStack Query (WIP)
+- *State Management:* TanStack Query (Server state)
+- *Data Fetching:* TanStack Query
 - *Charts:* [[https://github.com/tradingview/lightweight-charts][Lightweight Charts v5]]
 - *Icons:* [[https://lucide.dev][Lucide React]]
 
@@ -30,6 +30,6 @@ Ensure you have *Node.js 18+* installed.
 
 **  Project Structure
 
-- ~src/components~ — Reusable UI components
-- ~src/App.tsx~ — Main application layout and composition layer
-- ~src/index.css~ — Global styles and Tailwind directives
+- ~src/pages~ — Main views (Dashboard, Leaderboard, Profile)
+- ~src/components~ — Atomic UI components
+- ~src/lib~ — API clients and utilities
