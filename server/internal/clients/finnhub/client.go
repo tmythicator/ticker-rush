@@ -1,4 +1,4 @@
-package lib
+package finnhub
 
 import (
 	"context"
@@ -9,28 +9,40 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
+	"github.com/tmythicator/ticker-rush/server/internal/config"
 	"github.com/tmythicator/ticker-rush/server/model"
 )
 
-const TIME_BETWEEN_UPDATES = 3 * time.Second
-
-func FetchMarketData(ctx context.Context, symbol string, apiKey string, rdb *redis.Client) {
-	ticker := time.NewTicker(TIME_BETWEEN_UPDATES)
+func UpdateMarketData(ctx context.Context, symbol string, apiKey string, rdb *redis.Client) {
+	ticker := time.NewTicker(config.FETCH_INTERVAL)
 
 	// Pattern: Immediate + Interval
 	updatePrice(ctx, symbol, apiKey, rdb)
 	go func() {
-		for range ticker.C {
-			updatePrice(ctx, symbol, apiKey, rdb)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				updatePrice(ctx, symbol, apiKey, rdb)
+			case <-ctx.Done():
+				log.Printf("Worker for %s stopped", symbol)
+				return
+			}
 		}
 	}()
 }
 
 func updatePrice(ctx context.Context, symbol string, apiKey string, rdb *redis.Client) {
 	url := fmt.Sprintf("https://finnhub.io/api/v1/quote?symbol=%s&token=%s", symbol, apiKey)
-	client := http.Client{Timeout: TIME_BETWEEN_UPDATES}
+	httpClient := http.Client{Timeout: config.FETCH_INTERVAL}
 
-	resp, err := client.Get(url)
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		log.Printf("Error creating request: %v", err)
+		return
+	}
+
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		log.Printf("Error fetching quote for %s: %v", symbol, err)
 		return
@@ -44,7 +56,6 @@ func updatePrice(ctx context.Context, symbol string, apiKey string, rdb *redis.C
 	}
 
 	if fq.CurrentPrice == 0 {
-		log.Printf("Zero price received (Market closed/API limit reached)")
 		return
 	}
 
@@ -68,5 +79,5 @@ func updatePrice(ctx context.Context, symbol string, apiKey string, rdb *redis.C
 		return
 	}
 
-	log.Printf("Market Updated: %s @ $%.2f", quote.Symbol, quote.Price)
+	log.Printf("✅ Market Updated: %s @ $%.2f", quote.Symbol, quote.Price)
 }

@@ -53,11 +53,19 @@ Create a =.env= file in =server/= directory:
 FINNHUB_API_KEY=your_secret_key_here
 #+END_SRC
 
-Run the server:
+Start the services:
+
 #+BEGIN_SRC bash
+# Terminal A (Fetcher)
 cd server
 go mod tidy
-go run main.go
+go run ./cmd/fetcher
+#+END_SRC
+
+#+BEGIN_SRC bash
+# Terminal B (Exchange)
+cd server
+go run ./cmd/exchange
 #+END_SRC
 
 ** 3. Frontend

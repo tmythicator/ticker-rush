@@ -6,15 +6,17 @@
 High-performance market data engine written in *Go*.
 Acts as a proxy and caching layer between the expensive external API (Finnhub) and high-load frontend clients.
 
-* Architecture
-The server implements a *Producer-Consumer* pattern to handle API rate limits gracefully:
+* Microservices Architecture
+The backend is split into two independent processes sharing a Data Layer (Valkey):
 
-** 1. Background Worker (Producer)
-- Runs in a separate Goroutine.
-- Polls Finnhub API every *3 seconds*.
-- Writes latest quotes to *Valkey*.
+** 1. Fetcher Service (=cmd/fetcher=)
+- *Role:* Producer.
+- Runs in the background.
+- Polls Finnhub API every *3 seconds* (Safe Mode).
+- Writes latest quotes to Valkey (Redis).
 
-** 2. HTTP Handler (Consumer)
+** 2. Exchange API (=cmd/exchange=)
+- *Role:* Consumer.
 - Built with *Gin Framework*.
 - Reads data directly from Valkey RAM.
 - Decoupled from external API limits (1000 users = 0 extra load on Finnhub).
@@ -35,21 +37,28 @@ Ensure you have a Redis/Valkey instance running on =localhost:6379=.
 go mod tidy
 #+END_SRC
 
-** 3. Run
+** 3. Run Services
+You must run both services for the system to work fully.
+
 #+BEGIN_SRC bash
-go run main.go
+# Terminal 1: Start the data ingestion
+go run ./cmd/fetcher
+
+# Terminal 2: Start the Exchange API
+go run ./cmd/exchange
 #+END_SRC
 
 * "Safe Mode" (Rate Limiting)
 To prevent getting banned by Finnhub on the free tier, the server operates in a strict allowlist mode.
 
-** Configuration
+** Configuration (=server/lib/config.go=)
 - *Poll Interval:* 3 seconds
 - *Tracked Assets:*
   - =AAPL= (NASDAQ)
   - =BINANCE:BTCUSDT= (Crypto)
 
 * Project Structure
-- =main.go= — Entry point, configuration, and HTTP server orchestration.
-- =lib/= — Core logic (Environment loader, Market Fetcher worker).
+- =cmd/exchange/= — Exchange API entry point.
+- =cmd/fetcher/= — Background worker entry point.
+- =internal/= —  Shared utilities, configuration and application logic.
 - =model/= — Data structures (DTOs and Domain models).
