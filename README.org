@@ -4,7 +4,7 @@
 
 #+CAPTION: Ticker Rush Overview
 #+ATTR_HTML: :width 100%
-[[./assets/ticker-rush.jpg]]
+[[./assets/ticker-rush.png]]
 
 * Overview
 Ticker Rush is a high-performance, real-time stock trading simulator with gamification elements.
