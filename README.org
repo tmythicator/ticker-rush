@@ -2,6 +2,10 @@
 #+AUTHOR: Alexandr Timchenko
 #+OPTIONS: toc:nil num:nil
 
+#+CAPTION: Ticker Rush Overview
+#+ATTR_HTML: :width 100%
+[[./assets/ticker-rush.jpg]]
+
 * Overview
 Ticker Rush is a high-performance, real-time stock trading simulator with gamification elements.
 Participants start with equal virtual budgets and compete by trading stocks and ETFs against each other and an autonomous AI agent.
