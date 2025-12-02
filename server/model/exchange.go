@@ -11,3 +11,9 @@ type FinnhubQuote struct {
 	Change       float64 `json:"d"` // d = Change
 	Timestamp    int64   `json:"t"` // t = Timestamp
 }
+
+type TradeRequest struct {
+	UserID int64  `json:"user_id"`
+	Symbol string `json:"symbol"`
+	Count  int    `json:"count"`
+}
