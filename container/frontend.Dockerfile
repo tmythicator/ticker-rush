@@ -3,13 +3,13 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY frontend/package.json frontend/package-lock.json ./
-RUN npm ci
+COPY frontend/package.json frontend/pnpm-lock.yaml ./
+RUN corepack enable pnpm && pnpm install --frozen-lockfile
 
 COPY .env /
 
 COPY frontend/ .
-RUN npm run build
+RUN pnpm run build
 
 # Runtime stage
 FROM nginx:alpine

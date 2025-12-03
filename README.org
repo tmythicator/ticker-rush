@@ -122,9 +122,10 @@ If you prefer not to use Nix, you can run the services manually in separate term
    Open a third terminal for the frontend.
    #+BEGIN_SRC bash
    cd frontend
-   npm install
-   npm run dev
+   pnpm install
+   pnpm run dev
    #+END_SRC
+   *Note:* pnpm disables postinstall scripts by default for security.
 
 * License
 Apache License 2.0 — see =LICENSE= and =NOTICE=.
