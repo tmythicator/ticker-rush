@@ -25,6 +25,10 @@
             # Infrastructure
             valkey
             process-compose
+
+            # Frontend
+            nodejs_20
+            nodePackages.pnpm
           ];
 
           shellHook = ''
