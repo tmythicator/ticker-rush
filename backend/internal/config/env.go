@@ -6,10 +6,13 @@ import (
 	"strings"
 )
 
-func LoadEnv() {
-	file, err := os.Open(".env")
+func LoadEnv() error {
+	file, err := os.Open("../.env")
 	if err != nil {
-		return
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
 	}
 	defer file.Close()
 
@@ -37,4 +40,5 @@ func LoadEnv() {
 			os.Setenv(key, value)
 		}
 	}
+	return scanner.Err()
 }

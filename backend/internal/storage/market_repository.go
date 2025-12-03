@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/model"
@@ -28,4 +29,13 @@ func (r *MarketRepository) GetQuote(ctx context.Context, symbol string) (*model.
 	}
 
 	return &quote, nil
+}
+
+func (r *MarketRepository) SaveQuote(ctx context.Context, quote *model.Quote) error {
+	data, err := json.Marshal(quote)
+	if err != nil {
+		return err
+	}
+	key := fmt.Sprintf("quote:%s", quote.Symbol)
+	return r.rdb.Set(ctx, key, data, 0).Err()
 }

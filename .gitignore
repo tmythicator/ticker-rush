@@ -11,3 +11,12 @@ Thumbs.db
 
 # Env vars and secrets
 .env
+
+# DB
+*.rdb
+
+# Binaries
+/exchange
+/fetcher
+/backend/exchange
+/backend/fetcher

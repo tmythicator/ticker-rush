@@ -23,14 +23,14 @@ var (
 	valkeyClient *redis.Client
 )
 
-func getQuote(c *gin.Context) {
+func getQuote(c *gin.Context, cfg *config.Config) {
 	symbol := c.DefaultQuery("symbol", "AAPL")
 
-	isTracked := slices.Contains(config.Tickers, symbol)
+	isTracked := slices.Contains(cfg.Tickers, symbol)
 
 	if !isTracked {
 		c.JSON(http.StatusNotFound, gin.H{
-			"error": fmt.Sprintf("Symbol '%s' is not tracked. Available: %v", symbol, config.Tickers),
+			"error": fmt.Sprintf("Symbol '%s' is not tracked. Available: %v", symbol, cfg.Tickers),
 		})
 		return
 	}
@@ -155,10 +155,18 @@ func createUser(c *gin.Context) {
 }
 
 func main() {
-	var err error
-	valkeyClient, err = storage.NewRedisClient(config.REDIS_ADDR)
+	if err := config.LoadEnv(); err != nil {
+		log.Printf("⚠️ Failed to load .env: %v", err)
+	}
+
+	cfg, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("❌ API failed to start: Valkey connection error: %v", err)
+		log.Printf("⚠️ Failed to load config: %v", err)
+	}
+
+	valkeyClient, err = storage.NewRedisClient(fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort))
+	if err != nil {
+		log.Fatalf("❌ Exchange API failed to start: Valkey connection error (port %d): %v", cfg.RedisPort, err)
 	} else {
 		log.Println("✅ Connected to Valkey")
 	}
@@ -168,18 +176,20 @@ func main() {
 
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://" + config.CLIENT_ADDR},
-		AllowMethods:     []string{"GET"},
-		AllowHeaders:     []string{"Origin"},
+		AllowOrigins:     []string{fmt.Sprintf("http://localhost:%d", cfg.ClientPort)},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
 
-	r.GET("/api/quote", getQuote)
+	r.GET("/api/quote", func(c *gin.Context) {
+		getQuote(c, cfg)
+	})
 	r.POST("/api/buy", buyStock)
 	r.POST("/api/sell", sellStock)
 	r.POST("/api/newUser", createUser)
 
-	log.Printf("✅ Exchange API running on %s\n", config.SERVER_PORT)
-	r.Run(config.SERVER_PORT)
+	log.Printf("✅ Exchange API running on :%d\n", cfg.ServerPort)
+	r.Run(fmt.Sprintf(":%d", cfg.ServerPort))
 }

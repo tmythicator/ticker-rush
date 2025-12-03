@@ -8,7 +8,6 @@ import (
 
 	"github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/clients/finnhub"
-	"github.com/tmythicator/ticker-rush/server/internal/config"
 )
 
 type MarketFetcher struct {
@@ -23,8 +22,8 @@ func NewMarketFetcher(client *finnhub.Client, rdb *redis.Client) *MarketFetcher 
 	}
 }
 
-func (w *MarketFetcher) Start(ctx context.Context, symbol string) {
-	ticker := time.NewTicker(config.FETCH_INTERVAL)
+func (w *MarketFetcher) Start(ctx context.Context, symbol string, fetchInterval time.Duration) {
+	ticker := time.NewTicker(fetchInterval)
 	w.processTicker(ctx, symbol)
 
 	go func() {
