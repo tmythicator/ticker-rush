@@ -1,0 +1,35 @@
+version: "0.5"
+
+processes:
+  valkey:
+    command: valkey-server --port ${REDIS_PORT:-6379}
+    availability:
+      restart: always
+
+  exchange:
+    command: |
+      cd backend
+      # Wait for Valkey
+      sleep 1
+      go run ./cmd/exchange
+
+    depends_on:
+      valkey:
+        condition: process_started
+
+  fetcher:
+    command: |
+      cd backend
+      # Wait for Valkey
+      sleep 1
+      go run ./cmd/fetcher
+
+    depends_on:
+      valkey:
+        condition: process_started
+
+  frontend:
+    command: |
+      cd frontend
+      npm install
+      npm run dev

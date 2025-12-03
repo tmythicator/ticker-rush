@@ -41,43 +41,90 @@ The project follows a polyglot microservices architecture to demonstrate scalabi
 
 * Quick Start
 ** Prerequisites
-- Docker + Docker Compose
-- Go 1.23+
-- Node.js 18+
+- *Production*: Docker + Docker Compose
+- *Development*: Nix (with flakes enabled)
 - Finnhub.io API Key (Free)
 
-** 1. DB
-Start the Valkey (Redis) container:
-#+BEGIN_SRC bash
-docker-compose up -d
-#+END_SRC
-** 2. Backend
-Create a =.env= file in =server/= directory:
-#+BEGIN_SRC text
-FINNHUB_API_KEY=your_secret_key_here
-#+END_SRC
+** 1. Production (Docker)
+The easiest way to run the full stack (Frontend + Backend + Database) is via Docker Compose.
 
-Start the services:
+1. Create a =.env= file in the root directory:
+   #+BEGIN_SRC bash
+   cp .env-example .env
+   # Edit .env and add your FINNHUB_API_KEY
+   #+END_SRC
 
-#+BEGIN_SRC bash
-# Terminal A (Fetcher)
-cd server
-go mod tidy
-go run ./cmd/fetcher
-#+END_SRC
+2. Start the application:
+   #+BEGIN_SRC bash
+   docker-compose up -d --build
+   #+END_SRC
 
-#+BEGIN_SRC bash
-# Terminal B (Exchange)
-cd server
-go run ./cmd/exchange
-#+END_SRC
+3. Access the application:
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:8081
 
-** 3. Frontend
-#+BEGIN_SRC bash
-cd client
-npm install
-npm run dev
-#+END_SRC
+** 2. Development (Nix + Flakes)
+For a reproducible development environment, we use Nix.
+
+1. Enter the development shell:
+   #+BEGIN_SRC bash
+   nix develop
+   #+END_SRC
+   This will install Go, Node.js, Valkey, and other dependencies.
+
+2. Create a =.env= file (if not already created):
+   #+BEGIN_SRC bash
+   cp .env-example .env
+   # Edit .env and add your FINNHUB_API_KEY
+   #+END_SRC
+
+3. Start the development stack:
+   #+BEGIN_SRC bash
+   process-compose up
+   #+END_SRC
+   This starts the Backend (Exchange & Fetcher), Frontend (Vite), and Valkey database.
+
+** 3. Manual Setup (No Nix)
+If you prefer not to use Nix, you can run the services manually in separate terminals.
+
+*** Prerequisites
+- Go 1.23+
+- Node.js 18+
+- Valkey (or Redis) installed and running
+
+*** Steps
+1. *Start Valkey/Redis*:
+   Ensure your Redis server is running on port 6379 (default).
+
+2. *Configure Environment*:
+   Create a =.env= file in the root directory:
+   #+BEGIN_SRC bash
+   cp .env-example .env
+   # Edit .env and add your FINNHUB_API_KEY
+   #+END_SRC
+
+3. *Run Backend Services*:
+   Open two terminals for the backend services.
+
+   *Terminal A (Fetcher):*
+   #+BEGIN_SRC bash
+   cd backend
+   go run ./cmd/fetcher
+   #+END_SRC
+
+   *Terminal B (Exchange):*
+   #+BEGIN_SRC bash
+   cd backend
+   go run ./cmd/exchange
+   #+END_SRC
+
+4. *Run Frontend*:
+   Open a third terminal for the frontend.
+   #+BEGIN_SRC bash
+   cd frontend
+   npm install
+   npm run dev
+   #+END_SRC
 
 * License
 Apache License 2.0 — see =LICENSE= and =NOTICE=.

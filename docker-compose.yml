@@ -2,11 +2,56 @@ services:
   valkey:
     image: valkey/valkey:8-alpine
     container_name: ticker_rush_valkey
+    command: sh -c "valkey-server --port $$REDIS_PORT"
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    env_file:
+      - .env
     volumes:
       - valkey_data:/data
     restart: always
 
+  exchange:
+    build:
+      context: .
+      dockerfile: container/backend.Dockerfile
+      target: exchange-image
+    container_name: ticker_rush_exchange
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    env_file:
+      - .env
+    environment:
+      - REDIS_HOST=valkey
+    depends_on:
+      - valkey
+    restart: always
+
+  fetcher:
+    build:
+      context: .
+      dockerfile: container/backend.Dockerfile
+      target: fetcher-image
+    container_name: ticker_rush_fetcher
+    env_file:
+      - .env
+    environment:
+      - REDIS_HOST=valkey
+    depends_on:
+      - valkey
+    restart: always
+
+  frontend:
+    build:
+      context: .
+      dockerfile: container/frontend.Dockerfile
+    container_name: ticker_rush_frontend
+    env_file:
+      - .env
+    ports:
+      - "${CLIENT_PORT}:8080"
+    depends_on:
+      - exchange
+    restart: always
 volumes:
   valkey_data:
