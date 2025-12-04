@@ -6,11 +6,13 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 	"time"
 
+	go_redis "github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/clients/finnhub"
 	"github.com/tmythicator/ticker-rush/server/internal/config"
-	"github.com/tmythicator/ticker-rush/server/internal/storage"
+	"github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/internal/worker"
 )
 
@@ -28,16 +30,22 @@ func main() {
 		log.Fatalf("❌ Fetcher failed to start: %v", err)
 	}
 
-	rdb, err := storage.NewRedisClient(fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort))
-	if err != nil {
-		log.Fatalf("❌ Fetcher failed to start: Valkey connection error (port:%d): %v", cfg.RedisPort, err)
-	}
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	finnhubClient := finnhub.NewClient(cfg.FinnhubKey, 5*time.Second)
-	marketWorker := worker.NewMarketFetcher(finnhubClient, rdb)
+	// Initialize Redis Client
+	rdb := go_redis.NewClient(&go_redis.Options{
+		Addr: cfg.RedisHost + ":" + strconv.Itoa(cfg.RedisPort),
+	})
+
+	// Initialize Market Repository
+	marketRepo := redis.NewMarketRepository(rdb)
+
+	// Initialize Finnhub Client
+	finnhubClient := finnhub.NewClient(cfg.FinnhubKey, cfg.FinnhubTimeout)
+
+	// Initialize Worker
+	marketWorker := worker.NewMarketFetcher(finnhubClient, marketRepo)
 
 	fmt.Printf("✅ Worker service started. Tracking %d tickers...\n", len(cfg.Tickers))
 

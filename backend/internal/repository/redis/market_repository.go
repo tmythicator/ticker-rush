@@ -1,4 +1,4 @@
-package storage
+package redis
 
 import (
 	"context"
@@ -36,6 +36,6 @@ func (r *MarketRepository) SaveQuote(ctx context.Context, quote *model.Quote) er
 	if err != nil {
 		return err
 	}
-	key := fmt.Sprintf("quote:%s", quote.Symbol)
+	key := fmt.Sprintf("market:%s", quote.Symbol)
 	return r.rdb.Set(ctx, key, data, 0).Err()
 }

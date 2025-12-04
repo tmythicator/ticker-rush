@@ -29,10 +29,31 @@
             # Frontend
             nodejs_20
             nodePackages.pnpm
+
+            # Protobuf
+            protobuf
+            protoc-gen-go
+
+            # Database
+            sqlc
+            goose
+            postgresql_16
+
+            # Task Runner
+            go-task
           ];
 
           shellHook = ''
             echo "Welcome to Ticker Rush Dev Environment!"
+            
+
+            # Setup Postgres
+            export PGDATA="$PWD/.data/postgres"
+            if [ ! -d "$PGDATA" ]; then
+              echo "Initializing Postgres data..."
+              initdb -U postgres --no-locale --encoding=UTF8 > /dev/null
+            fi
+
             echo "Run 'process-compose up' to start the stack."
           '';
         };

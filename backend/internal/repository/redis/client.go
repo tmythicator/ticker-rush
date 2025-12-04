@@ -1,4 +1,4 @@
-package storage
+package redis
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func NewRedisClient(addr string) (*redis.Client, error) {
+func NewClient(addr string) (*redis.Client, error) {
 	rdb := redis.NewClient(&redis.Options{
 		Addr: addr,
 	})

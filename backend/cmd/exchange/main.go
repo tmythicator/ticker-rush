@@ -10,17 +10,19 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/redis/go-redis/v9"
+	"github.com/jackc/pgx/v5/pgxpool"
+	go_redis "github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/config"
-	"github.com/tmythicator/ticker-rush/server/internal/storage"
+	"github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
+	app_redis "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/model"
 )
 
 var (
 	ctx          = context.Background()
-	userRepo     *storage.UserRepository
-	marketRepo   *storage.MarketRepository
-	valkeyClient *redis.Client
+	userRepo     *postgres.UserRepository
+	marketRepo   *app_redis.MarketRepository
+	valkeyClient *go_redis.Client
 )
 
 func getQuote(c *gin.Context, cfg *config.Config) {
@@ -37,7 +39,7 @@ func getQuote(c *gin.Context, cfg *config.Config) {
 
 	quote, err := marketRepo.GetQuote(ctx, symbol)
 
-	if err == redis.Nil {
+	if err == go_redis.Nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Warming up..."})
 		return
 	} else if err != nil {
@@ -79,7 +81,7 @@ func buyStock(c *gin.Context) {
 
 	// 4. Execute Trade
 	user.Balance -= cost
-	user.Portfolio[req.Symbol] += req.Count
+	user.Portfolio[req.Symbol] += int32(req.Count)
 
 	// 5. Save User
 	if err := userRepo.SaveUser(ctx, user); err != nil {
@@ -105,7 +107,7 @@ func sellStock(c *gin.Context) {
 	}
 
 	// 2. Check Portfolio
-	if user.Portfolio[req.Symbol] < req.Count {
+	if user.Portfolio[req.Symbol] < int32(req.Count) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Not enough shares"})
 		return
 	}
@@ -121,7 +123,7 @@ func sellStock(c *gin.Context) {
 
 	// 4. Execute Trade
 	user.Balance += revenue
-	user.Portfolio[req.Symbol] -= req.Count
+	user.Portfolio[req.Symbol] -= int32(req.Count)
 	if user.Portfolio[req.Symbol] == 0 {
 		delete(user.Portfolio, req.Symbol)
 	}
@@ -164,15 +166,33 @@ func main() {
 		log.Printf("⚠️ Failed to load config: %v", err)
 	}
 
-	valkeyClient, err = storage.NewRedisClient(fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort))
+	valkeyClient, err = app_redis.NewClient(fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort))
 	if err != nil {
 		log.Fatalf("❌ Exchange API failed to start: Valkey connection error (port %d): %v", cfg.RedisPort, err)
 	} else {
 		log.Println("✅ Connected to Valkey")
 	}
 
-	userRepo = storage.NewUserRepository(valkeyClient)
-	marketRepo = storage.NewMarketRepository(valkeyClient)
+	// Connect to Postgres
+	connStr := fmt.Sprintf("postgres://%s:%s@localhost:%d/%s", cfg.PostgresUser, cfg.PostgresPass, cfg.PostgresPort, cfg.PostgresDB)
+	dbPool, err := pgxpool.New(ctx, connStr)
+	if err != nil {
+		log.Fatalf("❌ Failed to connect to Postgres: %v", err)
+	}
+	defer dbPool.Close()
+	log.Println("✅ Connected to Postgres")
+
+	userRepo = postgres.NewUserRepository(dbPool)
+	stockRepo := postgres.NewStockRepository(dbPool)
+
+	// Populate Stocks
+	for _, ticker := range cfg.Tickers {
+		if err := stockRepo.UpsertStock(ctx, ticker, ticker); err != nil {
+			log.Printf("⚠️ Failed to upsert stock %s: %v", ticker, err)
+		}
+	}
+
+	marketRepo = app_redis.NewMarketRepository(valkeyClient)
 
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{

@@ -1,0 +1,13 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "db/queries/"
+    schema: "db/migrations/"
+    gen:
+      go:
+        package: "sqlc"
+        out: "internal/gen/sqlc"
+        sql_package: "pgx/v5"
+        overrides:
+          - column: "users.portfolio"
+            go_type: "github.com/tmythicator/ticker-rush/server/model.Portfolio"

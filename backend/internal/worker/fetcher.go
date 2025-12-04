@@ -2,23 +2,26 @@ package worker
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"time"
 
-	"github.com/redis/go-redis/v9"
-	"github.com/tmythicator/ticker-rush/server/internal/clients/finnhub"
+	"github.com/tmythicator/ticker-rush/server/internal/repository/redis"
+	"github.com/tmythicator/ticker-rush/server/model"
 )
 
-type MarketFetcher struct {
-	client *finnhub.Client
-	rdb    *redis.Client
+type FinnhubClient interface {
+	GetQuote(ctx context.Context, symbol string) (*model.Quote, error)
 }
 
-func NewMarketFetcher(client *finnhub.Client, rdb *redis.Client) *MarketFetcher {
+type MarketFetcher struct {
+	client FinnhubClient
+	repo   *redis.MarketRepository
+}
+
+func NewMarketFetcher(client FinnhubClient, repo *redis.MarketRepository) *MarketFetcher {
 	return &MarketFetcher{
 		client: client,
-		rdb:    rdb,
+		repo:   repo,
 	}
 }
 
@@ -49,8 +52,7 @@ func (w *MarketFetcher) processTicker(ctx context.Context, symbol string) {
 
 	quote.Price = float64(int(quote.Price*100)) / 100
 
-	jsonBytes, _ := json.Marshal(quote)
-	if err := w.rdb.Set(ctx, "market:"+symbol, jsonBytes, 0).Err(); err != nil {
+	if err := w.repo.SaveQuote(ctx, quote); err != nil {
 		log.Printf("❌ [%s] Redis Error: %v", symbol, err)
 		return
 	}

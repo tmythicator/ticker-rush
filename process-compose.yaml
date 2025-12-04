@@ -6,6 +6,14 @@ processes:
     availability:
       restart: always
 
+  postgres:
+    command: postgres -p ${POSTGRES_PORT:-5432}
+    availability:
+      restart: always
+    readiness_probe:
+      exec:
+        command: pg_isready -h ${POSTGRES_HOST:-localhost} -p ${POSTGRES_PORT:-5432} -U ${POSTGRES_USER:-postgres}
+
   exchange:
     command: |
       cd backend
@@ -16,6 +24,8 @@ processes:
     depends_on:
       valkey:
         condition: process_started
+      postgres:
+        condition: process_healthy
 
   fetcher:
     command: |
