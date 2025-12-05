@@ -5,8 +5,8 @@ services:
     command: sh -c "valkey-server --port $$REDIS_PORT"
     ports:
       - "${REDIS_PORT}:${REDIS_PORT}"
-    env_file:
-      - .env
+    environment:
+      - REDIS_PORT
     volumes:
       - valkey_data:/data
     restart: always
@@ -30,14 +30,16 @@ services:
       dockerfile: container/backend.Dockerfile
       target: exchange-image
     container_name: ticker_rush_exchange
-    ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
     env_file:
       - .env
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
     environment:
       - REDIS_HOST=valkey
+      - POSTGRES_HOST=postgres
     depends_on:
       - valkey
+      - postgres
     restart: always
 
   fetcher:
@@ -50,6 +52,7 @@ services:
       - .env
     environment:
       - REDIS_HOST=valkey
+      - POSTGRES_HOST=postgres
     depends_on:
       - valkey
     restart: always

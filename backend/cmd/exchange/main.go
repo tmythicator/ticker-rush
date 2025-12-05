@@ -14,14 +14,14 @@ import (
 	go_redis "github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/config"
 	"github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
-	app_redis "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
+	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/model"
 )
 
 var (
 	ctx          = context.Background()
 	userRepo     *postgres.UserRepository
-	marketRepo   *app_redis.MarketRepository
+	marketRepo   *valkey.MarketRepository
 	valkeyClient *go_redis.Client
 )
 
@@ -166,7 +166,7 @@ func main() {
 		log.Printf("⚠️ Failed to load config: %v", err)
 	}
 
-	valkeyClient, err = app_redis.NewClient(fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort))
+	valkeyClient, err = valkey.NewClient(fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort))
 	if err != nil {
 		log.Fatalf("❌ Exchange API failed to start: Valkey connection error (port %d): %v", cfg.RedisPort, err)
 	} else {
@@ -174,7 +174,7 @@ func main() {
 	}
 
 	// Connect to Postgres
-	connStr := fmt.Sprintf("postgres://%s:%s@localhost:%d/%s", cfg.PostgresUser, cfg.PostgresPass, cfg.PostgresPort, cfg.PostgresDB)
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", cfg.PostgresUser, cfg.PostgresPass, cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresDB)
 	dbPool, err := pgxpool.New(ctx, connStr)
 	if err != nil {
 		log.Fatalf("❌ Failed to connect to Postgres: %v", err)
@@ -183,18 +183,12 @@ func main() {
 	log.Println("✅ Connected to Postgres")
 
 	userRepo = postgres.NewUserRepository(dbPool)
-	stockRepo := postgres.NewStockRepository(dbPool)
-
-	// Populate Stocks
-	for _, ticker := range cfg.Tickers {
-		if err := stockRepo.UpsertStock(ctx, ticker, ticker); err != nil {
-			log.Printf("⚠️ Failed to upsert stock %s: %v", ticker, err)
-		}
-	}
-
-	marketRepo = app_redis.NewMarketRepository(valkeyClient)
+	marketRepo = valkey.NewMarketRepository(valkeyClient)
 
 	r := gin.Default()
+	if err := r.SetTrustedProxies(nil); err != nil {
+		log.Printf("⚠️ Failed to set trusted proxies: %v", err)
+	}
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{fmt.Sprintf("http://localhost:%d", cfg.ClientPort)},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},

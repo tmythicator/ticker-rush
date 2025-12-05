@@ -21,6 +21,7 @@ type Config struct {
 	PostgresPass   string
 	PostgresDB     string
 	PostgresPort   int
+	PostgresHost   string
 }
 
 func LoadConfig() (*Config, error) {
@@ -41,6 +42,7 @@ func LoadConfig() (*Config, error) {
 		PostgresPass:   getEnvString("POSTGRES_PASSWORD", "postgres"),
 		PostgresDB:     getEnvString("POSTGRES_DB", "ticker_rush"),
 		PostgresPort:   getEnvInt("POSTGRES_PORT", 5432),
+		PostgresHost:   getEnvString("POSTGRES_HOST", "localhost"),
 	}
 	log.Printf("config loaded: %s %s %s", cfg.PostgresUser, cfg.PostgresPass, cfg.PostgresDB)
 

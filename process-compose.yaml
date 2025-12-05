@@ -2,12 +2,12 @@ version: "0.5"
 
 processes:
   valkey:
-    command: valkey-server --port ${REDIS_PORT:-6379}
+    command: task run:valkey
     availability:
       restart: always
 
   postgres:
-    command: postgres -p ${POSTGRES_PORT:-5432}
+    command: task run:postgres
     availability:
       restart: always
     readiness_probe:
@@ -15,11 +15,7 @@ processes:
         command: pg_isready -h ${POSTGRES_HOST:-localhost} -p ${POSTGRES_PORT:-5432} -U ${POSTGRES_USER:-postgres}
 
   exchange:
-    command: |
-      cd backend
-      # Wait for Valkey
-      sleep 1
-      go run ./cmd/exchange
+    command: task run:exchange
 
     depends_on:
       valkey:
@@ -28,18 +24,11 @@ processes:
         condition: process_healthy
 
   fetcher:
-    command: |
-      cd backend
-      # Wait for Valkey
-      sleep 1
-      go run ./cmd/fetcher
+    command: task run:fetcher
 
     depends_on:
       valkey:
         condition: process_started
 
   frontend:
-    command: |
-      cd frontend
-      pnpm install
-      pnpm run dev
+    command: task run:frontend

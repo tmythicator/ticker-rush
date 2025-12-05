@@ -10,8 +10,8 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        
-        
+
+
       in
       {
         devShells.default = pkgs.mkShell {
@@ -45,7 +45,7 @@
 
           shellHook = ''
             echo "Welcome to Ticker Rush Dev Environment!"
-            
+
 
             # Setup Postgres
             export PGDATA="$PWD/.data/postgres"
@@ -54,7 +54,7 @@
               initdb -U postgres --no-locale --encoding=UTF8 > /dev/null
             fi
 
-            echo "Run 'process-compose up' to start the stack."
+            echo "Run 'task dev' to start the stack."
           '';
         };
       }

@@ -8,17 +8,17 @@ tasks:
     dir: backend
     cmds:
       - sqlc generate
-      # Add protoc command here if needed in the future
+      - protoc --go_out=. --go_opt=paths=source_relative proto/user/*.proto
 
   migrate:
     desc: Run database migrations
     dir: backend
     cmds:
-      - createdb -h localhost -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} {{.POSTGRES_DB | default "ticker_rush"}} || true
+      - createdb -h {{.POSTGRES_HOST | default "localhost"}} -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} {{.POSTGRES_DB | default "ticker_rush"}} || true
       - goose -dir db/migrations up
     env:
       GOOSE_DRIVER: postgres
-      GOOSE_DBSTRING: 'postgres://{{.POSTGRES_USER | default "postgres"}}:{{.POSTGRES_PASSWORD}}@localhost:{{.POSTGRES_PORT | default "5432"}}/{{.POSTGRES_DB | default "ticker_rush"}}?sslmode=disable'
+      GOOSE_DBSTRING: 'postgres://{{.POSTGRES_USER | default "postgres"}}:{{.POSTGRES_PASSWORD}}@{{.POSTGRES_HOST | default "localhost"}}:{{.POSTGRES_PORT | default "5432"}}/{{.POSTGRES_DB | default "ticker_rush"}}?sslmode=disable'
 
   build:
     desc: Build the backend services
@@ -37,3 +37,36 @@ tasks:
     desc: Start the development environment
     cmds:
       - process-compose up
+
+  run:exchange:
+    desc: Run the exchange service
+    dir: backend
+    cmds:
+      - go run cmd/exchange/main.go
+    env:
+      PORT: '{{.SERVER_PORT | default "8081"}}'
+
+  run:fetcher:
+    desc: Run the fetcher service
+    dir: backend
+    cmds:
+      - go run cmd/fetcher/main.go
+
+  run:frontend:
+    desc: Run the frontend
+    dir: frontend
+    cmds:
+      - pnpm install
+      - pnpm run dev
+    env:
+      PORT: '{{.CLIENT_PORT | default "8080"}}'
+
+  run:valkey:
+    desc: Run Valkey (Redis)
+    cmds:
+      - valkey-server --port {{.REDIS_PORT | default "6379"}}
+
+  run:postgres:
+    desc: Run Postgres
+    cmds:
+      - postgres -p {{.POSTGRES_PORT | default "5432"}}
