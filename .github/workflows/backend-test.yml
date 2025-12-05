@@ -1,0 +1,42 @@
+name: Backend Tests
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+      - 'go.mod'
+      - 'go.sum'
+      - 'Taskfile.yml'
+      - 'flake.nix'
+      - 'flake.lock'
+      - '.github/workflows/backend-test.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+      - 'go.mod'
+      - 'go.sum'
+      - 'Taskfile.yml'
+      - 'flake.nix'
+      - 'flake.lock'
+      - '.github/workflows/backend-test.yml'
+
+jobs:
+  test-backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Install Dependencies
+        run: nix develop --command task deps:backend
+
+      - name: Run Tests
+        run: nix develop --command task test:backend

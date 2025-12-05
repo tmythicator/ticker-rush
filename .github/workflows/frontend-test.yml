@@ -1,0 +1,38 @@
+name: Frontend Tests
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+      - 'Taskfile.yml'
+      - 'flake.nix'
+      - 'flake.lock'
+      - '.github/workflows/frontend-test.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'frontend/**'
+      - 'Taskfile.yml'
+      - 'flake.nix'
+      - 'flake.lock'
+      - '.github/workflows/frontend-test.yml'
+
+jobs:
+  test-frontend:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Install Dependencies
+        run: nix develop --command task deps:frontend
+
+      - name: Run Tests
+        run: nix develop --command task test:frontend
