@@ -20,6 +20,24 @@ tasks:
       GOOSE_DRIVER: postgres
       GOOSE_DBSTRING: 'postgres://{{.POSTGRES_USER | default "postgres"}}:{{.POSTGRES_PASSWORD}}@{{.POSTGRES_HOST | default "localhost"}}:{{.POSTGRES_PORT | default "5432"}}/{{.POSTGRES_DB | default "ticker_rush"}}?sslmode=disable'
 
+  deps:
+    desc: Install all dependencies
+    cmds:
+      - task: deps:backend
+      - task: deps:frontend
+
+  deps:backend:
+    desc: Install backend dependencies
+    dir: backend
+    cmds:
+      - go mod download
+
+  deps:frontend:
+    desc: Install frontend dependencies
+    dir: frontend
+    cmds:
+      - pnpm install --frozen-lockfile
+
   build:
     desc: Build the backend services
     dir: backend
@@ -29,9 +47,21 @@ tasks:
 
   test:
     desc: Run all tests
+    cmds:
+      - task: test:backend
+      - task: test:frontend
+
+  test:backend:
+    desc: Run backend tests
     dir: backend
     cmds:
       - go test -v ./...
+
+  test:frontend:
+    desc: Run frontend tests
+    dir: frontend
+    cmds:
+      - pnpm test
 
   dev:
     desc: Start the development environment
