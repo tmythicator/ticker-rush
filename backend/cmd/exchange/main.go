@@ -141,13 +141,14 @@ func createUser(c *gin.Context) {
 	var req struct {
 		UserID   int64  `json:"user_id"`
 		Password string `json:"password"`
+		Email    string `json:"email"`
 	}
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 
-	user, err := userRepo.CreateUser(ctx, req.UserID, req.Password)
+	user, err := userRepo.CreateUser(ctx, req.UserID, req.Password, req.Email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

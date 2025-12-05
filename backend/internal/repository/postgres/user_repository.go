@@ -85,7 +85,7 @@ func (r *UserRepository) SaveUser(ctx context.Context, user *pb.User) error {
 	return tx.Commit(ctx)
 }
 
-func (r *UserRepository) CreateUser(ctx context.Context, id int64, password string) (*pb.User, error) {
+func (r *UserRepository) CreateUser(ctx context.Context, id int64, password, email string) (*pb.User, error) {
 	exists, err := r.queries.CheckUserExists(ctx, id)
 	if err != nil {
 		return nil, err
@@ -101,9 +101,9 @@ func (r *UserRepository) CreateUser(ctx context.Context, id int64, password stri
 
 	user := &pb.User{
 		Id:           id,
-		Email:        "",
+		Email:        email,
 		PasswordHash: string(hashedPassword),
-		Balance:      10000.0,
+		Balance:      10000.0, // TODO: Make configurable each ladder run
 		Portfolio:    make(map[string]int32),
 		CreatedAt:    timestamppb.Now(),
 	}
