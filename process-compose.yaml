@@ -13,6 +13,8 @@ processes:
     readiness_probe:
       exec:
         command: pg_isready -h ${POSTGRES_HOST:-localhost} -p ${POSTGRES_PORT:-5432} -U ${POSTGRES_USER:-postgres}
+    shutdown:
+      signal: 2
 
   exchange:
     command: task run:exchange

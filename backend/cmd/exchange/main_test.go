@@ -23,10 +23,10 @@ import (
 	repos "github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
 	app_redis "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/model"
+	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 )
 
 const testEmail = "userTest@example.com"
-const testUserID = 333
 
 func setupTestDB(t *testing.T) string {
 	ctx := context.Background()
@@ -78,15 +78,14 @@ func setupTestRouter(t *testing.T) (*gin.Engine, *miniredis.Miniredis, *pgxpool.
 	})
 
 	connStr := setupTestDB(t)
-	dbPool, err := pgxpool.New(context.Background(), connStr)
+	var err error
+	dbPool, err = pgxpool.New(context.Background(), connStr)
 	if err != nil {
 		t.Fatalf("failed to connect to test db: %v", err)
 	}
 
 	userRepo = repos.NewUserRepository(dbPool)
-	stockRepo := repos.NewStockRepository(dbPool)
-	stockRepo.UpsertStock(context.Background(), "AAPL", "Apple Inc.")
-
+	portfolioRepo = repos.NewPortfolioRepository(dbPool)
 	marketRepo = app_redis.NewMarketRepository(valkeyClient)
 	ctx = context.Background()
 
@@ -98,41 +97,50 @@ func setupTestRouter(t *testing.T) (*gin.Engine, *miniredis.Miniredis, *pgxpool.
 }
 
 func TestCreateUser(t *testing.T) {
-
 	r, mr, pool := setupTestRouter(t)
 	defer mr.Close()
 	defer pool.Close()
 
-	reqBody := fmt.Sprintf(`{"user_id": %d, "password": "password123", "email": "%s"}`, testUserID, testEmail)
+	reqBody := fmt.Sprintf(`{"email": "%s", "password": "password123", "first_name": "Test", "last_name": "User"}`, testEmail)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/newUser", bytes.NewBufferString(reqBody))
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusCreated, w.Code)
 
-	user, _ := userRepo.GetUser(ctx, testUserID)
+	var responseUser pb.User
+	err := json.Unmarshal(w.Body.Bytes(), &responseUser)
+	assert.NoError(t, err)
+
+	user, _ := userRepo.GetUser(ctx, responseUser.Id)
 	assert.Equal(t, testEmail, user.Email)
 }
 
 func TestBuyStock(t *testing.T) {
+	const symbol = "AAPL"
+	const balance = 1000.0
+	const price = 150.0
+	const quantity = 2
+	const expectedBalance = balance - price*float64(quantity)
+
 	r, mr, pool := setupTestRouter(t)
 	defer mr.Close()
 	defer pool.Close()
 
 	// Setup Market Data
-	quote := model.Quote{Symbol: "AAPL", Price: 150.0, Timestamp: time.Now().Unix()}
+	quote := model.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
-	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
+	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
 
 	// Setup User
-	userRepo.CreateUser(ctx, testUserID, "password123", testEmail)
+	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz")
 	// Update balance for test
-	user, _ := userRepo.GetUser(ctx, testUserID)
-	user.Balance = 1000.0
+	user, _ := userRepo.GetUser(ctx, createdUser.Id)
+	user.Balance = balance
 	userRepo.SaveUser(ctx, user)
 
 	// Perform Buy
-	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "AAPL", "count": 2}`, testUserID)
+	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "%s", "count": %d}`, user.Id, symbol, quantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/buy", bytes.NewBufferString(reqBody))
 	r.ServeHTTP(w, req)
@@ -140,9 +148,14 @@ func TestBuyStock(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	// Verify User State
-	updatedUser, _ := userRepo.GetUser(ctx, testUserID)
-	assert.Equal(t, 700.0, updatedUser.Balance)
-	assert.Equal(t, int32(2), updatedUser.Portfolio["AAPL"])
+	updatedUser, _ := userRepo.GetUser(ctx, user.Id)
+	assert.Equal(t, testEmail, updatedUser.Email)
+	assert.Equal(t, expectedBalance, updatedUser.Balance)
+
+	// Verify Portfolio State from Repo
+	item, err := portfolioRepo.GetPortfolioItem(ctx, user.Id, symbol)
+	assert.NoError(t, err)
+	assert.Equal(t, int32(quantity), item.Quantity)
 }
 
 func TestSellStock(t *testing.T) {
@@ -156,14 +169,17 @@ func TestSellStock(t *testing.T) {
 	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
 
 	// Setup User
-	userRepo.CreateUser(ctx, testUserID, "password123", testEmail)
-	user, _ := userRepo.GetUser(ctx, testUserID)
+	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz")
+	user, _ := userRepo.GetUser(ctx, createdUser.Id)
 	user.Balance = 0.0
-	user.Portfolio = map[string]int32{"AAPL": 5}
 	userRepo.SaveUser(ctx, user)
 
+	// Setup Portfolio via Repo
+	err := portfolioRepo.SetPortfolioItem(ctx, user.Id, "AAPL", 5, 150.0)
+	assert.NoError(t, err)
+
 	// Perform Sell
-	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "AAPL", "count": 2}`, testUserID)
+	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "AAPL", "count": 2}`, user.Id)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/sell", bytes.NewBufferString(reqBody))
 	r.ServeHTTP(w, req)
@@ -171,9 +187,13 @@ func TestSellStock(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	// Verify User State
-	updatedUser, _ := userRepo.GetUser(ctx, testUserID)
+	updatedUser, _ := userRepo.GetUser(ctx, user.Id)
 	assert.Equal(t, 300.0, updatedUser.Balance)
-	assert.Equal(t, int32(3), updatedUser.Portfolio["AAPL"])
+
+	// Verify Portfolio
+	item, err := portfolioRepo.GetPortfolioItem(ctx, user.Id, "AAPL")
+	assert.NoError(t, err)
+	assert.Equal(t, int32(3), item.Quantity)
 }
 
 func TestInsufficientFunds(t *testing.T) {
@@ -185,15 +205,62 @@ func TestInsufficientFunds(t *testing.T) {
 	quoteBytes, _ := json.Marshal(quote)
 	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
 
-	userRepo.CreateUser(ctx, testUserID, "password123", testEmail)
-	user, _ := userRepo.GetUser(ctx, testUserID)
+	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz")
+	user, _ := userRepo.GetUser(ctx, createdUser.Id)
 	user.Balance = 100.0
 	userRepo.SaveUser(ctx, user)
 
-	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "AAPL", "count": 1}`, testUserID)
+	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "AAPL", "count": 1}`, user.Id)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/buy", bytes.NewBufferString(reqBody))
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
+func TestSellAllStock(t *testing.T) {
+	const symbol = "AAPL"
+	const balance = 0.0
+	const price = 150.0
+	const quantity = 5
+	const sellQuantity = 5
+	const expectedBalance = balance + float64(sellQuantity*price)
+
+	r, mr, pool := setupTestRouter(t)
+	defer mr.Close()
+	defer pool.Close()
+
+	// Setup Market Data
+	quote := model.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
+	quoteBytes, _ := json.Marshal(quote)
+	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
+
+	// Setup User - use existing user 1
+	var userID int64 = 1
+	user, err := userRepo.GetUser(ctx, userID)
+	if err != nil {
+		t.Fatalf("Failed to get user: %v", err)
+	}
+	user.Balance = balance
+	userRepo.SaveUser(ctx, user)
+
+	// Setup Portfolio
+	err = portfolioRepo.SetPortfolioItem(ctx, user.Id, symbol, quantity, price)
+	assert.NoError(t, err)
+
+	// Perform Sell All
+	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "%s", "count": %d}`, user.Id, symbol, sellQuantity)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/sell", bytes.NewBufferString(reqBody))
+	r.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	// Verify User State
+	updatedUser, _ := userRepo.GetUser(ctx, user.Id)
+	assert.Equal(t, expectedBalance, updatedUser.Balance)
+
+	// Should be deleted
+	_, err = portfolioRepo.GetPortfolioItem(ctx, user.Id, symbol)
+	assert.Error(t, err, "Portfolio item should be removed (not found error expected)")
 }

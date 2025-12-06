@@ -6,11 +6,18 @@ option go_package = "github.com/tmythicator/ticker-rush/server/proto/user";
 
 import "google/protobuf/timestamp.proto";
 
+message PortfolioItem {
+  string stock_symbol = 1;
+  int32 quantity = 2;
+  double average_price = 3;
+}
+
 message User {
   int64 id = 1;
   string email = 2;
   string password_hash = 3;
   double balance = 4;
-  map<string, int32> portfolio = 5;
   google.protobuf.Timestamp created_at = 6;
+  string first_name = 7;
+  string last_name = 8;
 }

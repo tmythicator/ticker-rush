@@ -9,34 +9,33 @@ import (
 	"context"
 )
 
-const addPortfolioItem = `-- name: AddPortfolioItem :exec
-INSERT INTO portfolio_items (user_id, stock_symbol, quantity, average_price)
-VALUES ($1, $2, $3, $4)
-ON CONFLICT (user_id, stock_symbol) DO UPDATE SET
-    quantity = portfolio_items.quantity + EXCLUDED.quantity,
-    average_price = (portfolio_items.average_price * portfolio_items.quantity + EXCLUDED.average_price * EXCLUDED.quantity) / (portfolio_items.quantity + EXCLUDED.quantity)
+const deletePortfolioItem = `-- name: DeletePortfolioItem :exec
+DELETE FROM portfolio_items
+WHERE user_id = $1 AND stock_symbol = $2
 `
 
-type AddPortfolioItemParams struct {
-	UserID       int64
-	StockSymbol  string
-	Quantity     int32
-	AveragePrice float64
+type DeletePortfolioItemParams struct {
+	UserID      int64
+	StockSymbol string
 }
 
-func (q *Queries) AddPortfolioItem(ctx context.Context, arg AddPortfolioItemParams) error {
-	_, err := q.db.Exec(ctx, addPortfolioItem,
-		arg.UserID,
-		arg.StockSymbol,
-		arg.Quantity,
-		arg.AveragePrice,
-	)
+func (q *Queries) DeletePortfolioItem(ctx context.Context, arg DeletePortfolioItemParams) error {
+	_, err := q.db.Exec(ctx, deletePortfolioItem, arg.UserID, arg.StockSymbol)
+	return err
+}
+
+const deleteUserPortfolio = `-- name: DeleteUserPortfolio :exec
+DELETE FROM portfolio_items
+WHERE user_id = $1
+`
+
+func (q *Queries) DeleteUserPortfolio(ctx context.Context, userID int64) error {
+	_, err := q.db.Exec(ctx, deleteUserPortfolio, userID)
 	return err
 }
 
 const getPortfolio = `-- name: GetPortfolio :many
-SELECT user_id, stock_symbol, quantity, average_price
-FROM portfolio_items
+SELECT user_id, stock_symbol, quantity, average_price FROM portfolio_items
 WHERE user_id = $1
 `
 
@@ -65,25 +64,57 @@ func (q *Queries) GetPortfolio(ctx context.Context, userID int64) ([]PortfolioIt
 	return items, nil
 }
 
-const removePortfolioItem = `-- name: RemovePortfolioItem :exec
-DELETE FROM portfolio_items
+const getPortfolioItem = `-- name: GetPortfolioItem :one
+SELECT user_id, stock_symbol, quantity, average_price 
+FROM portfolio_items
 WHERE user_id = $1 AND stock_symbol = $2
 `
 
-type RemovePortfolioItemParams struct {
+type GetPortfolioItemParams struct {
 	UserID      int64
 	StockSymbol string
 }
 
-func (q *Queries) RemovePortfolioItem(ctx context.Context, arg RemovePortfolioItemParams) error {
-	_, err := q.db.Exec(ctx, removePortfolioItem, arg.UserID, arg.StockSymbol)
-	return err
+func (q *Queries) GetPortfolioItem(ctx context.Context, arg GetPortfolioItemParams) (PortfolioItem, error) {
+	row := q.db.QueryRow(ctx, getPortfolioItem, arg.UserID, arg.StockSymbol)
+	var i PortfolioItem
+	err := row.Scan(
+		&i.UserID,
+		&i.StockSymbol,
+		&i.Quantity,
+		&i.AveragePrice,
+	)
+	return i, err
+}
+
+const getPortfolioItemForUpdate = `-- name: GetPortfolioItemForUpdate :one
+SELECT user_id, stock_symbol, quantity, average_price 
+FROM portfolio_items
+WHERE user_id = $1 AND stock_symbol = $2 FOR UPDATE
+`
+
+type GetPortfolioItemForUpdateParams struct {
+	UserID      int64
+	StockSymbol string
+}
+
+func (q *Queries) GetPortfolioItemForUpdate(ctx context.Context, arg GetPortfolioItemForUpdateParams) (PortfolioItem, error) {
+	row := q.db.QueryRow(ctx, getPortfolioItemForUpdate, arg.UserID, arg.StockSymbol)
+	var i PortfolioItem
+	err := row.Scan(
+		&i.UserID,
+		&i.StockSymbol,
+		&i.Quantity,
+		&i.AveragePrice,
+	)
+	return i, err
 }
 
 const setPortfolioItem = `-- name: SetPortfolioItem :exec
 INSERT INTO portfolio_items (user_id, stock_symbol, quantity, average_price)
 VALUES ($1, $2, $3, $4)
-ON CONFLICT (user_id, stock_symbol) DO UPDATE SET
+ON CONFLICT (user_id, stock_symbol)
+DO UPDATE SET
     quantity = EXCLUDED.quantity,
     average_price = EXCLUDED.average_price
 `

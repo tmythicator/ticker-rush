@@ -2,8 +2,8 @@ package postgres
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/tmythicator/ticker-rush/server/internal/gen/sqlc"
@@ -30,94 +30,87 @@ func (r *UserRepository) GetUser(ctx context.Context, id int64) (*pb.User, error
 		return nil, err
 	}
 
-	items, err := r.queries.GetPortfolio(ctx, id)
+	return &pb.User{
+		Id:    u.ID,
+		Email: u.Email,
+		// PasswordHash is excluded from the query for security
+		Balance:   u.Balance,
+		CreatedAt: timestamppb.New(u.CreatedAt.Time),
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+	}, nil
+}
+
+func (r *UserRepository) WithTx(tx pgx.Tx) *UserRepository {
+	return &UserRepository{
+		queries: r.queries.WithTx(tx),
+		pool:    r.pool,
+	}
+}
+
+func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*pb.User, error) {
+	u, err := r.queries.GetUserForUpdate(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	portfolio := make(map[string]int32)
-	for _, item := range items {
-		portfolio[item.StockSymbol] = item.Quantity
-	}
-
 	return &pb.User{
-		Id:           u.ID,
-		Email:        u.Email,
-		PasswordHash: u.PasswordHash,
-		Balance:      u.Balance,
-		Portfolio:    portfolio,
-		CreatedAt:    timestamppb.New(u.CreatedAt.Time),
+		Id:        u.ID,
+		Email:     u.Email,
+		Balance:   u.Balance,
+		CreatedAt: timestamppb.New(u.CreatedAt.Time),
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
 	}, nil
 }
 
 func (r *UserRepository) SaveUser(ctx context.Context, user *pb.User) error {
-	tx, err := r.pool.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
+	// Note: When using WithTx, r.queries is already bound to the transaction.
+	// If r.pool is used here to begin a transaction, it would be a nested transaction
+	// or independent if not using the tx.
+	// Since we want this to be part of the external transaction when checking from main,
+	// we should rely on r.queries being set correctly via WithTx.
+	// However, if called without WithTx, r.queries uses the db (pool).
 
-	qtx := r.queries.WithTx(tx)
+	// But wait, UpdateUser is just a query. The previous implementation of SaveUser
+	// handled the PORTFOLIO deletions too. Now SaveUser ONLY updates the user balance/details.
+	// So we don't need a transaction inside SaveUser anymore if we assume the caller
+	// orchestrates the transaction for atomic User+Portfolio updates.
 
-	err = qtx.UpsertUser(ctx, db.UpsertUserParams{
-		ID:           user.Id,
-		Email:        user.Email,
-		PasswordHash: user.PasswordHash,
-		Balance:      user.Balance,
-		CreatedAt:    pgtype.Timestamptz{Time: user.CreatedAt.AsTime(), Valid: true},
+	err := r.queries.UpdateUser(ctx, db.UpdateUserParams{
+		ID:        user.Id,
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Balance:   user.Balance,
 	})
-	if err != nil {
-		return err
-	}
-
-	for symbol, quantity := range user.Portfolio {
-		err := qtx.SetPortfolioItem(ctx, db.SetPortfolioItemParams{
-			UserID:       user.Id,
-			StockSymbol:  symbol,
-			Quantity:     quantity,
-			AveragePrice: 0,
-		})
-		if err != nil {
-			return err
-		}
-	}
-
-	return tx.Commit(ctx)
+	return err
 }
 
-func (r *UserRepository) CreateUser(ctx context.Context, id int64, password, email string) (*pb.User, error) {
-	exists, err := r.queries.CheckUserExists(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	if exists {
-		return nil, fmt.Errorf("user already exists")
-	}
-
+func (r *UserRepository) CreateUser(ctx context.Context, email string, password string, firstName string, lastName string) (*pb.User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 
-	user := &pb.User{
-		Id:           id,
+	user, err := r.queries.CreateUser(ctx, db.CreateUserParams{
 		Email:        email,
 		PasswordHash: string(hashedPassword),
-		Balance:      10000.0, // TODO: Make configurable each ladder run
-		Portfolio:    make(map[string]int32),
-		CreatedAt:    timestamppb.Now(),
-	}
-
-	_, err = r.queries.CreateUser(ctx, db.CreateUserParams{
-		ID:           user.Id,
-		Email:        user.Email,
-		PasswordHash: user.PasswordHash,
-		Balance:      user.Balance,
-		CreatedAt:    pgtype.Timestamptz{Time: user.CreatedAt.AsTime(), Valid: true},
+		FirstName:    firstName,
+		LastName:     lastName,
+		Balance:      10000.0,
+		CreatedAt:    pgtype.Timestamptz{Time: timestamppb.Now().AsTime(), Valid: true},
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	return &pb.User{
+		Id:        user.ID,
+		Email:     user.Email,
+		Balance:   user.Balance,
+		CreatedAt: timestamppb.New(user.CreatedAt.Time),
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+	}, nil
 }

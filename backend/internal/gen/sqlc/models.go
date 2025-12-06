@@ -15,16 +15,12 @@ type PortfolioItem struct {
 	AveragePrice float64
 }
 
-type Stock struct {
-	Symbol    string
-	Name      string
-	CreatedAt pgtype.Timestamptz
-}
-
 type User struct {
 	ID           int64
 	Email        string
 	PasswordHash string
+	FirstName    string
+	LastName     string
 	Balance      float64
 	CreatedAt    pgtype.Timestamptz
 }

@@ -23,32 +23,44 @@ func (q *Queries) CheckUserExists(ctx context.Context, id int64) (bool, error) {
 }
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, email, password_hash, balance, created_at)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING id, email, password_hash, balance, created_at
+INSERT INTO users (email, password_hash, first_name, last_name, balance, created_at)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, email, first_name, last_name, balance, created_at
 `
 
 type CreateUserParams struct {
-	ID           int64
 	Email        string
 	PasswordHash string
+	FirstName    string
+	LastName     string
 	Balance      float64
 	CreatedAt    pgtype.Timestamptz
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+type CreateUserRow struct {
+	ID        int64
+	Email     string
+	FirstName string
+	LastName  string
+	Balance   float64
+	CreatedAt pgtype.Timestamptz
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
 	row := q.db.QueryRow(ctx, createUser,
-		arg.ID,
 		arg.Email,
 		arg.PasswordHash,
+		arg.FirstName,
+		arg.LastName,
 		arg.Balance,
 		arg.CreatedAt,
 	)
-	var i User
+	var i CreateUserRow
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
-		&i.PasswordHash,
+		&i.FirstName,
+		&i.LastName,
 		&i.Balance,
 		&i.CreatedAt,
 	)
@@ -56,49 +68,103 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, email, password_hash, balance, created_at
+SELECT id, email, first_name, last_name, balance, created_at
 FROM users
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
+type GetUserRow struct {
+	ID        int64
+	Email     string
+	FirstName string
+	LastName  string
+	Balance   float64
+	CreatedAt pgtype.Timestamptz
+}
+
+func (q *Queries) GetUser(ctx context.Context, id int64) (GetUserRow, error) {
 	row := q.db.QueryRow(ctx, getUser, id)
-	var i User
+	var i GetUserRow
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
-		&i.PasswordHash,
+		&i.FirstName,
+		&i.LastName,
 		&i.Balance,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
-const upsertUser = `-- name: UpsertUser :exec
-INSERT INTO users (id, email, password_hash, balance, created_at)
-VALUES ($1, $2, $3, $4, $5)
-ON CONFLICT (id) DO UPDATE SET
-    email = EXCLUDED.email,
-    password_hash = EXCLUDED.password_hash,
-    balance = EXCLUDED.balance,
-    created_at = EXCLUDED.created_at
+const getUserForUpdate = `-- name: GetUserForUpdate :one
+SELECT id, email, first_name, last_name, balance, created_at
+FROM users
+WHERE id = $1 LIMIT 1 FOR UPDATE
 `
 
-type UpsertUserParams struct {
-	ID           int64
-	Email        string
-	PasswordHash string
-	Balance      float64
-	CreatedAt    pgtype.Timestamptz
+type GetUserForUpdateRow struct {
+	ID        int64
+	Email     string
+	FirstName string
+	LastName  string
+	Balance   float64
+	CreatedAt pgtype.Timestamptz
 }
 
-func (q *Queries) UpsertUser(ctx context.Context, arg UpsertUserParams) error {
-	_, err := q.db.Exec(ctx, upsertUser,
+func (q *Queries) GetUserForUpdate(ctx context.Context, id int64) (GetUserForUpdateRow, error) {
+	row := q.db.QueryRow(ctx, getUserForUpdate, id)
+	var i GetUserForUpdateRow
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.FirstName,
+		&i.LastName,
+		&i.Balance,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const updateUser = `-- name: UpdateUser :exec
+UPDATE users
+SET email = $2,
+    first_name = $3,
+    last_name = $4,
+    balance = $5
+WHERE id = $1
+`
+
+type UpdateUserParams struct {
+	ID        int64
+	Email     string
+	FirstName string
+	LastName  string
+	Balance   float64
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
+	_, err := q.db.Exec(ctx, updateUser,
 		arg.ID,
 		arg.Email,
-		arg.PasswordHash,
+		arg.FirstName,
+		arg.LastName,
 		arg.Balance,
-		arg.CreatedAt,
 	)
+	return err
+}
+
+const updateUserBalance = `-- name: UpdateUserBalance :exec
+UPDATE users
+SET balance = $2
+WHERE id = $1
+`
+
+type UpdateUserBalanceParams struct {
+	ID      int64
+	Balance float64
+}
+
+func (q *Queries) UpdateUserBalance(ctx context.Context, arg UpdateUserBalanceParams) error {
+	_, err := q.db.Exec(ctx, updateUserBalance, arg.ID, arg.Balance)
 	return err
 }

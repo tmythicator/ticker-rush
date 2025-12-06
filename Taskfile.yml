@@ -100,3 +100,10 @@ tasks:
     desc: Run Postgres
     cmds:
       - postgres -p {{.POSTGRES_PORT | default "5432"}}
+
+  reset:postgres:
+    desc: Reset the database (Drop, Create, Migrate)
+    dir: backend
+    cmds:
+      - dropdb -h {{.POSTGRES_HOST | default "localhost"}} -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} {{.POSTGRES_DB | default "ticker_rush"}} --if-exists
+      - task: migrate
