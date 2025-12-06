@@ -13,7 +13,6 @@ export interface TradePanelProps {
     onTradeSuccess?: () => void;
 }
 
-
 export const TradePanel = ({ userId, symbol, currentPrice = 0, buyingPower = 0, onTradeSuccess }: TradePanelProps) => {
     const [quantity, setQuantity] = useState<string>('');
 

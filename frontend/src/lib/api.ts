@@ -24,7 +24,8 @@ export const fetchQuote = async (symbol: string): Promise<Quote> => {
       if (errorData.error) {
         errorMessage = errorData.error;
       }
-    } catch (e) {
+    } catch {
+      // failed to parse error json, use default message
     }
 
     throw new ApiError(errorMessage, res.status);
