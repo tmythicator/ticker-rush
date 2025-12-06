@@ -137,7 +137,7 @@ func TestBuyStock(t *testing.T) {
 	// Update balance for test
 	user, _ := userRepo.GetUser(ctx, createdUser.Id)
 	user.Balance = balance
-	userRepo.SaveUser(ctx, user)
+	_ = userRepo.SaveUser(ctx, user)
 
 	// Perform Buy
 	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "%s", "count": %d}`, user.Id, symbol, quantity)
@@ -172,7 +172,7 @@ func TestSellStock(t *testing.T) {
 	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz")
 	user, _ := userRepo.GetUser(ctx, createdUser.Id)
 	user.Balance = 0.0
-	userRepo.SaveUser(ctx, user)
+	_ = userRepo.SaveUser(ctx, user)
 
 	// Setup Portfolio via Repo
 	err := portfolioRepo.SetPortfolioItem(ctx, user.Id, "AAPL", 5, 150.0)
@@ -208,7 +208,7 @@ func TestInsufficientFunds(t *testing.T) {
 	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz")
 	user, _ := userRepo.GetUser(ctx, createdUser.Id)
 	user.Balance = 100.0
-	userRepo.SaveUser(ctx, user)
+	_ = userRepo.SaveUser(ctx, user)
 
 	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "AAPL", "count": 1}`, user.Id)
 	w := httptest.NewRecorder()
@@ -242,7 +242,7 @@ func TestSellAllStock(t *testing.T) {
 		t.Fatalf("Failed to get user: %v", err)
 	}
 	user.Balance = balance
-	userRepo.SaveUser(ctx, user)
+	_ = userRepo.SaveUser(ctx, user)
 
 	// Setup Portfolio
 	err = portfolioRepo.SetPortfolioItem(ctx, user.Id, symbol, quantity, price)

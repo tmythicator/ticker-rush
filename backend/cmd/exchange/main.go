@@ -76,7 +76,7 @@ func buyStock(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Transaction start failed"})
 		return
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 
 	// Create Transactional Repos
 	txUserRepo := userRepo.WithTx(tx)
@@ -150,7 +150,7 @@ func sellStock(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Transaction start failed"})
 		return
 	}
-	defer tx.Rollback(ctx)
+	defer func() { _ = tx.Rollback(ctx) }()
 
 	// Create Transactional Repos
 	txUserRepo := userRepo.WithTx(tx)
@@ -340,5 +340,7 @@ func main() {
 	})
 
 	log.Printf("✅ Exchange API running on :%d\n", cfg.ServerPort)
-	r.Run(fmt.Sprintf(":%d", cfg.ServerPort))
+	if err := r.Run(fmt.Sprintf(":%d", cfg.ServerPort)); err != nil {
+		log.Fatalf("❌ Failed to start server: %v", err)
+	}
 }

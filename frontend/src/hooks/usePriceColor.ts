@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export const usePriceColor = (price: number | undefined) => {
     const [prevPrice, setPrevPrice] = useState<number | null>(null);
     const [priceColor, setPriceColor] = useState('text-slate-900');
 
-    useEffect(() => {
-        if (price === undefined) return;
+
+    if (price !== undefined && price !== prevPrice) {
         if (prevPrice !== null) {
             if (price > prevPrice) {
                 setPriceColor('text-emerald-600');
@@ -13,9 +13,8 @@ export const usePriceColor = (price: number | undefined) => {
                 setPriceColor('text-red-600');
             }
         }
-
         setPrevPrice(price);
-    }, [price, prevPrice]);
+    }
 
     return priceColor;
 };

@@ -69,7 +69,7 @@ export const useChart = ({ chartContainerRef, quote, symbol }: UseChartProps) =>
             window.removeEventListener('resize', handleResize);
             chart.remove();
         };
-    }, []);
+    }, [chartContainerRef]);
 
     // Update Data
     useEffect(() => {
