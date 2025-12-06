@@ -3,14 +3,76 @@ version: '3'
 dotenv: ['.env']
 
 tasks:
-  generate:
+  dev:
+    desc: Start the development environment
+    cmds:
+      - process-compose up
+
+  deps:
+    desc: Install all dependencies
+    cmds:
+      - task: backend:deps
+      - task: frontend:deps
+
+  test:
+    desc: Run all tests
+    cmds:
+      - task: backend:test
+      - task: frontend:test
+
+  lint:
+    desc: Lint all code
+    cmds:
+      - task: backend:lint
+      - task: frontend:lint
+
+  backend:deps:
+    desc: Install backend dependencies
+    dir: backend
+    cmds:
+      - go mod download
+
+  backend:generate:
     desc: Generate code from SQL and Protobuf
     dir: backend
     cmds:
       - sqlc generate
       - protoc --go_out=. --go_opt=paths=source_relative proto/user/*.proto
 
-  migrate:
+  backend:build:
+    desc: Build the backend services
+    dir: backend
+    cmds:
+      - go build -o exchange cmd/exchange/main.go
+      - go build -o fetcher cmd/fetcher/main.go
+
+  backend:test:
+    desc: Run backend tests
+    dir: backend
+    cmds:
+      - go test -v ./...
+
+  backend:lint:
+    desc: Lint backend code
+    dir: backend
+    cmds:
+      - golangci-lint run
+
+  backend:run:exchange:
+    desc: Run the exchange service
+    dir: backend
+    cmds:
+      - go run cmd/exchange/main.go
+    env:
+      PORT: '{{.SERVER_PORT | default "8081"}}'
+
+  backend:run:fetcher:
+    desc: Run the fetcher service
+    dir: backend
+    cmds:
+      - go run cmd/fetcher/main.go
+
+  backend:migrate:
     desc: Run database migrations
     dir: backend
     cmds:
@@ -20,69 +82,26 @@ tasks:
       GOOSE_DRIVER: postgres
       GOOSE_DBSTRING: 'postgres://{{.POSTGRES_USER | default "postgres"}}:{{.POSTGRES_PASSWORD}}@{{.POSTGRES_HOST | default "localhost"}}:{{.POSTGRES_PORT | default "5432"}}/{{.POSTGRES_DB | default "ticker_rush"}}?sslmode=disable'
 
-  deps:
-    desc: Install all dependencies
-    cmds:
-      - task: deps:backend
-      - task: deps:frontend
-
-  deps:backend:
-    desc: Install backend dependencies
-    dir: backend
-    cmds:
-      - go mod download
-
-  deps:frontend:
+  frontend:deps:
     desc: Install frontend dependencies
     dir: frontend
     cmds:
       - pnpm install --frozen-lockfile
 
-  build:
-    desc: Build the backend services
-    dir: backend
-    cmds:
-      - go build -o exchange cmd/exchange/main.go
-      - go build -o fetcher cmd/fetcher/main.go
-
-  test:
-    desc: Run all tests
-    cmds:
-      - task: test:backend
-      - task: test:frontend
-
-  test:backend:
-    desc: Run backend tests
-    dir: backend
-    cmds:
-      - go test -v ./...
-
-  test:frontend:
+  frontend:test:
     desc: Run frontend tests
     dir: frontend
     cmds:
       - pnpm test
 
-  dev:
-    desc: Start the development environment
+  frontend:lint:
+    desc: Lint frontend code
+    dir: frontend
     cmds:
-      - process-compose up
+      - pnpm lint
+      - pnpm tsc --noEmit
 
-  run:exchange:
-    desc: Run the exchange service
-    dir: backend
-    cmds:
-      - go run cmd/exchange/main.go
-    env:
-      PORT: '{{.SERVER_PORT | default "8081"}}'
-
-  run:fetcher:
-    desc: Run the fetcher service
-    dir: backend
-    cmds:
-      - go run cmd/fetcher/main.go
-
-  run:frontend:
+  frontend:run:
     desc: Run the frontend
     dir: frontend
     cmds:
@@ -91,19 +110,19 @@ tasks:
     env:
       PORT: '{{.CLIENT_PORT | default "8080"}}'
 
-  run:valkey:
-    desc: Run Valkey (Redis)
-    cmds:
-      - valkey-server --port {{.REDIS_PORT | default "6379"}}
-
-  run:postgres:
+  postgres:run:
     desc: Run Postgres
     cmds:
       - postgres -p {{.POSTGRES_PORT | default "5432"}}
 
-  reset:postgres:
+  postgres:reset:
     desc: Reset the database (Drop, Create, Migrate)
     dir: backend
     cmds:
       - dropdb -h {{.POSTGRES_HOST | default "localhost"}} -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} {{.POSTGRES_DB | default "ticker_rush"}} --if-exists
-      - task: migrate
+      - task: backend:migrate
+
+  valkey:run:
+    desc: Run Valkey (Redis)
+    cmds:
+      - valkey-server --port {{.REDIS_PORT | default "6379"}}

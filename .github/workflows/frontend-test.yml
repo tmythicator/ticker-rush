@@ -24,15 +24,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Nix
-        uses: cachix/install-nix-action@v27
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
+        uses: cachix/install-nix-action@v31
 
       - name: Install Dependencies
-        run: nix develop --command task deps:frontend
+        run: nix develop --command task frontend:deps
+
+      - name: Run Linter
+        run: nix develop --command task frontend:lint
 
       - name: Run Tests
-        run: nix develop --command task test:frontend
+        run: nix develop --command task frontend:test
