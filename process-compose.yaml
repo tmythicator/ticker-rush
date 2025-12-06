@@ -2,12 +2,12 @@ version: "0.5"
 
 processes:
   valkey:
-    command: task run:valkey
+    command: task valkey:run
     availability:
       restart: always
 
   postgres:
-    command: task run:postgres
+    command: task postgres:run
     availability:
       restart: always
     readiness_probe:
@@ -17,7 +17,7 @@ processes:
       signal: 2
 
   exchange:
-    command: task run:exchange
+    command: task backend:run:exchange
 
     depends_on:
       valkey:
@@ -26,11 +26,11 @@ processes:
         condition: process_healthy
 
   fetcher:
-    command: task run:fetcher
+    command: task backend:run:fetcher
 
     depends_on:
       valkey:
         condition: process_started
 
   frontend:
-    command: task run:frontend
+    command: task frontend:run
