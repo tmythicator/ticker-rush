@@ -1,10 +1,12 @@
+import { TradeAction } from "../../types";
+
 export interface TradeButtonProps {
-    type: 'BUY' | 'SELL';
+    type: TradeAction;
     onClick?: () => void;
 }
 
 export const TradeButton = ({ type, onClick }: TradeButtonProps) => {
-    const isBuy = type === 'BUY';
+    const isBuy = type === TradeAction.BUY;
 
     return (
         <button
