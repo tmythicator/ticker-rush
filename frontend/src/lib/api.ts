@@ -34,11 +34,18 @@ export const fetchQuote = async (symbol: string): Promise<Quote> => {
   return res.json();
 };
 
+// TODO: use protobuf for frontend struct generation (autosync with backend)
+export interface PortfolioItem {
+  stock_symbol: string;
+  quantity: number;
+  average_price: number;
+}
+
 export interface User {
-  user_id: number;
+  id: number;
   email: string;
   balance: number;
-  portfolio: Record<string, number>;
+  portfolio: Record<string, PortfolioItem>;
 }
 
 export const getUser = async (userId: number): Promise<User> => {

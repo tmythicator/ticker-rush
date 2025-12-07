@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 
-	"github.com/tmythicator/ticker-rush/server/internal/gen/sqlc"
 	"github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
 	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 	"golang.org/x/crypto/bcrypt"
@@ -15,8 +14,8 @@ type UserService struct {
 }
 
 type UserWithPortfolio struct {
-	User      *pb.User
-	Portfolio map[string]sqlc.PortfolioItem `json:"portfolio"`
+	*pb.User
+	Portfolio map[string]*pb.PortfolioItem `json:"portfolio"`
 }
 
 func NewUserService(userRepo *postgres.UserRepository, portfolioRepo *postgres.PortfolioRepository) *UserService {
@@ -52,11 +51,15 @@ func (s *UserService) GetUserWithPortfolio(ctx context.Context, id int64) (*User
 
 	userWithPortfolio := &UserWithPortfolio{
 		User:      user,
-		Portfolio: make(map[string]sqlc.PortfolioItem),
+		Portfolio: make(map[string]*pb.PortfolioItem),
 	}
 
 	for _, item := range portfolio {
-		userWithPortfolio.Portfolio[item.StockSymbol] = item
+		userWithPortfolio.Portfolio[item.StockSymbol] = &pb.PortfolioItem{
+			StockSymbol:  item.StockSymbol,
+			Quantity:     item.Quantity,
+			AveragePrice: item.AveragePrice,
+		}
 	}
 	return userWithPortfolio, nil
 }
