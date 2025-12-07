@@ -10,15 +10,15 @@ import (
 )
 
 type MarketRepository struct {
-	rdb *redis.Client
+	valkey *redis.Client
 }
 
-func NewMarketRepository(rdb *redis.Client) *MarketRepository {
-	return &MarketRepository{rdb: rdb}
+func NewMarketRepository(valkey *redis.Client) *MarketRepository {
+	return &MarketRepository{valkey: valkey}
 }
 
 func (r *MarketRepository) GetQuote(ctx context.Context, symbol string) (*model.Quote, error) {
-	val, err := r.rdb.Get(ctx, "market:"+symbol).Result()
+	val, err := r.valkey.Get(ctx, "market:"+symbol).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -37,5 +37,5 @@ func (r *MarketRepository) SaveQuote(ctx context.Context, quote *model.Quote) er
 		return err
 	}
 	key := fmt.Sprintf("market:%s", quote.Symbol)
-	return r.rdb.Set(ctx, key, data, 0).Err()
+	return r.valkey.Set(ctx, key, data, 0).Err()
 }

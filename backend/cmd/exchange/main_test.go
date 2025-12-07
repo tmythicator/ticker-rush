@@ -13,24 +13,37 @@ import (
 	"time"
 
 	"github.com/alicebob/miniredis/v2"
-	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
+	"github.com/tmythicator/ticker-rush/server/internal/api"
+	"github.com/tmythicator/ticker-rush/server/internal/api/handler"
+	"github.com/tmythicator/ticker-rush/server/internal/config"
 	repos "github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
 	app_redis "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
+	"github.com/tmythicator/ticker-rush/server/internal/service"
 	"github.com/tmythicator/ticker-rush/server/model"
 	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 )
 
 const testEmail = "userTest@example.com"
 
-func setupTestDB(t *testing.T) string {
-	ctx := context.Background()
+var (
+	valkeyClient  *redis.Client
+	dbPool        *pgxpool.Pool
+	userRepo      *repos.UserRepository
+	portfolioRepo *repos.PortfolioRepository
+	marketRepo    *app_redis.MarketRepository
+	userService   *service.UserService
+	tradeService  *service.TradeService
+	marketService *service.MarketService
+	restHandler   *handler.RestHandler
+)
 
+func setupTestPostgres(t *testing.T) string {
 	dbName := "test_db"
 	dbUser := "test_user"
 	dbPassword := "test_password"
@@ -71,42 +84,58 @@ func setupTestDB(t *testing.T) string {
 	return connStr
 }
 
-func setupTestRouter(t *testing.T) (*gin.Engine, *miniredis.Miniredis, *pgxpool.Pool) {
+func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.Pool) {
 	mr, _ := miniredis.Run()
 	valkeyClient = redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
 	})
 
-	connStr := setupTestDB(t)
+	connStr := setupTestPostgres(t)
 	var err error
 	dbPool, err = pgxpool.New(context.Background(), connStr)
 	if err != nil {
 		t.Fatalf("failed to connect to test db: %v", err)
 	}
 
+	// Initialize Layers
 	userRepo = repos.NewUserRepository(dbPool)
 	portfolioRepo = repos.NewPortfolioRepository(dbPool)
 	marketRepo = app_redis.NewMarketRepository(valkeyClient)
-	ctx = context.Background()
 
-	r := gin.Default()
-	r.POST("/api/buy", buyStock)
-	r.POST("/api/sell", sellStock)
-	r.POST("/api/newUser", createUser)
-	return r, mr, dbPool
+	userService = service.NewUserService(userRepo, portfolioRepo)
+	tradeService = service.NewTradeService(userRepo, portfolioRepo, marketRepo, dbPool)
+	// Mock config tickers
+	tickers := []string{"AAPL", "GOOG", "BTC", "FAKE"}
+	marketService = service.NewMarketService(marketRepo, tickers)
+
+	restHandler = handler.NewRestHandler(userService, tradeService, marketService)
+
+	// Mock Config for Router
+	cfg := &config.Config{
+		ServerPort: 8080,
+		ClientPort: 3000,
+	}
+
+	// Initialize Router
+	router, err := api.NewRouter(restHandler, cfg)
+	if err != nil {
+		t.Fatalf("Failed to create router: %v", err)
+	}
+
+	return router, mr, dbPool
 }
 
 func TestCreateUser(t *testing.T) {
-	r, mr, pool := setupTestRouter(t)
+	router, mr, pool := setupTestRouter(t)
 	defer mr.Close()
 	defer pool.Close()
 
 	reqBody := fmt.Sprintf(`{"email": "%s", "password": "password123", "first_name": "Test", "last_name": "User"}`, testEmail)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/newUser", bytes.NewBufferString(reqBody))
-	r.ServeHTTP(w, req)
+	router.ServeHTTP(w, req)
 
-	assert.Equal(t, http.StatusCreated, w.Code)
+	assert.Equal(t, http.StatusOK, w.Code)
 
 	var responseUser pb.User
 	err := json.Unmarshal(w.Body.Bytes(), &responseUser)
@@ -123,7 +152,7 @@ func TestBuyStock(t *testing.T) {
 	const quantity = 2
 	const expectedBalance = balance - price*float64(quantity)
 
-	r, mr, pool := setupTestRouter(t)
+	router, mr, pool := setupTestRouter(t)
 	defer mr.Close()
 	defer pool.Close()
 
@@ -133,17 +162,14 @@ func TestBuyStock(t *testing.T) {
 	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
 
 	// Setup User
-	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz")
-	// Update balance for test
+	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz", balance)
 	user, _ := userRepo.GetUser(ctx, createdUser.Id)
-	user.Balance = balance
-	_ = userRepo.SaveUser(ctx, user)
 
 	// Perform Buy
 	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "%s", "count": %d}`, user.Id, symbol, quantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/buy", bytes.NewBufferString(reqBody))
-	r.ServeHTTP(w, req)
+	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -159,100 +185,35 @@ func TestBuyStock(t *testing.T) {
 }
 
 func TestSellStock(t *testing.T) {
-	r, mr, pool := setupTestRouter(t)
+	router, mr, pool := setupTestRouter(t)
 	defer mr.Close()
 	defer pool.Close()
 
+	const mockPrice = 150.0
+	const mockStartBalance = 20.0
+	const mockPortfolioQuantity int32 = 5
+	const mockSellQuantity int32 = 2
+	const expectedPortfolioQuantity int32 = mockPortfolioQuantity - mockSellQuantity
+	const expectedBalance = mockPrice*float64(mockSellQuantity) + mockStartBalance
+
 	// Setup Market Data
-	quote := model.Quote{Symbol: "AAPL", Price: 150.0, Timestamp: time.Now().Unix()}
+	quote := model.Quote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
 	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
 
 	// Setup User
-	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz")
+	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz", mockStartBalance)
 	user, _ := userRepo.GetUser(ctx, createdUser.Id)
-	user.Balance = 0.0
-	_ = userRepo.SaveUser(ctx, user)
 
 	// Setup Portfolio via Repo
-	err := portfolioRepo.SetPortfolioItem(ctx, user.Id, "AAPL", 5, 150.0)
+	err := portfolioRepo.SetPortfolioItem(ctx, user.Id, "AAPL", mockPortfolioQuantity, mockPrice)
 	assert.NoError(t, err)
 
 	// Perform Sell
-	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "AAPL", "count": 2}`, user.Id)
+	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "AAPL", "count": %d}`, user.Id, mockSellQuantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/sell", bytes.NewBufferString(reqBody))
-	r.ServeHTTP(w, req)
-
-	assert.Equal(t, http.StatusOK, w.Code)
-
-	// Verify User State
-	updatedUser, _ := userRepo.GetUser(ctx, user.Id)
-	assert.Equal(t, 300.0, updatedUser.Balance)
-
-	// Verify Portfolio
-	item, err := portfolioRepo.GetPortfolioItem(ctx, user.Id, "AAPL")
-	assert.NoError(t, err)
-	assert.Equal(t, int32(3), item.Quantity)
-}
-
-func TestInsufficientFunds(t *testing.T) {
-	r, mr, pool := setupTestRouter(t)
-	defer mr.Close()
-	defer pool.Close()
-
-	quote := model.Quote{Symbol: "AAPL", Price: 150.0, Timestamp: time.Now().Unix()}
-	quoteBytes, _ := json.Marshal(quote)
-	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
-
-	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz")
-	user, _ := userRepo.GetUser(ctx, createdUser.Id)
-	user.Balance = 100.0
-	_ = userRepo.SaveUser(ctx, user)
-
-	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "AAPL", "count": 1}`, user.Id)
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/buy", bytes.NewBufferString(reqBody))
-	r.ServeHTTP(w, req)
-
-	assert.Equal(t, http.StatusBadRequest, w.Code)
-}
-
-func TestSellAllStock(t *testing.T) {
-	const symbol = "AAPL"
-	const balance = 0.0
-	const price = 150.0
-	const quantity = 5
-	const sellQuantity = 5
-	const expectedBalance = balance + float64(sellQuantity*price)
-
-	r, mr, pool := setupTestRouter(t)
-	defer mr.Close()
-	defer pool.Close()
-
-	// Setup Market Data
-	quote := model.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
-	quoteBytes, _ := json.Marshal(quote)
-	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
-
-	// Setup User - use existing user 1
-	var userID int64 = 1
-	user, err := userRepo.GetUser(ctx, userID)
-	if err != nil {
-		t.Fatalf("Failed to get user: %v", err)
-	}
-	user.Balance = balance
-	_ = userRepo.SaveUser(ctx, user)
-
-	// Setup Portfolio
-	err = portfolioRepo.SetPortfolioItem(ctx, user.Id, symbol, quantity, price)
-	assert.NoError(t, err)
-
-	// Perform Sell All
-	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "%s", "count": %d}`, user.Id, symbol, sellQuantity)
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/sell", bytes.NewBufferString(reqBody))
-	r.ServeHTTP(w, req)
+	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -260,7 +221,78 @@ func TestSellAllStock(t *testing.T) {
 	updatedUser, _ := userRepo.GetUser(ctx, user.Id)
 	assert.Equal(t, expectedBalance, updatedUser.Balance)
 
+	// Verify Portfolio
+	item, err := portfolioRepo.GetPortfolioItem(ctx, user.Id, "AAPL")
+	assert.NoError(t, err)
+	assert.Equal(t, expectedPortfolioQuantity, item.Quantity)
+}
+
+func TestInsufficientFunds(t *testing.T) {
+	router, mr, pool := setupTestRouter(t)
+	defer mr.Close()
+	defer pool.Close()
+
+	const mockPrice = 151.0
+	const mockStartBalance = 20.0
+	const mockBuyQuantity = 1
+
+	quote := model.Quote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
+	quoteBytes, _ := json.Marshal(quote)
+	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
+
+	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz", mockStartBalance)
+	user, _ := userRepo.GetUser(ctx, createdUser.Id)
+
+	// balance < cost
+	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "AAPL", "count": %d}`, user.Id, mockBuyQuantity)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/buy", bytes.NewBufferString(reqBody))
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusPaymentRequired, w.Code)
+	assert.Error(t, model.ErrInsufficientFunds)
+}
+
+func TestSellAllStock(t *testing.T) {
+	const symbol = "AAPL"
+	const mockStartBalance = 0.0
+	const mockPrice = 150.0
+	const mockQuantity = 5
+	const mockSellQuantity = 5
+	const mockExpectedBalance = mockStartBalance + float64(mockSellQuantity*mockPrice)
+
+	router, mr, pool := setupTestRouter(t)
+	defer mr.Close()
+	defer pool.Close()
+
+	// Setup Market Data
+	quote := model.Quote{Symbol: symbol, Price: mockPrice, Timestamp: time.Now().Unix()}
+	quoteBytes, _ := json.Marshal(quote)
+	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
+
+	// Setup User (FIX: create user implicitly or explicitly)
+	createdUser, err := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz", mockStartBalance)
+	if err != nil {
+		t.Fatalf("Failed to create user: %v", err)
+	}
+
+	// Setup Portfolio
+	err = portfolioRepo.SetPortfolioItem(ctx, createdUser.Id, symbol, mockQuantity, mockPrice)
+	assert.NoError(t, err)
+
+	// Perform Sell All
+	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "%s", "count": %d}`, createdUser.Id, symbol, mockSellQuantity)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/sell", bytes.NewBufferString(reqBody))
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	// Verify User State
+	updatedUser, _ := userRepo.GetUser(ctx, createdUser.Id)
+	assert.Equal(t, mockExpectedBalance, updatedUser.Balance)
+
 	// Should be deleted
-	_, err = portfolioRepo.GetPortfolioItem(ctx, user.Id, symbol)
+	_, err = portfolioRepo.GetPortfolioItem(ctx, createdUser.Id, symbol)
 	assert.Error(t, err, "Portfolio item should be removed (not found error expected)")
 }

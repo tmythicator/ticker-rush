@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	go_redis "github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
 	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/model"
@@ -15,17 +14,15 @@ type TradeService struct {
 	userRepo      *postgres.UserRepository
 	portfolioRepo *postgres.PortfolioRepository
 	marketRepo    *valkey.MarketRepository
-	valkeyClient  *go_redis.Client
-	dbPool        *pgxpool.Pool
+	postgresPool  *pgxpool.Pool
 }
 
-func NewTradeService(userRepo *postgres.UserRepository, portfolioRepo *postgres.PortfolioRepository, marketRepo *valkey.MarketRepository, valkeyClient *go_redis.Client, dbPool *pgxpool.Pool) *TradeService {
+func NewTradeService(userRepo *postgres.UserRepository, portfolioRepo *postgres.PortfolioRepository, marketRepo *valkey.MarketRepository, postgresPool *pgxpool.Pool) *TradeService {
 	return &TradeService{
 		userRepo:      userRepo,
 		portfolioRepo: portfolioRepo,
 		marketRepo:    marketRepo,
-		valkeyClient:  valkeyClient,
-		dbPool:        dbPool,
+		postgresPool:  postgresPool,
 	}
 }
 
@@ -39,7 +36,7 @@ func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string
 	cost := quote.Price * float64(quantity)
 
 	// START TRANSACTION
-	tx, err := s.dbPool.Begin(ctx)
+	tx, err := s.postgresPool.Begin(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +103,7 @@ func (s *TradeService) SellStock(ctx context.Context, userID int64, symbol strin
 	cost := quote.Price * float64(quantity)
 
 	// START TRANSACTION
-	tx, err := s.dbPool.Begin(ctx)
+	tx, err := s.postgresPool.Begin(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -22,3 +22,4 @@ type TradeRequest struct {
 
 var ErrInsufficientFunds = errors.New("insufficient funds")
 var ErrInsufficientQuantity = errors.New("insufficient quantity")
+var ErrSymbolNotAllowed = errors.New("symbol not allowed")
