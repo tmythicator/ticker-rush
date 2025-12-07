@@ -1,5 +1,7 @@
 package model
 
+import "errors"
+
 type Quote struct {
 	Symbol    string  `json:"symbol"`
 	Price     float64 `json:"price"`
@@ -17,3 +19,6 @@ type TradeRequest struct {
 	Symbol string `json:"symbol"`
 	Count  int    `json:"count"`
 }
+
+var ErrInsufficientFunds = errors.New("insufficient funds")
+var ErrInsufficientQuantity = errors.New("insufficient quantity")

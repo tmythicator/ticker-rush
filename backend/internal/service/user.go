@@ -1,0 +1,62 @@
+package service
+
+import (
+	"context"
+
+	"github.com/tmythicator/ticker-rush/server/internal/gen/sqlc"
+	"github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
+	pb "github.com/tmythicator/ticker-rush/server/proto/user"
+	"golang.org/x/crypto/bcrypt"
+)
+
+type UserService struct {
+	userRepo      *postgres.UserRepository
+	portfolioRepo *postgres.PortfolioRepository
+}
+
+type UserWithPortfolio struct {
+	User      *pb.User
+	Portfolio map[string]sqlc.PortfolioItem `json:"portfolio"`
+}
+
+func NewUserService(userRepo *postgres.UserRepository, portfolioRepo *postgres.PortfolioRepository) *UserService {
+	return &UserService{
+		userRepo:      userRepo,
+		portfolioRepo: portfolioRepo,
+	}
+}
+
+func (s *UserService) CreateUser(ctx context.Context, email string, password string, firstName string, lastName string) (*pb.User, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.userRepo.CreateUser(ctx, email, string(hashedPassword), firstName, lastName, 10000)
+}
+
+func (s *UserService) GetUser(ctx context.Context, id int64) (*pb.User, error) {
+	return s.userRepo.GetUser(ctx, id)
+}
+
+func (s *UserService) GetUserWithPortfolio(ctx context.Context, id int64) (*UserWithPortfolio, error) {
+	user, err := s.userRepo.GetUser(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	portfolio, err := s.portfolioRepo.GetPortfolio(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	userWithPortfolio := &UserWithPortfolio{
+		User:      user,
+		Portfolio: make(map[string]sqlc.PortfolioItem),
+	}
+
+	for _, item := range portfolio {
+		userWithPortfolio.Portfolio[item.StockSymbol] = item
+	}
+	return userWithPortfolio, nil
+}

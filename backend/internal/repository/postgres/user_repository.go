@@ -8,7 +8,6 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/tmythicator/ticker-rush/server/internal/gen/sqlc"
 	pb "github.com/tmythicator/ticker-rush/server/proto/user"
-	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -65,18 +64,6 @@ func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*pb.Us
 }
 
 func (r *UserRepository) SaveUser(ctx context.Context, user *pb.User) error {
-	// Note: When using WithTx, r.queries is already bound to the transaction.
-	// If r.pool is used here to begin a transaction, it would be a nested transaction
-	// or independent if not using the tx.
-	// Since we want this to be part of the external transaction when checking from main,
-	// we should rely on r.queries being set correctly via WithTx.
-	// However, if called without WithTx, r.queries uses the db (pool).
-
-	// But wait, UpdateUser is just a query. The previous implementation of SaveUser
-	// handled the PORTFOLIO deletions too. Now SaveUser ONLY updates the user balance/details.
-	// So we don't need a transaction inside SaveUser anymore if we assume the caller
-	// orchestrates the transaction for atomic User+Portfolio updates.
-
 	err := r.queries.UpdateUser(ctx, db.UpdateUserParams{
 		ID:        user.Id,
 		Email:     user.Email,
@@ -87,18 +74,13 @@ func (r *UserRepository) SaveUser(ctx context.Context, user *pb.User) error {
 	return err
 }
 
-func (r *UserRepository) CreateUser(ctx context.Context, email string, password string, firstName string, lastName string) (*pb.User, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *UserRepository) CreateUser(ctx context.Context, email string, hashedPassword string, firstName string, lastName string, balance float64) (*pb.User, error) {
 	user, err := r.queries.CreateUser(ctx, db.CreateUserParams{
 		Email:        email,
-		PasswordHash: string(hashedPassword),
+		PasswordHash: hashedPassword,
 		FirstName:    firstName,
 		LastName:     lastName,
-		Balance:      10000.0,
+		Balance:      balance,
 		CreatedAt:    pgtype.Timestamptz{Time: timestamppb.Now().AsTime(), Valid: true},
 	})
 	if err != nil {
