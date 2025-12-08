@@ -13,13 +13,11 @@ import (
 
 type UserRepository struct {
 	queries *db.Queries
-	pool    *pgxpool.Pool
 }
 
 func NewUserRepository(pool *pgxpool.Pool) *UserRepository {
 	return &UserRepository{
 		queries: db.New(pool),
-		pool:    pool,
 	}
 }
 
@@ -43,7 +41,6 @@ func (r *UserRepository) GetUser(ctx context.Context, id int64) (*pb.User, error
 func (r *UserRepository) WithTx(tx pgx.Tx) *UserRepository {
 	return &UserRepository{
 		queries: r.queries.WithTx(tx),
-		pool:    r.pool,
 	}
 }
 

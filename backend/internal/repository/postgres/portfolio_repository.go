@@ -10,20 +10,17 @@ import (
 
 type PortfolioRepository struct {
 	queries *db.Queries
-	pool    *pgxpool.Pool
 }
 
 func (r *PortfolioRepository) WithTx(tx pgx.Tx) *PortfolioRepository {
 	return &PortfolioRepository{
 		queries: r.queries.WithTx(tx),
-		pool:    r.pool,
 	}
 }
 
 func NewPortfolioRepository(pool *pgxpool.Pool) *PortfolioRepository {
 	return &PortfolioRepository{
 		queries: db.New(pool),
-		pool:    pool,
 	}
 }
 

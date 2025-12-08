@@ -31,6 +31,7 @@ import (
 const testEmail = "userTest@example.com"
 
 var (
+	ctx           = context.Background()
 	valkeyClient  *redis.Client
 	dbPool        *pgxpool.Pool
 	userRepo      *repos.UserRepository

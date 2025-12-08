@@ -15,11 +15,8 @@ import (
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 )
 
-var (
-	ctx = context.Background()
-)
-
 func main() {
+	ctx := context.Background()
 	// Load environment variables
 	if err := config.LoadEnv(); err != nil {
 		log.Fatalf("Failed to load .env: %v", err)
