@@ -15,7 +15,9 @@ func Migrate(connStr string) error {
 	}
 
 	db := stdlib.OpenDB(*dbConfig)
-	defer db.Close()
+	defer func() {
+		_ = db.Close()
+	}()
 
 	goose.SetBaseFS(MigrationsFS)
 
