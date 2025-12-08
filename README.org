@@ -75,12 +75,10 @@ We use [[https://nixos.org][Nix]] to provide a hermetic, reproducible developmen
 We use [[https://taskfile.dev][Task]] as our command runner. Run ~task --list~ for details.
 
 | Command | Description |
-| :--- | :--- |
 | ~task dev~ | Start full dev stack |
 | ~task test~ | Run all tests (backend + frontend) |
 | ~task lint~ | Run linters |
 | ~task deps~ | Install dependencies |
-| ~task backend:migrate~ | Run database migrations |
 | ~task backend:generate~ | Re-generate Code (sqlc + proto) |
 
 ** 2. Production (Docker)
@@ -97,13 +95,7 @@ The ~docker-compose.yml~ defines the production stack, building optimized multi-
    docker-compose up -d --build
    #+END_SRC
 
-3. Initialize Database:
-   #+BEGIN_SRC bash
-   # Apply migrations to the running Postgres container
-   task backend:migrate
-   #+END_SRC
-
-4. Access:
+3. Access:
    - Frontend: http://localhost:5173
    - API: http://localhost:8081
 

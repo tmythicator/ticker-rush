@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/tmythicator/ticker-rush/server/db"
 	"github.com/tmythicator/ticker-rush/server/internal/api"
 	"github.com/tmythicator/ticker-rush/server/internal/api/handler"
 	"github.com/tmythicator/ticker-rush/server/internal/config"
@@ -41,6 +42,14 @@ func main() {
 
 	// Connect to Postgres
 	postgreConnStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", cfg.PostgresUser, cfg.PostgresPass, cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresDB)
+
+	// Run embedded migrations
+	log.Println("Running database migrations...")
+	if err := db.Migrate(postgreConnStr); err != nil {
+		log.Fatalf("Migration failed: %v", err)
+	}
+	log.Println("Database migrations applied successfully")
+
 	postgreClient, err := pgxpool.New(ctx, postgreConnStr)
 	if err != nil {
 		log.Fatalf("Failed to create database pool: %v", err)

@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"os/exec"
 	"testing"
 	"time"
 
@@ -19,6 +17,7 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
+	"github.com/tmythicator/ticker-rush/server/db"
 	"github.com/tmythicator/ticker-rush/server/internal/api"
 	"github.com/tmythicator/ticker-rush/server/internal/api/handler"
 	"github.com/tmythicator/ticker-rush/server/internal/config"
@@ -73,11 +72,8 @@ func setupTestPostgres(t *testing.T) string {
 		t.Fatalf("failed to get connection string: %s", err)
 	}
 
-	// Run Migrations
-	cmd := exec.Command("goose", "-dir", "../../db/migrations", "postgres", connStr, "up")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
+	// Run Migrations (Embedded)
+	if err := db.Migrate(connStr); err != nil {
 		t.Fatalf("failed to run migrations: %s", err)
 	}
 
@@ -147,10 +143,10 @@ func TestCreateUser(t *testing.T) {
 
 func TestBuyStock(t *testing.T) {
 	const symbol = "AAPL"
-	const balance = 1000.0
-	const price = 150.0
-	const quantity = 2
-	const expectedBalance = balance - price*float64(quantity)
+	const balance float64 = 1000.0
+	const price float64 = 150.0
+	const quantity int32 = 2
+	const expectedBalance float64 = balance - price*float64(quantity)
 
 	router, mr, pool := setupTestRouter(t)
 	defer mr.Close()
@@ -189,12 +185,12 @@ func TestSellStock(t *testing.T) {
 	defer mr.Close()
 	defer pool.Close()
 
-	const mockPrice = 150.0
-	const mockStartBalance = 20.0
+	const mockPrice float64 = 150.0
+	const mockStartBalance float64 = 20.0
 	const mockPortfolioQuantity int32 = 5
 	const mockSellQuantity int32 = 2
 	const expectedPortfolioQuantity int32 = mockPortfolioQuantity - mockSellQuantity
-	const expectedBalance = mockPrice*float64(mockSellQuantity) + mockStartBalance
+	const expectedBalance float64 = mockPrice*float64(mockSellQuantity) + mockStartBalance
 
 	// Setup Market Data
 	quote := model.Quote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
@@ -255,11 +251,11 @@ func TestInsufficientFunds(t *testing.T) {
 
 func TestSellAllStock(t *testing.T) {
 	const symbol = "AAPL"
-	const mockStartBalance = 0.0
-	const mockPrice = 150.0
-	const mockQuantity = 5
-	const mockSellQuantity = 5
-	const mockExpectedBalance = mockStartBalance + float64(mockSellQuantity*mockPrice)
+	const mockStartBalance float64 = 0.0
+	const mockPrice float64 = 150.0
+	const mockQuantity int32 = 5
+	const mockSellQuantity int32 = 5
+	const mockExpectedBalance float64 = mockStartBalance + float64(mockSellQuantity)*mockPrice
 
 	router, mr, pool := setupTestRouter(t)
 	defer mr.Close()

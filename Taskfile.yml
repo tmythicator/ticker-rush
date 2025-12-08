@@ -72,16 +72,6 @@ tasks:
     cmds:
       - go run cmd/fetcher/main.go
 
-  backend:migrate:
-    desc: Run database migrations
-    dir: backend
-    cmds:
-      - createdb -h {{.POSTGRES_HOST | default "localhost"}} -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} {{.POSTGRES_DB | default "ticker_rush"}} || true
-      - goose -dir db/migrations up
-    env:
-      GOOSE_DRIVER: postgres
-      GOOSE_DBSTRING: 'postgres://{{.POSTGRES_USER | default "postgres"}}:{{.POSTGRES_PASSWORD}}@{{.POSTGRES_HOST | default "localhost"}}:{{.POSTGRES_PORT | default "5432"}}/{{.POSTGRES_DB | default "ticker_rush"}}?sslmode=disable'
-
   frontend:deps:
     desc: Install frontend dependencies
     dir: frontend
@@ -116,11 +106,11 @@ tasks:
       - postgres -p {{.POSTGRES_PORT | default "5432"}}
 
   postgres:reset:
-    desc: Reset the database (Drop, Create, Migrate)
+    desc: Reset the database (Drop, Create)
     dir: backend
     cmds:
       - dropdb -h {{.POSTGRES_HOST | default "localhost"}} -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} {{.POSTGRES_DB | default "ticker_rush"}} --if-exists
-      - task: backend:migrate
+      - createdb -h {{.POSTGRES_HOST | default "localhost"}} -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} {{.POSTGRES_DB | default "ticker_rush"}}
 
   valkey:run:
     desc: Run Valkey (Redis)
