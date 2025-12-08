@@ -6,6 +6,8 @@
 #+ATTR_HTML: :width 100%
 [[./assets/ticker-rush.png]]
 
+[[https://github.com/tmythicator/ticker-rush/actions/workflows/backend-test.yml][https://github.com/tmythicator/ticker-rush/actions/workflows/backend-test.yml/badge.svg]] [[https://github.com/tmythicator/ticker-rush/actions/workflows/frontend-test.yml][https://github.com/tmythicator/ticker-rush/actions/workflows/frontend-test.yml/badge.svg]]  [[https://nixos.org][https://img.shields.io/badge/Built_With-Nix-5277C3.svg?logo=nixos&logoColor=white]]
+
 * Overview
 Ticker Rush is a high-performance, real-time stock trading simulator with gamification elements.
 Participants start with equal virtual budgets and compete by trading stocks and ETFs against each other and an autonomous AI agent.
@@ -30,49 +32,31 @@ The project follows a polyglot microservices architecture to demonstrate scalabi
 - [X] Interactive Frontend Terminal with dynamic ticker switching
 
 * Roadmap
-- [ ] *Phase 2: Gamification*
+- [-] *Phase 2: Gamification*
   - [ ] Leaderboard system
-  - [ ] User Profiles & Transaction History
+  - [-] User Profiles & Transaction History
   - [ ] Python AI Agent logic (Random Walk / Moving Average)
-- [ ] *Phase 3: Production Ready*
-  - [ ] Docker Compose orchestration
-  - [ ] Unit & Integration Tests
-  - [ ] CI/CD Pipelines
+- [X] *Phase 3: Production Ready*
+  - [X] Docker Compose orchestration
+  - [X] Unit & Integration Tests
+  - [X] CI/CD Pipelines
 
-* Quick Start
+* Development & Deployment
 ** Prerequisites
 - *Production*: Docker + Docker Compose
 - *Development*: Nix (with flakes enabled)
 - Finnhub.io API Key (Free)
 
-** 1. Production (Docker)
-The easiest way to run the full stack (Frontend + Backend + Database) is via Docker Compose.
-
-1. Create a =.env= file in the root directory:
-   #+BEGIN_SRC bash
-   cp .env-example .env
-   # Edit .env and add your FINNHUB_API_KEY
-   #+END_SRC
-
-2. Start the application:
-   #+BEGIN_SRC bash
-   docker-compose up -d --build
-   #+END_SRC
-
-3. Access the application:
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:8081
-
-** 2. Development (Nix + Flakes)
-For a reproducible development environment, we use Nix.
+** 1. Development (Nix + Flakes)
+We use [[https://nixos.org][Nix]] to provide a hermetic, reproducible development environment. The ~flake.nix~ file handles all dependencies: Go, Node.js, Valkey, Postgres, Task, etc.
 
 1. Enter the development shell:
    #+BEGIN_SRC bash
    nix develop
    #+END_SRC
-   This will install Go, Node.js, Valkey, and other dependencies.
+   *Tip for NixOS Users*: You don't need to install anything globally. Just run `nix develop`.
 
-2. Create a =.env= file (if not already created):
+2. Create a =.env= file:
    #+BEGIN_SRC bash
    cp .env-example .env
    # Edit .env and add your FINNHUB_API_KEY
@@ -80,52 +64,65 @@ For a reproducible development environment, we use Nix.
 
 3. Start the development stack:
    #+BEGIN_SRC bash
-   process-compose up
+   task dev
    #+END_SRC
-   This starts the Backend (Exchange & Fetcher), Frontend (Vite), and Valkey database.
+   This runs ~process-compose~ to orchestrate:
+   - *Frontend*: Vite dev server (port 8080)
+   - *Backend*: Exchange API (port 8081) + Fetcher service
+   - *Infrastructure*: Valkey (Redis) + Postgres
 
-** 3. Manual Setup (No Nix)
-If you prefer not to use Nix, you can run the services manually in separate terminals.
+*** Common Tasks
+We use [[https://taskfile.dev][Task]] as our command runner. Run ~task --list~ for details.
 
-*** Prerequisites
-- Go 1.23+
-- Node.js 18+
-- Valkey (or Redis) installed and running
+| Command | Description |
+| :--- | :--- |
+| ~task dev~ | Start full dev stack |
+| ~task test~ | Run all tests (backend + frontend) |
+| ~task lint~ | Run linters |
+| ~task deps~ | Install dependencies |
+| ~task backend:migrate~ | Run database migrations |
+| ~task backend:generate~ | Re-generate Code (sqlc + proto) |
 
-*** Steps
-1. *Start Valkey/Redis*:
-   Ensure your Redis server is running on port 6379 (default).
+** 2. Production (Docker)
+The ~docker-compose.yml~ defines the production stack, building optimized multi-stage images.
 
-2. *Configure Environment*:
-   Create a =.env= file in the root directory:
+1. Configure environment:
    #+BEGIN_SRC bash
    cp .env-example .env
-   # Edit .env and add your FINNHUB_API_KEY
+   # Add FINNHUB_API_KEY
    #+END_SRC
 
-3. *Run Backend Services*:
-   Open two terminals for the backend services.
-
-   *Terminal A (Fetcher):*
+2. Run production build:
    #+BEGIN_SRC bash
-   cd backend
-   go run ./cmd/fetcher
+   docker-compose up -d --build
    #+END_SRC
 
-   *Terminal B (Exchange):*
+3. Initialize Database:
    #+BEGIN_SRC bash
-   cd backend
-   go run ./cmd/exchange
+   # Apply migrations to the running Postgres container
+   task backend:migrate
    #+END_SRC
 
-4. *Run Frontend*:
-   Open a third terminal for the frontend.
-   #+BEGIN_SRC bash
-   cd frontend
-   pnpm install
-   pnpm run dev
-   #+END_SRC
-   *Note:* pnpm disables postinstall scripts by default for security.
+4. Access:
+   - Frontend: http://localhost:5173
+   - API: http://localhost:8081
+
+** 3. Manual Setup (No Nix)
+If you prefer installing tools manually:
+
+*** Prerequisites
+- Go 1.25+
+- Node.js 18+
+- Valkey/Redis (port 6379)
+- Postgres (port 5432)
+
+*** Steps
+1. *Start Infrastructure*: Ensure Valkey and Postgres are running.
+2. *Configure*: Create =.env=.
+3. *Run Services*:
+   - Term A: ~cd backend && go run ./cmd/fetcher~
+   - Term B: ~cd backend && go run ./cmd/exchange~
+   - Term C: ~cd frontend && pnpm install && pnpm run dev~
 
 * License
 Apache License 2.0 — see =LICENSE= and =NOTICE=.
