@@ -93,3 +93,19 @@ func (r *UserRepository) CreateUser(ctx context.Context, email string, hashedPas
 		LastName:  user.LastName,
 	}, nil
 }
+
+func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*pb.User, string, error) {
+	u, err := r.queries.GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return &pb.User{
+		Id:        u.ID,
+		Email:     u.Email,
+		Balance:   u.Balance,
+		CreatedAt: timestamppb.New(u.CreatedAt.Time),
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+	}, u.PasswordHash, nil
+}

@@ -8,6 +8,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/tmythicator/ticker-rush/server/internal/api/handler"
+	"github.com/tmythicator/ticker-rush/server/internal/api/middleware"
 	"github.com/tmythicator/ticker-rush/server/internal/config"
 )
 
@@ -31,11 +32,17 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 
 	api := engine.Group("/api")
 	{
-		api.GET("/quote", handler.GetQuote)
-		api.GET("/user/:id", handler.GetUser)
-		api.POST("/buy", handler.BuyStock)
-		api.POST("/sell", handler.SellStock)
-		api.POST("/newUser", handler.CreateUser)
+		api.POST("/login", handler.Login)
+		api.POST("/register", handler.CreateUser)
+
+		protected := api.Group("/")
+		protected.Use(middleware.AuthMiddleware())
+		{
+			protected.GET("/quote", handler.GetQuote)
+			protected.GET("/user/me", handler.GetMe)
+			protected.POST("/buy", handler.BuyStock)
+			protected.POST("/sell", handler.SellStock)
+		}
 	}
 
 	return &Router{engine: engine}, nil

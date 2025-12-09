@@ -63,3 +63,17 @@ func (s *UserService) GetUserWithPortfolio(ctx context.Context, id int64) (*User
 	}
 	return userWithPortfolio, nil
 }
+
+func (s *UserService) Authenticate(ctx context.Context, email string, password string) (*pb.User, error) {
+	user, passwordHash, err := s.userRepo.GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(password))
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}

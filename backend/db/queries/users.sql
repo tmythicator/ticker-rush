@@ -1,8 +1,3 @@
--- name: GetUser :one
-SELECT id, email, first_name, last_name, balance, created_at
-FROM users
-WHERE id = $1 LIMIT 1;
-
 -- name: CreateUser :one
 INSERT INTO users (email, password_hash, first_name, last_name, balance, created_at)
 VALUES ($1, $2, $3, $4, $5, $6)
@@ -24,9 +19,17 @@ UPDATE users
 SET balance = $2
 WHERE id = $1;
 
+-- name: GetUser :one
+SELECT id, email, first_name, last_name, balance, created_at
+FROM users
+WHERE id = $1 LIMIT 1;
+
 -- name: GetUserForUpdate :one
 SELECT id, email, first_name, last_name, balance, created_at
 FROM users
 WHERE id = $1 LIMIT 1 FOR UPDATE;
 
-
+-- name: GetUserByEmail :one
+SELECT id, email, password_hash, first_name, last_name, balance, created_at
+FROM users
+WHERE email = $1 LIMIT 1;

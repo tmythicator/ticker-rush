@@ -27,8 +27,3 @@ WHERE user_id = $1 AND stock_symbol = $2;
 SELECT user_id, stock_symbol, quantity, average_price 
 FROM portfolio_items
 WHERE user_id = $1 AND stock_symbol = $2 FOR UPDATE;
-
-
-
-
-
