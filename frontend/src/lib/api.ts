@@ -1,5 +1,20 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
+let authToken: string | null = null;
+export const setAuthToken = (token: string | null) => {
+  authToken = token;
+};
+
+const getHeaders = () => {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+  if (authToken) {
+    headers['Authorization'] = `Bearer ${authToken}`;
+  }
+  return headers;
+};
+
 export interface Quote {
   symbol: string;
   price: number;
@@ -14,24 +29,30 @@ class ApiError extends Error {
   }
 }
 
-export const fetchQuote = async (symbol: string): Promise<Quote> => {
-  const res = await fetch(`${API_URL}/quote?symbol=${symbol}`);
-
-  if (!res.ok) {
-    let errorMessage = `Error fetching quote: ${res.status}`;
-    try {
-      const errorData = await res.json();
-      if (errorData.error) {
-        errorMessage = errorData.error;
-      }
-    } catch {
-      // failed to parse error json, use default message
+export const api = {
+  get: async (endpoint: string) => {
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      headers: getHeaders(),
+    });
+    if (!res.ok) throw new ApiError(`Error: ${res.status}`, res.status);
+    return res.json();
+  },
+  post: async (endpoint: string, body: unknown) => {
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new ApiError(errorData.error || `Error: ${res.status}`, res.status);
     }
-
-    throw new ApiError(errorMessage, res.status);
+    return res.json();
   }
+};
 
-  return res.json();
+export const fetchQuote = async (symbol: string): Promise<Quote> => {
+  return api.get(`/quote?symbol=${symbol}`);
 };
 
 // TODO: use protobuf for frontend struct generation (autosync with backend)
@@ -42,40 +63,29 @@ export interface PortfolioItem {
 }
 
 export interface User {
-  id: number;
   email: string;
+  first_name: string;
+  last_name: string;
   balance: number;
   portfolio: Record<string, PortfolioItem>;
 }
 
-export const getUser = async (userId: number): Promise<User> => {
-  const res = await fetch(`${API_URL}/user/${userId}`);
-  if (!res.ok) throw new ApiError(`Error fetching user: ${res.status}`, res.status);
-  return res.json();
+export const getUser = async (): Promise<User> => {
+  return api.get(`/user/me`);
 };
 
-export const buyStock = async (userId: number, symbol: string, count: number): Promise<User> => {
-  const res = await fetch(`${API_URL}/buy`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ user_id: userId, symbol, count }),
-  });
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new ApiError(errorData.error || `Error buying stock: ${res.status}`, res.status);
-  }
-  return res.json();
+export const buyStock = async (symbol: string, count: number): Promise<User> => {
+  return api.post('/buy', { symbol, count });
 };
 
-export const sellStock = async (userId: number, symbol: string, count: number): Promise<User> => {
-  const res = await fetch(`${API_URL}/sell`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ user_id: userId, symbol, count }),
-  });
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new ApiError(errorData.error || `Error selling stock: ${res.status}`, res.status);
-  }
-  return res.json();
+export const sellStock = async (symbol: string, count: number): Promise<User> => {
+  return api.post('/sell', { symbol, count });
+};
+
+export const login = async (email: string, password: string): Promise<{ token: string; user: User }> => {
+  return api.post('/login', { email, password });
+};
+
+export const register = async (email: string, password: string, first_name: string, last_name: string): Promise<User> => {
+  return api.post('/register', { email, password, first_name, last_name });
 };

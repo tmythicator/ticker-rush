@@ -4,20 +4,20 @@ import { TradeAction } from '../../types';
 import { TradeFooter } from './TradeFooter';
 import { TradeOrderInput } from './TradeOrderInput';
 import { TradePanelHeader } from './TradePanelHeader';
+import { useAuth } from '../../hooks/useAuth';
 
 export interface TradePanelProps {
-    userId: number;
     symbol: string;
     currentPrice?: number;
-    buyingPower?: number;
     onTradeSuccess?: () => void;
 }
 
-export const TradePanel = ({ userId, symbol, currentPrice = 0, buyingPower = 0, onTradeSuccess }: TradePanelProps) => {
+export const TradePanel = ({ symbol, currentPrice = 0, onTradeSuccess }: TradePanelProps) => {
     const [quantity, setQuantity] = useState<string>('');
+    const { user } = useAuth();
+    const buyingPower = user?.balance || 0;
 
     const { executeTrade, isLoading, error } = useTrade({
-        userId,
         symbol,
         onSuccess: () => {
             setQuantity('');

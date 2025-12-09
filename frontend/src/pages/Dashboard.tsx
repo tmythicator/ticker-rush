@@ -4,18 +4,14 @@ import { useQuery } from '@tanstack/react-query';
 import { MarketChart } from '../components/MarketChart';
 import { StatCard } from '../components/StatCard';
 import { TradePanel } from '../components/TradePanel';
-import { getUser, fetchQuote } from '../lib/api';
+import { PortfolioList } from '../components/PortfolioList';
+import { fetchQuote } from '../lib/api';
 import { TradeSymbol } from '../types';
-const TEST_USER_ID = 1; // Hardcoded for dev
+import { useAuth } from '../hooks/useAuth';
 
 export const Dashboard = () => {
     const [symbol, setSymbol] = useState<TradeSymbol>(TradeSymbol.AAPL);
-
-    const { data: user, refetch: refetchUser } = useQuery({
-        queryKey: ['user', TEST_USER_ID],
-        queryFn: () => getUser(TEST_USER_ID),
-        refetchInterval: 1000,
-    });
+    const { user } = useAuth();
 
     const { data: quote, isLoading: isQuoteLoading, isError: isQuoteError } = useQuery({
         queryKey: ['quote', symbol],
@@ -47,15 +43,15 @@ export const Dashboard = () => {
                         <StatCard key={i} {...stat} />
                     ))}
                 </div>
+                <PortfolioList />
             </div>
             <div className="lg:col-span-3 flex flex-col gap-4 h-full">
-                <TradePanel
-                    userId={TEST_USER_ID}
-                    symbol={symbol}
-                    currentPrice={quote?.price}
-                    buyingPower={user?.balance}
-                    onTradeSuccess={() => refetchUser()}
-                />
+                {user && (
+                    <TradePanel
+                        symbol={symbol}
+                        currentPrice={quote?.price}
+                    />
+                )}
             </div>
         </div>
     );

@@ -1,7 +1,16 @@
-import { Activity, Wallet, BarChart2, Trophy, User } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { Activity, Wallet, BarChart2, Trophy, User, LogOut } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 export const Header = () => {
+    const { user, logout, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
+
     const getLinkStyle = (isActive: boolean): string => {
         const baseStyles = "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors";
 
@@ -22,30 +31,44 @@ export const Header = () => {
                     <span className="font-bold text-lg tracking-tight text-slate-900 hidden sm:block">Ticker Rush</span>
                 </div>
 
-                <nav className="hidden md:flex items-center gap-1">
-                    <NavLink to="/" className={(params) => getLinkStyle(params.isActive)}>
-                        <Trophy className="w-4 h-4" />
-                        Ladder
-                    </NavLink>
-                    <NavLink to="/profile" className={(params) => getLinkStyle(params.isActive)}>
-                        <User className="w-4 h-4" />
-                        Profile
-                    </NavLink>
-                    <NavLink to="/trade" className={(params) => getLinkStyle(params.isActive)}>
-                        <BarChart2 className="w-4 h-4" />
-                        Terminal
-                    </NavLink>
-                </nav>
+                {isAuthenticated && (
+                    <nav className="hidden md:flex items-center gap-1">
+                        <NavLink to="/" className={(params) => getLinkStyle(params.isActive)}>
+                            <Trophy className="w-4 h-4" />
+                            Ladder
+                        </NavLink>
+                        <NavLink to="/profile" className={(params) => getLinkStyle(params.isActive)}>
+                            <User className="w-4 h-4" />
+                            Profile
+                        </NavLink>
+                        <NavLink to="/trade" className={(params) => getLinkStyle(params.isActive)}>
+                            <BarChart2 className="w-4 h-4" />
+                            Terminal
+                        </NavLink>
+                    </nav>
+                )}
             </div>
 
             <div className="flex items-center gap-4 text-sm font-medium">
-                <div className="group flex items-center gap-2 text-slate-600 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200">
-                    <Wallet className="w-4 h-4 text-slate-400" />
-                    <span className="tabular-nums font-mono">$10,000.00</span>
-                </div>
-                <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full border-2 border-white shadow-sm flex items-center justify-center text-white font-bold text-xs cursor-pointer">
-                    AS
-                </div>
+                {isAuthenticated && user ? (
+                    <>
+                        <div className="group flex items-center gap-2 text-slate-600 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200">
+                            <Wallet className="w-4 h-4 text-slate-400" />
+                            <span className="tabular-nums font-mono">${user.balance.toFixed(2)}</span>
+                        </div>
+                        <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full border-2 border-white shadow-sm flex items-center justify-center text-white font-bold text-xs cursor-default" title={user.email}>
+                            {user.first_name ? user.first_name[0] : user.email[0]}
+                        </div>
+                        <button onClick={handleLogout} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors" title="Logout">
+                            <LogOut className="w-5 h-5" />
+                        </button>
+                    </>
+                ) : (
+                    <div className="flex gap-2">
+                        <NavLink to="/login" className="px-4 py-2 text-slate-600 hover:text-slate-900 font-medium">Login</NavLink>
+                        <NavLink to="/register" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">Register</NavLink>
+                    </div>
+                )}
             </div>
         </header>
     );
