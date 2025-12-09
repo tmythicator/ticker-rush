@@ -26,6 +26,12 @@ tasks:
       - task: backend:lint
       - task: frontend:lint
 
+  build:
+    desc: Build everything
+    cmds:
+      - task: backend:build
+      - task: frontend:build
+
   backend:deps:
     desc: Install backend dependencies
     dir: backend
@@ -90,6 +96,12 @@ tasks:
     cmds:
       - pnpm lint
       - pnpm tsc --noEmit
+
+  frontend:build:
+    desc: Build frontend
+    dir: frontend
+    cmds:
+      - pnpm build
 
   frontend:run:
     desc: Run the frontend

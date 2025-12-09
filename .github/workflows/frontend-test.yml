@@ -32,8 +32,12 @@ jobs:
       - name: Install Dependencies
         run: nix develop --command task frontend:deps
 
+      - name: Build
+        run: nix develop --command task frontend:build
+
       - name: Run Linter
         run: nix develop --command task frontend:lint
 
       - name: Run Tests
         run: nix develop --command task frontend:test
+        
