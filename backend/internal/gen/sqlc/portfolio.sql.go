@@ -122,7 +122,7 @@ DO UPDATE SET
 type SetPortfolioItemParams struct {
 	UserID       int64
 	StockSymbol  string
-	Quantity     int32
+	Quantity     float64
 	AveragePrice float64
 }
 

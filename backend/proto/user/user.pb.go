@@ -25,7 +25,7 @@ const (
 type PortfolioItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	StockSymbol   string                 `protobuf:"bytes,1,opt,name=stock_symbol,json=stockSymbol,proto3" json:"stock_symbol,omitempty"`
-	Quantity      int32                  `protobuf:"varint,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Quantity      float64                `protobuf:"fixed64,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	AveragePrice  float64                `protobuf:"fixed64,3,opt,name=average_price,json=averagePrice,proto3" json:"average_price,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -68,7 +68,7 @@ func (x *PortfolioItem) GetStockSymbol() string {
 	return ""
 }
 
-func (x *PortfolioItem) GetQuantity() int32 {
+func (x *PortfolioItem) GetQuantity() float64 {
 	if x != nil {
 		return x.Quantity
 	}
@@ -181,7 +181,7 @@ const file_proto_user_user_proto_rawDesc = "" +
 	"\x15proto/user/user.proto\x12\x04user\x1a\x1fgoogle/protobuf/timestamp.proto\"s\n" +
 	"\rPortfolioItem\x12!\n" +
 	"\fstock_symbol\x18\x01 \x01(\tR\vstockSymbol\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x05R\bquantity\x12#\n" +
+	"\bquantity\x18\x02 \x01(\x01R\bquantity\x12#\n" +
 	"\raverage_price\x18\x03 \x01(\x01R\faveragePrice\"\xe2\x01\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x14\n" +

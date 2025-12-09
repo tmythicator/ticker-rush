@@ -25,7 +25,7 @@ export const TradePanel = ({ userId, symbol, currentPrice = 0, buyingPower = 0, 
         }
     });
 
-    const qty = parseInt(quantity) || 0;
+    const qty = parseFloat(quantity) || 0;
     const estCost = qty * currentPrice;
 
     const handleTrade = (action: TradeAction) => {

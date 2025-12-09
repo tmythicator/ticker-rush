@@ -146,8 +146,8 @@ func TestBuyStock(t *testing.T) {
 	const symbol = "AAPL"
 	const balance float64 = 1000.0
 	const price float64 = 150.0
-	const quantity int32 = 2
-	const expectedBalance float64 = balance - price*float64(quantity)
+	const quantity float64 = 2.0
+	const expectedBalance float64 = balance - price*quantity
 
 	router, mr, pool := setupTestRouter(t)
 	defer mr.Close()
@@ -163,7 +163,7 @@ func TestBuyStock(t *testing.T) {
 	user, _ := userRepo.GetUser(ctx, createdUser.Id)
 
 	// Perform Buy
-	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "%s", "count": %d}`, user.Id, symbol, quantity)
+	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "%s", "count": %f}`, user.Id, symbol, quantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/buy", bytes.NewBufferString(reqBody))
 	router.ServeHTTP(w, req)
@@ -178,7 +178,7 @@ func TestBuyStock(t *testing.T) {
 	// Verify Portfolio State from Repo
 	item, err := portfolioRepo.GetPortfolioItem(ctx, user.Id, symbol)
 	assert.NoError(t, err)
-	assert.Equal(t, int32(quantity), item.Quantity)
+	assert.Equal(t, quantity, item.Quantity)
 }
 
 func TestSellStock(t *testing.T) {
@@ -188,10 +188,10 @@ func TestSellStock(t *testing.T) {
 
 	const mockPrice float64 = 150.0
 	const mockStartBalance float64 = 20.0
-	const mockPortfolioQuantity int32 = 5
-	const mockSellQuantity int32 = 2
-	const expectedPortfolioQuantity int32 = mockPortfolioQuantity - mockSellQuantity
-	const expectedBalance float64 = mockPrice*float64(mockSellQuantity) + mockStartBalance
+	const mockPortfolioQuantity float64 = 5.0
+	const mockSellQuantity float64 = 2.0
+	const expectedPortfolioQuantity float64 = mockPortfolioQuantity - mockSellQuantity
+	const expectedBalance float64 = mockPrice*mockSellQuantity + mockStartBalance
 
 	// Setup Market Data
 	quote := model.Quote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
@@ -207,7 +207,7 @@ func TestSellStock(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Perform Sell
-	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "AAPL", "count": %d}`, user.Id, mockSellQuantity)
+	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "AAPL", "count": %f}`, user.Id, mockSellQuantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/sell", bytes.NewBufferString(reqBody))
 	router.ServeHTTP(w, req)
@@ -254,9 +254,9 @@ func TestSellAllStock(t *testing.T) {
 	const symbol = "AAPL"
 	const mockStartBalance float64 = 0.0
 	const mockPrice float64 = 150.0
-	const mockQuantity int32 = 5
-	const mockSellQuantity int32 = 5
-	const mockExpectedBalance float64 = mockStartBalance + float64(mockSellQuantity)*mockPrice
+	const mockQuantity float64 = 5.0
+	const mockSellQuantity float64 = 5.0
+	const mockExpectedBalance float64 = mockStartBalance + mockSellQuantity*mockPrice
 
 	router, mr, pool := setupTestRouter(t)
 	defer mr.Close()
@@ -278,7 +278,7 @@ func TestSellAllStock(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Perform Sell All
-	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "%s", "count": %d}`, createdUser.Id, symbol, mockSellQuantity)
+	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "%s", "count": %f}`, createdUser.Id, symbol, mockSellQuantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/sell", bytes.NewBufferString(reqBody))
 	router.ServeHTTP(w, req)

@@ -8,3 +8,10 @@ sql:
         package: "sqlc"
         out: "internal/gen/sqlc"
         sql_package: "pgx/v5"
+        overrides:
+          - column: "users.balance"
+            go_type: "float64"
+          - column: "portfolio_items.quantity"
+            go_type: "float64"
+          - column: "portfolio_items.average_price"
+            go_type: "float64"

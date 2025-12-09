@@ -42,7 +42,7 @@ func (r *PortfolioRepository) GetPortfolioItemForUpdate(ctx context.Context, use
 	})
 }
 
-func (r *PortfolioRepository) SetPortfolioItem(ctx context.Context, userID int64, symbol string, quantity int32, averagePrice float64) error {
+func (r *PortfolioRepository) SetPortfolioItem(ctx context.Context, userID int64, symbol string, quantity float64, averagePrice float64) error {
 	return r.queries.SetPortfolioItem(ctx, db.SetPortfolioItemParams{
 		UserID:       userID,
 		StockSymbol:  symbol,

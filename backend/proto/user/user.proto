@@ -8,7 +8,7 @@ import "google/protobuf/timestamp.proto";
 
 message PortfolioItem {
   string stock_symbol = 1;
-  int32 quantity = 2;
+  double quantity = 2;
   double average_price = 3;
 }
 

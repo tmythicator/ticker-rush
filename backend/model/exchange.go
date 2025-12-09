@@ -15,9 +15,9 @@ type FinnhubQuote struct {
 }
 
 type TradeRequest struct {
-	UserID int64  `json:"user_id"`
-	Symbol string `json:"symbol"`
-	Count  int    `json:"count"`
+	UserID int64   `json:"user_id"`
+	Symbol string  `json:"symbol"`
+	Count  float64 `json:"count"`
 }
 
 var ErrInsufficientFunds = errors.New("insufficient funds")

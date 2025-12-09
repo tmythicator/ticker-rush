@@ -90,7 +90,7 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 		return
 	}
 
-	user, err := h.tradeService.BuyStock(c.Request.Context(), req.UserID, req.Symbol, int32(req.Count))
+	user, err := h.tradeService.BuyStock(c.Request.Context(), req.UserID, req.Symbol, req.Count)
 	if err != nil {
 		if errors.Is(err, model.ErrInsufficientFunds) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
@@ -115,7 +115,7 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 		return
 	}
 
-	user, err := h.tradeService.SellStock(c.Request.Context(), req.UserID, req.Symbol, int32(req.Count))
+	user, err := h.tradeService.SellStock(c.Request.Context(), req.UserID, req.Symbol, req.Count)
 	if err != nil {
 		if errors.Is(err, model.ErrInsufficientQuantity) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})

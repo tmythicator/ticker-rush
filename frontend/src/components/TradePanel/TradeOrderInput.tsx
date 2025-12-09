@@ -39,8 +39,9 @@ export const TradeOrderInput = ({
                         type="number"
                         value={quantity}
                         onChange={(e) => setQuantity(e.target.value)}
-                        placeholder="0"
-                        min="1"
+                        placeholder="0.0"
+                        min="0"
+                        step="any"
                         className="w-full bg-white border border-slate-200 rounded-lg px-4 py-3 font-mono text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all shadow-sm placeholder:text-slate-300"
                     />
                 </div>

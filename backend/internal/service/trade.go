@@ -26,14 +26,14 @@ func NewTradeService(userRepo *postgres.UserRepository, portfolioRepo *postgres.
 	}
 }
 
-func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string, quantity int32) (*pb.User, error) {
+func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string, quantity float64) (*pb.User, error) {
 	// 1. Get current price
 	quote, err := s.marketRepo.GetQuote(ctx, symbol)
 	if err != nil {
 		return nil, err
 	}
 
-	cost := quote.Price * float64(quantity)
+	cost := quote.Price * quantity
 
 	// START TRANSACTION
 	tx, err := s.postgresPool.Begin(ctx)
@@ -58,7 +58,7 @@ func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string
 	}
 
 	// 4. Get Current Portfolio Item
-	var currentQty int32 = 0
+	var currentQty float64 = 0
 	var currentAvg float64 = 0
 	item, err := txPortfolioRepo.GetPortfolioItemForUpdate(ctx, user.Id, symbol)
 	if err == nil {
@@ -69,11 +69,11 @@ func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string
 	// 5. Execute Trade Logic
 	user.Balance -= cost
 
-	currentTotalValue := float64(currentQty) * currentAvg
+	currentTotalValue := currentQty * currentAvg
 	newTotalValue := currentTotalValue + cost
 	newTotalQuantity := currentQty + quantity
 
-	item.AveragePrice = newTotalValue / float64(newTotalQuantity)
+	item.AveragePrice = newTotalValue / newTotalQuantity
 	item.Quantity = newTotalQuantity
 
 	// 6. Persistence
@@ -93,14 +93,14 @@ func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string
 	return user, nil
 }
 
-func (s *TradeService) SellStock(ctx context.Context, userID int64, symbol string, quantity int32) (*pb.User, error) {
+func (s *TradeService) SellStock(ctx context.Context, userID int64, symbol string, quantity float64) (*pb.User, error) {
 	// 1. Get current price
 	quote, err := s.marketRepo.GetQuote(ctx, symbol)
 	if err != nil {
 		return nil, err
 	}
 
-	cost := quote.Price * float64(quantity)
+	cost := quote.Price * quantity
 
 	// START TRANSACTION
 	tx, err := s.postgresPool.Begin(ctx)
