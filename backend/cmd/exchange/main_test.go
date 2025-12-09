@@ -25,7 +25,6 @@ import (
 	app_redis "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 	"github.com/tmythicator/ticker-rush/server/model"
-	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 )
 
 const testEmail = "userTest@example.com"
@@ -129,16 +128,17 @@ func TestCreateUser(t *testing.T) {
 
 	reqBody := fmt.Sprintf(`{"email": "%s", "password": "password123", "first_name": "Test", "last_name": "User"}`, testEmail)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/newUser", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest("POST", "/api/register", bytes.NewBufferString(reqBody))
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var responseUser pb.User
+	var responseUser handler.UserResponse
 	err := json.Unmarshal(w.Body.Bytes(), &responseUser)
 	assert.NoError(t, err)
 
-	user, _ := userRepo.GetUser(ctx, responseUser.Id)
+	user, _, err := userRepo.GetUserByEmail(ctx, responseUser.Email)
+	assert.NoError(t, err)
 	assert.Equal(t, testEmail, user.Email)
 }
 
@@ -162,10 +162,14 @@ func TestBuyStock(t *testing.T) {
 	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz", balance)
 	user, _ := userRepo.GetUser(ctx, createdUser.Id)
 
+	// Generate Token
+	token, _ := service.GenerateToken(user)
+
 	// Perform Buy
-	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "%s", "count": %f}`, user.Id, symbol, quantity)
+	reqBody := fmt.Sprintf(`{"symbol": "%s", "count": %f}`, symbol, quantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/buy", bytes.NewBufferString(reqBody))
+	req.Header.Set("Authorization", "Bearer "+token)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -206,10 +210,14 @@ func TestSellStock(t *testing.T) {
 	err := portfolioRepo.SetPortfolioItem(ctx, user.Id, "AAPL", mockPortfolioQuantity, mockPrice)
 	assert.NoError(t, err)
 
+	// Generate Token
+	token, _ := service.GenerateToken(user)
+
 	// Perform Sell
-	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "AAPL", "count": %f}`, user.Id, mockSellQuantity)
+	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "count": %f}`, mockSellQuantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/sell", bytes.NewBufferString(reqBody))
+	req.Header.Set("Authorization", "Bearer "+token)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -240,10 +248,14 @@ func TestInsufficientFunds(t *testing.T) {
 	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz", mockStartBalance)
 	user, _ := userRepo.GetUser(ctx, createdUser.Id)
 
+	// Generate Token
+	token, _ := service.GenerateToken(user)
+
 	// balance < cost
-	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "AAPL", "count": %d}`, user.Id, mockBuyQuantity)
+	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "count": %d}`, mockBuyQuantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/buy", bytes.NewBufferString(reqBody))
+	req.Header.Set("Authorization", "Bearer "+token)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusPaymentRequired, w.Code)
@@ -277,10 +289,14 @@ func TestSellAllStock(t *testing.T) {
 	err = portfolioRepo.SetPortfolioItem(ctx, createdUser.Id, symbol, mockQuantity, mockPrice)
 	assert.NoError(t, err)
 
+	// Generate Token
+	token, _ := service.GenerateToken(createdUser)
+
 	// Perform Sell All
-	reqBody := fmt.Sprintf(`{"user_id": %d, "symbol": "%s", "count": %f}`, createdUser.Id, symbol, mockSellQuantity)
+	reqBody := fmt.Sprintf(`{"symbol": "%s", "count": %f}`, symbol, mockSellQuantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/sell", bytes.NewBufferString(reqBody))
+	req.Header.Set("Authorization", "Bearer "+token)
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
