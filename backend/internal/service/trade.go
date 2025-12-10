@@ -3,26 +3,24 @@ package service
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
 	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/model"
 	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 )
 
 type TradeService struct {
-	userRepo      *postgres.UserRepository
-	portfolioRepo *postgres.PortfolioRepository
+	userRepo      UserRepository
+	portfolioRepo PortfolioRepository
 	marketRepo    *valkey.MarketRepository
-	postgresPool  *pgxpool.Pool
+	transactor    Transactor
 }
 
-func NewTradeService(userRepo *postgres.UserRepository, portfolioRepo *postgres.PortfolioRepository, marketRepo *valkey.MarketRepository, postgresPool *pgxpool.Pool) *TradeService {
+func NewTradeService(userRepo UserRepository, portfolioRepo PortfolioRepository, marketRepo *valkey.MarketRepository, transactor Transactor) *TradeService {
 	return &TradeService{
 		userRepo:      userRepo,
 		portfolioRepo: portfolioRepo,
 		marketRepo:    marketRepo,
-		postgresPool:  postgresPool,
+		transactor:    transactor,
 	}
 }
 
@@ -36,7 +34,7 @@ func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string
 	cost := quote.Price * quantity
 
 	// START TRANSACTION
-	tx, err := s.postgresPool.Begin(ctx)
+	tx, err := s.transactor.Begin(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -73,15 +71,14 @@ func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string
 	newTotalValue := currentTotalValue + cost
 	newTotalQuantity := currentQty + quantity
 
-	item.AveragePrice = newTotalValue / newTotalQuantity
-	item.Quantity = newTotalQuantity
+	newAvgPrice := newTotalValue / newTotalQuantity
 
 	// 6. Persistence
 	if err := txUserRepo.SaveUser(ctx, user); err != nil {
 		return nil, err
 	}
 
-	if err := txPortfolioRepo.SetPortfolioItem(ctx, user.Id, symbol, item.Quantity, item.AveragePrice); err != nil {
+	if err := txPortfolioRepo.SetPortfolioItem(ctx, user.Id, symbol, newTotalQuantity, newAvgPrice); err != nil {
 		return nil, err
 	}
 
@@ -103,7 +100,7 @@ func (s *TradeService) SellStock(ctx context.Context, userID int64, symbol strin
 	cost := quote.Price * quantity
 
 	// START TRANSACTION
-	tx, err := s.postgresPool.Begin(ctx)
+	tx, err := s.transactor.Begin(ctx)
 	if err != nil {
 		return nil, err
 	}

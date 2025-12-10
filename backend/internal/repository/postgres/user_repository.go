@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/tmythicator/ticker-rush/server/internal/gen/sqlc"
+	"github.com/tmythicator/ticker-rush/server/internal/service"
 	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -38,9 +39,9 @@ func (r *UserRepository) GetUser(ctx context.Context, id int64) (*pb.User, error
 	}, nil
 }
 
-func (r *UserRepository) WithTx(tx pgx.Tx) *UserRepository {
+func (r *UserRepository) WithTx(tx service.Transaction) service.UserRepository {
 	return &UserRepository{
-		queries: r.queries.WithTx(tx),
+		queries: r.queries.WithTx(tx.(pgx.Tx)),
 	}
 }
 

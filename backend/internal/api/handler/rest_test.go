@@ -1,4 +1,4 @@
-package main
+package handler_test
 
 import (
 	"bytes"
@@ -97,9 +97,10 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 	userRepo = repos.NewUserRepository(dbPool)
 	portfolioRepo = repos.NewPortfolioRepository(dbPool)
 	marketRepo = app_redis.NewMarketRepository(valkeyClient)
+	transactor := repos.NewPgxTransactor(dbPool)
 
 	userService = service.NewUserService(userRepo, portfolioRepo)
-	tradeService = service.NewTradeService(userRepo, portfolioRepo, marketRepo, dbPool)
+	tradeService = service.NewTradeService(userRepo, portfolioRepo, marketRepo, transactor)
 	// Mock config tickers
 	tickers := []string{"AAPL", "GOOG", "BTC", "FAKE"}
 	marketService = service.NewMarketService(marketRepo, tickers)
@@ -159,8 +160,14 @@ func TestBuyStock(t *testing.T) {
 	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
 
 	// Setup User
-	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz", balance)
-	user, _ := userRepo.GetUser(ctx, createdUser.Id)
+	createdUser, err := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz", balance)
+	if err != nil {
+		t.Fatalf("Failed to create user: %v", err)
+	}
+	user, err := userRepo.GetUser(ctx, createdUser.Id)
+	if err != nil {
+		t.Fatalf("Failed to get user: %v", err)
+	}
 
 	// Generate Token
 	token, _ := service.GenerateToken(user)

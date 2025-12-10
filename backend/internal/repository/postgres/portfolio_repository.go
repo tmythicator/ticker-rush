@@ -6,16 +6,12 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/tmythicator/ticker-rush/server/internal/gen/sqlc"
+	"github.com/tmythicator/ticker-rush/server/internal/service"
+	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 )
 
 type PortfolioRepository struct {
 	queries *db.Queries
-}
-
-func (r *PortfolioRepository) WithTx(tx pgx.Tx) *PortfolioRepository {
-	return &PortfolioRepository{
-		queries: r.queries.WithTx(tx),
-	}
 }
 
 func NewPortfolioRepository(pool *pgxpool.Pool) *PortfolioRepository {
@@ -24,22 +20,59 @@ func NewPortfolioRepository(pool *pgxpool.Pool) *PortfolioRepository {
 	}
 }
 
-func (r *PortfolioRepository) GetPortfolio(ctx context.Context, userID int64) ([]db.PortfolioItem, error) {
-	return r.queries.GetPortfolio(ctx, userID)
+func (r *PortfolioRepository) WithTx(tx service.Transaction) service.PortfolioRepository {
+	return &PortfolioRepository{
+		queries: r.queries.WithTx(tx.(pgx.Tx)),
+	}
 }
 
-func (r *PortfolioRepository) GetPortfolioItem(ctx context.Context, userID int64, symbol string) (db.PortfolioItem, error) {
-	return r.queries.GetPortfolioItem(ctx, db.GetPortfolioItemParams{
+func (r *PortfolioRepository) GetPortfolio(ctx context.Context, userID int64) ([]*pb.PortfolioItem, error) {
+	items, err := r.queries.GetPortfolio(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*pb.PortfolioItem, len(items))
+	for i, item := range items {
+		result[i] = &pb.PortfolioItem{
+			StockSymbol:  item.StockSymbol,
+			Quantity:     item.Quantity,
+			AveragePrice: item.AveragePrice,
+		}
+	}
+	return result, nil
+}
+
+func (r *PortfolioRepository) GetPortfolioItem(ctx context.Context, userID int64, symbol string) (*pb.PortfolioItem, error) {
+	item, err := r.queries.GetPortfolioItem(ctx, db.GetPortfolioItemParams{
 		UserID:      userID,
 		StockSymbol: symbol,
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.PortfolioItem{
+		StockSymbol:  item.StockSymbol,
+		Quantity:     item.Quantity,
+		AveragePrice: item.AveragePrice,
+	}, nil
 }
 
-func (r *PortfolioRepository) GetPortfolioItemForUpdate(ctx context.Context, userID int64, symbol string) (db.PortfolioItem, error) {
-	return r.queries.GetPortfolioItemForUpdate(ctx, db.GetPortfolioItemForUpdateParams{
+func (r *PortfolioRepository) GetPortfolioItemForUpdate(ctx context.Context, userID int64, symbol string) (*pb.PortfolioItem, error) {
+	item, err := r.queries.GetPortfolioItemForUpdate(ctx, db.GetPortfolioItemForUpdateParams{
 		UserID:      userID,
 		StockSymbol: symbol,
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.PortfolioItem{
+		StockSymbol:  item.StockSymbol,
+		Quantity:     item.Quantity,
+		AveragePrice: item.AveragePrice,
+	}, nil
 }
 
 func (r *PortfolioRepository) SetPortfolioItem(ctx context.Context, userID int64, symbol string, quantity float64, averagePrice float64) error {

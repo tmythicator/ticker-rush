@@ -3,14 +3,13 @@ package service
 import (
 	"context"
 
-	"github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
 	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct {
-	userRepo      *postgres.UserRepository
-	portfolioRepo *postgres.PortfolioRepository
+	userRepo      UserRepository
+	portfolioRepo PortfolioRepository
 }
 
 type UserWithPortfolio struct {
@@ -18,7 +17,7 @@ type UserWithPortfolio struct {
 	Portfolio map[string]*pb.PortfolioItem `json:"portfolio"`
 }
 
-func NewUserService(userRepo *postgres.UserRepository, portfolioRepo *postgres.PortfolioRepository) *UserService {
+func NewUserService(userRepo UserRepository, portfolioRepo PortfolioRepository) *UserService {
 	return &UserService{
 		userRepo:      userRepo,
 		portfolioRepo: portfolioRepo,

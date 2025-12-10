@@ -59,9 +59,10 @@ func main() {
 	userRepo := postgres.NewUserRepository(postgreClient)
 	portfolioRepo := postgres.NewPortfolioRepository(postgreClient)
 	marketRepo := valkey.NewMarketRepository(valkeyClient)
+	transactor := postgres.NewPgxTransactor(postgreClient)
 
 	userService := service.NewUserService(userRepo, portfolioRepo)
-	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, postgreClient)
+	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, transactor)
 	marketService := service.NewMarketService(marketRepo, cfg.Tickers)
 
 	restHandler := handler.NewRestHandler(userService, tradeService, marketService)
