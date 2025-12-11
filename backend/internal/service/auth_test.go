@@ -20,8 +20,11 @@ func TestAuthService_GenerateToken(t *testing.T) {
 		Email: testEmail,
 	}
 
-	os.Setenv("JWT_SECRET", secret)
-	defer os.Unsetenv("JWT_SECRET")
+	err := os.Setenv("JWT_SECRET", secret)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = os.Unsetenv("JWT_SECRET") }()
 
 	tokenString, err := service.GenerateToken(user)
 
@@ -40,8 +43,11 @@ func TestAuthService_GenerateToken(t *testing.T) {
 
 func TestAuthService_ValidateToken(t *testing.T) {
 	const secret = "test-secret"
-	os.Setenv("JWT_SECRET", secret)
-	defer os.Unsetenv("JWT_SECRET")
+	err := os.Setenv("JWT_SECRET", secret)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = os.Unsetenv("JWT_SECRET") }()
 
 	t.Run("Valid Token", func(t *testing.T) {
 		claims := &service.Claims{
