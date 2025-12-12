@@ -1,13 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Header } from './components/Header';
-import { Dashboard } from './pages/Dashboard';
-import { Leaderboard } from './pages/Leaderboard';
-import { Profile } from './pages/Profile';
+import { DashboardPage } from './pages/DashboardPage';
+import { LeaderboardPage } from './pages/LeaderboardPage';
+import { ProfilePage } from './pages/ProfilePage';
 
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
-import { Login } from './pages/Login';
-import { Register } from './pages/Register';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
 
 function App() {
     return (
@@ -18,13 +18,13 @@ function App() {
 
                     <main className="flex-1 flex flex-col">
                         <Routes>
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/register" element={<Register />} />
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route path="/register" element={<RegisterPage />} />
 
                             <Route element={<ProtectedRoute />}>
-                                <Route path="/" element={<Leaderboard />} />
-                                <Route path="/trade" element={<Dashboard />} />
-                                <Route path="/profile" element={<Profile />} />
+                                <Route path="/" element={<LeaderboardPage />} />
+                                <Route path="/trade" element={<DashboardPage />} />
+                                <Route path="/profile" element={<ProfilePage />} />
                             </Route>
 
                             <Route path="*" element={<Navigate to="/" replace />} />

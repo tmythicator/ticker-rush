@@ -1,8 +1,14 @@
-import { useAuth } from '../hooks/useAuth';
+import { useSearchParams } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 export const PortfolioList = () => {
     const { user } = useAuth();
     const positions = user?.portfolio ? Object.values(user.portfolio) : [];
+    const [, setSearchParams] = useSearchParams();
+
+    const handleRowClick = (symbol: string) => {
+        setSearchParams({ symbol });
+    };
 
     if (positions.length === 0) {
         return (
@@ -29,7 +35,11 @@ export const PortfolioList = () => {
                     </thead>
                     <tbody className="divide-y divide-slate-50">
                         {positions.map((item) => (
-                            <tr key={item.stock_symbol} className="group hover:bg-slate-50 transition-colors">
+                            <tr
+                                key={item.stock_symbol}
+                                onClick={() => handleRowClick(item.stock_symbol)}
+                                className="group hover:bg-slate-50 transition-colors cursor-pointer"
+                            >
                                 <td className="py-3 pl-2 text-slate-900 font-bold">{item.stock_symbol}</td>
                                 <td className="py-3 text-right text-slate-700">{item.quantity}</td>
                                 <td className="py-3 text-right text-slate-500">${item.average_price.toFixed(2)}</td>

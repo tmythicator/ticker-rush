@@ -1,9 +1,9 @@
 import { useRef } from 'react';
-import { type Quote } from '../../lib/api';
+import { type Quote } from '../../../lib/api';
 import { ChartBody } from './ChartBody';
-import { TradeSymbol } from '../../types';
-import { useChart } from '../../hooks/useChart';
-import { usePriceColor } from '../../hooks/usePriceColor';
+import { TradeSymbol } from '../../../types';
+import { useChart } from '../../../hooks/useChart';
+import { usePriceColor } from '../../../hooks/usePriceColor';
 
 interface MarketChartProps {
     symbol: TradeSymbol;
@@ -18,15 +18,14 @@ export const MarketChart = ({ symbol, onSymbolChange, quote, isLoading, isError 
 
     useChart({ chartContainerRef, quote, symbol });
 
-    const price = quote?.price;
-    const priceColor = usePriceColor(price);
+    const priceColor = usePriceColor(quote?.price);
 
     return (
         <div className="w-full h-full relative group">
             <ChartBody
                 symbol={symbol}
                 onSymbolChange={onSymbolChange}
-                price={price}
+                price={quote?.price}
                 priceColor={priceColor}
                 isLoading={isLoading}
                 isError={isError}

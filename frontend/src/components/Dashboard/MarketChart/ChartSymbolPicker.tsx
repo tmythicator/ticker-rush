@@ -1,5 +1,5 @@
 import { ChevronDown } from "lucide-react";
-import { isTradeSymbol, TradeSymbol, TradeSymbols } from "../../types";
+import { isTradeSymbol, TradeSymbol, TradeSymbols } from "../../../types";
 
 interface ChartSymbolPickerProps {
     symbol: string;

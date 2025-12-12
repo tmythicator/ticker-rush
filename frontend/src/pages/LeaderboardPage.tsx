@@ -9,7 +9,7 @@ const leaders = [
     { rank: 5, name: "Jonas B.", profit: "+45.2%", volume: "$1.8M" },
 ];
 
-export const Leaderboard = () => {
+export const LeaderboardPage = () => {
     return (
         <div className="max-w-5xl w-full mx-auto p-4 lg:p-6">
             <div className="mb-8 text-center">

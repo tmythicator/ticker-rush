@@ -5,12 +5,13 @@ export const setAuthToken = (token: string | null) => {
   authToken = token;
 };
 
-const getHeaders = () => {
+const getHeaders = (token?: string | null) => {
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
   };
-  if (authToken) {
-    headers['Authorization'] = `Bearer ${authToken}`;
+  const finalToken = token || authToken;
+  if (finalToken) {
+    headers['Authorization'] = `Bearer ${finalToken}`;
   }
   return headers;
 };
@@ -30,17 +31,17 @@ class ApiError extends Error {
 }
 
 export const api = {
-  get: async (endpoint: string) => {
+  get: async (endpoint: string, token?: string | null) => {
     const res = await fetch(`${API_URL}${endpoint}`, {
-      headers: getHeaders(),
+      headers: getHeaders(token),
     });
     if (!res.ok) throw new ApiError(`Error: ${res.status}`, res.status);
     return res.json();
   },
-  post: async (endpoint: string, body: unknown) => {
+  post: async (endpoint: string, body: unknown, token?: string | null) => {
     const res = await fetch(`${API_URL}${endpoint}`, {
       method: 'POST',
-      headers: getHeaders(),
+      headers: getHeaders(token),
       body: JSON.stringify(body),
     });
     if (!res.ok) {
@@ -51,8 +52,8 @@ export const api = {
   }
 };
 
-export const fetchQuote = async (symbol: string): Promise<Quote> => {
-  return api.get(`/quote?symbol=${symbol}`);
+export const fetchQuote = async (symbol: string, token?: string | null): Promise<Quote> => {
+  return api.get(`/quote?symbol=${symbol}`, token);
 };
 
 // TODO: use protobuf for frontend struct generation (autosync with backend)

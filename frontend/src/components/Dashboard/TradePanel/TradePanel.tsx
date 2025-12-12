@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useTrade } from '../../hooks/useTrade';
-import { TradeAction } from '../../types';
+import { useTrade } from '../../../hooks/useTrade';
+import { TradeAction } from '../../../types';
 import { TradeFooter } from './TradeFooter';
 import { TradeOrderInput } from './TradeOrderInput';
 import { TradePanelHeader } from './TradePanelHeader';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../../hooks/useAuth';
 
 export interface TradePanelProps {
     symbol: string;
