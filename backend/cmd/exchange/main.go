@@ -4,6 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/tmythicator/ticker-rush/server/db"
@@ -73,8 +78,31 @@ func main() {
 		log.Fatalf("Failed to create router: %v", err)
 	}
 
-	log.Printf("Exchange API running on :%d\n", cfg.ServerPort)
-	if err := router.Run(fmt.Sprintf(":%d", cfg.ServerPort)); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+	// Start server in a goroutine
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%d", cfg.ServerPort),
+		Handler: router,
 	}
+
+	go func() {
+		log.Printf("Exchange API running on :%d\n", cfg.ServerPort)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Failed to start server: %v", err)
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 5 seconds.
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log.Println("Shutting down server...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatal("Server forced to shutdown: ", err)
+	}
+
+	log.Println("Server exiting")
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"math"
+	"sync"
 	"time"
 
 	"github.com/tmythicator/ticker-rush/server/internal/model"
@@ -26,7 +27,7 @@ func NewMarketFetcher(client FinnhubClient, repo *redis.MarketRepository) *Marke
 	}
 }
 
-func (w *MarketFetcher) Start(ctx context.Context, symbol string, fetchInterval time.Duration) {
+func (w *MarketFetcher) Start(ctx context.Context, symbol string, fetchInterval time.Duration, wg *sync.WaitGroup) {
 	ticker := time.NewTicker(fetchInterval)
 
 	// Initial fetch
@@ -35,7 +36,7 @@ func (w *MarketFetcher) Start(ctx context.Context, symbol string, fetchInterval 
 		log.Printf("[%s] Initial fetch failed (will retry in loop): %v", symbol, err)
 	}
 
-	go func() {
+	wg.Go(func() {
 		defer ticker.Stop()
 		for {
 			select {
@@ -51,7 +52,7 @@ func (w *MarketFetcher) Start(ctx context.Context, symbol string, fetchInterval 
 				return
 			}
 		}
-	}()
+	})
 }
 
 func (w *MarketFetcher) processTicker(ctx context.Context, symbol string, lastQuote *model.Quote) (*model.Quote, error) {

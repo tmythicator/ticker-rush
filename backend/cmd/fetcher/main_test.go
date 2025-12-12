@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"sync"
 	"testing"
 	"time"
 
@@ -57,11 +58,10 @@ func TestMarketFetcher(t *testing.T) {
 	// Actually, for testing, it's better if we can trigger it.
 	// Let's rely on the fact that Start calls processTicker immediately once.
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	// Start in a goroutine
-	go marketWorker.Start(ctx, "AAPL", 100*time.Millisecond)
+	go marketWorker.Start(ctx, "AAPL", 100*time.Millisecond, &sync.WaitGroup{})
 
 	// Wait for Redis update
 	time.Sleep(200 * time.Millisecond)

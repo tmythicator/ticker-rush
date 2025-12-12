@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"sync"
+	"syscall"
 	"time"
 
 	go_redis "github.com/redis/go-redis/v9"
@@ -49,17 +51,22 @@ func main() {
 
 	fmt.Printf("Worker service started. Tracking %d tickers...\n", len(cfg.Tickers))
 
+	var wg sync.WaitGroup
+
 	for _, symbol := range cfg.Tickers {
-		marketWorker.Start(ctx, symbol, cfg.FetchInterval)
+		marketWorker.Start(ctx, symbol, cfg.FetchInterval, &wg)
 		time.Sleep(cfg.SleepInterval)
 	}
 
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
 
 	log.Println("Fetcher shutting down...")
 	cancel()
-	time.Sleep(1 * time.Second)
+
+	log.Println("Waiting for workers to finish...")
+	wg.Wait()
+	log.Println("All workers stopped. Exiting.")
 }
