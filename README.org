@@ -20,8 +20,11 @@ The project follows a polyglot microservices architecture to demonstrate scalabi
 - *Frontend*: React 19, TypeScript, Vite, Tailwind CSS, Lightweight Charts v5.
 - *Backend:* Go (Golang) + Gin Framework. Implements a "Producer-Consumer" pattern:
   - *Worker:* Background process that polls Finnhub API (respecting rate limits) and writes to cache.
-  - *API:* HTTP handler serving data from memory.
-- *Data Layer:* Valkey (Open Source Redis fork) for caching hot market data.
+  - *API:* HTTP handler serving data and real-time updates via **Server-Sent Events (SSE)**.
+  - *Security:* **Authorization Middleware** (JWT) ensures secure access to simulated trading and portfolio management.
+- *Data Layer:*
+  - *PostgreSQL:* Primary store for user profiles, portfolios, and transaction history.
+  - *Valkey (Redis fork):* High-performance cache for hot market data and quotes.
 - *AI Agent:* (Planned) Python service for automated trading strategies.
 
 * Status
@@ -34,12 +37,14 @@ The project follows a polyglot microservices architecture to demonstrate scalabi
 * Roadmap
 - [-] *Phase 2: Gamification*
   - [ ] Leaderboard system
-  - [-] User Profiles & Transaction History
+  - [X] User Profiles & Transaction History
+  - [X] "Sell All" Position with Real-Time Price Confirmation
   - [ ] Python AI Agent logic (Random Walk / Moving Average)
 - [X] *Phase 3: Production Ready*
   - [X] Docker Compose orchestration
   - [X] Unit & Integration Tests
   - [X] CI/CD Pipelines
+  - [X] Graceful Shutdown (SIGINT/SIGTERM handling)
 
 * Development & Deployment
 ** Prerequisites
