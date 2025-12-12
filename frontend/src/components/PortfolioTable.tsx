@@ -1,8 +1,8 @@
 import { Briefcase, ArrowRight, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import type { PortfolioItem } from '../../lib/api';
-import { sellStock } from '../../lib/api';
-import { useAuth } from '../../hooks/useAuth';
+import { useState } from 'react';
+import type { PortfolioItem } from '../lib/api';
+import { SellPositionModal } from './SellPositionModal';
 
 interface PortfolioTableProps {
     portfolio: Record<string, PortfolioItem>;
@@ -10,24 +10,14 @@ interface PortfolioTableProps {
 
 export const PortfolioTable = ({ portfolio }: PortfolioTableProps) => {
     const navigate = useNavigate();
-    const { refreshUser } = useAuth();
+    const [sellModal, setSellModal] = useState<{ isOpen: boolean; item?: PortfolioItem }>({ isOpen: false });
 
     const handleTrade = (symbol: string) => {
         navigate(`/trade?symbol=${symbol}`);
     };
 
-    const handleSellAll = async (item: PortfolioItem) => {
-        if (!confirm(`Are you sure you want to sell all ${item.quantity} shares of ${item.stock_symbol}?`)) {
-            return;
-        }
-
-        try {
-            const updatedUser = await sellStock(item.stock_symbol, item.quantity);
-            refreshUser(updatedUser);
-        } catch (error) {
-            console.error('Failed to sell stock:', error);
-            alert('Failed to sell stock. Please try again.');
-        }
+    const handleSellClick = (item: PortfolioItem) => {
+        setSellModal({ isOpen: true, item });
     };
 
     return (
@@ -68,7 +58,7 @@ export const PortfolioTable = ({ portfolio }: PortfolioTableProps) => {
                                 <td className="px-6 py-4 text-right">
                                     <div className="flex items-center justify-end gap-2">
                                         <button
-                                            onClick={() => handleSellAll(item)}
+                                            onClick={() => handleSellClick(item)}
                                             className="text-xs font-bold text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
                                             title="Sell All"
                                         >
@@ -96,6 +86,16 @@ export const PortfolioTable = ({ portfolio }: PortfolioTableProps) => {
                     </tbody>
                 </table>
             </div>
+
+            {sellModal.item && (
+                <SellPositionModal
+                    isOpen={sellModal.isOpen}
+                    onClose={() => setSellModal({ isOpen: false })}
+                    symbol={sellModal.item.stock_symbol}
+                    quantity={sellModal.item.quantity}
+                    onSuccess={() => setSellModal({ isOpen: false })}
+                />
+            )}
         </div>
     );
 };

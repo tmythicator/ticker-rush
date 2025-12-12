@@ -1,4 +1,5 @@
-import { MarketChart, TradePanel, PortfolioList, DashboardStats } from '../components/Dashboard';
+import { MarketChart, TradePanel, DashboardStats } from '../components/Dashboard';
+import { PortfolioTable } from '../components/PortfolioTable';
 import { useQuotesSSE } from '../hooks/useQuotesSSE';
 import { useAuth } from '../hooks/useAuth';
 import { useTradeSymbol } from '../hooks/useTradeSymbol';
@@ -25,7 +26,7 @@ export const DashboardPage = () => {
                     />
                 </div>
                 <DashboardStats user={user} />
-                <PortfolioList />
+                <PortfolioTable portfolio={user?.portfolio ?? {}} />
             </div>
             <div className="lg:col-span-3 flex flex-col gap-4 h-full">
                 {user && (

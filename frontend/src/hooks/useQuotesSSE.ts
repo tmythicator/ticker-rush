@@ -12,6 +12,7 @@ export const useQuotesSSE = (symbol: string) => {
             return;
         }
 
+        // Hydrate initial quote
         fetchQuote(symbol, token).then(initialQuote => {
             setQuote(initialQuote);
         }).catch(e => console.error("Initial fetch failed:", e));

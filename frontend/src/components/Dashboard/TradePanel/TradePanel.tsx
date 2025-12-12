@@ -33,9 +33,17 @@ export const TradePanel = ({ symbol, currentPrice = 0, onTradeSuccess }: TradePa
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col h-full">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col h-full relative">
             <TradePanelHeader isLoading={isLoading} />
-            <TradeOrderInput symbol={symbol} quantity={quantity} setQuantity={setQuantity} error={error} handleTrade={handleTrade} />
+            <TradeOrderInput
+                symbol={symbol}
+                quantity={quantity}
+                setQuantity={setQuantity}
+                error={error}
+                handleTrade={handleTrade}
+            />
+
+            <div className="flex-1" />
             <TradeFooter buyingPower={buyingPower} estCost={estCost} />
         </div>
     );
