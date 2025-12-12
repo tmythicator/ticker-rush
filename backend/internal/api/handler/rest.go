@@ -2,13 +2,15 @@ package handler
 
 import (
 	"errors"
+	"io"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	go_redis "github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/api/middleware"
+	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
-	"github.com/tmythicator/ticker-rush/server/model"
 )
 
 type RestHandler struct {
@@ -89,7 +91,7 @@ func (h *RestHandler) GetQuote(c *gin.Context) {
 
 	quote, err := h.marketService.GetQuote(c.Request.Context(), symbol)
 	if err != nil {
-		if errors.Is(err, model.ErrSymbolNotAllowed) {
+		if errors.Is(err, apperrors.ErrSymbolNotAllowed) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
@@ -120,11 +122,11 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 
 	_, err := h.tradeService.BuyStock(c.Request.Context(), userId.(int64), req.Symbol, req.Count)
 	if err != nil {
-		if errors.Is(err, model.ErrInsufficientFunds) {
+		if errors.Is(err, apperrors.ErrInsufficientFunds) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
 			return
 		}
-		if errors.Is(err, model.ErrInsufficientQuantity) {
+		if errors.Is(err, apperrors.ErrInsufficientQuantity) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
 			return
 		}
@@ -157,12 +159,12 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 
 	_, err := h.tradeService.SellStock(c.Request.Context(), userId.(int64), req.Symbol, req.Count)
 	if err != nil {
-		if errors.Is(err, model.ErrInsufficientQuantity) {
+		if errors.Is(err, apperrors.ErrInsufficientQuantity) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
 			return
 		}
 
-		if errors.Is(err, model.ErrInsufficientFunds) {
+		if errors.Is(err, apperrors.ErrInsufficientFunds) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
 			return
 		}
@@ -178,4 +180,36 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, toUserResponse(fullUser.User, fullUser.Portfolio))
+}
+
+func (h *RestHandler) StreamQuotes(c *gin.Context) {
+	c.Header("Content-Type", "text/event-stream")
+	c.Header("Cache-Control", "no-cache")
+	c.Header("Connection", "keep-alive")
+	c.Header("Transfer-Encoding", "chunked")
+
+	clientGone := c.Writer.CloseNotify()
+
+	pubsub, err := h.marketService.SubscribeToQuotes(c.Request.Context(), c.Query("symbol"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	defer func() {
+		if err := pubsub.Close(); err != nil {
+			log.Printf("Failed to close pubsub: %v", err)
+		}
+	}()
+
+	ch := pubsub.Channel()
+
+	c.Stream(func(w io.Writer) bool {
+		select {
+		case <-clientGone:
+			return false
+		case msg := <-ch:
+			c.SSEvent("quote", msg.Payload)
+			return true
+		}
+	})
 }

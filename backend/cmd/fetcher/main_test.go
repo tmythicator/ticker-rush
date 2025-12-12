@@ -9,14 +9,15 @@ import (
 	"github.com/alicebob/miniredis/v2"
 	go_redis "github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
-	redis_repo "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
+	"github.com/tmythicator/ticker-rush/server/internal/clients/finnhub"
+	"github.com/tmythicator/ticker-rush/server/internal/model"
+	"github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/internal/worker"
-	"github.com/tmythicator/ticker-rush/server/model"
 )
 
 // MockFinnhubClient mocks the Finnhub API
 type MockFinnhubClient struct {
-	Quote model.FinnhubQuote
+	Quote finnhub.FinnhubQuote
 }
 
 func (m *MockFinnhubClient) GetQuote(ctx context.Context, symbol string) (*model.Quote, error) {
@@ -38,7 +39,7 @@ func TestMarketFetcher(t *testing.T) {
 	})
 
 	// 2. Setup Mock Finnhub
-	mockQuote := model.FinnhubQuote{
+	mockQuote := finnhub.FinnhubQuote{
 		Change:       10.0,
 		CurrentPrice: 150.0,
 		Timestamp:    time.Now().Unix(),
@@ -46,7 +47,7 @@ func TestMarketFetcher(t *testing.T) {
 	mockClient := &MockFinnhubClient{Quote: mockQuote}
 
 	// 3. Setup Worker
-	marketRepo := redis_repo.NewMarketRepository(rdb)
+	marketRepo := redis.NewMarketRepository(rdb)
 	marketWorker := worker.NewMarketFetcher(mockClient, marketRepo)
 
 	// 4. Run Worker logic (simulate one tick)

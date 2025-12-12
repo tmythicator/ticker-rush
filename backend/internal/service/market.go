@@ -4,8 +4,10 @@ import (
 	"context"
 	"slices"
 
+	"github.com/redis/go-redis/v9"
+	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
+	"github.com/tmythicator/ticker-rush/server/internal/model"
 	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
-	"github.com/tmythicator/ticker-rush/server/model"
 )
 
 type MarketService struct {
@@ -20,9 +22,16 @@ func NewMarketService(marketRepo *valkey.MarketRepository, allowedTickers []stri
 	}
 }
 
-func (s *MarketService) GetQuote(ctx context.Context, symbol string) (any, error) {
+func (s *MarketService) GetQuote(ctx context.Context, symbol string) (*model.Quote, error) {
 	if !slices.Contains(s.allowedTickers, symbol) {
-		return nil, model.ErrSymbolNotAllowed
+		return nil, apperrors.ErrSymbolNotAllowed
 	}
 	return s.marketRepo.GetQuote(ctx, symbol)
+}
+
+func (s *MarketService) SubscribeToQuotes(ctx context.Context, symbol string) (*redis.PubSub, error) {
+	if !slices.Contains(s.allowedTickers, symbol) {
+		return nil, apperrors.ErrSymbolNotAllowed
+	}
+	return s.marketRepo.SubscribeToQuotes(ctx, symbol), nil
 }

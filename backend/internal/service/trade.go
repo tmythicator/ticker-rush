@@ -3,8 +3,9 @@ package service
 import (
 	"context"
 
+	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
+
 	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
-	"github.com/tmythicator/ticker-rush/server/model"
 	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 )
 
@@ -52,7 +53,7 @@ func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string
 
 	// 3. Check Balance
 	if user.Balance < cost {
-		return nil, model.ErrInsufficientFunds
+		return nil, apperrors.ErrInsufficientFunds
 	}
 
 	// 4. Get Current Portfolio Item
@@ -117,7 +118,7 @@ func (s *TradeService) SellStock(ctx context.Context, userID int64, symbol strin
 	}
 
 	if item.Quantity < quantity {
-		return nil, model.ErrInsufficientQuantity
+		return nil, apperrors.ErrInsufficientQuantity
 	}
 
 	// 3. Get User

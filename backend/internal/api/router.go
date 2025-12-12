@@ -38,6 +38,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 		protected := api.Group("/")
 		protected.Use(middleware.AuthMiddleware())
 		{
+			protected.GET("/quotes/events", handler.StreamQuotes)
 			protected.GET("/quote", handler.GetQuote)
 			protected.GET("/user/me", handler.GetMe)
 			protected.POST("/buy", handler.BuyStock)

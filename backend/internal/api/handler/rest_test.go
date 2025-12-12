@@ -20,11 +20,12 @@ import (
 	"github.com/tmythicator/ticker-rush/server/db"
 	"github.com/tmythicator/ticker-rush/server/internal/api"
 	"github.com/tmythicator/ticker-rush/server/internal/api/handler"
+	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/server/internal/config"
+	"github.com/tmythicator/ticker-rush/server/internal/model"
 	repos "github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
 	app_redis "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
-	"github.com/tmythicator/ticker-rush/server/model"
 )
 
 const testEmail = "userTest@example.com"
@@ -266,7 +267,7 @@ func TestInsufficientFunds(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusPaymentRequired, w.Code)
-	assert.Error(t, model.ErrInsufficientFunds)
+	assert.Error(t, apperrors.ErrInsufficientFunds)
 }
 
 func TestSellAllStock(t *testing.T) {

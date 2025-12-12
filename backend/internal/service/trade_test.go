@@ -10,10 +10,11 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
+	"github.com/tmythicator/ticker-rush/server/internal/model"
 	app_redis "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 	"github.com/tmythicator/ticker-rush/server/internal/service/mocks"
-	"github.com/tmythicator/ticker-rush/server/model"
 	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 )
 
@@ -103,7 +104,7 @@ func TestTradeService_BuyStock_InsufficientFunds(t *testing.T) {
 	_, err := tradeService.BuyStock(ctx, userID, symbol, quantity)
 
 	assert.Error(t, err)
-	assert.Equal(t, model.ErrInsufficientFunds, err)
+	assert.Equal(t, apperrors.ErrInsufficientFunds, err)
 
 	mockTx.AssertNotCalled(t, "Commit", mock.Anything)
 	mockTx.AssertCalled(t, "Rollback", mock.Anything)

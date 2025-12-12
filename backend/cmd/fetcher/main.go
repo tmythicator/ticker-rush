@@ -18,16 +18,16 @@ import (
 
 func main() {
 	if err := config.LoadEnv(); err != nil {
-		log.Printf("⚠️ Failed to load .env: %v", err)
+		log.Printf("Failed to load .env: %v", err)
 	}
 
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		log.Printf("⚠️ Failed to load config: %v", err)
+		log.Fatalf("Failed to load config: %v", err)
 	}
 
 	if err := cfg.ValidateFetcher(); err != nil {
-		log.Fatalf("❌ Fetcher failed to start: %v", err)
+		log.Fatalf("Fetcher failed to start: %v", err)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -47,7 +47,7 @@ func main() {
 	// Initialize Worker
 	marketWorker := worker.NewMarketFetcher(finnhubClient, marketRepo)
 
-	fmt.Printf("✅ Worker service started. Tracking %d tickers...\n", len(cfg.Tickers))
+	fmt.Printf("Worker service started. Tracking %d tickers...\n", len(cfg.Tickers))
 
 	for _, symbol := range cfg.Tickers {
 		marketWorker.Start(ctx, symbol, cfg.FetchInterval)

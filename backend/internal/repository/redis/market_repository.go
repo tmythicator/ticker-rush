@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/tmythicator/ticker-rush/server/model"
+	"github.com/tmythicator/ticker-rush/server/internal/model"
 )
 
 type MarketRepository struct {
@@ -37,5 +37,18 @@ func (r *MarketRepository) SaveQuote(ctx context.Context, quote *model.Quote) er
 		return err
 	}
 	key := fmt.Sprintf("market:%s", quote.Symbol)
-	return r.valkey.Set(ctx, key, data, 0).Err()
+
+	// Publish to specific channel for the symbol
+	channel := fmt.Sprintf("market:quote:%s", quote.Symbol)
+
+	pipe := r.valkey.Pipeline()
+	pipe.Set(ctx, key, data, 0)
+	pipe.Publish(ctx, channel, data)
+	_, err = pipe.Exec(ctx)
+	return err
+}
+
+func (r *MarketRepository) SubscribeToQuotes(ctx context.Context, symbol string) *redis.PubSub {
+	channel := fmt.Sprintf("market:quote:%s", symbol)
+	return r.valkey.Subscribe(ctx, channel)
 }
