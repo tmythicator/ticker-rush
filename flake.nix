@@ -63,6 +63,7 @@
             # Protobuf
             protobuf
             protoc-gen-go
+            protoc-gen-go-grpc
 
             # Database
             sqlc
@@ -71,6 +72,12 @@
 
             # Task Runner
             go-task
+
+            # Trading Bot
+            python3
+            python3Packages.grpcio
+            python3Packages.grpcio-tools
+            python3Packages.protobuf
           ];
 
           shellHook = ''
