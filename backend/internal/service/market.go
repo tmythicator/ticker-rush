@@ -6,7 +6,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
-	"github.com/tmythicator/ticker-rush/server/internal/model"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
 	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 )
 
@@ -22,7 +22,7 @@ func NewMarketService(marketRepo *valkey.MarketRepository, allowedTickers []stri
 	}
 }
 
-func (s *MarketService) GetQuote(ctx context.Context, symbol string) (*model.Quote, error) {
+func (s *MarketService) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error) {
 	if !slices.Contains(s.allowedTickers, symbol) {
 		return nil, apperrors.ErrSymbolNotAllowed
 	}

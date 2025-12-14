@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/tmythicator/ticker-rush/server/internal/model"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
 )
 
 type MarketRepository struct {
@@ -17,13 +17,13 @@ func NewMarketRepository(valkey *redis.Client) *MarketRepository {
 	return &MarketRepository{valkey: valkey}
 }
 
-func (r *MarketRepository) GetQuote(ctx context.Context, symbol string) (*model.Quote, error) {
+func (r *MarketRepository) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error) {
 	val, err := r.valkey.Get(ctx, "market:"+symbol).Result()
 	if err != nil {
 		return nil, err
 	}
 
-	var quote model.Quote
+	var quote exchange.Quote
 	if err := json.Unmarshal([]byte(val), &quote); err != nil {
 		return nil, err
 	}
@@ -31,7 +31,7 @@ func (r *MarketRepository) GetQuote(ctx context.Context, symbol string) (*model.
 	return &quote, nil
 }
 
-func (r *MarketRepository) SaveQuote(ctx context.Context, quote *model.Quote) error {
+func (r *MarketRepository) SaveQuote(ctx context.Context, quote *exchange.Quote) error {
 	data, err := json.Marshal(quote)
 	if err != nil {
 		return err

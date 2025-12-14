@@ -61,6 +61,7 @@
             nodePackages.pnpm
 
             # Protobuf
+            buf
             protobuf
             protoc-gen-go
             protoc-gen-go-grpc

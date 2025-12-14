@@ -5,8 +5,8 @@ import (
 
 	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
 
+	"github.com/tmythicator/ticker-rush/server/internal/proto/user"
 	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
-	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 )
 
 type TradeService struct {
@@ -25,7 +25,7 @@ func NewTradeService(userRepo UserRepository, portfolioRepo PortfolioRepository,
 	}
 }
 
-func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string, quantity float64) (*pb.User, error) {
+func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string, quantity float64) (*user.User, error) {
 	// 1. Get current price
 	quote, err := s.marketRepo.GetQuote(ctx, symbol)
 	if err != nil {
@@ -91,7 +91,7 @@ func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string
 	return user, nil
 }
 
-func (s *TradeService) SellStock(ctx context.Context, userID int64, symbol string, quantity float64) (*pb.User, error) {
+func (s *TradeService) SellStock(ctx context.Context, userID int64, symbol string, quantity float64) (*user.User, error) {
 	// 1. Get current price
 	quote, err := s.marketRepo.GetQuote(ctx, symbol)
 	if err != nil {

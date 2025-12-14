@@ -7,13 +7,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/tmythicator/ticker-rush/server/internal/model"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
 )
 
 type FinnhubQuote struct {
-	CurrentPrice float64 `json:"c"` // c = Current price
-	Change       float64 `json:"d"` // d = Change
-	Timestamp    int64   `json:"t"` // t = Timestamp
+	CurrentPrice  float64 `json:"c"`  // c = Current price
+	Change        float64 `json:"d"`  // d = Change
+	PercentChange float64 `json:"dp"` // dp = Percent change
+	Timestamp     int64   `json:"t"`  // t = Timestamp
 }
 
 type Client struct {
@@ -30,7 +31,7 @@ func NewClient(apiKey string, timeout time.Duration) *Client {
 	}
 }
 
-func (c *Client) GetQuote(ctx context.Context, symbol string) (*model.Quote, error) {
+func (c *Client) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error) {
 	url := fmt.Sprintf("%s/quote?symbol=%s&token=%s", c.baseURL, symbol, c.apiKey)
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
@@ -60,9 +61,11 @@ func (c *Client) GetQuote(ctx context.Context, symbol string) (*model.Quote, err
 		ts = time.Now().Unix()
 	}
 
-	return &model.Quote{
-		Symbol:    symbol,
-		Price:     fq.CurrentPrice,
-		Timestamp: ts,
+	return &exchange.Quote{
+		Symbol:        symbol,
+		Price:         fq.CurrentPrice,
+		Change:        fq.Change,
+		ChangePercent: fq.PercentChange,
+		Timestamp:     ts,
 	}, nil
 }

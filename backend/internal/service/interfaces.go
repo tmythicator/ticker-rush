@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	pb "github.com/tmythicator/ticker-rush/server/proto/user"
+	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user"
 )
 
 type Transaction interface {

@@ -11,11 +11,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
-	"github.com/tmythicator/ticker-rush/server/internal/model"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/user"
 	app_redis "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 	"github.com/tmythicator/ticker-rush/server/internal/service/mocks"
-	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 )
 
 func TestTradeService_BuyStock_Success(t *testing.T) {
@@ -31,7 +31,7 @@ func TestTradeService_BuyStock_Success(t *testing.T) {
 	defer mr.Close()
 	valkeyClient := redis.NewClient(&redis.Options{Addr: mr.Addr()})
 	marketRepo := app_redis.NewMarketRepository(valkeyClient)
-	quote := model.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
+	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
 	bytes, _ := json.Marshal(quote)
 	valkeyClient.Set(context.Background(), "market:"+symbol, bytes, 0)
 
@@ -47,10 +47,10 @@ func TestTradeService_BuyStock_Success(t *testing.T) {
 	mockUserRepo.On("WithTx", mockTx).Return(mockUserRepo)
 	mockPortRepo.On("WithTx", mockTx).Return(mockPortRepo)
 
-	initialUser := &pb.User{Id: userID, Balance: startBalance}
+	initialUser := &user.User{Id: userID, Balance: startBalance}
 	mockUserRepo.On("GetUserForUpdate", mock.Anything, userID).Return(initialUser, nil)
-	mockPortRepo.On("GetPortfolioItemForUpdate", mock.Anything, userID, symbol).Return(&pb.PortfolioItem{}, assert.AnError)
-	mockUserRepo.On("SaveUser", mock.Anything, mock.MatchedBy(func(u *pb.User) bool {
+	mockPortRepo.On("GetPortfolioItemForUpdate", mock.Anything, userID, symbol).Return(&user.PortfolioItem{}, assert.AnError)
+	mockUserRepo.On("SaveUser", mock.Anything, mock.MatchedBy(func(u *user.User) bool {
 		return u.Balance == expectedBalance
 	})).Return(nil)
 	mockPortRepo.On("SetPortfolioItem", mock.Anything, userID, symbol, quantity, price).Return(nil)
@@ -83,7 +83,7 @@ func TestTradeService_BuyStock_InsufficientFunds(t *testing.T) {
 	defer mr.Close()
 	rClient := redis.NewClient(&redis.Options{Addr: mr.Addr()})
 	marketRepo := app_redis.NewMarketRepository(rClient)
-	quote := model.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
+	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
 	bytes, _ := json.Marshal(quote)
 	rClient.Set(context.Background(), "market:"+symbol, bytes, 0)
 
@@ -97,7 +97,7 @@ func TestTradeService_BuyStock_InsufficientFunds(t *testing.T) {
 	mockTx.On("Rollback", mock.Anything).Return(nil)
 	mockUserRepo.On("WithTx", mockTx).Return(mockUserRepo)
 	mockPortRepo.On("WithTx", mockTx).Return(mockPortRepo)
-	initialUser := &pb.User{Id: userID, Balance: startBalance}
+	initialUser := &user.User{Id: userID, Balance: startBalance}
 	mockUserRepo.On("GetUserForUpdate", mock.Anything, userID).Return(initialUser, nil)
 
 	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockTransactor)

@@ -40,7 +40,7 @@ func (h *RestHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, toUserResponse(user, nil))
+	c.JSON(http.StatusOK, user)
 }
 
 func (h *RestHandler) Login(c *gin.Context) {
@@ -68,7 +68,7 @@ func (h *RestHandler) Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": token, "user": toUserResponse(fullUser.User, fullUser.Portfolio)})
+	c.JSON(http.StatusOK, gin.H{"token": token, "user": fullUser})
 }
 
 func (h *RestHandler) GetMe(c *gin.Context) {
@@ -83,7 +83,7 @@ func (h *RestHandler) GetMe(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
 		return
 	}
-	c.JSON(http.StatusOK, toUserResponse(user.User, user.Portfolio))
+	c.JSON(http.StatusOK, user)
 }
 
 func (h *RestHandler) GetQuote(c *gin.Context) {
@@ -140,8 +140,7 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, toUserResponse(fullUser.User, fullUser.Portfolio))
-
+	c.JSON(http.StatusOK, fullUser)
 }
 
 func (h *RestHandler) SellStock(c *gin.Context) {
@@ -179,7 +178,7 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, toUserResponse(fullUser.User, fullUser.Portfolio))
+	c.JSON(http.StatusOK, fullUser)
 }
 
 func (h *RestHandler) StreamQuotes(c *gin.Context) {

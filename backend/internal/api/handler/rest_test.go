@@ -22,7 +22,8 @@ import (
 	"github.com/tmythicator/ticker-rush/server/internal/api/handler"
 	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/server/internal/config"
-	"github.com/tmythicator/ticker-rush/server/internal/model"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/user"
 	repos "github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
 	app_redis "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
@@ -135,7 +136,7 @@ func TestCreateUser(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var responseUser handler.UserResponse
+	var responseUser user.User
 	err := json.Unmarshal(w.Body.Bytes(), &responseUser)
 	assert.NoError(t, err)
 
@@ -156,7 +157,7 @@ func TestBuyStock(t *testing.T) {
 	defer pool.Close()
 
 	// Setup Market Data
-	quote := model.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
+	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
 	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
 
@@ -206,7 +207,7 @@ func TestSellStock(t *testing.T) {
 	const expectedBalance float64 = mockPrice*mockSellQuantity + mockStartBalance
 
 	// Setup Market Data
-	quote := model.Quote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
+	quote := &exchange.Quote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
 	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
 
@@ -249,7 +250,7 @@ func TestInsufficientFunds(t *testing.T) {
 	const mockStartBalance = 20.0
 	const mockBuyQuantity = 1
 
-	quote := model.Quote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
+	quote := &exchange.Quote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
 	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
 
@@ -283,7 +284,7 @@ func TestSellAllStock(t *testing.T) {
 	defer pool.Close()
 
 	// Setup Market Data
-	quote := model.Quote{Symbol: symbol, Price: mockPrice, Timestamp: time.Now().Unix()}
+	quote := &exchange.Quote{Symbol: symbol, Price: mockPrice, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
 	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
 

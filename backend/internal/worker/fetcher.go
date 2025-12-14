@@ -7,12 +7,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tmythicator/ticker-rush/server/internal/model"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
 	"github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 )
 
 type FinnhubClient interface {
-	GetQuote(ctx context.Context, symbol string) (*model.Quote, error)
+	GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error)
 }
 
 type MarketFetcher struct {
@@ -55,7 +55,7 @@ func (w *MarketFetcher) Start(ctx context.Context, symbol string, fetchInterval 
 	})
 }
 
-func (w *MarketFetcher) processTicker(ctx context.Context, symbol string, lastQuote *model.Quote) (*model.Quote, error) {
+func (w *MarketFetcher) processTicker(ctx context.Context, symbol string, lastQuote *exchange.Quote) (*exchange.Quote, error) {
 	quote, err := w.client.GetQuote(ctx, symbol)
 	if err != nil {
 		return nil, err

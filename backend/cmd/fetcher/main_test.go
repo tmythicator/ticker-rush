@@ -11,7 +11,7 @@ import (
 	go_redis "github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/tmythicator/ticker-rush/server/internal/clients/finnhub"
-	"github.com/tmythicator/ticker-rush/server/internal/model"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
 	"github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/internal/worker"
 )
@@ -21,8 +21,8 @@ type MockFinnhubClient struct {
 	Quote finnhub.FinnhubQuote
 }
 
-func (m *MockFinnhubClient) GetQuote(ctx context.Context, symbol string) (*model.Quote, error) {
-	return &model.Quote{
+func (m *MockFinnhubClient) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error) {
+	return &exchange.Quote{
 		Symbol:    symbol,
 		Price:     m.Quote.CurrentPrice,
 		Timestamp: m.Quote.Timestamp,
@@ -70,7 +70,7 @@ func TestMarketFetcher(t *testing.T) {
 	val, err := rdb.Get(ctx, "market:AAPL").Result()
 	assert.NoError(t, err)
 
-	var quote model.Quote
+	var quote exchange.Quote
 	err = json.Unmarshal([]byte(val), &quote)
 	assert.NoError(t, err)
 

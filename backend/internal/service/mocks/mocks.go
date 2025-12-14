@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/stretchr/testify/mock"
+	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
-	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 )
 
 type MockTransaction struct {

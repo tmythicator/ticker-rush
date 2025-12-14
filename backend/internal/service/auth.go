@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	pb "github.com/tmythicator/ticker-rush/server/proto/user"
+	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user"
 )
 
 func getSecretKey() []byte {

@@ -38,12 +38,17 @@ tasks:
     cmds:
       - go mod download
 
-  backend:generate:
-    desc: Generate code from SQL and Protobuf
+  generate:
+    desc: Generate code using Buf
+    cmds:
+      - buf generate
+      - task: backend:sqlc
+
+  backend:sqlc:
+    desc: Generate code from SQL
     dir: backend
     cmds:
       - sqlc generate
-      - protoc --go_out=. --go_opt=paths=source_relative proto/user/*.proto
 
   backend:build:
     desc: Build the backend services

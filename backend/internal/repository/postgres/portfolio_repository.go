@@ -6,8 +6,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/tmythicator/ticker-rush/server/internal/gen/sqlc"
+	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
-	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 )
 
 type PortfolioRepository struct {

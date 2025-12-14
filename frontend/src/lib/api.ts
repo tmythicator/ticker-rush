@@ -1,3 +1,8 @@
+import { User, PortfolioItem } from './proto/user/user';
+import { Quote } from './proto/exchange/exchange';
+
+export type { User, PortfolioItem, Quote };
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 let authToken: string | null = null;
@@ -16,11 +21,7 @@ const getHeaders = (token?: string | null) => {
   return headers;
 };
 
-export interface Quote {
-  symbol: string;
-  price: number;
-  timestamp: number;
-}
+
 
 class ApiError extends Error {
   status: number;
@@ -55,21 +56,6 @@ export const api = {
 export const fetchQuote = async (symbol: string, token?: string | null): Promise<Quote> => {
   return api.get(`/quote?symbol=${symbol}`, token);
 };
-
-// TODO: use protobuf for frontend struct generation (autosync with backend)
-export interface PortfolioItem {
-  stock_symbol: string;
-  quantity: number;
-  average_price: number;
-}
-
-export interface User {
-  email: string;
-  first_name: string;
-  last_name: string;
-  balance: number;
-  portfolio: Record<string, PortfolioItem>;
-}
 
 export const getUser = async (): Promise<User> => {
   return api.get(`/user/me`);

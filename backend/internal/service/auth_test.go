@@ -7,8 +7,8 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
+	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
-	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 )
 
 func TestAuthService_GenerateToken(t *testing.T) {

@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 	"github.com/tmythicator/ticker-rush/server/internal/service/mocks"
-	pb "github.com/tmythicator/ticker-rush/server/proto/user"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -65,7 +65,8 @@ func TestUserService_GetUserWithPortfolio(t *testing.T) {
 	res, err := userService.GetUserWithPortfolio(ctx, userID)
 
 	assert.NoError(t, err)
-	assert.Equal(t, expectedUser, res.User)
+	assert.Equal(t, expectedUser.Id, res.Id)
+	assert.Equal(t, expectedUser.Email, res.Email)
 	assert.Len(t, res.Portfolio, len(expectedPortfolioItems))
 
 	assert.Equal(t, expectedPortfolioItems[0], res.Portfolio["AAPL"])
