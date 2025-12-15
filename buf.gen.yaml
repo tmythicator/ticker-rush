@@ -4,6 +4,16 @@ plugins:
     out: backend/internal/proto
     opt: paths=source_relative
 
+  - local: protoc-gen-go-grpc
+    out: backend/internal/proto
+    opt: paths=source_relative
+
   - local: frontend/node_modules/.bin/protoc-gen-ts_proto
     out: frontend/src/lib/proto
     opt: esModuleInterop=true,forceLong=string,outputServices=false,snakeToCamel=false
+
+  - remote: buf.build/protocolbuffers/python
+    out: bot/proto
+
+  - remote: buf.build/grpc/python
+    out: bot/proto

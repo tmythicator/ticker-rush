@@ -17,6 +17,36 @@ export interface Quote {
   timestamp: string;
 }
 
+export interface GetQuoteRequest {
+  symbol: string;
+}
+
+export interface GetQuoteResponse {
+  quote: Quote | undefined;
+}
+
+export interface BuyStockRequest {
+  symbol: string;
+  quantity: number;
+}
+
+export interface BuyStockResponse {
+  success: boolean;
+  total_price: number;
+  message: string;
+}
+
+export interface SellStockRequest {
+  symbol: string;
+  quantity: number;
+}
+
+export interface SellStockResponse {
+  success: boolean;
+  total_proceeds: number;
+  message: string;
+}
+
 function createBaseQuote(): Quote {
   return { symbol: "", price: 0, change: 0, change_percent: 0, timestamp: "0" };
 }
@@ -137,6 +167,458 @@ export const Quote: MessageFns<Quote> = {
     message.change = object.change ?? 0;
     message.change_percent = object.change_percent ?? 0;
     message.timestamp = object.timestamp ?? "0";
+    return message;
+  },
+};
+
+function createBaseGetQuoteRequest(): GetQuoteRequest {
+  return { symbol: "" };
+}
+
+export const GetQuoteRequest: MessageFns<GetQuoteRequest> = {
+  encode(message: GetQuoteRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.symbol !== "") {
+      writer.uint32(10).string(message.symbol);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetQuoteRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetQuoteRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.symbol = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetQuoteRequest {
+    return { symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : "" };
+  },
+
+  toJSON(message: GetQuoteRequest): unknown {
+    const obj: any = {};
+    if (message.symbol !== "") {
+      obj.symbol = message.symbol;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetQuoteRequest>, I>>(base?: I): GetQuoteRequest {
+    return GetQuoteRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetQuoteRequest>, I>>(object: I): GetQuoteRequest {
+    const message = createBaseGetQuoteRequest();
+    message.symbol = object.symbol ?? "";
+    return message;
+  },
+};
+
+function createBaseGetQuoteResponse(): GetQuoteResponse {
+  return { quote: undefined };
+}
+
+export const GetQuoteResponse: MessageFns<GetQuoteResponse> = {
+  encode(message: GetQuoteResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.quote !== undefined) {
+      Quote.encode(message.quote, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetQuoteResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetQuoteResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.quote = Quote.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetQuoteResponse {
+    return { quote: isSet(object.quote) ? Quote.fromJSON(object.quote) : undefined };
+  },
+
+  toJSON(message: GetQuoteResponse): unknown {
+    const obj: any = {};
+    if (message.quote !== undefined) {
+      obj.quote = Quote.toJSON(message.quote);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetQuoteResponse>, I>>(base?: I): GetQuoteResponse {
+    return GetQuoteResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetQuoteResponse>, I>>(object: I): GetQuoteResponse {
+    const message = createBaseGetQuoteResponse();
+    message.quote = (object.quote !== undefined && object.quote !== null) ? Quote.fromPartial(object.quote) : undefined;
+    return message;
+  },
+};
+
+function createBaseBuyStockRequest(): BuyStockRequest {
+  return { symbol: "", quantity: 0 };
+}
+
+export const BuyStockRequest: MessageFns<BuyStockRequest> = {
+  encode(message: BuyStockRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.symbol !== "") {
+      writer.uint32(10).string(message.symbol);
+    }
+    if (message.quantity !== 0) {
+      writer.uint32(17).double(message.quantity);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): BuyStockRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBuyStockRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.symbol = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 17) {
+            break;
+          }
+
+          message.quantity = reader.double();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): BuyStockRequest {
+    return {
+      symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : "",
+      quantity: isSet(object.quantity) ? globalThis.Number(object.quantity) : 0,
+    };
+  },
+
+  toJSON(message: BuyStockRequest): unknown {
+    const obj: any = {};
+    if (message.symbol !== "") {
+      obj.symbol = message.symbol;
+    }
+    if (message.quantity !== 0) {
+      obj.quantity = message.quantity;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<BuyStockRequest>, I>>(base?: I): BuyStockRequest {
+    return BuyStockRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<BuyStockRequest>, I>>(object: I): BuyStockRequest {
+    const message = createBaseBuyStockRequest();
+    message.symbol = object.symbol ?? "";
+    message.quantity = object.quantity ?? 0;
+    return message;
+  },
+};
+
+function createBaseBuyStockResponse(): BuyStockResponse {
+  return { success: false, total_price: 0, message: "" };
+}
+
+export const BuyStockResponse: MessageFns<BuyStockResponse> = {
+  encode(message: BuyStockResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.success !== false) {
+      writer.uint32(8).bool(message.success);
+    }
+    if (message.total_price !== 0) {
+      writer.uint32(17).double(message.total_price);
+    }
+    if (message.message !== "") {
+      writer.uint32(26).string(message.message);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): BuyStockResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBuyStockResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.success = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 17) {
+            break;
+          }
+
+          message.total_price = reader.double();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): BuyStockResponse {
+    return {
+      success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
+      total_price: isSet(object.total_price) ? globalThis.Number(object.total_price) : 0,
+      message: isSet(object.message) ? globalThis.String(object.message) : "",
+    };
+  },
+
+  toJSON(message: BuyStockResponse): unknown {
+    const obj: any = {};
+    if (message.success !== false) {
+      obj.success = message.success;
+    }
+    if (message.total_price !== 0) {
+      obj.total_price = message.total_price;
+    }
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<BuyStockResponse>, I>>(base?: I): BuyStockResponse {
+    return BuyStockResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<BuyStockResponse>, I>>(object: I): BuyStockResponse {
+    const message = createBaseBuyStockResponse();
+    message.success = object.success ?? false;
+    message.total_price = object.total_price ?? 0;
+    message.message = object.message ?? "";
+    return message;
+  },
+};
+
+function createBaseSellStockRequest(): SellStockRequest {
+  return { symbol: "", quantity: 0 };
+}
+
+export const SellStockRequest: MessageFns<SellStockRequest> = {
+  encode(message: SellStockRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.symbol !== "") {
+      writer.uint32(10).string(message.symbol);
+    }
+    if (message.quantity !== 0) {
+      writer.uint32(17).double(message.quantity);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SellStockRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSellStockRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.symbol = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 17) {
+            break;
+          }
+
+          message.quantity = reader.double();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SellStockRequest {
+    return {
+      symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : "",
+      quantity: isSet(object.quantity) ? globalThis.Number(object.quantity) : 0,
+    };
+  },
+
+  toJSON(message: SellStockRequest): unknown {
+    const obj: any = {};
+    if (message.symbol !== "") {
+      obj.symbol = message.symbol;
+    }
+    if (message.quantity !== 0) {
+      obj.quantity = message.quantity;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<SellStockRequest>, I>>(base?: I): SellStockRequest {
+    return SellStockRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SellStockRequest>, I>>(object: I): SellStockRequest {
+    const message = createBaseSellStockRequest();
+    message.symbol = object.symbol ?? "";
+    message.quantity = object.quantity ?? 0;
+    return message;
+  },
+};
+
+function createBaseSellStockResponse(): SellStockResponse {
+  return { success: false, total_proceeds: 0, message: "" };
+}
+
+export const SellStockResponse: MessageFns<SellStockResponse> = {
+  encode(message: SellStockResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.success !== false) {
+      writer.uint32(8).bool(message.success);
+    }
+    if (message.total_proceeds !== 0) {
+      writer.uint32(17).double(message.total_proceeds);
+    }
+    if (message.message !== "") {
+      writer.uint32(26).string(message.message);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): SellStockResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSellStockResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.success = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 17) {
+            break;
+          }
+
+          message.total_proceeds = reader.double();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SellStockResponse {
+    return {
+      success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
+      total_proceeds: isSet(object.total_proceeds) ? globalThis.Number(object.total_proceeds) : 0,
+      message: isSet(object.message) ? globalThis.String(object.message) : "",
+    };
+  },
+
+  toJSON(message: SellStockResponse): unknown {
+    const obj: any = {};
+    if (message.success !== false) {
+      obj.success = message.success;
+    }
+    if (message.total_proceeds !== 0) {
+      obj.total_proceeds = message.total_proceeds;
+    }
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<SellStockResponse>, I>>(base?: I): SellStockResponse {
+    return SellStockResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SellStockResponse>, I>>(object: I): SellStockResponse {
+    const message = createBaseSellStockResponse();
+    message.success = object.success ?? false;
+    message.total_proceeds = object.total_proceeds ?? 0;
+    message.message = object.message ?? "";
     return message;
   },
 };
