@@ -133,3 +133,9 @@ tasks:
     desc: Run Valkey (Redis)
     cmds:
       - valkey-server --port {{.REDIS_PORT | default "6379"}}
+
+  bot:deps:
+    desc: Install bot dependencies in venv
+    cmds:
+      - python3 -m venv bot/.venv
+      - PYTHONPATH= bot/.venv/bin/pip install -r bot/requirements.txt
