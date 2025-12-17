@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,11 +14,15 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/tmythicator/ticker-rush/server/db"
 	"github.com/tmythicator/ticker-rush/server/internal/api"
+	grpcapi "github.com/tmythicator/ticker-rush/server/internal/api/grpc"
 	"github.com/tmythicator/ticker-rush/server/internal/api/handler"
+	"github.com/tmythicator/ticker-rush/server/internal/api/middleware"
 	"github.com/tmythicator/ticker-rush/server/internal/config"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
 	"github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
 	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
+	googlegrpc "google.golang.org/grpc"
 )
 
 func main() {
@@ -78,7 +83,7 @@ func main() {
 		log.Fatalf("Failed to create router: %v", err)
 	}
 
-	// Start server in a goroutine
+	// Start HTTP server in a goroutine
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", cfg.ServerPort),
 		Handler: router,
@@ -91,11 +96,31 @@ func main() {
 		}
 	}()
 
+	// Init gRPC server
+	grpcListener, err := net.Listen("tcp", fmt.Sprintf(":%d", 50051))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	grpcServer := googlegrpc.NewServer(
+		googlegrpc.UnaryInterceptor(middleware.GrpcAuthInterceptor),
+	)
+	exchangeServer := grpcapi.NewExchangeServer(tradeService, marketService)
+	exchange.RegisterExchangeServiceServer(grpcServer, exchangeServer)
+
+	go func() {
+		log.Printf("Exchange gRPC running on :%d\n", 50051)
+		if err := grpcServer.Serve(grpcListener); err != nil {
+			log.Fatalf("failed to serve gRPC: %v", err)
+		}
+	}()
+
 	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 5 seconds.
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Println("Shutting down server...")
+
+	grpcServer.GracefulStop()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
