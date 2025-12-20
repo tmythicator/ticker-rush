@@ -55,6 +55,7 @@
             # Infrastructure
             valkey
             process-compose
+            docker-compose
 
             # Frontend
             nodejs_20
