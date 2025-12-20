@@ -42,7 +42,7 @@ func LoadConfig() (*Config, error) {
 		PostgresPass:   getEnvString("POSTGRES_PASSWORD", "postgres"),
 		PostgresDB:     getEnvString("POSTGRES_DB", "ticker_rush"),
 		PostgresPort:   getEnvInt("POSTGRES_PORT", 5432),
-		PostgresHost:   getEnvString("POSTGRES_HOST", "localhost"),
+		PostgresHost:   getEnvString("POSTGRES_HOST", os.Getenv("PGDATA")),
 	}
 	log.Printf("config loaded: %s %s %s", cfg.PostgresUser, cfg.PostgresPass, cfg.PostgresDB)
 

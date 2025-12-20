@@ -120,14 +120,14 @@ tasks:
   postgres:run:
     desc: Run Postgres
     cmds:
-      - postgres -p {{.POSTGRES_PORT | default "5432"}}
+      - postgres -k "$PGDATA" -p {{.POSTGRES_PORT | default "5432"}}
 
   postgres:reset:
     desc: Reset the database (Drop, Create)
     dir: backend
     cmds:
-      - dropdb -h {{.POSTGRES_HOST | default "localhost"}} -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} {{.POSTGRES_DB | default "ticker_rush"}} --if-exists
-      - createdb -h {{.POSTGRES_HOST | default "localhost"}} -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} {{.POSTGRES_DB | default "ticker_rush"}}
+      - dropdb -h "$PGDATA" -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} {{.POSTGRES_DB | default "ticker_rush_db"}} --if-exists
+      - createdb -h "$PGDATA" -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} {{.POSTGRES_DB | default "ticker_rush_db"}}
 
   valkey:run:
     desc: Run Valkey (Redis)

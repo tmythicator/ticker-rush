@@ -12,7 +12,7 @@ processes:
       restart: always
     readiness_probe:
       exec:
-        command: pg_isready -h ${POSTGRES_HOST:-localhost} -p ${POSTGRES_PORT:-5432} -U ${POSTGRES_USER:-postgres}
+        command: pg_isready -h "$PGDATA" -p ${POSTGRES_PORT:-5432} -U ${POSTGRES_USER:-postgres}
     shutdown:
       signal: 2
 
