@@ -2,21 +2,21 @@ name: Frontend Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'frontend/**'
-      - 'Taskfile.yml'
-      - 'flake.nix'
-      - 'flake.lock'
-      - '.github/workflows/frontend-test.yml'
+      - "frontend/**"
+      - "Taskfile.yml"
+      - "flake.nix"
+      - "flake.lock"
+      - ".github/workflows/frontend-test.yml"
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'frontend/**'
-      - 'Taskfile.yml'
-      - 'flake.nix'
-      - 'flake.lock'
-      - '.github/workflows/frontend-test.yml'
+      - "frontend/**"
+      - "Taskfile.yml"
+      - "flake.nix"
+      - "flake.lock"
+      - ".github/workflows/frontend-test.yml"
 
 jobs:
   test-frontend:
@@ -35,9 +35,5 @@ jobs:
       - name: Build
         run: nix develop --command task frontend:build
 
-      - name: Run Linter
-        run: nix develop --command task frontend:lint
-
-      - name: Run Tests
-        run: nix develop --command task frontend:test
-        
+      - name: Run CI (Lint, Format Check, Test)
+        run: nix develop --command task frontend:ci

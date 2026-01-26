@@ -30,10 +30,16 @@ tasks:
       - task: backend:test
       - task: frontend:test
 
+  ci:
+    desc: Run all CI checks (lint, format check, tests)
+    cmds:
+      - task: backend:ci
+      - task: frontend:ci
+
   lint:
     desc: Lint all code
     cmds:
-      - task: backend:lint
+      - task: backend:ci
       - task: frontend:lint
 
   format:
@@ -79,11 +85,20 @@ tasks:
     cmds:
       - go test -v ./...
 
-  backend:lint:
-    desc: Lint backend code
+  backend:ci:
+    desc: Lint backend code (CI)
     dir: backend
     cmds:
+      - task: backend:check-mod
       - golangci-lint run
+      - task: backend:test
+
+  backend:check-mod:
+    desc: Check if go.mod/sum are tidy
+    dir: backend
+    cmds:
+      - go mod tidy
+      - git diff --exit-code go.mod go.sum
 
   backend:format:
     desc: Format backend code
@@ -123,6 +138,19 @@ tasks:
     cmds:
       - pnpm lint
       - pnpm tsc --noEmit
+
+  frontend:check-format:
+    desc: Check frontend code formatting
+    dir: frontend
+    cmds:
+      - pnpm check-format
+
+  frontend:ci:
+    desc: Run frontend CI checks
+    cmds:
+      - task: frontend:check-format
+      - task: frontend:lint
+      - task: frontend:test
 
   frontend:format:
     desc: Format frontend code

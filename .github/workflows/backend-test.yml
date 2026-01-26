@@ -2,25 +2,25 @@ name: Backend Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'backend/**'
-      - 'go.mod'
-      - 'go.sum'
-      - 'Taskfile.yml'
-      - 'flake.nix'
-      - 'flake.lock'
-      - '.github/workflows/backend-test.yml'
+      - "backend/**"
+      - "go.mod"
+      - "go.sum"
+      - "Taskfile.yml"
+      - "flake.nix"
+      - "flake.lock"
+      - ".github/workflows/backend-test.yml"
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'backend/**'
-      - 'go.mod'
-      - 'go.sum'
-      - 'Taskfile.yml'
-      - 'flake.nix'
-      - 'flake.lock'
-      - '.github/workflows/backend-test.yml'
+      - "backend/**"
+      - "go.mod"
+      - "go.sum"
+      - "Taskfile.yml"
+      - "flake.nix"
+      - "flake.lock"
+      - ".github/workflows/backend-test.yml"
 
 jobs:
   test-backend:
@@ -39,8 +39,5 @@ jobs:
       - name: Build
         run: nix develop --command task backend:build
 
-      - name: Run Linter
-        run: nix develop --command task backend:lint
-
-      - name: Run Tests
-        run: nix develop --command task backend:test
+      - name: Run CI (Lint, Test, Check formatting/diffs)
+        run: nix develop --command task backend:ci
