@@ -1,6 +1,6 @@
-version: '3'
+version: "3"
 
-dotenv: ['.env']
+dotenv: [".env"]
 
 tasks:
   dev:
@@ -35,6 +35,12 @@ tasks:
     cmds:
       - task: backend:lint
       - task: frontend:lint
+
+  format:
+    desc: Format all code
+    cmds:
+      - task: backend:format
+      - task: frontend:format
 
   build:
     desc: Build everything
@@ -79,6 +85,12 @@ tasks:
     cmds:
       - golangci-lint run
 
+  backend:format:
+    desc: Format backend code
+    dir: backend
+    cmds:
+      - golangci-lint run --fix
+
   backend:run:exchange:
     desc: Run the exchange service
     dir: backend
@@ -111,6 +123,12 @@ tasks:
     cmds:
       - pnpm lint
       - pnpm tsc --noEmit
+
+  frontend:format:
+    desc: Format frontend code
+    dir: frontend
+    cmds:
+      - pnpm format
 
   frontend:build:
     desc: Build frontend
