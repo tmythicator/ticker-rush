@@ -19,9 +19,11 @@ type Router struct {
 func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error) {
 	engine := gin.Default()
 
-	if err := engine.SetTrustedProxies(nil); err != nil {
-		return nil, fmt.Errorf("failed to set trusted proxies: %v", err)
+	err := engine.SetTrustedProxies(nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to set trusted proxies: %w", err)
 	}
+
 	engine.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{fmt.Sprintf("http://localhost:%d", cfg.ClientPort)},
 		AllowMethods:     []string{"GET", "POST"},

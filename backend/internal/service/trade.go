@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
-
 	"github.com/tmythicator/ticker-rush/server/internal/proto/user"
 	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 )
@@ -16,7 +15,12 @@ type TradeService struct {
 	transactor    Transactor
 }
 
-func NewTradeService(userRepo UserRepository, portfolioRepo PortfolioRepository, marketRepo *valkey.MarketRepository, transactor Transactor) *TradeService {
+func NewTradeService(
+	userRepo UserRepository,
+	portfolioRepo PortfolioRepository,
+	marketRepo *valkey.MarketRepository,
+	transactor Transactor,
+) *TradeService {
 	return &TradeService{
 		userRepo:      userRepo,
 		portfolioRepo: portfolioRepo,
@@ -25,20 +29,26 @@ func NewTradeService(userRepo UserRepository, portfolioRepo PortfolioRepository,
 	}
 }
 
-func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string, quantity float64) (*user.User, error) {
+func (s *TradeService) BuyStock(
+	ctx context.Context,
+	userID int64,
+	symbol string,
+	quantity float64,
+) (*user.User, error) {
 	// 1. Get current price
 	quote, err := s.marketRepo.GetQuote(ctx, symbol)
 	if err != nil {
 		return nil, err
 	}
 
-	cost := quote.Price * quantity
+	cost := quote.GetPrice() * quantity
 
 	// START TRANSACTION
 	tx, err := s.transactor.Begin(ctx)
 	if err != nil {
 		return nil, err
 	}
+
 	defer func() { _ = tx.Rollback(ctx) }()
 
 	// Create Transactional Repos
@@ -52,17 +62,20 @@ func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string
 	}
 
 	// 3. Check Balance
-	if user.Balance < cost {
+	if user.GetBalance() < cost {
 		return nil, apperrors.ErrInsufficientFunds
 	}
 
 	// 4. Get Current Portfolio Item
-	var currentQty float64 = 0
-	var currentAvg float64 = 0
-	item, err := txPortfolioRepo.GetPortfolioItemForUpdate(ctx, user.Id, symbol)
+	var (
+		currentQty float64 = 0
+		currentAvg float64 = 0
+	)
+
+	item, err := txPortfolioRepo.GetPortfolioItemForUpdate(ctx, user.GetId(), symbol)
 	if err == nil {
-		currentQty = item.Quantity
-		currentAvg = item.AveragePrice
+		currentQty = item.GetQuantity()
+		currentAvg = item.GetAveragePrice()
 	}
 
 	// 5. Execute Trade Logic
@@ -79,7 +92,7 @@ func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string
 		return nil, err
 	}
 
-	if err := txPortfolioRepo.SetPortfolioItem(ctx, user.Id, symbol, newTotalQuantity, newAvgPrice); err != nil {
+	if err := txPortfolioRepo.SetPortfolioItem(ctx, user.GetId(), symbol, newTotalQuantity, newAvgPrice); err != nil {
 		return nil, err
 	}
 
@@ -91,20 +104,26 @@ func (s *TradeService) BuyStock(ctx context.Context, userID int64, symbol string
 	return user, nil
 }
 
-func (s *TradeService) SellStock(ctx context.Context, userID int64, symbol string, quantity float64) (*user.User, error) {
+func (s *TradeService) SellStock(
+	ctx context.Context,
+	userID int64,
+	symbol string,
+	quantity float64,
+) (*user.User, error) {
 	// 1. Get current price
 	quote, err := s.marketRepo.GetQuote(ctx, symbol)
 	if err != nil {
 		return nil, err
 	}
 
-	cost := quote.Price * quantity
+	cost := quote.GetPrice() * quantity
 
 	// START TRANSACTION
 	tx, err := s.transactor.Begin(ctx)
 	if err != nil {
 		return nil, err
 	}
+
 	defer func() { _ = tx.Rollback(ctx) }()
 
 	// Create Transactional Repos
@@ -117,7 +136,7 @@ func (s *TradeService) SellStock(ctx context.Context, userID int64, symbol strin
 		return nil, err
 	}
 
-	if item.Quantity < quantity {
+	if item.GetQuantity() < quantity {
 		return nil, apperrors.ErrInsufficientQuantity
 	}
 
@@ -129,19 +148,21 @@ func (s *TradeService) SellStock(ctx context.Context, userID int64, symbol strin
 
 	// 4 Execute Trade Logic
 	user.Balance += cost
-	item.Quantity = item.Quantity - quantity
+	item.Quantity = item.GetQuantity() - quantity
 
 	// 6. Persistence
 	if err := txUserRepo.SaveUser(ctx, user); err != nil {
 		return nil, err
 	}
 
-	if item.Quantity == 0 {
-		if err := txPortfolioRepo.DeletePortfolioItem(ctx, userID, symbol); err != nil {
+	if item.GetQuantity() == 0 {
+		err := txPortfolioRepo.DeletePortfolioItem(ctx, userID, symbol)
+		if err != nil {
 			return nil, err
 		}
 	} else {
-		if err := txPortfolioRepo.SetPortfolioItem(ctx, user.Id, symbol, item.Quantity, item.AveragePrice); err != nil {
+		err := txPortfolioRepo.SetPortfolioItem(ctx, user.GetId(), symbol, item.GetQuantity(), item.GetAveragePrice())
+		if err != nil {
 			return nil, err
 		}
 	}

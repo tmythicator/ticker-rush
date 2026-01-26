@@ -9,18 +9,17 @@ import (
 	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 	"github.com/tmythicator/ticker-rush/server/internal/service/mocks"
-
 	"golang.org/x/crypto/bcrypt"
 )
 
-var (
-	ctx = context.Background()
-)
+var ctx = context.Background()
 
 func TestUserService_CreateUser(t *testing.T) {
-	const password = "test33"
-	const email = "abc@gmail.com"
-	const startBalance = 10000.0
+	const (
+		password     = "test33"
+		email        = "abc@gmail.com"
+		startBalance = 10000.0
+	)
 
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
@@ -34,10 +33,16 @@ func TestUserService_CreateUser(t *testing.T) {
 
 	mockUserRepo.On("CreateUser", ctx, email, mock.MatchedBy(func(hashedPassword string) bool {
 		return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)) == nil
-	}), expectedUser.FirstName, expectedUser.LastName, startBalance).Return(expectedUser, nil)
+	}), expectedUser.GetFirstName(), expectedUser.GetLastName(), startBalance).Return(expectedUser, nil)
 
 	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo)
-	user, err := userService.CreateUser(ctx, email, password, expectedUser.FirstName, expectedUser.LastName)
+	user, err := userService.CreateUser(
+		ctx,
+		email,
+		password,
+		expectedUser.GetFirstName(),
+		expectedUser.GetLastName(),
+	)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, user)
@@ -65,18 +70,20 @@ func TestUserService_GetUserWithPortfolio(t *testing.T) {
 	res, err := userService.GetUserWithPortfolio(ctx, userID)
 
 	assert.NoError(t, err)
-	assert.Equal(t, expectedUser.Id, res.Id)
-	assert.Equal(t, expectedUser.Email, res.Email)
-	assert.Len(t, res.Portfolio, len(expectedPortfolioItems))
+	assert.Equal(t, expectedUser.GetId(), res.GetId())
+	assert.Equal(t, expectedUser.GetEmail(), res.GetEmail())
+	assert.Len(t, res.GetPortfolio(), len(expectedPortfolioItems))
 
-	assert.Equal(t, expectedPortfolioItems[0], res.Portfolio["AAPL"])
-	assert.Equal(t, expectedPortfolioItems[1], res.Portfolio["GOOG"])
+	assert.Equal(t, expectedPortfolioItems[0], res.GetPortfolio()["AAPL"])
+	assert.Equal(t, expectedPortfolioItems[1], res.GetPortfolio()["GOOG"])
 }
 
 func TestUserService_Authenticate(t *testing.T) {
-	const truePassword = "password123"
-	const wrongPassword = "wrongpassword"
-	const email = "test@example.com"
+	const (
+		truePassword  = "password123"
+		wrongPassword = "wrongpassword"
+		email         = "test@example.com"
+	)
 
 	mockUserRepo := new(mocks.MockUserRepository)
 	userService := service.NewUserService(mockUserRepo, nil)

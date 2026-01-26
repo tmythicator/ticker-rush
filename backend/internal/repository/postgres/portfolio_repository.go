@@ -26,7 +26,10 @@ func (r *PortfolioRepository) WithTx(tx service.Transaction) service.PortfolioRe
 	}
 }
 
-func (r *PortfolioRepository) GetPortfolio(ctx context.Context, userID int64) ([]*pb.PortfolioItem, error) {
+func (r *PortfolioRepository) GetPortfolio(
+	ctx context.Context,
+	userID int64,
+) ([]*pb.PortfolioItem, error) {
 	items, err := r.queries.GetPortfolio(ctx, userID)
 	if err != nil {
 		return nil, err
@@ -40,10 +43,15 @@ func (r *PortfolioRepository) GetPortfolio(ctx context.Context, userID int64) ([
 			AveragePrice: item.AveragePrice,
 		}
 	}
+
 	return result, nil
 }
 
-func (r *PortfolioRepository) GetPortfolioItem(ctx context.Context, userID int64, symbol string) (*pb.PortfolioItem, error) {
+func (r *PortfolioRepository) GetPortfolioItem(
+	ctx context.Context,
+	userID int64,
+	symbol string,
+) (*pb.PortfolioItem, error) {
 	item, err := r.queries.GetPortfolioItem(ctx, db.GetPortfolioItemParams{
 		UserID:      userID,
 		StockSymbol: symbol,
@@ -59,7 +67,11 @@ func (r *PortfolioRepository) GetPortfolioItem(ctx context.Context, userID int64
 	}, nil
 }
 
-func (r *PortfolioRepository) GetPortfolioItemForUpdate(ctx context.Context, userID int64, symbol string) (*pb.PortfolioItem, error) {
+func (r *PortfolioRepository) GetPortfolioItemForUpdate(
+	ctx context.Context,
+	userID int64,
+	symbol string,
+) (*pb.PortfolioItem, error) {
 	item, err := r.queries.GetPortfolioItemForUpdate(ctx, db.GetPortfolioItemForUpdateParams{
 		UserID:      userID,
 		StockSymbol: symbol,
@@ -75,7 +87,13 @@ func (r *PortfolioRepository) GetPortfolioItemForUpdate(ctx context.Context, use
 	}, nil
 }
 
-func (r *PortfolioRepository) SetPortfolioItem(ctx context.Context, userID int64, symbol string, quantity float64, averagePrice float64) error {
+func (r *PortfolioRepository) SetPortfolioItem(
+	ctx context.Context,
+	userID int64,
+	symbol string,
+	quantity float64,
+	averagePrice float64,
+) error {
 	return r.queries.SetPortfolioItem(ctx, db.SetPortfolioItemParams{
 		UserID:       userID,
 		StockSymbol:  symbol,
@@ -84,7 +102,11 @@ func (r *PortfolioRepository) SetPortfolioItem(ctx context.Context, userID int64
 	})
 }
 
-func (r *PortfolioRepository) DeletePortfolioItem(ctx context.Context, userID int64, symbol string) error {
+func (r *PortfolioRepository) DeletePortfolioItem(
+	ctx context.Context,
+	userID int64,
+	symbol string,
+) error {
 	return r.queries.DeletePortfolioItem(ctx, db.DeletePortfolioItemParams{
 		UserID:      userID,
 		StockSymbol: symbol,

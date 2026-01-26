@@ -63,16 +63,24 @@ func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*pb.Us
 
 func (r *UserRepository) SaveUser(ctx context.Context, user *pb.User) error {
 	err := r.queries.UpdateUser(ctx, db.UpdateUserParams{
-		ID:        user.Id,
-		Email:     user.Email,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Balance:   user.Balance,
+		ID:        user.GetId(),
+		Email:     user.GetEmail(),
+		FirstName: user.GetFirstName(),
+		LastName:  user.GetLastName(),
+		Balance:   user.GetBalance(),
 	})
+
 	return err
 }
 
-func (r *UserRepository) CreateUser(ctx context.Context, email string, hashedPassword string, firstName string, lastName string, balance float64) (*pb.User, error) {
+func (r *UserRepository) CreateUser(
+	ctx context.Context,
+	email string,
+	hashedPassword string,
+	firstName string,
+	lastName string,
+	balance float64,
+) (*pb.User, error) {
 	user, err := r.queries.CreateUser(ctx, db.CreateUserParams{
 		Email:        email,
 		PasswordHash: hashedPassword,
@@ -95,7 +103,10 @@ func (r *UserRepository) CreateUser(ctx context.Context, email string, hashedPas
 	}, nil
 }
 
-func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*pb.User, string, error) {
+func (r *UserRepository) GetUserByEmail(
+	ctx context.Context,
+	email string,
+) (*pb.User, string, error) {
 	u, err := r.queries.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, "", err

@@ -3,22 +3,23 @@ import { useSearchParams } from 'react-router-dom';
 import { TradeSymbol, isTradeSymbol } from '../types';
 
 export const useTradeSymbol = () => {
-    const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-    const initialSymbolParam = searchParams.get('symbol');
-    const symbol: TradeSymbol = (initialSymbolParam && isTradeSymbol(initialSymbolParam))
-        ? (initialSymbolParam as TradeSymbol)
-        : TradeSymbol.AAPL;
+  const initialSymbolParam = searchParams.get('symbol');
+  const symbol: TradeSymbol =
+    initialSymbolParam && isTradeSymbol(initialSymbolParam)
+      ? (initialSymbolParam as TradeSymbol)
+      : TradeSymbol.AAPL;
 
-    const setSymbol = (newSymbol: TradeSymbol) => {
-        setSearchParams({ symbol: newSymbol });
-    };
+  const setSymbol = (newSymbol: TradeSymbol) => {
+    setSearchParams({ symbol: newSymbol });
+  };
 
-    useEffect(() => {
-        if (!initialSymbolParam || !isTradeSymbol(initialSymbolParam)) {
-            setSearchParams({ symbol: TradeSymbol.AAPL }, { replace: true });
-        }
-    }, [initialSymbolParam, setSearchParams]);
+  useEffect(() => {
+    if (!initialSymbolParam || !isTradeSymbol(initialSymbolParam)) {
+      setSearchParams({ symbol: TradeSymbol.AAPL }, { replace: true });
+    }
+  }, [initialSymbolParam, setSearchParams]);
 
-    return { symbol, setSymbol };
+  return { symbol, setSymbol };
 };

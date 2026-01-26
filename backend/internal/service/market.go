@@ -26,12 +26,17 @@ func (s *MarketService) GetQuote(ctx context.Context, symbol string) (*exchange.
 	if !slices.Contains(s.allowedTickers, symbol) {
 		return nil, apperrors.ErrSymbolNotAllowed
 	}
+
 	return s.marketRepo.GetQuote(ctx, symbol)
 }
 
-func (s *MarketService) SubscribeToQuotes(ctx context.Context, symbol string) (*redis.PubSub, error) {
+func (s *MarketService) SubscribeToQuotes(
+	ctx context.Context,
+	symbol string,
+) (*redis.PubSub, error) {
 	if !slices.Contains(s.allowedTickers, symbol) {
 		return nil, apperrors.ErrSymbolNotAllowed
 	}
+
 	return s.marketRepo.SubscribeToQuotes(ctx, symbol), nil
 }

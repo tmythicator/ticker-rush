@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -51,8 +52,9 @@ func LoadConfig() (*Config, error) {
 
 func (c *Config) ValidateFetcher() error {
 	if c.FinnhubKey == "" {
-		return fmt.Errorf("FINNHUB_API_KEY is not set")
+		return errors.New("FINNHUB_API_KEY is not set")
 	}
+
 	return nil
 }
 
@@ -70,6 +72,7 @@ func getEnvInt(key string, defaultValue int) int {
 	if _, err := fmt.Sscanf(val, "%d", &i); err != nil {
 		return defaultValue
 	}
+
 	return i
 }
 
@@ -78,5 +81,6 @@ func getEnvString(key, defaultValue string) string {
 	if val == "" {
 		return defaultValue
 	}
+
 	return val
 }

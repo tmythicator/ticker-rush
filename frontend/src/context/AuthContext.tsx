@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await apiLogout();
     } catch (error) {
-      console.error("Logout failed", error);
+      console.error('Logout failed', error);
     } finally {
       setUser(null);
     }
@@ -32,7 +32,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, refreshUser, isAuthenticated: !!user, isLoading }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, refreshUser, isAuthenticated: !!user, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );

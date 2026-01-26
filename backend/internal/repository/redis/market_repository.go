@@ -3,7 +3,6 @@ package redis
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
@@ -36,19 +35,22 @@ func (r *MarketRepository) SaveQuote(ctx context.Context, quote *exchange.Quote)
 	if err != nil {
 		return err
 	}
-	key := fmt.Sprintf("market:%s", quote.Symbol)
+
+	key := "market:" + quote.GetSymbol()
 
 	// Publish to specific channel for the symbol
-	channel := fmt.Sprintf("market:quote:%s", quote.Symbol)
+	channel := "market:quote:" + quote.GetSymbol()
 
 	pipe := r.valkey.Pipeline()
 	pipe.Set(ctx, key, data, 0)
 	pipe.Publish(ctx, channel, data)
 	_, err = pipe.Exec(ctx)
+
 	return err
 }
 
 func (r *MarketRepository) SubscribeToQuotes(ctx context.Context, symbol string) *redis.PubSub {
-	channel := fmt.Sprintf("market:quote:%s", symbol)
+	channel := "market:quote:" + symbol
+
 	return r.valkey.Subscribe(ctx, channel)
 }

@@ -12,8 +12,10 @@ func LoadEnv() error {
 		if os.IsNotExist(err) {
 			return nil
 		}
+
 		return err
 	}
+
 	defer func() { _ = file.Close() }()
 
 	scanner := bufio.NewScanner(file)
@@ -40,5 +42,6 @@ func LoadEnv() error {
 			_ = os.Setenv(key, value)
 		}
 	}
+
 	return scanner.Err()
 }

@@ -65,7 +65,8 @@ func setupTestPostgres(t *testing.T) string {
 	}
 
 	t.Cleanup(func() {
-		if err := postgresContainer.Terminate(ctx); err != nil {
+		err := postgresContainer.Terminate(ctx)
+		if err != nil {
 			t.Fatalf("failed to terminate postgres container: %s", err)
 		}
 	})
@@ -90,7 +91,9 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 	})
 
 	connStr := setupTestPostgres(t)
+
 	var err error
+
 	dbPool, err = pgxpool.New(context.Background(), connStr)
 	if err != nil {
 		t.Fatalf("failed to connect to test db: %v", err)
@@ -130,21 +133,25 @@ func TestCreateUser(t *testing.T) {
 	defer mr.Close()
 	defer pool.Close()
 
-	reqBody := fmt.Sprintf(`{"email": "%s", "password": "password123", "first_name": "Test", "last_name": "User"}`, testEmail)
+	reqBody := fmt.Sprintf(
+		`{"email": "%s", "password": "password123", "first_name": "Test", "last_name": "User"}`,
+		testEmail,
+	)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/register", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/register", bytes.NewBufferString(reqBody))
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var responseUser user.User
+
 	err := json.Unmarshal(w.Body.Bytes(), &responseUser)
 	assert.NoError(t, err)
 
-	user, _, err := userRepo.GetUserByEmail(ctx, responseUser.Email)
+	user, _, err := userRepo.GetUserByEmail(ctx, responseUser.GetEmail())
 	assert.NoError(t, err)
-	assert.Equal(t, testEmail, user.Email)
-	assert.Equal(t, testEmail, user.Email)
+	assert.Equal(t, testEmail, user.GetEmail())
+	assert.Equal(t, testEmail, user.GetEmail())
 }
 
 func TestLogin(t *testing.T) {
@@ -160,37 +167,44 @@ func TestLogin(t *testing.T) {
 	// Perform Login
 	reqBody := fmt.Sprintf(`{"email": "%s", "password": "password123"}`, testEmail)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/login", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/login", bytes.NewBufferString(reqBody))
 	router.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	// Verify Cookie
 	cookies := w.Result().Cookies()
 	found := false
+
 	for _, cookie := range cookies {
 		if cookie.Name == "auth_token" {
 			found = true
+
 			assert.True(t, cookie.HttpOnly, "Cookie should be HttpOnly")
 			assert.Equal(t, "/", cookie.Path, "Cookie path should be /")
 			assert.NotEmpty(t, cookie.Value, "Cookie value should not be empty")
 		}
 	}
+
 	assert.True(t, found, "auth_token cookie should be present")
 
 	// Verify Response Body (Should NOT have token)
 	var response map[string]any
+
 	err = json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
+
 	_, hasToken := response["token"]
 	assert.False(t, hasToken, "Response body should NOT contain token")
 }
 
 func TestBuyStock(t *testing.T) {
-	const symbol = "AAPL"
-	const balance float64 = 1000.0
-	const price float64 = 150.0
-	const quantity float64 = 2.0
-	const expectedBalance float64 = balance - price*quantity
+	const (
+		symbol                  = "AAPL"
+		balance         float64 = 1000.0
+		price           float64 = 150.0
+		quantity        float64 = 2.0
+		expectedBalance float64 = balance - price*quantity
+	)
 
 	router, mr, pool := setupTestRouter(t)
 	defer mr.Close()
@@ -202,11 +216,19 @@ func TestBuyStock(t *testing.T) {
 	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
 
 	// Setup User
-	createdUser, err := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz", balance)
+	createdUser, err := userRepo.CreateUser(
+		ctx,
+		testEmail,
+		"password123",
+		"Marcel",
+		"Schulz",
+		balance,
+	)
 	if err != nil {
 		t.Fatalf("Failed to create user: %v", err)
 	}
-	user, err := userRepo.GetUser(ctx, createdUser.Id)
+
+	user, err := userRepo.GetUser(ctx, createdUser.GetId())
 	if err != nil {
 		t.Fatalf("Failed to get user: %v", err)
 	}
@@ -217,21 +239,21 @@ func TestBuyStock(t *testing.T) {
 	// Perform Buy
 	reqBody := fmt.Sprintf(`{"symbol": "%s", "count": %f}`, symbol, quantity)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/buy", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/buy", bytes.NewBufferString(reqBody))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	// Verify User State
-	updatedUser, _ := userRepo.GetUser(ctx, user.Id)
-	assert.Equal(t, testEmail, updatedUser.Email)
-	assert.Equal(t, expectedBalance, updatedUser.Balance)
+	updatedUser, _ := userRepo.GetUser(ctx, user.GetId())
+	assert.Equal(t, testEmail, updatedUser.GetEmail())
+	assert.Equal(t, expectedBalance, updatedUser.GetBalance())
 
 	// Verify Portfolio State from Repo
-	item, err := portfolioRepo.GetPortfolioItem(ctx, user.Id, symbol)
+	item, err := portfolioRepo.GetPortfolioItem(ctx, user.GetId(), symbol)
 	assert.NoError(t, err)
-	assert.Equal(t, quantity, item.Quantity)
+	assert.Equal(t, quantity, item.GetQuantity())
 }
 
 func TestSellStock(t *testing.T) {
@@ -239,12 +261,14 @@ func TestSellStock(t *testing.T) {
 	defer mr.Close()
 	defer pool.Close()
 
-	const mockPrice float64 = 150.0
-	const mockStartBalance float64 = 20.0
-	const mockPortfolioQuantity float64 = 5.0
-	const mockSellQuantity float64 = 2.0
-	const expectedPortfolioQuantity float64 = mockPortfolioQuantity - mockSellQuantity
-	const expectedBalance float64 = mockPrice*mockSellQuantity + mockStartBalance
+	const (
+		mockPrice                 float64 = 150.0
+		mockStartBalance          float64 = 20.0
+		mockPortfolioQuantity     float64 = 5.0
+		mockSellQuantity          float64 = 2.0
+		expectedPortfolioQuantity float64 = mockPortfolioQuantity - mockSellQuantity
+		expectedBalance           float64 = mockPrice*mockSellQuantity + mockStartBalance
+	)
 
 	// Setup Market Data
 	quote := &exchange.Quote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
@@ -252,11 +276,24 @@ func TestSellStock(t *testing.T) {
 	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
 
 	// Setup User
-	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz", mockStartBalance)
-	user, _ := userRepo.GetUser(ctx, createdUser.Id)
+	createdUser, _ := userRepo.CreateUser(
+		ctx,
+		testEmail,
+		"password123",
+		"Marcel",
+		"Schulz",
+		mockStartBalance,
+	)
+	user, _ := userRepo.GetUser(ctx, createdUser.GetId())
 
 	// Setup Portfolio via Repo
-	err := portfolioRepo.SetPortfolioItem(ctx, user.Id, "AAPL", mockPortfolioQuantity, mockPrice)
+	err := portfolioRepo.SetPortfolioItem(
+		ctx,
+		user.GetId(),
+		"AAPL",
+		mockPortfolioQuantity,
+		mockPrice,
+	)
 	assert.NoError(t, err)
 
 	// Generate Token
@@ -265,20 +302,20 @@ func TestSellStock(t *testing.T) {
 	// Perform Sell
 	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "count": %f}`, mockSellQuantity)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/sell", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/sell", bytes.NewBufferString(reqBody))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	// Verify User State
-	updatedUser, _ := userRepo.GetUser(ctx, user.Id)
-	assert.Equal(t, expectedBalance, updatedUser.Balance)
+	updatedUser, _ := userRepo.GetUser(ctx, user.GetId())
+	assert.Equal(t, expectedBalance, updatedUser.GetBalance())
 
 	// Verify Portfolio
-	item, err := portfolioRepo.GetPortfolioItem(ctx, user.Id, "AAPL")
+	item, err := portfolioRepo.GetPortfolioItem(ctx, user.GetId(), "AAPL")
 	assert.NoError(t, err)
-	assert.Equal(t, expectedPortfolioQuantity, item.Quantity)
+	assert.Equal(t, expectedPortfolioQuantity, item.GetQuantity())
 }
 
 func TestInsufficientFunds(t *testing.T) {
@@ -286,16 +323,25 @@ func TestInsufficientFunds(t *testing.T) {
 	defer mr.Close()
 	defer pool.Close()
 
-	const mockPrice = 151.0
-	const mockStartBalance = 20.0
-	const mockBuyQuantity = 1
+	const (
+		mockPrice        = 151.0
+		mockStartBalance = 20.0
+		mockBuyQuantity  = 1
+	)
 
 	quote := &exchange.Quote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
 	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
 
-	createdUser, _ := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz", mockStartBalance)
-	user, _ := userRepo.GetUser(ctx, createdUser.Id)
+	createdUser, _ := userRepo.CreateUser(
+		ctx,
+		testEmail,
+		"password123",
+		"Marcel",
+		"Schulz",
+		mockStartBalance,
+	)
+	user, _ := userRepo.GetUser(ctx, createdUser.GetId())
 
 	// Generate Token
 	token, _ := service.GenerateToken(user)
@@ -303,7 +349,7 @@ func TestInsufficientFunds(t *testing.T) {
 	// balance < cost
 	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "count": %d}`, mockBuyQuantity)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/buy", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/buy", bytes.NewBufferString(reqBody))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
@@ -312,12 +358,14 @@ func TestInsufficientFunds(t *testing.T) {
 }
 
 func TestSellAllStock(t *testing.T) {
-	const symbol = "AAPL"
-	const mockStartBalance float64 = 0.0
-	const mockPrice float64 = 150.0
-	const mockQuantity float64 = 5.0
-	const mockSellQuantity float64 = 5.0
-	const mockExpectedBalance float64 = mockStartBalance + mockSellQuantity*mockPrice
+	const (
+		symbol                      = "AAPL"
+		mockStartBalance    float64 = 0.0
+		mockPrice           float64 = 150.0
+		mockQuantity        float64 = 5.0
+		mockSellQuantity    float64 = 5.0
+		mockExpectedBalance float64 = mockStartBalance + mockSellQuantity*mockPrice
+	)
 
 	router, mr, pool := setupTestRouter(t)
 	defer mr.Close()
@@ -329,13 +377,20 @@ func TestSellAllStock(t *testing.T) {
 	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
 
 	// Setup User (FIX: create user implicitly or explicitly)
-	createdUser, err := userRepo.CreateUser(ctx, testEmail, "password123", "Marcel", "Schulz", mockStartBalance)
+	createdUser, err := userRepo.CreateUser(
+		ctx,
+		testEmail,
+		"password123",
+		"Marcel",
+		"Schulz",
+		mockStartBalance,
+	)
 	if err != nil {
 		t.Fatalf("Failed to create user: %v", err)
 	}
 
 	// Setup Portfolio
-	err = portfolioRepo.SetPortfolioItem(ctx, createdUser.Id, symbol, mockQuantity, mockPrice)
+	err = portfolioRepo.SetPortfolioItem(ctx, createdUser.GetId(), symbol, mockQuantity, mockPrice)
 	assert.NoError(t, err)
 
 	// Generate Token
@@ -344,17 +399,17 @@ func TestSellAllStock(t *testing.T) {
 	// Perform Sell All
 	reqBody := fmt.Sprintf(`{"symbol": "%s", "count": %f}`, symbol, mockSellQuantity)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("POST", "/api/sell", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/sell", bytes.NewBufferString(reqBody))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	// Verify User State
-	updatedUser, _ := userRepo.GetUser(ctx, createdUser.Id)
-	assert.Equal(t, mockExpectedBalance, updatedUser.Balance)
+	updatedUser, _ := userRepo.GetUser(ctx, createdUser.GetId())
+	assert.Equal(t, mockExpectedBalance, updatedUser.GetBalance())
 
 	// Should be deleted
-	_, err = portfolioRepo.GetPortfolioItem(ctx, createdUser.Id, symbol)
+	_, err = portfolioRepo.GetPortfolioItem(ctx, createdUser.GetId(), symbol)
 	assert.Error(t, err, "Portfolio item should be removed (not found error expected)")
 }

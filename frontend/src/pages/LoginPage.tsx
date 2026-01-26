@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
@@ -54,14 +53,14 @@ export const LoginPage = () => {
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200"
           >
-             Login
+            Login
           </button>
         </form>
         <div className="mt-4 text-center">
           <p className="text-gray-400">
-                                         Don't have an account?{' '}
+            Don't have an account?{' '}
             <a href="/register" className="text-blue-500 hover:underline">
-                                                                            Register
+              Register
             </a>
           </p>
         </div>

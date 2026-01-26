@@ -15,17 +15,20 @@ func AuthMiddleware() gin.HandlerFunc {
 		token, err := c.Cookie("auth_token")
 		if err != nil {
 			_ = c.AbortWithError(http.StatusUnauthorized, apperrors.ErrAuthRequired)
+
 			return
 		}
 
 		if token == "" {
 			_ = c.AbortWithError(http.StatusUnauthorized, apperrors.ErrInvalidToken)
+
 			return
 		}
 
 		claims, err := service.ValidateToken(token)
 		if err != nil {
 			_ = c.AbortWithError(http.StatusUnauthorized, apperrors.ErrInvalidToken)
+
 			return
 		}
 

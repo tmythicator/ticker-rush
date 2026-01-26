@@ -29,7 +29,7 @@ export const api = {
       throw new ApiError(errorData.error || `Error: ${res.status}`, res.status);
     }
     return res.json();
-  }
+  },
 };
 
 export const fetchQuote = async (symbol: string): Promise<Quote> => {
@@ -56,6 +56,11 @@ export const logout = async (): Promise<void> => {
   return api.post('/logout', {});
 };
 
-export const register = async (email: string, password: string, first_name: string, last_name: string): Promise<User> => {
+export const register = async (
+  email: string,
+  password: string,
+  first_name: string,
+  last_name: string,
+): Promise<User> => {
   return api.post('/register', { email, password, first_name, last_name });
 };

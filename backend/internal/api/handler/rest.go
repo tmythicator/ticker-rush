@@ -19,7 +19,11 @@ type RestHandler struct {
 	marketService *service.MarketService
 }
 
-func NewRestHandler(userService *service.UserService, tradeService *service.TradeService, marketService *service.MarketService) *RestHandler {
+func NewRestHandler(
+	userService *service.UserService,
+	tradeService *service.TradeService,
+	marketService *service.MarketService,
+) *RestHandler {
 	return &RestHandler{
 		userService:   userService,
 		tradeService:  tradeService,
@@ -31,12 +35,20 @@ func (h *RestHandler) CreateUser(c *gin.Context) {
 	req := CreateUserRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+
 		return
 	}
 
-	user, err := h.userService.CreateUser(c.Request.Context(), req.Email, req.Password, req.FirstName, req.LastName)
+	user, err := h.userService.CreateUser(
+		c.Request.Context(),
+		req.Email,
+		req.Password,
+		req.FirstName,
+		req.LastName,
+	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
+
 		return
 	}
 
@@ -47,24 +59,28 @@ func (h *RestHandler) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+
 		return
 	}
 
 	user, err := h.userService.Authenticate(c.Request.Context(), req.Email, req.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+
 		return
 	}
 
-	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), user.Id)
+	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), user.GetId())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user profile"})
+
 		return
 	}
 
 	token, err := service.GenerateToken(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+
 		return
 	}
 
@@ -81,14 +97,17 @@ func (h *RestHandler) GetMe(c *gin.Context) {
 	userId, exists := c.Get(middleware.UserIDKey)
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+
 		return
 	}
 
 	user, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
+
 		return
 	}
+
 	c.JSON(http.StatusOK, user)
 }
 
@@ -99,14 +118,21 @@ func (h *RestHandler) GetQuote(c *gin.Context) {
 	if err != nil {
 		if errors.Is(err, apperrors.ErrSymbolNotAllowed) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+
 			return
 		}
 
 		if errors.Is(err, go_redis.Nil) {
-			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Market data warming up, please retry"})
+			c.JSON(
+				http.StatusServiceUnavailable,
+				gin.H{"error": "Market data warming up, please retry"},
+			)
+
 			return
 		}
+
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
+
 		return
 	}
 
@@ -117,12 +143,14 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 	userId, exists := c.Get(middleware.UserIDKey)
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+
 		return
 	}
 
 	var req TradeRequest
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+
 		return
 	}
 
@@ -130,19 +158,25 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 	if err != nil {
 		if errors.Is(err, apperrors.ErrInsufficientFunds) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
+
 			return
 		}
+
 		if errors.Is(err, apperrors.ErrInsufficientQuantity) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
+
 			return
 		}
+
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
+
 		return
 	}
 
 	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
+
 		return
 	}
 
@@ -153,12 +187,14 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 	userId, exists := c.Get(middleware.UserIDKey)
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+
 		return
 	}
 
 	var req TradeRequest
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+
 		return
 	}
 
@@ -166,21 +202,25 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 	if err != nil {
 		if errors.Is(err, apperrors.ErrInsufficientQuantity) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
+
 			return
 		}
 
 		if errors.Is(err, apperrors.ErrInsufficientFunds) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
+
 			return
 		}
 
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
+
 		return
 	}
 
 	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userId.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
+
 		return
 	}
 
@@ -198,10 +238,13 @@ func (h *RestHandler) StreamQuotes(c *gin.Context) {
 	pubsub, err := h.marketService.SubscribeToQuotes(c.Request.Context(), c.Query("symbol"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
 		return
 	}
+
 	defer func() {
-		if err := pubsub.Close(); err != nil {
+		err := pubsub.Close()
+		if err != nil {
 			log.Printf("Failed to close pubsub: %v", err)
 		}
 	}()
@@ -214,6 +257,7 @@ func (h *RestHandler) StreamQuotes(c *gin.Context) {
 			return false
 		case msg := <-ch:
 			c.SSEvent("quote", msg.Payload)
+
 			return true
 		}
 	})

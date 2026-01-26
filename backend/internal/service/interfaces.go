@@ -17,8 +17,18 @@ type Transactor interface {
 
 type UserRepository interface {
 	GetUser(ctx context.Context, id int64) (*pb.User, error)
-	GetUserByEmail(ctx context.Context, email string) (*pb.User, string, error) // Returns user, hash, error
-	CreateUser(ctx context.Context, email string, hashedPassword string, firstName string, lastName string, balance float64) (*pb.User, error)
+	GetUserByEmail(
+		ctx context.Context,
+		email string,
+	) (*pb.User, string, error) // Returns user, hash, error
+	CreateUser(
+		ctx context.Context,
+		email string,
+		hashedPassword string,
+		firstName string,
+		lastName string,
+		balance float64,
+	) (*pb.User, error)
 
 	GetUserForUpdate(ctx context.Context, id int64) (*pb.User, error)
 	SaveUser(ctx context.Context, user *pb.User) error
@@ -29,8 +39,18 @@ type PortfolioRepository interface {
 	GetPortfolio(ctx context.Context, userID int64) ([]*pb.PortfolioItem, error)
 	GetPortfolioItem(ctx context.Context, userID int64, symbol string) (*pb.PortfolioItem, error)
 
-	GetPortfolioItemForUpdate(ctx context.Context, userID int64, symbol string) (*pb.PortfolioItem, error)
-	SetPortfolioItem(ctx context.Context, userID int64, symbol string, quantity float64, averagePrice float64) error
+	GetPortfolioItemForUpdate(
+		ctx context.Context,
+		userID int64,
+		symbol string,
+	) (*pb.PortfolioItem, error)
+	SetPortfolioItem(
+		ctx context.Context,
+		userID int64,
+		symbol string,
+		quantity float64,
+		averagePrice float64,
+	) error
 	DeletePortfolioItem(ctx context.Context, userID int64, symbol string) error
 	WithTx(tx Transaction) PortfolioRepository
 }

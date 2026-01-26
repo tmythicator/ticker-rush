@@ -12,9 +12,12 @@ import (
 )
 
 func TestAuthService_GenerateToken(t *testing.T) {
-	const testEmail = "test@example.com"
-	const testUserID = int64(123)
-	const secret = "test-secret"
+	const (
+		testEmail  = "test@example.com"
+		testUserID = int64(123)
+		secret     = "test-secret"
+	)
+
 	user := &pb.User{
 		Id:    testUserID,
 		Email: testEmail,
@@ -24,6 +27,7 @@ func TestAuthService_GenerateToken(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	defer func() { _ = os.Unsetenv("JWT_SECRET") }()
 
 	tokenString, err := service.GenerateToken(user)
@@ -43,10 +47,12 @@ func TestAuthService_GenerateToken(t *testing.T) {
 
 func TestAuthService_ValidateToken(t *testing.T) {
 	const secret = "test-secret"
+
 	err := os.Setenv("JWT_SECRET", secret)
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	defer func() { _ = os.Unsetenv("JWT_SECRET") }()
 
 	t.Run("Valid Token", func(t *testing.T) {

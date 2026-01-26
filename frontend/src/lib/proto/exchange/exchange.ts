@@ -5,9 +5,9 @@
 // source: exchange/exchange.proto
 
 /* eslint-disable */
-import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { BinaryReader, BinaryWriter } from '@bufbuild/protobuf/wire';
 
-export const protobufPackage = "exchange";
+export const protobufPackage = 'exchange';
 
 export interface Quote {
   symbol: string;
@@ -48,12 +48,12 @@ export interface SellStockResponse {
 }
 
 function createBaseQuote(): Quote {
-  return { symbol: "", price: 0, change: 0, change_percent: 0, timestamp: "0" };
+  return { symbol: '', price: 0, change: 0, change_percent: 0, timestamp: '0' };
 }
 
 export const Quote: MessageFns<Quote> = {
   encode(message: Quote, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.symbol !== "") {
+    if (message.symbol !== '') {
       writer.uint32(10).string(message.symbol);
     }
     if (message.price !== 0) {
@@ -65,7 +65,7 @@ export const Quote: MessageFns<Quote> = {
     if (message.change_percent !== 0) {
       writer.uint32(33).double(message.change_percent);
     }
-    if (message.timestamp !== "0") {
+    if (message.timestamp !== '0') {
       writer.uint32(40).int64(message.timestamp);
     }
     return writer;
@@ -129,17 +129,17 @@ export const Quote: MessageFns<Quote> = {
 
   fromJSON(object: any): Quote {
     return {
-      symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : "",
+      symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : '',
       price: isSet(object.price) ? globalThis.Number(object.price) : 0,
       change: isSet(object.change) ? globalThis.Number(object.change) : 0,
       change_percent: isSet(object.change_percent) ? globalThis.Number(object.change_percent) : 0,
-      timestamp: isSet(object.timestamp) ? globalThis.String(object.timestamp) : "0",
+      timestamp: isSet(object.timestamp) ? globalThis.String(object.timestamp) : '0',
     };
   },
 
   toJSON(message: Quote): unknown {
     const obj: any = {};
-    if (message.symbol !== "") {
+    if (message.symbol !== '') {
       obj.symbol = message.symbol;
     }
     if (message.price !== 0) {
@@ -151,7 +151,7 @@ export const Quote: MessageFns<Quote> = {
     if (message.change_percent !== 0) {
       obj.change_percent = message.change_percent;
     }
-    if (message.timestamp !== "0") {
+    if (message.timestamp !== '0') {
       obj.timestamp = message.timestamp;
     }
     return obj;
@@ -162,22 +162,22 @@ export const Quote: MessageFns<Quote> = {
   },
   fromPartial<I extends Exact<DeepPartial<Quote>, I>>(object: I): Quote {
     const message = createBaseQuote();
-    message.symbol = object.symbol ?? "";
+    message.symbol = object.symbol ?? '';
     message.price = object.price ?? 0;
     message.change = object.change ?? 0;
     message.change_percent = object.change_percent ?? 0;
-    message.timestamp = object.timestamp ?? "0";
+    message.timestamp = object.timestamp ?? '0';
     return message;
   },
 };
 
 function createBaseGetQuoteRequest(): GetQuoteRequest {
-  return { symbol: "" };
+  return { symbol: '' };
 }
 
 export const GetQuoteRequest: MessageFns<GetQuoteRequest> = {
   encode(message: GetQuoteRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.symbol !== "") {
+    if (message.symbol !== '') {
       writer.uint32(10).string(message.symbol);
     }
     return writer;
@@ -208,12 +208,12 @@ export const GetQuoteRequest: MessageFns<GetQuoteRequest> = {
   },
 
   fromJSON(object: any): GetQuoteRequest {
-    return { symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : "" };
+    return { symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : '' };
   },
 
   toJSON(message: GetQuoteRequest): unknown {
     const obj: any = {};
-    if (message.symbol !== "") {
+    if (message.symbol !== '') {
       obj.symbol = message.symbol;
     }
     return obj;
@@ -224,7 +224,7 @@ export const GetQuoteRequest: MessageFns<GetQuoteRequest> = {
   },
   fromPartial<I extends Exact<DeepPartial<GetQuoteRequest>, I>>(object: I): GetQuoteRequest {
     const message = createBaseGetQuoteRequest();
-    message.symbol = object.symbol ?? "";
+    message.symbol = object.symbol ?? '';
     return message;
   },
 };
@@ -282,18 +282,21 @@ export const GetQuoteResponse: MessageFns<GetQuoteResponse> = {
   },
   fromPartial<I extends Exact<DeepPartial<GetQuoteResponse>, I>>(object: I): GetQuoteResponse {
     const message = createBaseGetQuoteResponse();
-    message.quote = (object.quote !== undefined && object.quote !== null) ? Quote.fromPartial(object.quote) : undefined;
+    message.quote =
+      object.quote !== undefined && object.quote !== null
+        ? Quote.fromPartial(object.quote)
+        : undefined;
     return message;
   },
 };
 
 function createBaseBuyStockRequest(): BuyStockRequest {
-  return { symbol: "", quantity: 0 };
+  return { symbol: '', quantity: 0 };
 }
 
 export const BuyStockRequest: MessageFns<BuyStockRequest> = {
   encode(message: BuyStockRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.symbol !== "") {
+    if (message.symbol !== '') {
       writer.uint32(10).string(message.symbol);
     }
     if (message.quantity !== 0) {
@@ -336,14 +339,14 @@ export const BuyStockRequest: MessageFns<BuyStockRequest> = {
 
   fromJSON(object: any): BuyStockRequest {
     return {
-      symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : "",
+      symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : '',
       quantity: isSet(object.quantity) ? globalThis.Number(object.quantity) : 0,
     };
   },
 
   toJSON(message: BuyStockRequest): unknown {
     const obj: any = {};
-    if (message.symbol !== "") {
+    if (message.symbol !== '') {
       obj.symbol = message.symbol;
     }
     if (message.quantity !== 0) {
@@ -357,14 +360,14 @@ export const BuyStockRequest: MessageFns<BuyStockRequest> = {
   },
   fromPartial<I extends Exact<DeepPartial<BuyStockRequest>, I>>(object: I): BuyStockRequest {
     const message = createBaseBuyStockRequest();
-    message.symbol = object.symbol ?? "";
+    message.symbol = object.symbol ?? '';
     message.quantity = object.quantity ?? 0;
     return message;
   },
 };
 
 function createBaseBuyStockResponse(): BuyStockResponse {
-  return { success: false, total_price: 0, message: "" };
+  return { success: false, total_price: 0, message: '' };
 }
 
 export const BuyStockResponse: MessageFns<BuyStockResponse> = {
@@ -375,7 +378,7 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
     if (message.total_price !== 0) {
       writer.uint32(17).double(message.total_price);
     }
-    if (message.message !== "") {
+    if (message.message !== '') {
       writer.uint32(26).string(message.message);
     }
     return writer;
@@ -425,7 +428,7 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
     return {
       success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
       total_price: isSet(object.total_price) ? globalThis.Number(object.total_price) : 0,
-      message: isSet(object.message) ? globalThis.String(object.message) : "",
+      message: isSet(object.message) ? globalThis.String(object.message) : '',
     };
   },
 
@@ -437,7 +440,7 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
     if (message.total_price !== 0) {
       obj.total_price = message.total_price;
     }
-    if (message.message !== "") {
+    if (message.message !== '') {
       obj.message = message.message;
     }
     return obj;
@@ -450,18 +453,18 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
     const message = createBaseBuyStockResponse();
     message.success = object.success ?? false;
     message.total_price = object.total_price ?? 0;
-    message.message = object.message ?? "";
+    message.message = object.message ?? '';
     return message;
   },
 };
 
 function createBaseSellStockRequest(): SellStockRequest {
-  return { symbol: "", quantity: 0 };
+  return { symbol: '', quantity: 0 };
 }
 
 export const SellStockRequest: MessageFns<SellStockRequest> = {
   encode(message: SellStockRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.symbol !== "") {
+    if (message.symbol !== '') {
       writer.uint32(10).string(message.symbol);
     }
     if (message.quantity !== 0) {
@@ -504,14 +507,14 @@ export const SellStockRequest: MessageFns<SellStockRequest> = {
 
   fromJSON(object: any): SellStockRequest {
     return {
-      symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : "",
+      symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : '',
       quantity: isSet(object.quantity) ? globalThis.Number(object.quantity) : 0,
     };
   },
 
   toJSON(message: SellStockRequest): unknown {
     const obj: any = {};
-    if (message.symbol !== "") {
+    if (message.symbol !== '') {
       obj.symbol = message.symbol;
     }
     if (message.quantity !== 0) {
@@ -525,14 +528,14 @@ export const SellStockRequest: MessageFns<SellStockRequest> = {
   },
   fromPartial<I extends Exact<DeepPartial<SellStockRequest>, I>>(object: I): SellStockRequest {
     const message = createBaseSellStockRequest();
-    message.symbol = object.symbol ?? "";
+    message.symbol = object.symbol ?? '';
     message.quantity = object.quantity ?? 0;
     return message;
   },
 };
 
 function createBaseSellStockResponse(): SellStockResponse {
-  return { success: false, total_proceeds: 0, message: "" };
+  return { success: false, total_proceeds: 0, message: '' };
 }
 
 export const SellStockResponse: MessageFns<SellStockResponse> = {
@@ -543,7 +546,7 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
     if (message.total_proceeds !== 0) {
       writer.uint32(17).double(message.total_proceeds);
     }
-    if (message.message !== "") {
+    if (message.message !== '') {
       writer.uint32(26).string(message.message);
     }
     return writer;
@@ -593,7 +596,7 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
     return {
       success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
       total_proceeds: isSet(object.total_proceeds) ? globalThis.Number(object.total_proceeds) : 0,
-      message: isSet(object.message) ? globalThis.String(object.message) : "",
+      message: isSet(object.message) ? globalThis.String(object.message) : '',
     };
   },
 
@@ -605,7 +608,7 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
     if (message.total_proceeds !== 0) {
       obj.total_proceeds = message.total_proceeds;
     }
-    if (message.message !== "") {
+    if (message.message !== '') {
       obj.message = message.message;
     }
     return obj;
@@ -618,21 +621,26 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
     const message = createBaseSellStockResponse();
     message.success = object.success ?? false;
     message.total_proceeds = object.total_proceeds ?? 0;
-    message.message = object.message ?? "";
+    message.message = object.message ?? '';
     return message;
   },
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+    ? globalThis.Array<DeepPartial<U>>
+    : T extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : T extends {}
+        ? { [K in keyof T]?: DeepPartial<T[K]> }
+        : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
 function isSet(value: any): boolean {

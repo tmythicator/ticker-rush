@@ -7,9 +7,11 @@ export const useQuotesSSE = (symbol: string) => {
 
   useEffect(() => {
     // Hydrate initial quote
-    fetchQuote(symbol).then(initialQuote => {
-      setQuote(initialQuote);
-    }).catch(e => console.error("Initial fetch failed:", e));
+    fetchQuote(symbol)
+      .then((initialQuote) => {
+        setQuote(initialQuote);
+      })
+      .catch((e) => console.error('Initial fetch failed:', e));
 
     const url = `${import.meta.env.VITE_API_URL}/quotes/events?symbol=${symbol}`;
     const eventSource = new EventSource(url);
@@ -19,7 +21,7 @@ export const useQuotesSSE = (symbol: string) => {
     };
 
     eventSource.onerror = (e) => {
-      console.error("SSE: Connection Error", e);
+      console.error('SSE: Connection Error', e);
       setError(e);
       eventSource.close();
     };
@@ -29,7 +31,7 @@ export const useQuotesSSE = (symbol: string) => {
         const data = JSON.parse(event.data) as Quote;
         setQuote(data);
       } catch (err) {
-        console.error("SSE: Parse Error", err);
+        console.error('SSE: Parse Error', err);
       }
     });
 

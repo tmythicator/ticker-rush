@@ -15,6 +15,7 @@ func getSecretKey() []byte {
 	if secret == "" {
 		return []byte("super-secret-key-change-me")
 	}
+
 	return []byte(secret)
 }
 
@@ -27,8 +28,8 @@ type Claims struct {
 func GenerateToken(user *pb.User) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
-		UserID: user.Id,
-		Email:  user.Email,
+		UserID: user.GetId(),
+		Email:  user.GetEmail(),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -38,13 +39,14 @@ func GenerateToken(user *pb.User) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(getSecretKey())
+
 	return tokenString, err
 }
 
 func ValidateToken(tokenString string) (*Claims, error) {
 	claims := &Claims{}
-	token, err := jwt.ParseWithClaims(tokenString, claims, getKey)
 
+	token, err := jwt.ParseWithClaims(tokenString, claims, getKey)
 	if err != nil {
 		return nil, err
 	}
@@ -60,5 +62,6 @@ func getKey(token *jwt.Token) (any, error) {
 	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 		return nil, errors.New("unexpected signing method")
 	}
+
 	return getSecretKey(), nil
 }

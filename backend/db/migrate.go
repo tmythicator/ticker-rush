@@ -15,6 +15,7 @@ func Migrate(connStr string) error {
 	}
 
 	db := stdlib.OpenDB(*dbConfig)
+
 	defer func() {
 		_ = db.Close()
 	}()

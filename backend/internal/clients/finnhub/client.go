@@ -3,6 +3,7 @@ package finnhub
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -33,7 +34,8 @@ func NewClient(apiKey string, timeout time.Duration) *Client {
 
 func (c *Client) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error) {
 	url := fmt.Sprintf("%s/quote?symbol=%s&token=%s", c.baseURL, symbol, c.apiKey)
-	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
@@ -42,6 +44,7 @@ func (c *Client) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, 
 	if err != nil {
 		return nil, fmt.Errorf("network error: %w", err)
 	}
+
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
@@ -54,8 +57,9 @@ func (c *Client) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, 
 	}
 
 	if fq.CurrentPrice == 0 {
-		return nil, fmt.Errorf("zero price received")
+		return nil, errors.New("zero price received")
 	}
+
 	ts := fq.Timestamp
 	if ts == 0 {
 		ts = time.Now().Unix()

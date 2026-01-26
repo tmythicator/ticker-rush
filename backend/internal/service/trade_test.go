@@ -19,16 +19,19 @@ import (
 )
 
 func TestTradeService_BuyStock_Success(t *testing.T) {
-	const symbol string = "AAPL"
-	const price float64 = 100.0
-	const startBalance float64 = 1000.0
-	const userID int64 = 1
-	const quantity float64 = 5.0
-	const expectedBalance float64 = startBalance - (quantity * price)
+	const (
+		symbol          string  = "AAPL"
+		price           float64 = 100.0
+		startBalance    float64 = 1000.0
+		userID          int64   = 1
+		quantity        float64 = 5.0
+		expectedBalance float64 = startBalance - (quantity * price)
+	)
 
 	// 1. Setup Market
 	mr, _ := miniredis.Run()
 	defer mr.Close()
+
 	valkeyClient := redis.NewClient(&redis.Options{Addr: mr.Addr()})
 	marketRepo := app_redis.NewMarketRepository(valkeyClient)
 	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
@@ -43,15 +46,17 @@ func TestTradeService_BuyStock_Success(t *testing.T) {
 
 	// 3. Setup Expectations
 	ctx := context.Background()
+
 	mockTransactor.On("Begin", mock.Anything).Return(mockTx, nil)
 	mockUserRepo.On("WithTx", mockTx).Return(mockUserRepo)
 	mockPortRepo.On("WithTx", mockTx).Return(mockPortRepo)
 
 	initialUser := &user.User{Id: userID, Balance: startBalance}
 	mockUserRepo.On("GetUserForUpdate", mock.Anything, userID).Return(initialUser, nil)
-	mockPortRepo.On("GetPortfolioItemForUpdate", mock.Anything, userID, symbol).Return(&user.PortfolioItem{}, assert.AnError)
+	mockPortRepo.On("GetPortfolioItemForUpdate", mock.Anything, userID, symbol).
+		Return(&user.PortfolioItem{}, assert.AnError)
 	mockUserRepo.On("SaveUser", mock.Anything, mock.MatchedBy(func(u *user.User) bool {
-		return u.Balance == expectedBalance
+		return u.GetBalance() == expectedBalance
 	})).Return(nil)
 	mockPortRepo.On("SetPortfolioItem", mock.Anything, userID, symbol, quantity, price).Return(nil)
 	mockTx.On("Commit", mock.Anything).Return(nil)
@@ -64,7 +69,7 @@ func TestTradeService_BuyStock_Success(t *testing.T) {
 	// 5. Verify
 	assert.NoError(t, err)
 	assert.NotNil(t, user)
-	assert.Equal(t, expectedBalance, user.Balance)
+	assert.Equal(t, expectedBalance, user.GetBalance())
 
 	mockUserRepo.AssertExpectations(t)
 	mockPortRepo.AssertExpectations(t)
@@ -73,14 +78,17 @@ func TestTradeService_BuyStock_Success(t *testing.T) {
 }
 
 func TestTradeService_BuyStock_InsufficientFunds(t *testing.T) {
-	const userID int64 = 2
-	const symbol string = "ExpensiveStock"
-	const price float64 = 10000.0
-	const quantity float64 = 1.0
-	const startBalance float64 = 100.0
+	const (
+		userID       int64   = 2
+		symbol       string  = "ExpensiveStock"
+		price        float64 = 10000.0
+		quantity     float64 = 1.0
+		startBalance float64 = 100.0
+	)
 
 	mr, _ := miniredis.Run()
 	defer mr.Close()
+
 	rClient := redis.NewClient(&redis.Options{Addr: mr.Addr()})
 	marketRepo := app_redis.NewMarketRepository(rClient)
 	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
@@ -93,10 +101,12 @@ func TestTradeService_BuyStock_InsufficientFunds(t *testing.T) {
 	mockTx := new(mocks.MockTransaction)
 
 	ctx := context.Background()
+
 	mockTransactor.On("Begin", mock.Anything).Return(mockTx, nil)
 	mockTx.On("Rollback", mock.Anything).Return(nil)
 	mockUserRepo.On("WithTx", mockTx).Return(mockUserRepo)
 	mockPortRepo.On("WithTx", mockTx).Return(mockPortRepo)
+
 	initialUser := &user.User{Id: userID, Balance: startBalance}
 	mockUserRepo.On("GetUserForUpdate", mock.Anything, userID).Return(initialUser, nil)
 

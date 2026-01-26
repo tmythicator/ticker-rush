@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { register as apiRegister, login as apiLogin } from '../lib/api';
@@ -79,14 +78,14 @@ export const RegisterPage = () => {
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200"
           >
-             Register
+            Register
           </button>
         </form>
         <div className="mt-4 text-center">
           <p className="text-gray-400">
-                                         Already have an account?{' '}
+            Already have an account?{' '}
             <a href="/login" className="text-blue-500 hover:underline">
-                                                                         Login
+              Login
             </a>
           </p>
         </div>

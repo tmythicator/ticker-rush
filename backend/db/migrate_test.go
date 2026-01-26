@@ -31,8 +31,10 @@ func TestMigrate(t *testing.T) {
 		),
 	)
 	require.NoError(t, err)
+
 	defer func() {
-		if err := pgContainer.Terminate(ctx); err != nil {
+		err := pgContainer.Terminate(ctx)
+		if err != nil {
 			t.Fatalf("failed to terminate container: %s", err)
 		}
 	}()

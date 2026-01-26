@@ -16,7 +16,7 @@ import (
 	"github.com/tmythicator/ticker-rush/server/internal/worker"
 )
 
-// MockFinnhubClient mocks the Finnhub API
+// MockFinnhubClient mocks the Finnhub API.
 type MockFinnhubClient struct {
 	Quote finnhub.FinnhubQuote
 }
@@ -33,6 +33,7 @@ func TestMarketFetcher(t *testing.T) {
 	// 1. Setup Miniredis
 	mr, err := miniredis.Run()
 	assert.NoError(t, err)
+
 	defer mr.Close()
 
 	rdb := go_redis.NewClient(&go_redis.Options{
@@ -71,9 +72,10 @@ func TestMarketFetcher(t *testing.T) {
 	assert.NoError(t, err)
 
 	var quote exchange.Quote
+
 	err = json.Unmarshal([]byte(val), &quote)
 	assert.NoError(t, err)
 
-	assert.Equal(t, 150.0, quote.Price)
-	assert.Equal(t, "AAPL", quote.Symbol)
+	assert.Equal(t, 150.0, quote.GetPrice())
+	assert.Equal(t, "AAPL", quote.GetSymbol())
 }

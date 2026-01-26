@@ -19,7 +19,13 @@ func NewUserService(userRepo UserRepository, portfolioRepo PortfolioRepository) 
 	}
 }
 
-func (s *UserService) CreateUser(ctx context.Context, email string, password string, firstName string, lastName string) (*user.User, error) {
+func (s *UserService) CreateUser(
+	ctx context.Context,
+	email string,
+	password string,
+	firstName string,
+	lastName string,
+) (*user.User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
@@ -48,16 +54,21 @@ func (s *UserService) GetUserWithPortfolio(ctx context.Context, id int64) (*user
 	}
 
 	for _, item := range portfolio {
-		fetchedUser.Portfolio[item.StockSymbol] = &user.PortfolioItem{
-			StockSymbol:  item.StockSymbol,
-			Quantity:     item.Quantity,
-			AveragePrice: item.AveragePrice,
+		fetchedUser.Portfolio[item.GetStockSymbol()] = &user.PortfolioItem{
+			StockSymbol:  item.GetStockSymbol(),
+			Quantity:     item.GetQuantity(),
+			AveragePrice: item.GetAveragePrice(),
 		}
 	}
+
 	return fetchedUser, nil
 }
 
-func (s *UserService) Authenticate(ctx context.Context, email string, password string) (*user.User, error) {
+func (s *UserService) Authenticate(
+	ctx context.Context,
+	email string,
+	password string,
+) (*user.User, error) {
 	user, passwordHash, err := s.userRepo.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err

@@ -27,7 +27,12 @@ func NewMarketFetcher(client FinnhubClient, repo *redis.MarketRepository) *Marke
 	}
 }
 
-func (w *MarketFetcher) Start(ctx context.Context, symbol string, fetchInterval time.Duration, wg *sync.WaitGroup) {
+func (w *MarketFetcher) Start(
+	ctx context.Context,
+	symbol string,
+	fetchInterval time.Duration,
+	wg *sync.WaitGroup,
+) {
 	ticker := time.NewTicker(fetchInterval)
 
 	// Initial fetch
@@ -38,40 +43,56 @@ func (w *MarketFetcher) Start(ctx context.Context, symbol string, fetchInterval 
 
 	wg.Go(func() {
 		defer ticker.Stop()
+
 		for {
 			select {
 			case <-ticker.C:
 				q, err := w.processTicker(ctx, symbol, lastQuote)
 				if err != nil {
 					log.Printf("[%s] Tick skipped: %v", symbol, err)
+
 					continue
 				}
+
 				lastQuote = q
 			case <-ctx.Done():
 				log.Printf("Worker for %s stopped", symbol)
+
 				return
 			}
 		}
 	})
 }
 
-func (w *MarketFetcher) processTicker(ctx context.Context, symbol string, lastQuote *exchange.Quote) (*exchange.Quote, error) {
+func (w *MarketFetcher) processTicker(
+	ctx context.Context,
+	symbol string,
+	lastQuote *exchange.Quote,
+) (*exchange.Quote, error) {
 	quote, err := w.client.GetQuote(ctx, symbol)
 	if err != nil {
 		return nil, err
 	}
 
-	quote.Price = math.Round(quote.Price*100) / 100
+	quote.Price = math.Round(quote.GetPrice()*100) / 100
 
-	if lastQuote != nil && quote.Price == lastQuote.Price && quote.Timestamp == lastQuote.Timestamp {
+	if lastQuote != nil && quote.GetPrice() == lastQuote.GetPrice() &&
+		quote.GetTimestamp() == lastQuote.GetTimestamp() {
 		return lastQuote, nil
 	}
 
 	if err := w.repo.SaveQuote(ctx, quote); err != nil {
 		log.Printf("[%s] Redis Error: %v", symbol, err)
+
 		return nil, err
 	}
 
-	log.Printf("[%s] Updated: $%.2f (ts: %d)", quote.Symbol, quote.Price, quote.Timestamp)
+	log.Printf(
+		"[%s] Updated: $%.2f (ts: %d)",
+		quote.GetSymbol(),
+		quote.GetPrice(),
+		quote.GetTimestamp(),
+	)
+
 	return quote, nil
 }

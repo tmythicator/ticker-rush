@@ -18,6 +18,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -61,16 +62,26 @@ func main() {
 	}
 
 	defer func() { _ = valkeyClient.Close() }()
+
 	log.Println("Connected to Valkey")
 
 	// Connect to Postgres
-	postgreConnStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", cfg.PostgresUser, cfg.PostgresPass, cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresDB)
+	postgreConnStr := fmt.Sprintf(
+		"postgres://%s:%s@%s:%d/%s",
+		cfg.PostgresUser,
+		cfg.PostgresPass,
+		cfg.PostgresHost,
+		cfg.PostgresPort,
+		cfg.PostgresDB,
+	)
 
 	// Run embedded migrations
 	log.Println("Running database migrations...")
+
 	if err := db.Migrate(postgreConnStr); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
+
 	log.Println("Database migrations applied successfully")
 
 	postgreClient, err := pgxpool.New(ctx, postgreConnStr)
@@ -79,6 +90,7 @@ func main() {
 	}
 
 	defer postgreClient.Close()
+
 	log.Println("Connected to Postgres")
 
 	// Initialize repositories and services
@@ -107,7 +119,10 @@ func main() {
 
 	go func() {
 		log.Printf("Exchange API running on :%d\n", cfg.ServerPort)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+
+		err := srv.ListenAndServe()
+
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("Failed to start server: %v", err)
 		}
 	}()
@@ -117,6 +132,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
 	grpcServer := googlegrpc.NewServer(
 		googlegrpc.UnaryInterceptor(middleware.GrpcAuthInterceptor),
 	)
@@ -125,7 +141,9 @@ func main() {
 
 	go func() {
 		log.Printf("Exchange gRPC running on :%d\n", 50051)
-		if err := grpcServer.Serve(grpcListener); err != nil {
+
+		err := grpcServer.Serve(grpcListener)
+		if err != nil {
 			log.Fatalf("failed to serve gRPC: %v", err)
 		}
 	}()

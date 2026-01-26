@@ -11,7 +11,8 @@ func NewClient(addr string) (*redis.Client, error) {
 		Addr: addr,
 	})
 
-	if err := rdb.Ping(context.Background()).Err(); err != nil {
+	err := rdb.Ping(context.Background()).Err()
+	if err != nil {
 		return nil, err
 	}
 
