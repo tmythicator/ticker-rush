@@ -1,0 +1,8 @@
+src/lib/proto/
+dist/
+node_modules/
+.vinxi/
+.output/
+.vercel/
+coverage/
+pnpm-lock.yaml
