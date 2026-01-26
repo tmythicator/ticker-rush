@@ -33,6 +33,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 	api := engine.Group("/api")
 	{
 		api.POST("/login", handler.Login)
+		api.POST("/logout", handler.Logout)
 		api.POST("/register", handler.CreateUser)
 
 		protected := api.Group("/")
