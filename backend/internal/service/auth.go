@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
 	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user"
 )
 
@@ -49,7 +50,7 @@ func ValidateToken(tokenString string) (*Claims, error) {
 	}
 
 	if !token.Valid {
-		return nil, errors.New("invalid token")
+		return nil, apperrors.ErrInvalidToken
 	}
 
 	return claims, nil

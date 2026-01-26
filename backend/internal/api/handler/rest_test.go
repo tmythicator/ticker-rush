@@ -24,9 +24,10 @@ import (
 	"github.com/tmythicator/ticker-rush/server/internal/config"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/user"
-	repos "github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
-	app_redis "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
+	postgreRepo "github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
+	redisRepo "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const testEmail = "userTest@example.com"
@@ -35,9 +36,9 @@ var (
 	ctx           = context.Background()
 	valkeyClient  *redis.Client
 	dbPool        *pgxpool.Pool
-	userRepo      *repos.UserRepository
-	portfolioRepo *repos.PortfolioRepository
-	marketRepo    *app_redis.MarketRepository
+	userRepo      *postgreRepo.UserRepository
+	portfolioRepo *postgreRepo.PortfolioRepository
+	marketRepo    *redisRepo.MarketRepository
 	userService   *service.UserService
 	tradeService  *service.TradeService
 	marketService *service.MarketService
@@ -96,10 +97,10 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 	}
 
 	// Initialize Layers
-	userRepo = repos.NewUserRepository(dbPool)
-	portfolioRepo = repos.NewPortfolioRepository(dbPool)
-	marketRepo = app_redis.NewMarketRepository(valkeyClient)
-	transactor := repos.NewPgxTransactor(dbPool)
+	userRepo = postgreRepo.NewUserRepository(dbPool)
+	portfolioRepo = postgreRepo.NewPortfolioRepository(dbPool)
+	marketRepo = redisRepo.NewMarketRepository(valkeyClient)
+	transactor := postgreRepo.NewPgxTransactor(dbPool)
 
 	userService = service.NewUserService(userRepo, portfolioRepo)
 	tradeService = service.NewTradeService(userRepo, portfolioRepo, marketRepo, transactor)
@@ -143,6 +144,45 @@ func TestCreateUser(t *testing.T) {
 	user, _, err := userRepo.GetUserByEmail(ctx, responseUser.Email)
 	assert.NoError(t, err)
 	assert.Equal(t, testEmail, user.Email)
+	assert.Equal(t, testEmail, user.Email)
+}
+
+func TestLogin(t *testing.T) {
+	router, mr, pool := setupTestRouter(t)
+	defer mr.Close()
+	defer pool.Close()
+
+	// Create User first
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
+	_, err := userRepo.CreateUser(ctx, testEmail, string(hashedPassword), "Test", "User", 100.0)
+	assert.NoError(t, err)
+
+	// Perform Login
+	reqBody := fmt.Sprintf(`{"email": "%s", "password": "password123"}`, testEmail)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/login", bytes.NewBufferString(reqBody))
+	router.ServeHTTP(w, req)
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	// Verify Cookie
+	cookies := w.Result().Cookies()
+	found := false
+	for _, cookie := range cookies {
+		if cookie.Name == "auth_token" {
+			found = true
+			assert.True(t, cookie.HttpOnly, "Cookie should be HttpOnly")
+			assert.Equal(t, "/", cookie.Path, "Cookie path should be /")
+			assert.NotEmpty(t, cookie.Value, "Cookie value should not be empty")
+		}
+	}
+	assert.True(t, found, "auth_token cookie should be present")
+
+	// Verify Response Body (Should NOT have token)
+	var response map[string]any
+	err = json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	_, hasToken := response["token"]
+	assert.False(t, hasToken, "Response body should NOT contain token")
 }
 
 func TestBuyStock(t *testing.T) {
@@ -178,7 +218,7 @@ func TestBuyStock(t *testing.T) {
 	reqBody := fmt.Sprintf(`{"symbol": "%s", "count": %f}`, symbol, quantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/buy", bytes.NewBufferString(reqBody))
-	req.Header.Set("Authorization", "Bearer "+token)
+	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -226,7 +266,7 @@ func TestSellStock(t *testing.T) {
 	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "count": %f}`, mockSellQuantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/sell", bytes.NewBufferString(reqBody))
-	req.Header.Set("Authorization", "Bearer "+token)
+	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -264,7 +304,7 @@ func TestInsufficientFunds(t *testing.T) {
 	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "count": %d}`, mockBuyQuantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/buy", bytes.NewBufferString(reqBody))
-	req.Header.Set("Authorization", "Bearer "+token)
+	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusPaymentRequired, w.Code)
@@ -305,7 +345,7 @@ func TestSellAllStock(t *testing.T) {
 	reqBody := fmt.Sprintf(`{"symbol": "%s", "count": %f}`, symbol, mockSellQuantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/sell", bytes.NewBufferString(reqBody))
-	req.Header.Set("Authorization", "Bearer "+token)
+	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)

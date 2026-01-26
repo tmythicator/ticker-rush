@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 )
 
@@ -12,29 +12,20 @@ const UserIDKey = "userID"
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenString := ""
-		authHeader := c.GetHeader("Authorization")
-
-		if authHeader != "" {
-			parts := strings.Split(authHeader, " ")
-			if len(parts) == 2 && parts[0] == "Bearer" {
-				tokenString = parts[1]
-			}
-		}
-
-		// SSE doesn't support Authorization header configuring -> hence send it via query param
-		if tokenString == "" {
-			tokenString = c.Query("token")
-		}
-
-		if tokenString == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization required"})
+		token, err := c.Cookie("auth_token")
+		if err != nil {
+			_ = c.AbortWithError(http.StatusUnauthorized, apperrors.ErrAuthRequired)
 			return
 		}
 
-		claims, err := service.ValidateToken(tokenString)
+		if token == "" {
+			_ = c.AbortWithError(http.StatusUnauthorized, apperrors.ErrInvalidToken)
+			return
+		}
+
+		claims, err := service.ValidateToken(token)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			_ = c.AbortWithError(http.StatusUnauthorized, apperrors.ErrInvalidToken)
 			return
 		}
 
