@@ -68,7 +68,8 @@ func (h *RestHandler) Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": token, "user": fullUser})
+	c.SetCookie("auth_token", token, 3600*24, "/", "", false, true)
+	c.JSON(http.StatusOK, fullUser)
 }
 
 func (h *RestHandler) GetMe(c *gin.Context) {
