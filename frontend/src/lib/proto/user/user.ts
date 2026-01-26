@@ -5,10 +5,10 @@
 // source: user/user.proto
 
 /* eslint-disable */
-import { BinaryReader, BinaryWriter } from '@bufbuild/protobuf/wire';
-import { Timestamp } from '../google/protobuf/timestamp';
+import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { Timestamp } from "../google/protobuf/timestamp";
 
-export const protobufPackage = 'user';
+export const protobufPackage = "user";
 
 export interface PortfolioItem {
   stock_symbol: string;
@@ -33,12 +33,12 @@ export interface User_PortfolioEntry {
 }
 
 function createBasePortfolioItem(): PortfolioItem {
-  return { stock_symbol: '', quantity: 0, average_price: 0 };
+  return { stock_symbol: "", quantity: 0, average_price: 0 };
 }
 
 export const PortfolioItem: MessageFns<PortfolioItem> = {
   encode(message: PortfolioItem, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.stock_symbol !== '') {
+    if (message.stock_symbol !== "") {
       writer.uint32(10).string(message.stock_symbol);
     }
     if (message.quantity !== 0) {
@@ -92,7 +92,7 @@ export const PortfolioItem: MessageFns<PortfolioItem> = {
 
   fromJSON(object: any): PortfolioItem {
     return {
-      stock_symbol: isSet(object.stock_symbol) ? globalThis.String(object.stock_symbol) : '',
+      stock_symbol: isSet(object.stock_symbol) ? globalThis.String(object.stock_symbol) : "",
       quantity: isSet(object.quantity) ? globalThis.Number(object.quantity) : 0,
       average_price: isSet(object.average_price) ? globalThis.Number(object.average_price) : 0,
     };
@@ -100,7 +100,7 @@ export const PortfolioItem: MessageFns<PortfolioItem> = {
 
   toJSON(message: PortfolioItem): unknown {
     const obj: any = {};
-    if (message.stock_symbol !== '') {
+    if (message.stock_symbol !== "") {
       obj.stock_symbol = message.stock_symbol;
     }
     if (message.quantity !== 0) {
@@ -117,7 +117,7 @@ export const PortfolioItem: MessageFns<PortfolioItem> = {
   },
   fromPartial<I extends Exact<DeepPartial<PortfolioItem>, I>>(object: I): PortfolioItem {
     const message = createBasePortfolioItem();
-    message.stock_symbol = object.stock_symbol ?? '';
+    message.stock_symbol = object.stock_symbol ?? "";
     message.quantity = object.quantity ?? 0;
     message.average_price = object.average_price ?? 0;
     return message;
@@ -126,26 +126,26 @@ export const PortfolioItem: MessageFns<PortfolioItem> = {
 
 function createBaseUser(): User {
   return {
-    id: '0',
-    email: '',
-    password_hash: '',
+    id: "0",
+    email: "",
+    password_hash: "",
     balance: 0,
     created_at: undefined,
-    first_name: '',
-    last_name: '',
+    first_name: "",
+    last_name: "",
     portfolio: {},
   };
 }
 
 export const User: MessageFns<User> = {
   encode(message: User, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== '0') {
+    if (message.id !== "0") {
       writer.uint32(8).int64(message.id);
     }
-    if (message.email !== '') {
+    if (message.email !== "") {
       writer.uint32(18).string(message.email);
     }
-    if (message.password_hash !== '') {
+    if (message.password_hash !== "") {
       writer.uint32(26).string(message.password_hash);
     }
     if (message.balance !== 0) {
@@ -154,10 +154,10 @@ export const User: MessageFns<User> = {
     if (message.created_at !== undefined) {
       Timestamp.encode(toTimestamp(message.created_at), writer.uint32(50).fork()).join();
     }
-    if (message.first_name !== '') {
+    if (message.first_name !== "") {
       writer.uint32(58).string(message.first_name);
     }
-    if (message.last_name !== '') {
+    if (message.last_name !== "") {
       writer.uint32(66).string(message.last_name);
     }
     Object.entries(message.portfolio).forEach(([key, value]) => {
@@ -251,34 +251,31 @@ export const User: MessageFns<User> = {
 
   fromJSON(object: any): User {
     return {
-      id: isSet(object.id) ? globalThis.String(object.id) : '0',
-      email: isSet(object.email) ? globalThis.String(object.email) : '',
-      password_hash: isSet(object.password_hash) ? globalThis.String(object.password_hash) : '',
+      id: isSet(object.id) ? globalThis.String(object.id) : "0",
+      email: isSet(object.email) ? globalThis.String(object.email) : "",
+      password_hash: isSet(object.password_hash) ? globalThis.String(object.password_hash) : "",
       balance: isSet(object.balance) ? globalThis.Number(object.balance) : 0,
       created_at: isSet(object.created_at) ? fromJsonTimestamp(object.created_at) : undefined,
-      first_name: isSet(object.first_name) ? globalThis.String(object.first_name) : '',
-      last_name: isSet(object.last_name) ? globalThis.String(object.last_name) : '',
+      first_name: isSet(object.first_name) ? globalThis.String(object.first_name) : "",
+      last_name: isSet(object.last_name) ? globalThis.String(object.last_name) : "",
       portfolio: isObject(object.portfolio)
-        ? Object.entries(object.portfolio).reduce<{ [key: string]: PortfolioItem }>(
-            (acc, [key, value]) => {
-              acc[key] = PortfolioItem.fromJSON(value);
-              return acc;
-            },
-            {},
-          )
+        ? Object.entries(object.portfolio).reduce<{ [key: string]: PortfolioItem }>((acc, [key, value]) => {
+          acc[key] = PortfolioItem.fromJSON(value);
+          return acc;
+        }, {})
         : {},
     };
   },
 
   toJSON(message: User): unknown {
     const obj: any = {};
-    if (message.id !== '0') {
+    if (message.id !== "0") {
       obj.id = message.id;
     }
-    if (message.email !== '') {
+    if (message.email !== "") {
       obj.email = message.email;
     }
-    if (message.password_hash !== '') {
+    if (message.password_hash !== "") {
       obj.password_hash = message.password_hash;
     }
     if (message.balance !== 0) {
@@ -287,10 +284,10 @@ export const User: MessageFns<User> = {
     if (message.created_at !== undefined) {
       obj.created_at = message.created_at.toISOString();
     }
-    if (message.first_name !== '') {
+    if (message.first_name !== "") {
       obj.first_name = message.first_name;
     }
-    if (message.last_name !== '') {
+    if (message.last_name !== "") {
       obj.last_name = message.last_name;
     }
     if (message.portfolio) {
@@ -310,32 +307,33 @@ export const User: MessageFns<User> = {
   },
   fromPartial<I extends Exact<DeepPartial<User>, I>>(object: I): User {
     const message = createBaseUser();
-    message.id = object.id ?? '0';
-    message.email = object.email ?? '';
-    message.password_hash = object.password_hash ?? '';
+    message.id = object.id ?? "0";
+    message.email = object.email ?? "";
+    message.password_hash = object.password_hash ?? "";
     message.balance = object.balance ?? 0;
     message.created_at = object.created_at ?? undefined;
-    message.first_name = object.first_name ?? '';
-    message.last_name = object.last_name ?? '';
-    message.portfolio = Object.entries(object.portfolio ?? {}).reduce<{
-      [key: string]: PortfolioItem;
-    }>((acc, [key, value]) => {
-      if (value !== undefined) {
-        acc[key] = PortfolioItem.fromPartial(value);
-      }
-      return acc;
-    }, {});
+    message.first_name = object.first_name ?? "";
+    message.last_name = object.last_name ?? "";
+    message.portfolio = Object.entries(object.portfolio ?? {}).reduce<{ [key: string]: PortfolioItem }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = PortfolioItem.fromPartial(value);
+        }
+        return acc;
+      },
+      {},
+    );
     return message;
   },
 };
 
 function createBaseUser_PortfolioEntry(): User_PortfolioEntry {
-  return { key: '', value: undefined };
+  return { key: "", value: undefined };
 }
 
 export const User_PortfolioEntry: MessageFns<User_PortfolioEntry> = {
   encode(message: User_PortfolioEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.key !== '') {
+    if (message.key !== "") {
       writer.uint32(10).string(message.key);
     }
     if (message.value !== undefined) {
@@ -378,14 +376,14 @@ export const User_PortfolioEntry: MessageFns<User_PortfolioEntry> = {
 
   fromJSON(object: any): User_PortfolioEntry {
     return {
-      key: isSet(object.key) ? globalThis.String(object.key) : '',
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
       value: isSet(object.value) ? PortfolioItem.fromJSON(object.value) : undefined,
     };
   },
 
   toJSON(message: User_PortfolioEntry): unknown {
     const obj: any = {};
-    if (message.key !== '') {
+    if (message.key !== "") {
       obj.key = message.key;
     }
     if (message.value !== undefined) {
@@ -397,34 +395,26 @@ export const User_PortfolioEntry: MessageFns<User_PortfolioEntry> = {
   create<I extends Exact<DeepPartial<User_PortfolioEntry>, I>>(base?: I): User_PortfolioEntry {
     return User_PortfolioEntry.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<User_PortfolioEntry>, I>>(
-    object: I,
-  ): User_PortfolioEntry {
+  fromPartial<I extends Exact<DeepPartial<User_PortfolioEntry>, I>>(object: I): User_PortfolioEntry {
     const message = createBaseUser_PortfolioEntry();
-    message.key = object.key ?? '';
-    message.value =
-      object.value !== undefined && object.value !== null
-        ? PortfolioItem.fromPartial(object.value)
-        : undefined;
+    message.key = object.key ?? "";
+    message.value = (object.value !== undefined && object.value !== null)
+      ? PortfolioItem.fromPartial(object.value)
+      : undefined;
     return message;
   },
 };
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
-export type DeepPartial<T> = T extends Builtin
-  ? T
-  : T extends globalThis.Array<infer U>
-    ? globalThis.Array<DeepPartial<U>>
-    : T extends ReadonlyArray<infer U>
-      ? ReadonlyArray<DeepPartial<U>>
-      : T extends {}
-        ? { [K in keyof T]?: DeepPartial<T[K]> }
-        : Partial<T>;
+export type DeepPartial<T> = T extends Builtin ? T
+  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
+  : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin
-  ? P
+export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
 function toTimestamp(date: Date): Timestamp {
@@ -442,7 +432,7 @@ function fromTimestamp(t: Timestamp): Date {
 function fromJsonTimestamp(o: any): Date {
   if (o instanceof globalThis.Date) {
     return o;
-  } else if (typeof o === 'string') {
+  } else if (typeof o === "string") {
     return new globalThis.Date(o);
   } else {
     return fromTimestamp(Timestamp.fromJSON(o));
@@ -450,7 +440,7 @@ function fromJsonTimestamp(o: any): Date {
 }
 
 function isObject(value: any): boolean {
-  return typeof value === 'object' && value !== null;
+  return typeof value === "object" && value !== null;
 }
 
 function isSet(value: any): boolean {
