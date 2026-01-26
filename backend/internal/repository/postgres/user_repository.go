@@ -12,16 +12,19 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// UserRepository handles user data persistence in PostgreSQL.
 type UserRepository struct {
 	queries *db.Queries
 }
 
+// NewUserRepository creates a new instance of UserRepository.
 func NewUserRepository(pool *pgxpool.Pool) *UserRepository {
 	return &UserRepository{
 		queries: db.New(pool),
 	}
 }
 
+// GetUser retrieves a user by ID.
 func (r *UserRepository) GetUser(ctx context.Context, id int64) (*pb.User, error) {
 	u, err := r.queries.GetUser(ctx, id)
 	if err != nil {
@@ -39,12 +42,14 @@ func (r *UserRepository) GetUser(ctx context.Context, id int64) (*pb.User, error
 	}, nil
 }
 
+// WithTx returns a new UserRepository that uses the given transaction.
 func (r *UserRepository) WithTx(tx service.Transaction) service.UserRepository {
 	return &UserRepository{
 		queries: r.queries.WithTx(tx.(pgx.Tx)),
 	}
 }
 
+// GetUserForUpdate retrieves a user by ID with a lock for update.
 func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*pb.User, error) {
 	u, err := r.queries.GetUserForUpdate(ctx, id)
 	if err != nil {
@@ -61,6 +66,7 @@ func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*pb.Us
 	}, nil
 }
 
+// SaveUser updates an existing user.
 func (r *UserRepository) SaveUser(ctx context.Context, user *pb.User) error {
 	err := r.queries.UpdateUser(ctx, db.UpdateUserParams{
 		ID:        user.GetId(),
@@ -73,6 +79,7 @@ func (r *UserRepository) SaveUser(ctx context.Context, user *pb.User) error {
 	return err
 }
 
+// CreateUser creates a new user in the database.
 func (r *UserRepository) CreateUser(
 	ctx context.Context,
 	email string,
@@ -103,6 +110,7 @@ func (r *UserRepository) CreateUser(
 	}, nil
 }
 
+// GetUserByEmail retrieves a user by email, returning the user and password hash.
 func (r *UserRepository) GetUserByEmail(
 	ctx context.Context,
 	email string,

@@ -1,3 +1,4 @@
+// Package grpc provides the gRPC server implementation.
 package grpc
 
 import (
@@ -10,6 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// ExchangeServer implements the gRPC exchange service.
 type ExchangeServer struct {
 	exchange.UnimplementedExchangeServiceServer
 
@@ -17,6 +19,7 @@ type ExchangeServer struct {
 	marketService *service.MarketService
 }
 
+// NewExchangeServer creates a new instance of ExchangeServer.
 func NewExchangeServer(
 	tradeService *service.TradeService,
 	marketService *service.MarketService,
@@ -27,6 +30,7 @@ func NewExchangeServer(
 	}
 }
 
+// GetQuote retrieves the current price of a stock.
 func (s *ExchangeServer) GetQuote(
 	ctx context.Context,
 	req *exchange.GetQuoteRequest,
@@ -44,6 +48,7 @@ func (s *ExchangeServer) GetQuote(
 	return &exchange.GetQuoteResponse{Quote: quote}, nil
 }
 
+// BuyStock executes a buy order.
 func (s *ExchangeServer) BuyStock(
 	ctx context.Context,
 	req *exchange.BuyStockRequest,
@@ -61,6 +66,7 @@ func (s *ExchangeServer) BuyStock(
 	return &exchange.BuyStockResponse{Success: true, Message: "Stock bought successfully"}, nil
 }
 
+// SellStock executes a sell order.
 func (s *ExchangeServer) SellStock(
 	ctx context.Context,
 	req *exchange.SellStockRequest,

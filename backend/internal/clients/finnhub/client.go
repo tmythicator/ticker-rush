@@ -1,3 +1,4 @@
+// Package finnhub provides a client for the Finnhub API.
 package finnhub
 
 import (
@@ -11,19 +12,22 @@ import (
 	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
 )
 
-type FinnhubQuote struct {
+// APIQuote represents a stock quote from the Finnhub API.
+type APIQuote struct {
 	CurrentPrice  float64 `json:"c"`  // c = Current price
 	Change        float64 `json:"d"`  // d = Change
 	PercentChange float64 `json:"dp"` // dp = Percent change
 	Timestamp     int64   `json:"t"`  // t = Timestamp
 }
 
+// Client is a client for the Finnhub API.
 type Client struct {
 	apiKey     string
 	baseURL    string
 	httpClient *http.Client
 }
 
+// NewClient creates a new instance of FinnhubClient.
 func NewClient(apiKey string, timeout time.Duration) *Client {
 	return &Client{
 		apiKey:     apiKey,
@@ -32,6 +36,7 @@ func NewClient(apiKey string, timeout time.Duration) *Client {
 	}
 }
 
+// GetQuote fetches a stock quote for a given symbol.
 func (c *Client) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error) {
 	url := fmt.Sprintf("%s/quote?symbol=%s&token=%s", c.baseURL, symbol, c.apiKey)
 
@@ -51,7 +56,7 @@ func (c *Client) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, 
 		return nil, fmt.Errorf("API status: %d", resp.StatusCode)
 	}
 
-	var fq FinnhubQuote
+	var fq APIQuote
 	if err := json.NewDecoder(resp.Body).Decode(&fq); err != nil {
 		return nil, fmt.Errorf("json error: %w", err)
 	}

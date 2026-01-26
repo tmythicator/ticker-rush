@@ -1,3 +1,4 @@
+// Package api provides the API router and setup.
 package api
 
 import (
@@ -12,10 +13,12 @@ import (
 	"github.com/tmythicator/ticker-rush/server/internal/config"
 )
 
+// Router handles API routing.
 type Router struct {
 	engine *gin.Engine
 }
 
+// NewRouter creates a new API router.
 func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error) {
 	engine := gin.Default()
 
@@ -52,6 +55,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 	return &Router{engine: engine}, nil
 }
 
+// Run starts the HTTP server.
 func (r *Router) Run(addr string) error {
 	return r.engine.Run(addr)
 }

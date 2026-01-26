@@ -7,11 +7,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// UserService handles user-related business logic.
 type UserService struct {
 	userRepo      UserRepository
 	portfolioRepo PortfolioRepository
 }
 
+// NewUserService creates a new instance of UserService.
 func NewUserService(userRepo UserRepository, portfolioRepo PortfolioRepository) *UserService {
 	return &UserService{
 		userRepo:      userRepo,
@@ -19,6 +21,7 @@ func NewUserService(userRepo UserRepository, portfolioRepo PortfolioRepository) 
 	}
 }
 
+// CreateUser registers a new user.
 func (s *UserService) CreateUser(
 	ctx context.Context,
 	email string,
@@ -34,10 +37,12 @@ func (s *UserService) CreateUser(
 	return s.userRepo.CreateUser(ctx, email, string(hashedPassword), firstName, lastName, 10000)
 }
 
+// GetUser retrieves a user by ID.
 func (s *UserService) GetUser(ctx context.Context, id int64) (*user.User, error) {
 	return s.userRepo.GetUser(ctx, id)
 }
 
+// GetUserWithPortfolio retrieves a user and their portfolio.
 func (s *UserService) GetUserWithPortfolio(ctx context.Context, id int64) (*user.User, error) {
 	fetchedUser, err := s.userRepo.GetUser(ctx, id)
 	if err != nil {
@@ -64,6 +69,7 @@ func (s *UserService) GetUserWithPortfolio(ctx context.Context, id int64) (*user
 	return fetchedUser, nil
 }
 
+// Authenticate verifies user credentials.
 func (s *UserService) Authenticate(
 	ctx context.Context,
 	email string,

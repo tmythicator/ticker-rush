@@ -8,14 +8,17 @@ import (
 	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
 )
 
+// MarketRepository handles market data storage in Redis.
 type MarketRepository struct {
 	valkey *redis.Client
 }
 
+// NewMarketRepository creates a new instance of MarketRepository.
 func NewMarketRepository(valkey *redis.Client) *MarketRepository {
 	return &MarketRepository{valkey: valkey}
 }
 
+// GetQuote retrieves the latest quote for a symbol from Redis.
 func (r *MarketRepository) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error) {
 	val, err := r.valkey.Get(ctx, "market:"+symbol).Result()
 	if err != nil {
@@ -30,6 +33,7 @@ func (r *MarketRepository) GetQuote(ctx context.Context, symbol string) (*exchan
 	return &quote, nil
 }
 
+// SaveQuote saves a quote to Redis and publishes it to the channel.
 func (r *MarketRepository) SaveQuote(ctx context.Context, quote *exchange.Quote) error {
 	data, err := json.Marshal(quote)
 	if err != nil {
@@ -49,6 +53,7 @@ func (r *MarketRepository) SaveQuote(ctx context.Context, quote *exchange.Quote)
 	return err
 }
 
+// SubscribeToQuotes subscribes to real-time quote updates for a symbol.
 func (r *MarketRepository) SubscribeToQuotes(ctx context.Context, symbol string) *redis.PubSub {
 	channel := "market:quote:" + symbol
 

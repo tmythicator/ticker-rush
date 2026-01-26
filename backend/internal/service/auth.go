@@ -1,3 +1,4 @@
+// Package service implements business logic.
 package service
 
 import (
@@ -19,12 +20,14 @@ func getSecretKey() []byte {
 	return []byte(secret)
 }
 
+// Claims represents the JWT claims.
 type Claims struct {
 	UserID int64  `json:"user_id"`
 	Email  string `json:"email"`
 	jwt.RegisteredClaims
 }
 
+// GenerateToken generates a new JWT token for the user.
 func GenerateToken(user *pb.User) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
@@ -43,6 +46,7 @@ func GenerateToken(user *pb.User) (string, error) {
 	return tokenString, err
 }
 
+// ValidateToken validates the given JWT token string.
 func ValidateToken(tokenString string) (*Claims, error) {
 	claims := &Claims{}
 

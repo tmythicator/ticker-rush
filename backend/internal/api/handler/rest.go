@@ -13,12 +13,14 @@ import (
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 )
 
+// RestHandler handles HTTP requests for the API.
 type RestHandler struct {
 	userService   *service.UserService
 	tradeService  *service.TradeService
 	marketService *service.MarketService
 }
 
+// NewRestHandler creates a new instance of RestHandler.
 func NewRestHandler(
 	userService *service.UserService,
 	tradeService *service.TradeService,
@@ -31,6 +33,7 @@ func NewRestHandler(
 	}
 }
 
+// CreateUser handles user registration.
 func (h *RestHandler) CreateUser(c *gin.Context) {
 	req := CreateUserRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -55,6 +58,7 @@ func (h *RestHandler) CreateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// Login handles user authentication.
 func (h *RestHandler) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -88,20 +92,22 @@ func (h *RestHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, fullUser)
 }
 
+// Logout handles user logout.
 func (h *RestHandler) Logout(c *gin.Context) {
 	c.SetCookie("auth_token", "", -1, "/", "", false, true)
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }
 
+// GetMe returns the current user's profile.
 func (h *RestHandler) GetMe(c *gin.Context) {
-	userId, exists := c.Get(middleware.UserIDKey)
+	userID, exists := c.Get(middleware.UserIDKey)
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 
 		return
 	}
 
-	user, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userId.(int64))
+	user, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userID.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
 
@@ -111,6 +117,7 @@ func (h *RestHandler) GetMe(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// GetQuote returns a stock quote for a given symbol.
 func (h *RestHandler) GetQuote(c *gin.Context) {
 	symbol := c.DefaultQuery("symbol", "AAPL")
 
@@ -139,8 +146,9 @@ func (h *RestHandler) GetQuote(c *gin.Context) {
 	c.JSON(http.StatusOK, quote)
 }
 
+// BuyStock handles stock purchase requests.
 func (h *RestHandler) BuyStock(c *gin.Context) {
-	userId, exists := c.Get(middleware.UserIDKey)
+	userID, exists := c.Get(middleware.UserIDKey)
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 
@@ -154,7 +162,7 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 		return
 	}
 
-	_, err := h.tradeService.BuyStock(c.Request.Context(), userId.(int64), req.Symbol, req.Count)
+	_, err := h.tradeService.BuyStock(c.Request.Context(), userID.(int64), req.Symbol, req.Count)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrInsufficientFunds) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
@@ -173,7 +181,7 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 		return
 	}
 
-	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userId.(int64))
+	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userID.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
 
@@ -183,8 +191,9 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 	c.JSON(http.StatusOK, fullUser)
 }
 
+// SellStock handles stock sale requests.
 func (h *RestHandler) SellStock(c *gin.Context) {
-	userId, exists := c.Get(middleware.UserIDKey)
+	userID, exists := c.Get(middleware.UserIDKey)
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 
@@ -198,7 +207,7 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 		return
 	}
 
-	_, err := h.tradeService.SellStock(c.Request.Context(), userId.(int64), req.Symbol, req.Count)
+	_, err := h.tradeService.SellStock(c.Request.Context(), userID.(int64), req.Symbol, req.Count)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrInsufficientQuantity) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
@@ -217,7 +226,7 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 		return
 	}
 
-	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userId.(int64))
+	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userID.(int64))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
 
@@ -227,6 +236,7 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 	c.JSON(http.StatusOK, fullUser)
 }
 
+// StreamQuotes handles SSE connection for real-time quotes.
 func (h *RestHandler) StreamQuotes(c *gin.Context) {
 	c.Header("Content-Type", "text/event-stream")
 	c.Header("Cache-Control", "no-cache")

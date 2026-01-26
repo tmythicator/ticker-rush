@@ -18,14 +18,14 @@ import (
 
 // MockFinnhubClient mocks the Finnhub API.
 type MockFinnhubClient struct {
-	Quote finnhub.FinnhubQuote
+	FinnhubQuote finnhub.APIQuote
 }
 
 func (m *MockFinnhubClient) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error) {
 	return &exchange.Quote{
 		Symbol:    symbol,
-		Price:     m.Quote.CurrentPrice,
-		Timestamp: m.Quote.Timestamp,
+		Price:     m.FinnhubQuote.CurrentPrice,
+		Timestamp: m.FinnhubQuote.Timestamp,
 	}, nil
 }
 
@@ -41,24 +41,18 @@ func TestMarketFetcher(t *testing.T) {
 	})
 
 	// 2. Setup Mock Finnhub
-	mockQuote := finnhub.FinnhubQuote{
+	mockQuote := finnhub.APIQuote{
 		Change:       10.0,
 		CurrentPrice: 150.0,
 		Timestamp:    time.Now().Unix(),
 	}
-	mockClient := &MockFinnhubClient{Quote: mockQuote}
+	mockClient := &MockFinnhubClient{FinnhubQuote: mockQuote}
 
 	// 3. Setup Worker
 	marketRepo := redis.NewMarketRepository(rdb)
 	marketWorker := worker.NewMarketFetcher(mockClient, marketRepo)
 
 	// 4. Run Worker logic (simulate one tick)
-	// Since Start runs in a loop, we can test the internal logic by calling processTicker directly if it was public,
-	// or we can run Start in a goroutine and wait.
-	// However, processTicker is private. Let's make it public or just run Start and wait a bit.
-	// Actually, for testing, it's better if we can trigger it.
-	// Let's rely on the fact that Start calls processTicker immediately once.
-
 	ctx := t.Context()
 
 	// Start in a goroutine

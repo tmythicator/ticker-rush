@@ -65,9 +65,9 @@ func setupTestPostgres(t *testing.T) string {
 	}
 
 	t.Cleanup(func() {
-		err := postgresContainer.Terminate(ctx)
-		if err != nil {
-			t.Fatalf("failed to terminate postgres container: %s", err)
+		termErr := postgresContainer.Terminate(ctx)
+		if termErr != nil {
+			t.Fatalf("failed to terminate postgres container: %s", termErr)
 		}
 	})
 

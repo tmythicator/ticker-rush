@@ -1,3 +1,4 @@
+// Package postgres provides PostgreSQL repositories.
 package postgres
 
 import (
@@ -10,22 +11,26 @@ import (
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 )
 
+// PortfolioRepository handles portfolio data persistence in PostgreSQL.
 type PortfolioRepository struct {
 	queries *db.Queries
 }
 
+// NewPortfolioRepository creates a new instance of PortfolioRepository.
 func NewPortfolioRepository(pool *pgxpool.Pool) *PortfolioRepository {
 	return &PortfolioRepository{
 		queries: db.New(pool),
 	}
 }
 
+// WithTx returns a new PortfolioRepository that uses the given transaction.
 func (r *PortfolioRepository) WithTx(tx service.Transaction) service.PortfolioRepository {
 	return &PortfolioRepository{
 		queries: r.queries.WithTx(tx.(pgx.Tx)),
 	}
 }
 
+// GetPortfolio retrieves the portfolio for a user.
 func (r *PortfolioRepository) GetPortfolio(
 	ctx context.Context,
 	userID int64,
@@ -47,6 +52,7 @@ func (r *PortfolioRepository) GetPortfolio(
 	return result, nil
 }
 
+// GetPortfolioItem retrieves a specific portfolio item.
 func (r *PortfolioRepository) GetPortfolioItem(
 	ctx context.Context,
 	userID int64,
@@ -67,6 +73,7 @@ func (r *PortfolioRepository) GetPortfolioItem(
 	}, nil
 }
 
+// GetPortfolioItemForUpdate retrieves a portfolio item with a lock for update.
 func (r *PortfolioRepository) GetPortfolioItemForUpdate(
 	ctx context.Context,
 	userID int64,
@@ -87,6 +94,7 @@ func (r *PortfolioRepository) GetPortfolioItemForUpdate(
 	}, nil
 }
 
+// SetPortfolioItem updates or inserts a portfolio item.
 func (r *PortfolioRepository) SetPortfolioItem(
 	ctx context.Context,
 	userID int64,
@@ -102,6 +110,7 @@ func (r *PortfolioRepository) SetPortfolioItem(
 	})
 }
 
+// DeletePortfolioItem removes a portfolio item.
 func (r *PortfolioRepository) DeletePortfolioItem(
 	ctx context.Context,
 	userID int64,

@@ -8,6 +8,7 @@ import (
 	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 )
 
+// TradeService handles stock trading operations.
 type TradeService struct {
 	userRepo      UserRepository
 	portfolioRepo PortfolioRepository
@@ -15,6 +16,7 @@ type TradeService struct {
 	transactor    Transactor
 }
 
+// NewTradeService creates a new instance of TradeService.
 func NewTradeService(
 	userRepo UserRepository,
 	portfolioRepo PortfolioRepository,
@@ -29,6 +31,7 @@ func NewTradeService(
 	}
 }
 
+// BuyStock purchases a stock for a user.
 func (s *TradeService) BuyStock(
 	ctx context.Context,
 	userID int64,
@@ -68,8 +71,8 @@ func (s *TradeService) BuyStock(
 
 	// 4. Get Current Portfolio Item
 	var (
-		currentQty float64 = 0
-		currentAvg float64 = 0
+		currentQty float64
+		currentAvg float64
 	)
 
 	item, err := txPortfolioRepo.GetPortfolioItemForUpdate(ctx, user.GetId(), symbol)
@@ -104,6 +107,7 @@ func (s *TradeService) BuyStock(
 	return user, nil
 }
 
+// SellStock sells a stock for a user.
 func (s *TradeService) SellStock(
 	ctx context.Context,
 	userID int64,

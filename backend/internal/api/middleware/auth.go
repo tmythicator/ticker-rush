@@ -1,3 +1,4 @@
+// Package middleware provides HTTP middlewares.
 package middleware
 
 import (
@@ -8,8 +9,10 @@ import (
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 )
 
+// UserIDKey is the key used to store the user ID in the Gin context.
 const UserIDKey = "userID"
 
+// AuthMiddleware is a Gin middleware that validates the authentication token from cookies.
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := c.Cookie("auth_token")

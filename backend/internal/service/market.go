@@ -10,11 +10,13 @@ import (
 	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 )
 
+// MarketService handles stock market data operations.
 type MarketService struct {
 	marketRepo     *valkey.MarketRepository
 	allowedTickers []string
 }
 
+// NewMarketService creates a new instance of MarketService.
 func NewMarketService(marketRepo *valkey.MarketRepository, allowedTickers []string) *MarketService {
 	return &MarketService{
 		marketRepo:     marketRepo,
@@ -22,6 +24,7 @@ func NewMarketService(marketRepo *valkey.MarketRepository, allowedTickers []stri
 	}
 }
 
+// GetQuote gets a quote for a symbol, if allowed.
 func (s *MarketService) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error) {
 	if !slices.Contains(s.allowedTickers, symbol) {
 		return nil, apperrors.ErrSymbolNotAllowed
@@ -30,6 +33,7 @@ func (s *MarketService) GetQuote(ctx context.Context, symbol string) (*exchange.
 	return s.marketRepo.GetQuote(ctx, symbol)
 }
 
+// SubscribeToQuotes returns a PubSub for real-time quotes, if allowed.
 func (s *MarketService) SubscribeToQuotes(
 	ctx context.Context,
 	symbol string,

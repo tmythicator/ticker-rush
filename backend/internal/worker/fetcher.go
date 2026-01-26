@@ -1,3 +1,4 @@
+// Package worker provides background workers.
 package worker
 
 import (
@@ -11,15 +12,18 @@ import (
 	"github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 )
 
+// FinnhubClient defines the interface for fetching quotes.
 type FinnhubClient interface {
 	GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error)
 }
 
+// MarketFetcher is a worker that fetches market data.
 type MarketFetcher struct {
 	client FinnhubClient
 	repo   *redis.MarketRepository
 }
 
+// NewMarketFetcher creates a new instance of MarketFetcher.
 func NewMarketFetcher(client FinnhubClient, repo *redis.MarketRepository) *MarketFetcher {
 	return &MarketFetcher{
 		client: client,
@@ -27,6 +31,7 @@ func NewMarketFetcher(client FinnhubClient, repo *redis.MarketRepository) *Marke
 	}
 }
 
+// Start begins the fetching loop for a symbol.
 func (w *MarketFetcher) Start(
 	ctx context.Context,
 	symbol string,

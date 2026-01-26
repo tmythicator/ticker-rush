@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+// Package main serves the exchange API.
 package main
 
 import (
@@ -78,8 +79,8 @@ func main() {
 	// Run embedded migrations
 	log.Println("Running database migrations...")
 
-	if err := db.Migrate(postgreConnStr); err != nil {
-		log.Fatalf("Migration failed: %v", err)
+	if migrateErr := db.Migrate(postgreConnStr); migrateErr != nil {
+		log.Fatalf("Migration failed: %v", migrateErr)
 	}
 
 	log.Println("Database migrations applied successfully")
@@ -120,10 +121,10 @@ func main() {
 	go func() {
 		log.Printf("Exchange API running on :%d\n", cfg.ServerPort)
 
-		err := srv.ListenAndServe()
+		srvErr := srv.ListenAndServe()
 
-		if err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalf("Failed to start server: %v", err)
+		if srvErr != nil && !errors.Is(srvErr, http.ErrServerClosed) {
+			log.Fatalf("Failed to start server: %v", srvErr)
 		}
 	}()
 

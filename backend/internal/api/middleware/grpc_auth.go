@@ -13,8 +13,10 @@ import (
 
 type internalContextKey string
 
+// UserIDContextKey is the key used to store the user ID in the context.
 const UserIDContextKey = internalContextKey("userID")
 
+// GrpcAuthInterceptor is a gRPC interceptor that validates the authorization token.
 func GrpcAuthInterceptor(
 	ctx context.Context,
 	req any,

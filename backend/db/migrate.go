@@ -8,6 +8,7 @@ import (
 	"github.com/pressly/goose/v3"
 )
 
+// Migrate applies database migrations.
 func Migrate(connStr string) error {
 	dbConfig, err := pgx.ParseConfig(connStr)
 	if err != nil {

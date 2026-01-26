@@ -1,3 +1,4 @@
+// Package config handles application configuration.
 package config
 
 import (
@@ -8,6 +9,7 @@ import (
 	"time"
 )
 
+// Config holds the application configuration.
 type Config struct {
 	Tickers        []string
 	ServerPort     int
@@ -25,6 +27,7 @@ type Config struct {
 	PostgresHost   string
 }
 
+// LoadConfig loads the configuration from environment variables.
 func LoadConfig() (*Config, error) {
 	cfg := &Config{
 		Tickers: []string{
@@ -50,6 +53,7 @@ func LoadConfig() (*Config, error) {
 	return cfg, nil
 }
 
+// ValidateFetcher checks if the fetcher configuration is valid.
 func (c *Config) ValidateFetcher() error {
 	if c.FinnhubKey == "" {
 		return errors.New("FINNHUB_API_KEY is not set")
