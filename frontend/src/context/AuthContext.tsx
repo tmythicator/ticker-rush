@@ -1,45 +1,39 @@
-import { useState, useEffect, useCallback, type ReactNode } from 'react';
-import { setAuthToken, getUser, type User } from '../lib/api';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { logout as apiLogout, getUser, type User } from '../lib/api';
 import { AuthContext } from './AuthContextDefinition';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<User | null>(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') || '') : null);
-    const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-    const [isLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-    const login = useCallback((newToken: string, newUser: User) => {
-        localStorage.setItem('token', newToken);
-        localStorage.setItem('user', JSON.stringify(newUser));
-        setToken(newToken);
-        setUser(newUser);
-        setAuthToken(newToken);
-    }, []);
+  const login = useCallback((user: User) => {
+    setUser(user);
+  }, []);
 
-    const refreshUser = useCallback((updatedUser: User) => {
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        setUser(updatedUser);
-    }, []);
+  const logout = useCallback(async () => {
+    try {
+      await apiLogout();
+    } catch (error) {
+      console.error("Logout failed", error);
+    } finally {
+      setUser(null);
+    }
+  }, []);
 
-    const logout = useCallback(() => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setToken(null);
-        setUser(null);
-        setAuthToken(null);
-    }, []);
+  const refreshUser = useCallback((updatedUser: User) => {
+    setUser(updatedUser);
+  }, []);
 
-    useEffect(() => {
-        if (token) {
-            setAuthToken(token);
-            getUser().then(refreshUser).catch(console.error);
-        }
-    }, [token, refreshUser]);
+  useEffect(() => {
+    getUser()
+      .then(setUser)
+      .catch(() => setUser(null))
+      .finally(() => setIsLoading(false));
+  }, []);
 
-
-    return (
-        <AuthContext.Provider value={{ user, token, login, logout, refreshUser, isAuthenticated: !!token, isLoading }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  return (
+    <AuthContext.Provider value={{ user, login, logout, refreshUser, isAuthenticated: !!user, isLoading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
-

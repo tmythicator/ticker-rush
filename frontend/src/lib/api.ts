@@ -1,27 +1,9 @@
-import { User, PortfolioItem } from './proto/user/user';
 import { Quote } from './proto/exchange/exchange';
+import { PortfolioItem, User } from './proto/user/user';
 
-export type { User, PortfolioItem, Quote };
+export type { PortfolioItem, Quote, User };
 
 const API_URL = import.meta.env.VITE_API_URL;
-
-let authToken: string | null = null;
-export const setAuthToken = (token: string | null) => {
-  authToken = token;
-};
-
-const getHeaders = (token?: string | null) => {
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-  };
-  const finalToken = token || authToken;
-  if (finalToken) {
-    headers['Authorization'] = `Bearer ${finalToken}`;
-  }
-  return headers;
-};
-
-
 
 class ApiError extends Error {
   status: number;
@@ -32,17 +14,14 @@ class ApiError extends Error {
 }
 
 export const api = {
-  get: async (endpoint: string, token?: string | null) => {
-    const res = await fetch(`${API_URL}${endpoint}`, {
-      headers: getHeaders(token),
-    });
+  get: async (endpoint: string) => {
+    const res = await fetch(`${API_URL}${endpoint}`);
     if (!res.ok) throw new ApiError(`Error: ${res.status}`, res.status);
     return res.json();
   },
-  post: async (endpoint: string, body: unknown, token?: string | null) => {
+  post: async (endpoint: string, body: unknown) => {
     const res = await fetch(`${API_URL}${endpoint}`, {
       method: 'POST',
-      headers: getHeaders(token),
       body: JSON.stringify(body),
     });
     if (!res.ok) {
@@ -53,8 +32,8 @@ export const api = {
   }
 };
 
-export const fetchQuote = async (symbol: string, token?: string | null): Promise<Quote> => {
-  return api.get(`/quote?symbol=${symbol}`, token);
+export const fetchQuote = async (symbol: string): Promise<Quote> => {
+  return api.get(`/quote?symbol=${symbol}`);
 };
 
 export const getUser = async (): Promise<User> => {
@@ -69,8 +48,12 @@ export const sellStock = async (symbol: string, count: number): Promise<User> =>
   return api.post('/sell', { symbol, count });
 };
 
-export const login = async (email: string, password: string): Promise<{ token: string; user: User }> => {
+export const login = async (email: string, password: string): Promise<User> => {
   return api.post('/login', { email, password });
+};
+
+export const logout = async (): Promise<void> => {
+  return api.post('/logout', {});
 };
 
 export const register = async (email: string, password: string, first_name: string, last_name: string): Promise<User> => {
