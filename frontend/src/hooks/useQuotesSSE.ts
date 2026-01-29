@@ -30,7 +30,8 @@ export const useQuotesSSE = (symbol: string) => {
     const url = `${import.meta.env.VITE_API_URL}/quotes/events?symbol=${symbol}`;
     const eventSource = new EventSource(url);
 
-    eventSource.onopen = () => {
+    eventSource.onopen = (event) => {
+      console.log('SSE: Connection Opened', event);
       setError(null);
     };
 
