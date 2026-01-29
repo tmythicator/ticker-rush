@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	go_redis "github.com/redis/go-redis/v9"
@@ -238,21 +239,27 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 
 // StreamQuotes handles SSE connection for real-time quotes.
 func (h *RestHandler) StreamQuotes(c *gin.Context) {
+	c.Header("X-Accel-Buffering", "no")
 	c.Header("Content-Type", "text/event-stream")
 	c.Header("Cache-Control", "no-cache")
 	c.Header("Connection", "keep-alive")
 	c.Header("Transfer-Encoding", "chunked")
 
+	symbol := c.Query("symbol")
+	log.Printf("[StreamQuotes] Starting stream for symbol: %s", symbol)
+
 	clientGone := c.Writer.CloseNotify()
 
-	pubsub, err := h.marketService.SubscribeToQuotes(c.Request.Context(), c.Query("symbol"))
+	pubsub, err := h.marketService.SubscribeToQuotes(c.Request.Context(), symbol)
 	if err != nil {
+		log.Printf("[StreamQuotes] Failed to subscribe: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 
 		return
 	}
 
 	defer func() {
+		log.Printf("[StreamQuotes] Closing pubsub for symbol: %s", symbol)
 		err := pubsub.Close()
 		if err != nil {
 			log.Printf("Failed to close pubsub: %v", err)
@@ -260,15 +267,35 @@ func (h *RestHandler) StreamQuotes(c *gin.Context) {
 	}()
 
 	ch := pubsub.Channel()
+	ticker := time.NewTicker(5 * time.Second)
+	defer ticker.Stop()
 
 	c.Stream(func(w io.Writer) bool {
 		select {
 		case <-clientGone:
+			log.Printf("[StreamQuotes] Client gone regarding symbol: %s", symbol)
+
 			return false
+		case <-ticker.C:
+			h.sendHeartbeat(w)
+
+			return true
 		case msg := <-ch:
 			c.SSEvent("quote", msg.Payload)
+			// Flush the response to ensure it's sent immediately
+			if f, ok := w.(http.Flusher); ok {
+				f.Flush()
+			}
 
 			return true
 		}
 	})
+}
+
+// sendHeartbeat keeps the connection alive by sending a comment.
+func (h *RestHandler) sendHeartbeat(w io.Writer) {
+	_, _ = w.Write([]byte(": keep-alive\n\n"))
+	if f, ok := w.(http.Flusher); ok {
+		f.Flush()
+	}
 }
