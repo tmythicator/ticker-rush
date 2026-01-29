@@ -2,12 +2,12 @@
 // versions:
 //   protoc-gen-ts_proto  v2.11.1
 //   protoc               unknown
-// source: exchange/exchange.proto
+// source: exchange/v1/exchange.proto
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
-export const protobufPackage = "exchange";
+export const protobufPackage = "exchange.v1";
 
 export interface Quote {
   symbol: string;

@@ -2,13 +2,13 @@
 // versions:
 //   protoc-gen-ts_proto  v2.11.1
 //   protoc               unknown
-// source: user/user.proto
+// source: user/v1/user.proto
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { Timestamp } from "../google/protobuf/timestamp";
+import { Timestamp } from "../../google/protobuf/timestamp";
 
-export const protobufPackage = "user";
+export const protobufPackage = "user.v1";
 
 export interface PortfolioItem {
   stock_symbol: string;

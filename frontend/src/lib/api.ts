@@ -1,5 +1,5 @@
-import { Quote } from './proto/exchange/exchange';
-import { PortfolioItem, User } from './proto/user/user';
+import { Quote } from './proto/exchange/v1/exchange';
+import { PortfolioItem, User } from './proto/user/v1/user';
 
 export type { PortfolioItem, Quote, User };
 
