@@ -1,7 +1,5 @@
 # Ticker Rush
 
-![Ticker Rush Overview](assets/ticker-rush.png)
-
 [![Backend Status](https://github.com/tmythicator/ticker-rush/actions/workflows/backend-test.yml/badge.svg)](https://github.com/tmythicator/ticker-rush/actions/workflows/backend-test.yml)
 [![Frontend Status](https://github.com/tmythicator/ticker-rush/actions/workflows/frontend-test.yml/badge.svg)](https://github.com/tmythicator/ticker-rush/actions/workflows/frontend-test.yml)
 [![Built With Nix](https://img.shields.io/badge/Built_With-Nix-5277C3.svg?logo=nixos&logoColor=white)](https://nixos.org)
@@ -11,6 +9,10 @@
 Ticker Rush is a high-performance, real-time stock trading simulator. The project's core mission is to make the experience of trading stocks enjoyable and risk-free. It provides a platform where users can have fun while learning market dynamics without financial exposure.
 
 Participants start with equal virtual budgets and trade stocks and ETFs. The primary objective is to maximize portfolio value and compete for the top of the leaderboard.
+
+## Showcase
+
+![Ticker Rush Demo](assets/ticker-rush-demo.gif)
 
 ## Project Scope & Roadmap
 
