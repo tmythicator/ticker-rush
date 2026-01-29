@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package user;
-
-option go_package = "github.com/tmythicator/ticker-rush/server/internal/proto/user";
+package user.v1;
 
 import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1;user";
 
 message PortfolioItem {
   string stock_symbol = 1;

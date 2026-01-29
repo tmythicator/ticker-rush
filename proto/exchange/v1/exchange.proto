@@ -1,9 +1,8 @@
 syntax = "proto3";
 
-package exchange;
+package exchange.v1;
 
-option go_package = "github.com/tmythicator/ticker-rush/server/internal/proto/exchange";
-
+option go_package = "github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1;exchange";
 
 message Quote {
   string symbol = 1;
@@ -26,7 +25,6 @@ message GetQuoteRequest {
 message GetQuoteResponse {
   Quote quote = 1;
 }
-
 
 message BuyStockRequest {
   string symbol = 1;
