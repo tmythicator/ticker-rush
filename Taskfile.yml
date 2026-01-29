@@ -225,7 +225,8 @@ tasks:
   valkey:run:
     desc: Run Valkey (Redis)
     cmds:
-      - valkey-server --port {{.REDIS_PORT | default "6379"}}
+      - mkdir -p .data/valkey
+      - valkey-server --port {{.REDIS_PORT | default "6379"}} --dir .data/valkey
 
   bot:deps:
     desc: Install bot dependencies
