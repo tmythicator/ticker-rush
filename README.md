@@ -12,7 +12,7 @@ Participants start with equal virtual budgets and trade stocks and ETFs. The pri
 
 ## Showcase
 
-<video src="assets/ticker-rush-demo.mp4" controls width="100%"></video>
+https://github.com/user-attachments/assets/885a2f57-3f72-44d2-a813-447d222ca7f7
 
 ## Project Scope & Roadmap
 
