@@ -2,31 +2,31 @@ name: Proto Check
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'proto/**'
-      - 'backend/db/**' # SQLC also runs in task generate
-      - 'backend/internal/proto/**' # Monitor generated backend files
-      - 'frontend/src/lib/proto/**' # Monitor generated frontend files
-      - 'buf.yaml'
-      - 'buf.gen.yaml'
-      - 'Taskfile.yml'
-      - 'flake.nix'
-      - 'flake.lock'
-      - '.github/workflows/proto-check.yml'
+      - "proto/**"
+      - "backend/db/**"
+      - "backend/internal/proto/**"
+      - "frontend/src/lib/proto/**"
+      - "buf.yaml"
+      - "buf.gen.yaml"
+      - "Taskfile.yml"
+      - "flake.nix"
+      - "flake.lock"
+      - ".github/workflows/proto-check.yml"
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'proto/**'
-      - 'backend/db/**'
-      - 'backend/internal/proto/**'
-      - 'frontend/src/lib/proto/**'
-      - 'buf.yaml'
-      - 'buf.gen.yaml'
-      - 'Taskfile.yml'
-      - 'flake.nix'
-      - 'flake.lock'
-      - '.github/workflows/proto-check.yml'
+      - "proto/**"
+      - "backend/db/**"
+      - "backend/internal/proto/**"
+      - "frontend/src/lib/proto/**"
+      - "buf.yaml"
+      - "buf.gen.yaml"
+      - "Taskfile.yml"
+      - "flake.nix"
+      - "flake.lock"
+      - ".github/workflows/proto-check.yml"
 
 jobs:
   check-proto:
@@ -39,8 +39,8 @@ jobs:
       - name: Install Nix
         uses: cachix/install-nix-action@v31
 
-      - name: Install Frontend Dependencies
-        run: nix develop --command task frontend:deps
+      - name: Install All Dependencies
+        run: nix develop --command task deps
 
       - name: Generate Code
         run: nix develop --command task generate
