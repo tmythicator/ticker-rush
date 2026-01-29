@@ -8,9 +8,23 @@ tasks:
     cmds:
       - process-compose up
 
+  env:init:
+    desc: Initialize .env file from .env-example
+    cmds:
+      - |
+        if [ ! -f .env ]; then
+          cp .env-example .env
+          echo ".env created from .env-example"
+        else
+          echo ".env already exists, skipping"
+        fi
+    status:
+      - test -f .env
+
   init:
     desc: Initial project setup (deps + generate)
     cmds:
+      - task: env:init
       - task: deps
       - task: generate
 
