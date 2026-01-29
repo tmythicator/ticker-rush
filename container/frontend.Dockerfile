@@ -6,8 +6,6 @@ WORKDIR /app
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
 RUN corepack enable pnpm && pnpm install --frozen-lockfile
 
-COPY .env /
-
 COPY frontend/ .
 RUN pnpm run build
 
