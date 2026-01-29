@@ -6,86 +6,81 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        
-        # Use writeText to create a sourcable script (no bin wrapper)
-        setup-env = pkgs.writeText "setup-env.sh" ''
-          # Define potential Docker socket paths. Needed for `task test:backend` to work
-          possible_sockets=(
-            "$HOME/.colima/default/docker.sock" # Colima Default
-            "$HOME/.colima/docker.sock"         # Colima Legacy
-            "$HOME/.orbstack/run/docker.sock"   # OrbStack
-            "$HOME/.docker/run/docker.sock"     # Docker Desktop (Mac/Linux)
-            "/run/user/$UID/docker.sock"        # Rootless Linux
-            "/var/run/docker.sock"              # Standard Linux / System / WSL2
-          )
 
-          # Find the first existing socket
-          for sock in "''${possible_sockets[@]}"; do
-            if [ -S "$sock" ]; then
-              export DOCKER_HOST="unix://$sock"
-              echo "Found Docker socket: $sock"
-              break
-            fi
-          done
-          
-          # Fix for Testcontainers + Colima (Ryuk socket mount)
-          export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE="/var/run/docker.sock"
-          
-          # Setup Postgres
-          export PGDATA="$PWD/.data/postgres"
-          if [ ! -d "$PGDATA" ]; then
-            echo "Initializing Postgres data..."
-            initdb -U postgres --no-locale --encoding=UTF8 > /dev/null
-          fi
-        '';
+        # --- Environment Configuration ---
+        env-config = {
+          PGDATA = "$PWD/.data/postgres";
+          GOMODCACHE = "$PWD/.data/go_cache";
+          PYTHONPATH = "$PWD/bot";
+        };
+
+        # --- Toolsets ---
+        backend-tools = with pkgs; [
+          go
+          gopls
+          delve
+          golangci-lint
+        ];
+        frontend-tools = with pkgs; [
+          nodejs_20
+          nodePackages.pnpm
+        ];
+        proto-tools = with pkgs; [
+          buf
+          protobuf
+          protoc-gen-go
+          protoc-gen-go-grpc
+        ];
+        db-tools = with pkgs; [
+          sqlc
+          goose
+          postgresql_16
+          valkey
+        ];
+        infra-tools = with pkgs; [
+          process-compose
+          docker-compose
+          go-task
+        ];
+        python-tools = with pkgs; [
+          python3
+          python3Packages.grpcio
+          python3Packages.grpcio-tools
+          python3Packages.protobuf
+        ];
+
       in
       {
         devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            # Backend
-            go
-            gopls
-            delve
-            golangci-lint
-
-            # Infrastructure
-            valkey
-            process-compose
-            docker-compose
-
-            # Frontend
-            nodejs_20
-            nodePackages.pnpm
-
-            # Protobuf
-            buf
-            protobuf
-            protoc-gen-go
-            protoc-gen-go-grpc
-
-            # Database
-            sqlc
-            goose
-            postgresql_16
-
-            # Task Runner
-            go-task
-
-            # Trading Bot
-            python3
-            python3Packages.grpcio
-            python3Packages.grpcio-tools
-            python3Packages.protobuf
-          ];
+          buildInputs =
+            backend-tools ++ frontend-tools ++ proto-tools ++ db-tools ++ infra-tools ++ python-tools;
 
           shellHook = ''
-            source ${setup-env}
-            echo "Welcome to Ticker Rush Dev Environment!"
-            echo "Run 'task dev' to start the stack."
+            # Export environment config for the setup script
+            export PGDATA="${env-config.PGDATA}"
+            export GOMODCACHE="${env-config.GOMODCACHE}"
+            export PYTHONPATH="${env-config.PYTHONPATH}"
+
+            # Source the setup script from the project folder
+            if [ -f ./scripts/setup-env.sh ]; then
+              source ./scripts/setup-env.sh
+            fi
+
+            echo ""
+            echo "Welcome to Ticker Rush Dev Shell"
+            echo "Go: $GO_VERSION | Node: $NODE_VERSION | pnpm: $PNPM_VERSION | Python: $PYTHON_VERSION"
+            echo "Run 'task dev' to start the stack"
+            echo ""
           '';
         };
       }
