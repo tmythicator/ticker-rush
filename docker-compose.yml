@@ -9,6 +9,13 @@ services:
       - REDIS_PORT
     volumes:
       - valkey_data:/data
+    networks:
+      - ticker_rush_net
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     restart: always
 
   postgres:
@@ -22,6 +29,13 @@ services:
       - "${POSTGRES_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ticker_rush_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     restart: always
 
   exchange:
@@ -38,8 +52,12 @@ services:
       - REDIS_HOST=valkey
       - POSTGRES_HOST=postgres
     depends_on:
-      - valkey
-      - postgres
+      valkey:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - ticker_rush_net
     restart: always
 
   fetcher:
@@ -54,7 +72,10 @@ services:
       - REDIS_HOST=valkey
       - POSTGRES_HOST=postgres
     depends_on:
-      - valkey
+      valkey:
+        condition: service_healthy
+    networks:
+      - ticker_rush_net
     restart: always
 
   frontend:
@@ -67,7 +88,10 @@ services:
     ports:
       - "${CLIENT_PORT}:${CLIENT_PORT}"
     depends_on:
-      - exchange
+      exchange:
+        condition: service_started
+    networks:
+      - ticker_rush_net
     restart: always
 
   bot:
@@ -80,8 +104,16 @@ services:
     environment:
       - SERVER_URL=http://exchange:${SERVER_PORT}
     depends_on:
-      - exchange
+      exchange:
+        condition: service_started
+    networks:
+      - ticker_rush_net
     restart: always
+
+networks:
+  ticker_rush_net:
+    driver: bridge
+
 volumes:
   valkey_data:
   postgres_data:
