@@ -3,9 +3,8 @@ import { type User } from '../lib/api';
 
 export interface AuthContextType {
   user: User | null;
-  login: (user: User) => void;
-  logout: () => void;
-  refreshUser: (user: User) => void;
+  login: (user: User | null) => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
   isLoading: boolean;
 }

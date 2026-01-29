@@ -7,10 +7,7 @@ import { useTradeSymbol } from '../hooks/useTradeSymbol';
 export const DashboardPage = () => {
   const { symbol, setSymbol } = useTradeSymbol();
   const { user } = useAuth();
-  const { quote: sseQuote, error: isQuoteError } = useQuotesSSE(symbol);
-
-  // Exclude missmatched (other ticker) quote
-  const quote = sseQuote?.symbol === symbol ? sseQuote : null;
+  const { quote, error: isQuoteError } = useQuotesSSE(symbol);
 
   return (
     <div className="max-w-[1800px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">

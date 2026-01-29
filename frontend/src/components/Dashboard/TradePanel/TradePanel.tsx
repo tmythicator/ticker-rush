@@ -29,7 +29,7 @@ export const TradePanel = ({ symbol, currentPrice = 0, onTradeSuccess }: TradePa
   const estCost = qty * currentPrice;
 
   const handleTrade = (action: TradeAction) => {
-    executeTrade(action, qty);
+    executeTrade({ action, quantity: qty });
   };
 
   return (

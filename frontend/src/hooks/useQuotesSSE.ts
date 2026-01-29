@@ -1,18 +1,32 @@
-import { useState, useEffect } from 'react';
-import { fetchQuote, type Quote } from '../lib/api';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useState } from 'react';
+import { type Quote } from '../lib/api';
+import { QUERY_KEY_QUOTE } from '../lib/queryKeys';
+import { useQuoteQuery } from './useQuoteQuery';
 
 export const useQuotesSSE = (symbol: string) => {
-  const [quote, setQuote] = useState<Quote | null>(null);
   const [error, setError] = useState<Event | null>(null);
 
-  useEffect(() => {
-    // Hydrate initial quote
-    fetchQuote(symbol)
-      .then((initialQuote) => {
-        setQuote(initialQuote);
-      })
-      .catch((e) => console.error('Initial fetch failed:', e));
+  const queryClient = useQueryClient();
 
+  // Initial hydration + subscriber
+  const { data: quote = null } = useQuoteQuery(symbol);
+
+  // State management
+  const setQuote = useCallback(
+    (newData: Quote) => {
+      queryClient.setQueryData(QUERY_KEY_QUOTE(newData.symbol), (oldData: Quote | null) => {
+        if (!oldData || newData.timestamp > oldData.timestamp) {
+          return newData;
+        }
+        return oldData;
+      });
+    },
+    [queryClient],
+  );
+
+  // SSE worker
+  useEffect(() => {
     const url = `${import.meta.env.VITE_API_URL}/quotes/events?symbol=${symbol}`;
     const eventSource = new EventSource(url);
 
@@ -20,10 +34,9 @@ export const useQuotesSSE = (symbol: string) => {
       setError(null);
     };
 
-    eventSource.onerror = (e) => {
-      console.error('SSE: Connection Error', e);
-      setError(e);
-      eventSource.close();
+    eventSource.onerror = (errorEvent: Event) => {
+      console.error('SSE: Connection Error', errorEvent);
+      setError(errorEvent);
     };
 
     eventSource.addEventListener('quote', (event: MessageEvent) => {
@@ -38,7 +51,7 @@ export const useQuotesSSE = (symbol: string) => {
     return () => {
       eventSource.close();
     };
-  }, [symbol]);
+  }, [setQuote, symbol]);
 
   return { quote, error };
 };

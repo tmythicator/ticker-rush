@@ -1,14 +1,20 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
-import { logout as apiLogout, getUser, type User } from '../lib/api';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback, type ReactNode } from 'react';
+import { useUserQuery } from '../hooks/useUserQuery';
+import { logout as apiLogout, type User } from '../lib/api';
+import { QUERY_KEY_USER } from '../lib/queryKeys';
 import { AuthContext } from './AuthContextDefinition';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: user = null, isLoading } = useUserQuery();
 
-  const login = useCallback((user: User) => {
-    setUser(user);
-  }, []);
+  const setAuth = useCallback(
+    (newUser: User | null) => {
+      queryClient.setQueryData(QUERY_KEY_USER, newUser);
+    },
+    [queryClient],
+  );
 
   const logout = useCallback(async () => {
     try {
@@ -16,24 +22,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error('Logout failed', error);
     } finally {
-      setUser(null);
+      setAuth(null);
     }
-  }, []);
-
-  const refreshUser = useCallback((updatedUser: User) => {
-    setUser(updatedUser);
-  }, []);
-
-  useEffect(() => {
-    getUser()
-      .then(setUser)
-      .catch(() => setUser(null))
-      .finally(() => setIsLoading(false));
-  }, []);
+  }, [setAuth]);
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, refreshUser, isAuthenticated: !!user, isLoading }}
+      value={{ isAuthenticated: !!user, isLoading: isLoading, logout, user, login: setAuth }}
     >
       {children}
     </AuthContext.Provider>

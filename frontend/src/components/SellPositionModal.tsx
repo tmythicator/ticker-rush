@@ -29,7 +29,7 @@ export const SellPositionModal = ({
   });
 
   const handleSellAll = () => {
-    executeTrade(TradeAction.SELL, quantity);
+    executeTrade({ action: TradeAction.SELL, quantity });
   };
 
   const price = quote?.price || 0;
