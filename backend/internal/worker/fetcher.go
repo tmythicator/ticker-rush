@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 )
 

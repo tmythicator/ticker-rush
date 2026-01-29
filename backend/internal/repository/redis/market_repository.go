@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
 )
 
 // MarketRepository handles market data storage in Redis.

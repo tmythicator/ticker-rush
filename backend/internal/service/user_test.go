@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user"
+	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 	"github.com/tmythicator/ticker-rush/server/internal/service/mocks"
 	"golang.org/x/crypto/bcrypt"

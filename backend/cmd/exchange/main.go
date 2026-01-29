@@ -36,7 +36,7 @@ import (
 	"github.com/tmythicator/ticker-rush/server/internal/api/handler"
 	"github.com/tmythicator/ticker-rush/server/internal/api/middleware"
 	"github.com/tmythicator/ticker-rush/server/internal/config"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
 	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/internal/service"

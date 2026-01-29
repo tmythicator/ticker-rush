@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/user"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 )
 

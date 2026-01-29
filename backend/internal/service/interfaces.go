@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user"
+	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 )
 
 // Transaction represents a database transaction.

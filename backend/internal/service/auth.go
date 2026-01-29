@@ -8,7 +8,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
-	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user"
+	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 )
 
 func getSecretKey() []byte {

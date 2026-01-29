@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
 )
 
 // APIQuote represents a stock quote from the Finnhub API.

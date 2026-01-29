@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	db "github.com/tmythicator/ticker-rush/server/internal/gen/sqlc"
-	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user"
+	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 )
 

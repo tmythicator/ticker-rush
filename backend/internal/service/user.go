@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/tmythicator/ticker-rush/server/internal/proto/user"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 	"golang.org/x/crypto/bcrypt"
 )
 

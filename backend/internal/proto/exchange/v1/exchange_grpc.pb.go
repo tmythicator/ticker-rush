@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: exchange/exchange.proto
+// source: exchange/v1/exchange.proto
 
 package exchange
 
@@ -19,9 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ExchangeService_GetQuote_FullMethodName  = "/exchange.ExchangeService/GetQuote"
-	ExchangeService_BuyStock_FullMethodName  = "/exchange.ExchangeService/BuyStock"
-	ExchangeService_SellStock_FullMethodName = "/exchange.ExchangeService/SellStock"
+	ExchangeService_GetQuote_FullMethodName  = "/exchange.v1.ExchangeService/GetQuote"
+	ExchangeService_BuyStock_FullMethodName  = "/exchange.v1.ExchangeService/BuyStock"
+	ExchangeService_SellStock_FullMethodName = "/exchange.v1.ExchangeService/SellStock"
 )
 
 // ExchangeServiceClient is the client API for ExchangeService service.
@@ -176,7 +176,7 @@ func _ExchangeService_SellStock_Handler(srv interface{}, ctx context.Context, de
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ExchangeService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "exchange.ExchangeService",
+	ServiceName: "exchange.v1.ExchangeService",
 	HandlerType: (*ExchangeServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -193,5 +193,5 @@ var ExchangeService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "exchange/exchange.proto",
+	Metadata: "exchange/v1/exchange.proto",
 }
