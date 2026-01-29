@@ -15,8 +15,6 @@ RUN pnpm run build
 FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY container/nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 8080
+COPY container/nginx.conf.template /etc/nginx/templates/default.conf.template
 
 CMD ["nginx", "-g", "daemon off;"]
