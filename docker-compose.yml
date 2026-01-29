@@ -83,6 +83,7 @@ services:
       context: .
       dockerfile: container/frontend.Dockerfile
     container_name: ticker_rush_frontend
+    stop_signal: SIGTERM
     env_file:
       - .env
     ports:

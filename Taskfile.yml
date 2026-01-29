@@ -43,11 +43,17 @@ tasks:
     cmds:
       - docker compose down
 
-  prod:rebuild:
-    desc: Rebuild everything from scratch
+  prod:build:
+    desc: Clean-build the production images
     cmds:
       - docker compose build --no-cache
-      - docker compose up -d
+
+  prod:rebuild:
+    desc: Rebuild everything from scratch and restart
+    cmds:
+      - task: prod:down
+      - task: prod:build
+      - task: prod:run
 
   deps:
     desc: Install all dependencies
@@ -73,13 +79,14 @@ tasks:
   lint:
     desc: Lint all code
     cmds:
-      - task: proto:ci
-      - task: backend:ci
+      - task: proto:lint
+      - task: backend:lint
       - task: frontend:lint
 
   format:
     desc: Format all code
     cmds:
+      - task: proto:format
       - task: backend:format
       - task: frontend:format
 
@@ -109,6 +116,16 @@ tasks:
       - task: generate
       - git diff --exit-code
 
+  proto:lint:
+    desc: Lint Protobuf files
+    cmds:
+      - buf lint
+
+  proto:format:
+    desc: Format Protobuf files
+    cmds:
+      - buf format -w
+
   backend:sqlc:
     desc: Generate code from SQL
     dir: backend
@@ -135,6 +152,12 @@ tasks:
       - task: backend:check-mod
       - golangci-lint run
       - task: backend:test
+
+  backend:lint:
+    desc: Lint backend code
+    dir: backend
+    cmds:
+      - golangci-lint run
 
   backend:check-mod:
     desc: Check if go.mod/sum are tidy
