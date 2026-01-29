@@ -28,4 +28,4 @@ fi
 export GO_VERSION=$(go version | awk '{print $3}')
 export NODE_VERSION=$(node -v)
 export PNPM_VERSION=$(pnpm -v)
-export PYTHON_VERSION=$(python3 --version | awk '{print $2}')
+export BUN_VERSION=$(bun --version)

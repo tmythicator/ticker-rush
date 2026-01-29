@@ -20,8 +20,8 @@
         # --- Environment Configuration ---
         env-config = {
           PGDATA = "$PWD/.data/postgres";
-          GOMODCACHE = "$PWD/.data/go_cache";
-          PYTHONPATH = "$PWD/bot";
+          GOPATH = "$PWD/.data/go";
+          GOMODCACHE = "$PWD/.data/go/pkg/mod";
         };
 
         # --- Toolsets ---
@@ -51,25 +51,19 @@
           process-compose
           docker-compose
           go-task
-        ];
-        python-tools = with pkgs; [
-          python3
-          python3Packages.grpcio
-          python3Packages.grpcio-tools
-          python3Packages.protobuf
+          bun
         ];
 
       in
       {
         devShells.default = pkgs.mkShell {
-          buildInputs =
-            backend-tools ++ frontend-tools ++ proto-tools ++ db-tools ++ infra-tools ++ python-tools;
+          buildInputs = backend-tools ++ frontend-tools ++ proto-tools ++ db-tools ++ infra-tools;
 
           shellHook = ''
             # Export environment config for the setup script
             export PGDATA="${env-config.PGDATA}"
+            export GOPATH="${env-config.GOPATH}"
             export GOMODCACHE="${env-config.GOMODCACHE}"
-            export PYTHONPATH="${env-config.PYTHONPATH}"
 
             # Source the setup script from the project folder
             if [ -f ./scripts/setup-env.sh ]; then
@@ -78,7 +72,7 @@
 
             echo ""
             echo "Welcome to Ticker Rush Dev Shell"
-            echo "Go: $GO_VERSION | Node: $NODE_VERSION | pnpm: $PNPM_VERSION | Python: $PYTHON_VERSION"
+            echo "Go: $GO_VERSION | Node: $NODE_VERSION | pnpm: $PNPM_VERSION | Bun: $BUN_VERSION"
             echo "Run 'task dev' to start the stack"
             echo ""
           '';

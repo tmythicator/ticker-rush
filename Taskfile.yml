@@ -23,6 +23,7 @@ tasks:
     cmds:
       - task: backend:deps
       - task: frontend:deps
+      - task: bot:deps
 
   test:
     desc: Run all tests
@@ -33,12 +34,14 @@ tasks:
   ci:
     desc: Run all CI checks (lint, format check, tests)
     cmds:
+      - task: proto:ci
       - task: backend:ci
       - task: frontend:ci
 
   lint:
     desc: Lint all code
     cmds:
+      - task: proto:ci
       - task: backend:ci
       - task: frontend:lint
 
@@ -65,6 +68,14 @@ tasks:
     cmds:
       - buf generate
       - task: backend:sqlc
+
+  proto:ci:
+    desc: Run CI checks for Protobuf
+    cmds:
+      - buf lint
+      - buf format -d --exit-code
+      - task: generate
+      - git diff --exit-code
 
   backend:sqlc:
     desc: Generate code from SQL
@@ -191,7 +202,13 @@ tasks:
       - valkey-server --port {{.REDIS_PORT | default "6379"}}
 
   bot:deps:
-    desc: Install bot dependencies in venv
+    desc: Install bot dependencies
+    dir: bot
     cmds:
-      - python3 -m venv bot/.venv
-      - PYTHONPATH= bot/.venv/bin/pip install -r bot/requirements.txt
+      - bun install
+
+  bot:run:
+    desc: Run the TS bot
+    dir: bot
+    cmds:
+      - bun run index.ts

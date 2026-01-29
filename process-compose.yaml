@@ -34,3 +34,9 @@ processes:
 
   frontend:
     command: task frontend:run
+
+  bot:
+    command: task bot:run
+    depends_on:
+      exchange:
+        condition: process_started
