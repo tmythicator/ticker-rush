@@ -3,40 +3,24 @@ version: "0.5"
 processes:
   valkey:
     command: task valkey:run
-    availability:
-      restart: always
 
   postgres:
     command: task postgres:run
-    availability:
-      restart: always
     readiness_probe:
       exec:
-        command: pg_isready -h "$PGDATA" -p ${POSTGRES_PORT:-5432} -U ${POSTGRES_USER:-postgres}
-    shutdown:
-      signal: 2
+        command: pg_isready -h "$PGDATA"
 
   exchange:
-    command: task backend:run:exchange
-
+    command: task postgres:create && task backend:run:exchange
     depends_on:
-      valkey:
-        condition: process_started
       postgres:
         condition: process_healthy
 
   fetcher:
     command: task backend:run:fetcher
 
-    depends_on:
-      valkey:
-        condition: process_started
-
   frontend:
     command: task frontend:run
 
   bot:
     command: task bot:run
-    depends_on:
-      exchange:
-        condition: process_started

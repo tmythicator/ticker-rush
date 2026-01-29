@@ -1,79 +1,83 @@
 # Contributing to Ticker Rush
 
-Ticker Rush is more than just a trading simulator; it's a project dedicated to making the complex world of markets accessible, enjoyable, and risk-free. Our mission is to build a high-performance environment where people can have fun while learning market dynamics, and eventually compete for supremacy in a dedicated human vs. AI division.
+Ticker Rush is a high-performance, real-time stock trading simulator. Our mission is to build a hermetic, scalable, and enjoyable platform for learning market dynamics. Eventually, we aim to establish a Human vs. AI Division, where trading bots compete on an equal footing with human players.
 
-Thank you for your interest in helping us achieve this vision! This document provides guidelines for setting up your development environment and submitting contributions.
+---
 
 ## Development Environment
 
-We use **Nix** with Flakes to provide a hermetic, reproducible development environment. This ensures all contributors use the same versions of tools like Go, Node.js, and databases.
+We use Nix to provide a fully reproducible, "zero-config" development environment.
 
-### 1. Using Nix (Recommended)
+### 1. Startup Flow (Nix)
 
-1.  **Enter the development shell**:
+1. **Enter the shell**:
 
-    ```bash
-    nix develop
-    ```
+   ```bash
+   nix develop
+   ```
 
-    This will automatically install all dependencies: Go, Node.js, Valkey, Postgres, Task, etc.
+   This initializes everything in the project-local .data/ directory, including an isolated Go workspace.
 
-2.  **Configure environment**:
+2. **Initialize the project** (First time or after clean):
 
-    ```bash
-    cp .env-example .env
-    # Add your FINNHUB_API_KEY
-    ```
+   ```bash
+   task init
+   ```
 
-3.  **Start the full stack**:
-    ```bash
-    task dev
-    ```
+   This handles dependency installation (Go, Node, Bun) and code generation.
 
-### 2. Using Docker
+3. **Configure Environment**:
 
-If you prefer Docker, you can use the provided `docker-compose.yml`:
+   ```bash
+   cp .env-example .env
+   # Add your FINNHUB_API_KEY to .env
+   ```
 
-```bash
-cp .env-example .env
-docker-compose up -d --build
-```
+4. **Start the stack**:
+   ```bash
+   task dev
+   ```
+   This command starts databases, runs migrations, and launches all services.
 
-### 3. Manual Setup (No Nix)
+### 2. Manual Setup
 
-If you prefer manual installation:
+We strongly recommend Nix, but if you prefer manual setup:
 
-- **Go**: 1.25+
-- **Node.js**: 18+
-- **Valkey/Redis**: port 6379
-- **Postgres**: port 5432
+- Go 1.25+: Backend API & Exchange logic.
+- Node.js 20+ / pnpm: Frontend development.
+- Bun: Bot execution and TS scripting.
+- Postgres & Valkey: Core persistence and caching.
 
-Run services:
+---
 
-```bash
-# Term A: Fetcher
-cd backend && go run ./cmd/fetcher
-# Term B: Exchange API
-cd backend && go run ./cmd/exchange
-# Term C: Frontend
-cd frontend && pnpm install && pnpm run dev
-```
+## Technical Standards
 
-## Contribution Guidelines
+### Data Layer & State
 
-### Branching & PRs
+- **Server State**: Use TanStack Query (React Query) for all frontend data.
+- **Real-time**: We use a hybrid architecture (Initial fetch via Query + background updates via SSE).
+- **Protobuf**: Protocol Buffers are the Single Source of Truth. All API contracts must be defined in proto/v1/ before implementation.
 
-- Create a feature branch from `main`.
-- Ensure all tests pass (`task test`).
-- Run linters (`task lint`).
-- Submit a Pull Request with a clear description of your changes.
+### Architecture
 
-### Coding Style
+- **Backend**: Go services built with the Gin framework.
+- **Authentication**: HttpOnly Cookies + JWT (stateless, secure against XSS).
+- **AI Division**: Trading bots are written in TypeScript using Bun and LangChain.
 
-- **Backend (Go)**: Follow standard `gofmt` and `golangci-lint`.
-- **Frontend (React)**: Use TypeScript and follow established patterns in the codebase.
-- **Licenses**: Ensure any new files include the AGPLv3 header.
+---
 
-## License
+## Contribution Workflow
 
-By contributing to Ticker Rush, you agree that your contributions will be licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+### 1. Code Quality
+
+- **Formatting**: Run task format before committing.
+- **Linting**: Ensure task lint passes (Go & TypeScript).
+- **Type Safety**: Never use any. Use generated Protobuf types for all cross-service communication.
+
+### 2. Submitting Changes
+
+- Create a branch for your feature/fix.
+- Ensure all tests pass with task test.
+- Submissions must be under the AGPL-3.0 License.
+
+Thank you for building the future of trading with us!

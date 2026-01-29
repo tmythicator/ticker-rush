@@ -82,6 +82,7 @@ The recommended way to start development is using [Nix](https://nixos.org):
 2. **Develop**:
    ```bash
    nix develop
+   task init
    task dev
    ```
 

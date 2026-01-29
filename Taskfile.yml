@@ -8,6 +8,12 @@ tasks:
     cmds:
       - process-compose up
 
+  init:
+    desc: Initial project setup (deps + generate)
+    cmds:
+      - task: deps
+      - task: generate
+
   prod:
     desc: Start the production environment (Docker Compose)
     cmds:
@@ -37,6 +43,7 @@ tasks:
       - task: proto:ci
       - task: backend:ci
       - task: frontend:ci
+      - task: bot:ci
 
   lint:
     desc: Lint all code
@@ -189,12 +196,17 @@ tasks:
     cmds:
       - postgres -k "$PGDATA" -p {{.POSTGRES_PORT | default "5432"}}
 
+  postgres:create:
+    desc: Create the database if it doesn't exist
+    cmds:
+      - psql -h "$PGDATA" -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} -tc "SELECT 1 FROM pg_database WHERE datname = '{{.POSTGRES_DB | default "ticker_rush_db"}}'" | grep -q 1 || createdb -h "$PGDATA" -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} {{.POSTGRES_DB | default "ticker_rush_db"}}
+
   postgres:reset:
     desc: Reset the database (Drop, Create)
     dir: backend
     cmds:
       - dropdb -h "$PGDATA" -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} {{.POSTGRES_DB | default "ticker_rush_db"}} --if-exists
-      - createdb -h "$PGDATA" -p {{.POSTGRES_PORT | default "5432"}} -U {{.POSTGRES_USER | default "postgres"}} {{.POSTGRES_DB | default "ticker_rush_db"}}
+      - task: postgres:create
 
   valkey:run:
     desc: Run Valkey (Redis)
@@ -212,3 +224,9 @@ tasks:
     dir: bot
     cmds:
       - bun run index.ts
+
+  bot:ci:
+    desc: Run bot CI checks
+    dir: bot
+    cmds:
+      - bun x tsc --noEmit
