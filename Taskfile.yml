@@ -29,14 +29,25 @@ tasks:
       - task: generate
 
   prod:
-    desc: Start the production environment (Docker Compose)
+    desc: Start the production environment
     cmds:
       - docker compose up --build
+
+  prod:run:
+    desc: Start the production environment (detached)
+    cmds:
+      - docker compose up -d --build
 
   prod:down:
     desc: Stop and remove the production containers
     cmds:
       - docker compose down
+
+  prod:rebuild:
+    desc: Rebuild everything from scratch
+    cmds:
+      - docker compose build --no-cache
+      - docker compose up -d
 
   deps:
     desc: Install all dependencies
