@@ -34,5 +34,15 @@ export default defineConfig(({ mode }) => {
       environment: 'jsdom',
       setupFiles: './src/test/setup.ts',
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
+            ui: ['lucide-react', 'lightweight-charts'],
+          },
+        },
+      },
+    },
   };
 });
