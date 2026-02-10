@@ -1,4 +1,4 @@
-import path from "path";
+import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "./src"),
+        '@': path.resolve(__dirname, './src'),
       },
     },
     esbuild: {
@@ -45,7 +45,16 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks: {
             vendor: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
-            ui: ['lucide-react', 'lightweight-charts'],
+            forms: ['react-hook-form', 'zod', '@hookform/resolvers'],
+            charts: ['lightweight-charts'],
+            ui: [
+              'class-variance-authority',
+              'clsx',
+              'tailwind-merge',
+              'next-themes',
+              '@radix-ui/react-label',
+              '@radix-ui/react-slot',
+            ],
           },
         },
       },

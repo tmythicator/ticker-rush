@@ -1,4 +1,6 @@
 import { type PortfolioItem } from './api';
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 /**
  * Calculates the total invested capital from a user's portfolio.
@@ -14,3 +16,7 @@ export const calculateInvestedCapital = (
     0,
   );
 };
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
