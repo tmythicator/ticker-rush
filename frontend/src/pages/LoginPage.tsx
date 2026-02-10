@@ -1,56 +1,77 @@
-import React, { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { login as apiLogin } from '../lib/api';
+import { loginSchema, type LoginFormData } from '../lib/schemas';
 
 export const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    try {
-      const user = await apiLogin(email, password);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const {
+    mutate: loginUser,
+    isPending,
+    error: backendError,
+  } = useMutation({
+    mutationFn: async (data: LoginFormData) => {
+      return apiLogin(data.email, data.password);
+    },
+    onSuccess: (user) => {
       login(user);
       navigate('/');
-    } catch (err) {
-      setError('Login failed. Please check your credentials.');
-      console.error(err);
-    }
-  };
+    },
+    onError: (error) => {
+      console.log(error.message);
+    },
+  });
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-bold text-white mb-6 text-center">Login</h2>
-        {error && <div className="bg-red-500 text-white p-2 rounded mb-4">{error}</div>}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {backendError && (
+          <div className="bg-red-500 text-white p-2 rounded mb-4">{backendError.message}</div>
+        )}
+        <form onSubmit={handleSubmit((data) => loginUser(data))} className="space-y-4">
           <div>
             <label className="block text-gray-400 mb-1">Email</label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              {...register('email')}
               className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
           </div>
           <div>
             <label className="block text-gray-400 mb-1">Password</label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              {...register('password')}
               className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+            )}
           </div>
           <button
             type="submit"
+            disabled={isPending || isSubmitting}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200"
           >
             Login
