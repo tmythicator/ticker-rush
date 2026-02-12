@@ -41,40 +41,40 @@ export const SellPositionModal = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={`Sell ${symbol}?`}>
       <div className="space-y-4">
-        <p className="text-slate-600 text-sm">
+        <p className="text-muted-foreground text-sm">
           Are you sure you want to sell your entire position of{' '}
-          <strong className="text-slate-900">{symbol}</strong>?
+          <strong className="text-foreground">{symbol}</strong>?
         </p>
 
-        <div className="bg-slate-50 rounded-lg p-4 space-y-2 border border-slate-100">
+        <div className="bg-muted/50 rounded-lg p-4 space-y-2 border border-border">
           <div className="flex justify-between text-sm">
-            <span className="text-slate-500">Quantity</span>
-            <span className="font-mono font-bold text-slate-700">{quantity}</span>
+            <span className="text-muted-foreground">Quantity</span>
+            <span className="font-mono font-bold text-foreground">{quantity}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-slate-500">Current Price</span>
+            <span className="text-muted-foreground">Current Price</span>
             {isPriceLoading ? (
-              <span className="text-slate-400 animate-pulse">Loading...</span>
+              <span className="text-muted-foreground animate-pulse">Loading...</span>
             ) : isPriceError ? (
-              <span className="text-red-500 font-bold">Unavailable</span>
+              <span className="text-destructive font-bold">Unavailable</span>
             ) : (
-              <span className="font-mono font-bold text-slate-700">${price.toFixed(2)}</span>
+              <span className="font-mono font-bold text-foreground">${price.toFixed(2)}</span>
             )}
           </div>
-          <div className="border-t border-slate-200 pt-2 flex justify-between text-sm">
-            <span className="font-bold text-slate-900">Total Value</span>
+          <div className="border-t border-border pt-2 flex justify-between text-sm">
+            <span className="font-bold text-foreground">Total Value</span>
             {isPriceLoading ? (
-              <span className="text-slate-400 animate-pulse">Loading...</span>
+              <span className="text-muted-foreground animate-pulse">Loading...</span>
             ) : isPriceError ? (
-              <span className="text-red-500 font-bold">Unavailable</span>
+              <span className="text-destructive font-bold">Unavailable</span>
             ) : (
-              <span className="font-mono font-bold text-slate-900">${totalValue.toFixed(2)}</span>
+              <span className="font-mono font-bold text-foreground">${totalValue.toFixed(2)}</span>
             )}
           </div>
         </div>
 
         {isPriceError && (
-          <div className="text-xs text-red-600 bg-red-50 p-2 rounded border border-red-100">
+          <div className="text-xs text-destructive bg-destructive/10 p-2 rounded-lg border border-destructive/20">
             Failed to fetch current price. You cannot sell at this time.
           </div>
         )}
@@ -82,14 +82,14 @@ export const SellPositionModal = ({
         <div className="flex gap-3 pt-2">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg text-sm hover:bg-slate-50 transition-all"
+            className="flex-1 px-4 py-2.5 bg-muted text-foreground font-bold rounded-lg text-sm hover:bg-muted/80 transition-all border border-border"
           >
             Cancel
           </button>
           <button
             onClick={handleSellAll}
             disabled={isTradeLoading || isPriceLoading || isPriceError}
-            className="flex-1 px-4 py-2.5 bg-red-500 text-white font-bold rounded-lg text-sm hover:bg-red-600 shadow-sm shadow-red-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2.5 bg-destructive text-destructive-foreground font-bold rounded-lg text-sm hover:bg-destructive/90 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isTradeLoading ? 'Selling...' : 'Confirm Sell All'}
           </button>

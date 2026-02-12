@@ -1,7 +1,7 @@
-import { Briefcase, ArrowRight, Trash2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { PortfolioItem } from '../lib/api';
+import { IconArrowRight, IconBriefcase, IconTrash } from './icons/CustomIcons';
 import { SellPositionModal } from './SellPositionModal';
 
 interface PortfolioTableProps {
@@ -23,17 +23,17 @@ export const PortfolioTable = ({ portfolio }: PortfolioTableProps) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-      <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
-        <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2">
-          <Briefcase className="w-5 h-5 text-slate-400" />
+    <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
+      <div className="px-6 py-5 border-b border-border flex items-center justify-between">
+        <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
+          <IconBriefcase className="w-5 h-5 text-muted-foreground" />
           Current Holdings
         </h3>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
-            <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-bold">
+            <tr className="bg-muted text-muted-foreground text-xs uppercase tracking-wider font-bold">
               <th className="px-6 py-4">Asset</th>
               <th className="px-6 py-4 text-right">Quantity</th>
               <th className="px-6 py-4 text-right">Avg Price</th>
@@ -41,40 +41,42 @@ export const PortfolioTable = ({ portfolio }: PortfolioTableProps) => {
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-50">
+          <tbody className="divide-y divide-border">
             {Object.values(portfolio).map((item) => (
-              <tr key={item.stock_symbol} className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-6 py-4 font-bold text-slate-900">
+              <tr key={item.stock_symbol} className="hover:bg-muted/50 transition-colors">
+                <td className="px-6 py-4 font-bold text-foreground">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-600">
+                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center font-bold text-xs text-muted-foreground">
                       {item.stock_symbol[0]}
                     </div>
                     {item.stock_symbol}
                   </div>
                 </td>
-                <td className="px-6 py-4 text-right font-mono text-slate-700">{item.quantity}</td>
-                <td className="px-6 py-4 text-right font-mono text-slate-700">
+                <td className="px-6 py-4 text-right font-mono text-muted-foreground">
+                  {item.quantity}
+                </td>
+                <td className="px-6 py-4 text-right font-mono text-muted-foreground">
                   ${item.average_price.toFixed(2)}
                 </td>
-                <td className="px-6 py-4 text-right font-mono text-slate-900 font-bold">
+                <td className="px-6 py-4 text-right font-mono text-foreground font-bold">
                   ${(item.quantity * item.average_price).toFixed(2)}
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => handleSellClick(item)}
-                      className="text-xs font-bold text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
+                      className="text-xs font-bold text-destructive hover:bg-destructive/10 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
                       title="Sell All"
                     >
-                      <Trash2 className="w-3 h-3" />
+                      <IconTrash className="w-3 h-3" />
                       Sell All
                     </button>
                     <button
                       onClick={() => handleTrade(item.stock_symbol)}
-                      className="text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
+                      className="text-xs font-bold text-primary hover:bg-primary/10 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
                     >
                       Trade
-                      <ArrowRight className="w-3 h-3" />
+                      <IconArrowRight className="w-3 h-3" />
                     </button>
                   </div>
                 </td>
@@ -82,7 +84,7 @@ export const PortfolioTable = ({ portfolio }: PortfolioTableProps) => {
             ))}
             {Object.keys(portfolio).length === 0 && (
               <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-slate-400 italic">
+                <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground italic">
                   No assets found in your portfolio. Start trading!
                 </td>
               </tr>
