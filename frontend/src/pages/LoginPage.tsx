@@ -1,10 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { login as apiLogin } from '../lib/api';
 import { loginSchema, type LoginFormData } from '../lib/schemas';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const LoginPage = () => {
   const { login } = useAuth();
@@ -40,52 +44,50 @@ export const LoginPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold text-white mb-6 text-center">Login</h2>
-        {backendError && (
-          <div className="bg-red-500 text-white p-2 rounded mb-4">{backendError.message}</div>
-        )}
-        <form onSubmit={handleSubmit((data) => loginUser(data))} className="space-y-4">
-          <div>
-            <label className="block text-gray-400 mb-1">Email</label>
-            <input
-              type="email"
-              {...register('email')}
-              className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
-          </div>
-          <div>
-            <label className="block text-gray-400 mb-1">Password</label>
-            <input
-              type="password"
-              {...register('password')}
-              className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-            )}
-          </div>
-          <button
-            type="submit"
-            disabled={isPending || isSubmitting}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200"
-          >
-            Login
-          </button>
-        </form>
-        <div className="mt-4 text-center">
-          <p className="text-gray-400">
+    <div className="flex-1 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-brutalist">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {backendError && (
+            <div className="bg-destructive/15 text-destructive p-3 rounded-md mb-4 text-sm font-medium border border-destructive">
+              {backendError.message}
+            </div>
+          )}
+          <form onSubmit={handleSubmit((data) => loginUser(data))} className="space-y-4" noValidate>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" required {...register('email')} />
+              {errors.email && (
+                <p className="text-destructive text-sm font-medium">{errors.email.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" type="password" required {...register('password')} />
+              {errors.password && (
+                <p className="text-destructive text-sm font-medium">{errors.password.message}</p>
+              )}
+            </div>
+            <Button
+              type="submit"
+              disabled={isPending || isSubmitting}
+              className="w-full font-bold shadow-brutalist-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:translate-x-[4px] active:translate-y-[4px]"
+            >
+              {isPending || isSubmitting ? 'Logging in...' : 'Login'}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="justify-center">
+          <p className="text-muted-foreground text-sm">
             Don't have an account?{' '}
-            <a href="/register" className="text-blue-500 hover:underline">
+            <Link to="/register" className="text-primary hover:underline font-bold">
               Register
-            </a>
+            </Link>
           </p>
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
     </div>
   );
 };

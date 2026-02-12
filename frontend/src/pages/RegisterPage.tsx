@@ -1,10 +1,21 @@
-import { useNavigate } from 'react-router-dom';
-import { register as apiRegister, login as apiLogin } from '../lib/api';
-import { useAuth } from '../hooks/useAuth';
+import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type RegisterFormData, registerSchema } from '../lib/schemas';
 import { useMutation } from '@tanstack/react-query';
+import { register as apiRegister, login as apiLogin } from '../lib/api';
+import { useAuth } from '../hooks/useAuth';
+import { type RegisterFormData, registerSchema } from '../lib/schemas';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 export const RegisterPage = () => {
   const { login } = useAuth();
@@ -23,6 +34,7 @@ export const RegisterPage = () => {
       lastName: '',
     },
   });
+
   const {
     mutate: registerUser,
     isPending: isRegistering,
@@ -42,72 +54,73 @@ export const RegisterPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold text-white mb-6 text-center">Register</h2>
-        {backendError && (
-          <div className="bg-red-500 text-white p-2 rounded mb-4">{backendError.message}</div>
-        )}
-        <form onSubmit={handleSubmit((data) => registerUser(data))} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-gray-400 mb-1">First Name</label>
-              <input
-                type="text"
-                {...register('firstName')}
-                className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-              {errors.firstName && <p className="text-red-500">{errors.firstName.message}</p>}
+    <div className="flex-1 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-brutalist">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center">Register</CardTitle>
+          <CardDescription className="text-center">
+            Create an account to start trading
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {backendError && (
+            <div className="bg-destructive/15 text-destructive p-3 rounded-md mb-4 text-sm font-medium border border-destructive">
+              {backendError.message}
             </div>
-            <div>
-              <label className="block text-gray-400 mb-1">Last Name</label>
-              <input
-                type="text"
-                {...register('lastName')}
-                className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-              {errors.lastName && <p className="text-red-500">{errors.lastName.message}</p>}
-            </div>
-          </div>
-          <div>
-            <label className="block text-gray-400 mb-1">Email</label>
-            <input
-              type="email"
-              {...register('email')}
-              className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-            {errors.email && <p className="text-red-500">{errors.email.message}</p>}
-          </div>
-          <div>
-            <label className="block text-gray-400 mb-1">Password</label>
-            <input
-              type="password"
-              {...register('password')}
-              className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-            {errors.password && <p className="text-red-500">{errors.password.message}</p>}
-          </div>
-          <button
-            type="submit"
-            disabled={isSubmitting || isRegistering}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200"
+          )}
+          <form
+            onSubmit={handleSubmit((data) => registerUser(data))}
+            className="space-y-4"
+            noValidate
           >
-            Register
-          </button>
-        </form>
-        <div className="mt-4 text-center">
-          <p className="text-gray-400">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input id="firstName" {...register('firstName')} required />
+                {errors.firstName && (
+                  <p className="text-destructive text-sm font-medium">{errors.firstName.message}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input id="lastName" {...register('lastName')} required />
+                {errors.lastName && (
+                  <p className="text-destructive text-sm font-medium">{errors.lastName.message}</p>
+                )}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" {...register('email')} required />
+              {errors.email && (
+                <p className="text-destructive text-sm font-medium">{errors.email.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" type="password" {...register('password')} required />
+              {errors.password && (
+                <p className="text-destructive text-sm font-medium">{errors.password.message}</p>
+              )}
+            </div>
+            <Button
+              type="submit"
+              className="w-full font-bold shadow-brutalist-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:translate-x-[4px] active:translate-y-[4px]"
+              disabled={isSubmitting || isRegistering}
+            >
+              {isSubmitting || isRegistering ? 'Creating Account...' : 'Register'}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="justify-center">
+          <p className="text-muted-foreground text-sm">
             Already have an account?{' '}
-            <a href="/login" className="text-blue-500 hover:underline">
+            <Link to="/login" className="text-primary hover:underline font-bold">
               Login
-            </a>
+            </Link>
           </p>
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
     </div>
   );
 };
