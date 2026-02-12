@@ -22,9 +22,9 @@ export const ChartBody = ({
 }: ChartBodyProps) => {
   return (
     <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
-      <div className="bg-white/90 backdrop-blur-md p-1.5 rounded-xl shadow-lg border border-slate-200/60 flex items-center gap-1 transition-all hover:shadow-xl hover:scale-[1.02]">
+      <div className="bg-background/90 backdrop-blur-md p-1.5 rounded-xl shadow-lg border border-border/60 flex items-center gap-1 transition-all hover:shadow-xl hover:scale-[1.02]">
         <ChartSymbolPicker symbol={symbol} onSymbolChange={onSymbolChange} />
-        <div className="h-6 w-px bg-slate-200 mx-1"></div>
+        <div className="h-6 w-px bg-border mx-1"></div>
         <ChartSymbolIndicator
           price={price}
           priceColor={priceColor}

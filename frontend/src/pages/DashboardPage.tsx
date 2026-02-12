@@ -12,7 +12,7 @@ export const DashboardPage = () => {
   return (
     <div className="max-w-[1800px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-9 flex flex-col gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-1 overflow-hidden h-[500px] relative">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-1 overflow-hidden h-[500px] relative">
           <MarketChart
             key={symbol}
             symbol={symbol}

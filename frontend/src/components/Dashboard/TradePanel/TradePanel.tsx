@@ -33,7 +33,7 @@ export const TradePanel = ({ symbol, currentPrice = 0, onTradeSuccess }: TradePa
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col h-full relative">
+    <div className="bg-card rounded-lg shadow-sm border border-border p-6 flex flex-col h-full relative">
       <TradePanelHeader isLoading={isLoading} />
       <TradeOrderInput
         symbol={symbol}

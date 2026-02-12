@@ -1,4 +1,4 @@
-import { DollarSign, Briefcase, Wallet } from 'lucide-react';
+import { IconDollarSign, IconBriefcase, IconWallet } from '../icons/CustomIcons';
 import { type User } from '../../lib/api';
 import { calculateInvestedCapital } from '../../lib/utils';
 import { StatCard } from './StatCard';
@@ -16,17 +16,17 @@ export const DashboardStats = ({ user }: DashboardStatsProps) => {
     {
       label: 'Cash Balance',
       value: user ? `$${user.balance.toFixed(2)}` : '--',
-      icon: Wallet,
+      icon: IconWallet,
     },
     {
       label: 'Invested Capital',
       value: `$${investedCapital.toFixed(2)}`,
-      icon: DollarSign,
+      icon: IconDollarSign,
     },
     {
       label: 'Open Positions',
       value: portfolioCount.toString(),
-      icon: Briefcase,
+      icon: IconBriefcase,
     },
   ];
 

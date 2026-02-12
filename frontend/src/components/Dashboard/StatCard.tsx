@@ -1,21 +1,23 @@
-import { type LucideIcon } from 'lucide-react';
+import type { ComponentType, ComponentProps } from 'react';
 
 interface StatCardProps {
   label: string;
   value: string;
   trend?: string;
-  icon: LucideIcon;
+  icon: ComponentType<ComponentProps<'svg'>>;
 }
 
 export const StatCard = ({ label, value, trend, icon: Icon }: StatCardProps) => (
-  <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-start justify-between hover:shadow-md transition-shadow">
+  <div className="bg-card p-4 rounded-lg border border-border shadow-sm flex items-start justify-between hover:shadow-md transition-shadow">
     <div>
-      <span className="text-xs text-slate-500 uppercase font-bold tracking-wider">{label}</span>
-      <div className="text-2xl font-bold text-slate-900 mt-1">{value}</div>
+      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
+        {label}
+      </span>
+      <div className="text-2xl font-bold text-foreground mt-1">{value}</div>
       {trend && <div className="text-xs font-medium text-green-600 mt-1">{trend}</div>}
     </div>
-    <div className="p-2 bg-slate-50 rounded-lg">
-      <Icon className="w-4 h-4 text-slate-400" />
+    <div className="p-2 bg-muted rounded-lg">
+      <Icon className="w-4 h-4 text-muted-foreground" />
     </div>
   </div>
 );

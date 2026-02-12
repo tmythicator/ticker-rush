@@ -14,9 +14,9 @@ export const ChartSymbolIndicator = ({
   return (
     <div className="px-2 flex flex-col items-end min-w-[80px]">
       {isLoading ? (
-        <div className="h-5 w-16 bg-slate-200 animate-pulse rounded"></div>
+        <div className="h-5 w-16 bg-muted animate-pulse rounded"></div>
       ) : isError ? (
-        <span className="text-xs font-bold text-red-500">OFFLINE</span>
+        <span className="text-xs font-bold text-destructive">OFFLINE</span>
       ) : (
         <>
           <span
@@ -24,7 +24,7 @@ export const ChartSymbolIndicator = ({
           >
             {price ? `$${price.toFixed(2)}` : '—'}
           </span>
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+          <span className="text-[10px] font-bold text-foreground/60 uppercase tracking-wider">
             Live
           </span>
         </>

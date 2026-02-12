@@ -1,4 +1,4 @@
-import { ChevronDown } from 'lucide-react';
+import { IconChevronDown } from '../../icons/CustomIcons';
 import { isTradeSymbol, TradeSymbol, TradeSymbols } from '../../../types';
 
 interface ChartSymbolPickerProps {
@@ -18,15 +18,15 @@ export const ChartSymbolPicker = ({ symbol, onSymbolChange }: ChartSymbolPickerP
       <select
         value={symbol}
         onChange={handleSymbolChange}
-        className="appearance-none bg-transparent pl-3 pr-8 py-1.5 font-bold text-slate-800 text-lg tracking-tight focus:outline-none cursor-pointer hover:text-blue-600 transition-colors"
+        className="appearance-none bg-transparent pl-3 pr-8 py-1.5 font-bold text-foreground text-lg tracking-tight focus:outline-none cursor-pointer hover:text-primary transition-colors"
       >
         {TradeSymbols.map((t) => (
-          <option key={t} value={t}>
+          <option key={t} value={t} className="bg-popover text-popover-foreground">
             {t}
           </option>
         ))}
       </select>
-      <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none group-hover/select:text-blue-500 transition-colors" />
+      <IconChevronDown className="w-4 h-4 text-muted-foreground absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none group-hover/select:text-primary transition-colors" />
     </div>
   );
 };

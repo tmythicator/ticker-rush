@@ -4,17 +4,19 @@ export interface TradeFooterProps {
 }
 
 export const TradeFooter = ({ buyingPower, estCost }: TradeFooterProps) => {
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
   return (
-    <div className="mt-auto pt-6 border-t border-slate-100 space-y-2">
-      <div className="flex justify-between text-sm">
-        <span className="text-slate-500">Buying Power</span>
-        <span className="font-mono font-medium text-slate-700">{formatCurrency(buyingPower)}</span>
+    <div className="mt-6 pt-4 border-t border-border">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+          Buying Power
+        </span>
+        <span className="font-mono font-bold text-foreground">${buyingPower.toFixed(2)}</span>
       </div>
-      <div className="flex justify-between text-sm">
-        <span className="text-slate-500">Est. Cost</span>
-        <span className="font-mono font-bold text-slate-900">{formatCurrency(estCost)}</span>
+      <div className="flex justify-between items-center">
+        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+          Est. Cost
+        </span>
+        <span className="font-mono font-bold text-primary">${estCost.toFixed(2)}</span>
       </div>
     </div>
   );
