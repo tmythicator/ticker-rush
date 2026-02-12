@@ -1,7 +1,9 @@
+import { type Quote } from '@/lib/api';
+import { getChartColors } from '@/lib/chart-utils';
+import { AreaSeries, ColorType, createChart, type ISeriesApi, type Time } from 'lightweight-charts';
 import { useEffect, useRef } from 'react';
-import { createChart, ColorType, type ISeriesApi, type Time, AreaSeries } from 'lightweight-charts';
-import { type Quote } from '../lib/api';
 import { TradeSymbol } from '../types';
+import { useThemeObserver } from './useThemeObserver';
 
 interface UseChartProps {
   chartContainerRef: React.RefObject<HTMLDivElement | null>;
@@ -20,19 +22,52 @@ export const useChart = ({ chartContainerRef, quote, symbol }: UseChartProps) =>
     }
   }, [symbol]);
 
+  const updateChartColors = () => {
+    if (!chartRef.current) return;
+    const colors = getChartColors();
+
+    chartRef.current.applyOptions({
+      layout: {
+        background: { type: ColorType.Solid, color: colors.bgColor },
+        textColor: colors.textColor,
+      },
+      grid: {
+        horzLines: { color: colors.borderColor },
+        vertLines: { color: colors.borderColor },
+      },
+      timeScale: {
+        borderColor: colors.borderColor,
+      },
+      rightPriceScale: {
+        borderColor: colors.borderColor,
+      },
+    });
+
+    if (seriesRef.current) {
+      seriesRef.current.applyOptions({
+        topColor: colors.areaTopColor,
+        bottomColor: colors.areaBottomColor,
+        lineColor: colors.areaLineColor,
+      });
+    }
+  };
+
+  useThemeObserver(updateChartColors);
+
   // Initialize Chart
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
+    const colors = getChartColors();
     const chart = createChart(chartContainerRef.current, {
       layout: {
-        background: { type: ColorType.Solid, color: 'white' },
+        background: { type: ColorType.Solid, color: colors.bgColor },
+        textColor: colors.textColor,
         attributionLogo: false,
-        textColor: '#333',
       },
       grid: {
         vertLines: { visible: false },
-        horzLines: { color: '#f0f3fa' },
+        horzLines: { color: colors.borderColor },
       },
       width: chartContainerRef.current.clientWidth,
       height: 500,
@@ -40,22 +75,21 @@ export const useChart = ({ chartContainerRef, quote, symbol }: UseChartProps) =>
       timeScale: {
         timeVisible: true,
         secondsVisible: true,
-        borderColor: '#f0f3fa',
+        borderColor: colors.borderColor,
       },
       rightPriceScale: {
-        borderColor: '#f0f3fa',
+        borderColor: colors.borderColor,
       },
     });
 
     chartRef.current = chart;
 
     const series = chart.addSeries(AreaSeries, {
-      topColor: 'rgba(38, 166, 154, 0.56)',
-      bottomColor: 'rgba(38, 166, 154, 0.04)',
-      lineColor: 'rgba(38, 166, 154, 1)',
+      topColor: colors.areaTopColor,
+      bottomColor: colors.areaBottomColor,
+      lineColor: colors.areaLineColor,
       lineWidth: 2,
     });
-    //series.setData
     seriesRef.current = series;
 
     const handleResize = () => {
