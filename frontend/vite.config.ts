@@ -44,10 +44,11 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks: {
-            vendor: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
-            forms: ['react-hook-form', 'zod', '@hookform/resolvers'],
-            charts: ['lightweight-charts'],
-            ui: [
+            vendor: [
+              'react',
+              'react-dom',
+              'react-router-dom',
+              '@tanstack/react-query',
               'class-variance-authority',
               'clsx',
               'tailwind-merge',
@@ -55,6 +56,8 @@ export default defineConfig(({ mode }) => {
               '@radix-ui/react-label',
               '@radix-ui/react-slot',
             ],
+            forms: ['react-hook-form', 'zod', '@hookform/resolvers'],
+            charts: ['lightweight-charts'],
           },
         },
       },
