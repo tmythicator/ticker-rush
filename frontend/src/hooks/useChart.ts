@@ -1,5 +1,5 @@
 import { type Quote } from '@/lib/api';
-import { getChartColors } from '@/lib/chart-utils';
+import { getChartColors } from '@/lib/chartUtils';
 import { AreaSeries, ColorType, createChart, type ISeriesApi, type Time } from 'lightweight-charts';
 import { useEffect, useRef } from 'react';
 import { TradeSymbol } from '../types';
