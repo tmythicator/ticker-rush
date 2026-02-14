@@ -49,6 +49,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 			protected.GET("/user/me", handler.GetMe)
 			protected.POST("/buy", handler.BuyStock)
 			protected.POST("/sell", handler.SellStock)
+			protected.GET("/leaderboard", handler.GetLeaderboard)
 		}
 	}
 

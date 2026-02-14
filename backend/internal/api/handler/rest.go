@@ -5,12 +5,14 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	go_redis "github.com/redis/go-redis/v9"
+	"github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/api/middleware"
 	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/leaderboard/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 )
 
@@ -19,6 +21,7 @@ type RestHandler struct {
 	userService   *service.UserService
 	tradeService  *service.TradeService
 	marketService *service.MarketService
+	leadService   *service.LeaderBoardService
 }
 
 // NewRestHandler creates a new instance of RestHandler.
@@ -26,11 +29,13 @@ func NewRestHandler(
 	userService *service.UserService,
 	tradeService *service.TradeService,
 	marketService *service.MarketService,
+	leadService *service.LeaderBoardService,
 ) *RestHandler {
 	return &RestHandler{
 		userService:   userService,
 		tradeService:  tradeService,
 		marketService: marketService,
+		leadService:   leadService,
 	}
 }
 
@@ -130,7 +135,7 @@ func (h *RestHandler) GetQuote(c *gin.Context) {
 			return
 		}
 
-		if errors.Is(err, go_redis.Nil) {
+		if errors.Is(err, redis.Nil) {
 			c.JSON(
 				http.StatusServiceUnavailable,
 				gin.H{"error": "Market data warming up, please retry"},
@@ -237,6 +242,20 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 	c.JSON(http.StatusOK, fullUser)
 }
 
+// GetLeaderboard handles leaderboard fetching requests.
+func (h *RestHandler) GetLeaderboard(c *gin.Context) {
+	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+
+	resp, err := h.leadService.GetLeaderboard(c.Request.Context(), &leaderboard.GetLeaderboardRequest{Limit: int32(limit), Offset: int32(offset)})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch leaderboard"})
+
+		return
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
 // StreamQuotes handles SSE connection for real-time quotes.
 func (h *RestHandler) StreamQuotes(c *gin.Context) {
 	c.Header("X-Accel-Buffering", "no")
@@ -277,7 +296,7 @@ func (h *RestHandler) StreamQuotes(c *gin.Context) {
 
 			return false
 		case <-ticker.C:
-			h.sendHeartbeat(w)
+			h.SendHeartbeat(w)
 
 			return true
 		case msg := <-ch:
@@ -292,8 +311,8 @@ func (h *RestHandler) StreamQuotes(c *gin.Context) {
 	})
 }
 
-// sendHeartbeat keeps the connection alive by sending a comment.
-func (h *RestHandler) sendHeartbeat(w io.Writer) {
+// SendHeartbeat keeps the connection alive by sending a comment.
+func (h *RestHandler) SendHeartbeat(w io.Writer) {
 	_, _ = w.Write([]byte(": keep-alive\n\n"))
 	if f, ok := w.(http.Flusher); ok {
 		f.Flush()

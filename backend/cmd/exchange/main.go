@@ -103,8 +103,9 @@ func main() {
 	userService := service.NewUserService(userRepo, portfolioRepo)
 	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, transactor)
 	marketService := service.NewMarketService(marketRepo, cfg.Tickers)
+	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, valkeyClient)
 
-	restHandler := handler.NewRestHandler(userService, tradeService, marketService)
+	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService)
 
 	// Initialize router
 	router, err := api.NewRouter(restHandler, cfg)

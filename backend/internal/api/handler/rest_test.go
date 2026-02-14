@@ -107,11 +107,13 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 
 	userService = service.NewUserService(userRepo, portfolioRepo)
 	tradeService = service.NewTradeService(userRepo, portfolioRepo, marketRepo, transactor)
+	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, valkeyClient)
+
 	// Mock config tickers
 	tickers := []string{"AAPL", "GOOG", "BTC", "FAKE"}
 	marketService = service.NewMarketService(marketRepo, tickers)
 
-	restHandler = handler.NewRestHandler(userService, tradeService, marketService)
+	restHandler = handler.NewRestHandler(userService, tradeService, marketService, leaderboardService)
 
 	// Mock Config for Router
 	cfg := &config.Config{
