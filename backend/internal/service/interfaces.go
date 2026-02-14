@@ -5,7 +5,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
-	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 )
 
 // Transaction represents a database transaction.
@@ -19,6 +19,7 @@ type Transactor interface {
 	Begin(ctx context.Context) (Transaction, error)
 }
 
+// MarketRepository defines the interface for market data persistence.
 type MarketRepository interface {
 	GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error)
 	SaveQuote(ctx context.Context, quote *exchange.Quote) error
@@ -27,12 +28,12 @@ type MarketRepository interface {
 
 // UserRepository defines the interface for user persistence.
 type UserRepository interface {
-	GetUsers(ctx context.Context) ([]*pb.User, error)
-	GetUser(ctx context.Context, id int64) (*pb.User, error)
+	GetUsers(ctx context.Context) ([]*user.User, error)
+	GetUser(ctx context.Context, id int64) (*user.User, error)
 	GetUserByEmail(
 		ctx context.Context,
 		email string,
-	) (*pb.User, string, error) // Returns user, hash, error
+	) (*user.User, string, error) // Returns user, hash, error
 	CreateUser(
 		ctx context.Context,
 		email string,
@@ -40,23 +41,23 @@ type UserRepository interface {
 		firstName string,
 		lastName string,
 		balance float64,
-	) (*pb.User, error)
+	) (*user.User, error)
 
-	GetUserForUpdate(ctx context.Context, id int64) (*pb.User, error)
-	SaveUser(ctx context.Context, user *pb.User) error
+	GetUserForUpdate(ctx context.Context, id int64) (*user.User, error)
+	SaveUser(ctx context.Context, user *user.User) error
 	WithTx(tx Transaction) UserRepository
 }
 
 // PortfolioRepository defines the interface for portfolio persistence.
 type PortfolioRepository interface {
-	GetPortfolio(ctx context.Context, userID int64) ([]*pb.PortfolioItem, error)
-	GetPortfolioItem(ctx context.Context, userID int64, symbol string) (*pb.PortfolioItem, error)
+	GetPortfolio(ctx context.Context, userID int64) ([]*user.PortfolioItem, error)
+	GetPortfolioItem(ctx context.Context, userID int64, symbol string) (*user.PortfolioItem, error)
 
 	GetPortfolioItemForUpdate(
 		ctx context.Context,
 		userID int64,
 		symbol string,
-	) (*pb.PortfolioItem, error)
+	) (*user.PortfolioItem, error)
 	SetPortfolioItem(
 		ctx context.Context,
 		userID int64,

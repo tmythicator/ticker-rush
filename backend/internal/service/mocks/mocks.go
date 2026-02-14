@@ -5,7 +5,7 @@ import (
 	"context"
 
 	"github.com/stretchr/testify/mock"
-	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 )
 
@@ -45,24 +45,31 @@ type MockUserRepository struct {
 	mock.Mock
 }
 
+// GetUsers retrieves all users
+func (m *MockUserRepository) GetUsers(ctx context.Context) ([]*user.User, error) {
+	args := m.Called(ctx)
+
+	return args.Get(0).([]*user.User), args.Error(1)
+}
+
 // GetUser retrieves a user by ID.
-func (m *MockUserRepository) GetUser(ctx context.Context, id int64) (*pb.User, error) {
+func (m *MockUserRepository) GetUser(ctx context.Context, id int64) (*user.User, error) {
 	args := m.Called(ctx, id)
 
-	return args.Get(0).(*pb.User), args.Error(1)
+	return args.Get(0).(*user.User), args.Error(1)
 }
 
 // GetUserByEmail retrieves a user by email.
 func (m *MockUserRepository) GetUserByEmail(
 	ctx context.Context,
 	email string,
-) (*pb.User, string, error) {
+) (*user.User, string, error) {
 	args := m.Called(ctx, email)
 	if args.Get(0) == nil {
 		return nil, "", args.Error(2)
 	}
 
-	return args.Get(0).(*pb.User), args.String(1), args.Error(2)
+	return args.Get(0).(*user.User), args.String(1), args.Error(2)
 }
 
 // CreateUser creates a new user.
@@ -73,21 +80,21 @@ func (m *MockUserRepository) CreateUser(
 	firstName string,
 	lastName string,
 	balance float64,
-) (*pb.User, error) {
+) (*user.User, error) {
 	args := m.Called(ctx, email, hashedPassword, firstName, lastName, balance)
 
-	return args.Get(0).(*pb.User), args.Error(1)
+	return args.Get(0).(*user.User), args.Error(1)
 }
 
 // GetUserForUpdate retrieves a user by ID with a lock.
-func (m *MockUserRepository) GetUserForUpdate(ctx context.Context, id int64) (*pb.User, error) {
+func (m *MockUserRepository) GetUserForUpdate(ctx context.Context, id int64) (*user.User, error) {
 	args := m.Called(ctx, id)
 
-	return args.Get(0).(*pb.User), args.Error(1)
+	return args.Get(0).(*user.User), args.Error(1)
 }
 
 // SaveUser updates a user.
-func (m *MockUserRepository) SaveUser(ctx context.Context, user *pb.User) error {
+func (m *MockUserRepository) SaveUser(ctx context.Context, user *user.User) error {
 	args := m.Called(ctx, user)
 
 	return args.Error(0)
@@ -109,10 +116,10 @@ type MockPortfolioRepository struct {
 func (m *MockPortfolioRepository) GetPortfolio(
 	ctx context.Context,
 	userID int64,
-) ([]*pb.PortfolioItem, error) {
+) ([]*user.PortfolioItem, error) {
 	args := m.Called(ctx, userID)
 
-	return args.Get(0).([]*pb.PortfolioItem), args.Error(1)
+	return args.Get(0).([]*user.PortfolioItem), args.Error(1)
 }
 
 // GetPortfolioItem retrieves a portfolio item.
@@ -120,10 +127,10 @@ func (m *MockPortfolioRepository) GetPortfolioItem(
 	ctx context.Context,
 	userID int64,
 	symbol string,
-) (*pb.PortfolioItem, error) {
+) (*user.PortfolioItem, error) {
 	args := m.Called(ctx, userID, symbol)
 
-	return args.Get(0).(*pb.PortfolioItem), args.Error(1)
+	return args.Get(0).(*user.PortfolioItem), args.Error(1)
 }
 
 // GetPortfolioItemForUpdate retrieves a portfolio item with a lock.
@@ -131,10 +138,10 @@ func (m *MockPortfolioRepository) GetPortfolioItemForUpdate(
 	ctx context.Context,
 	userID int64,
 	symbol string,
-) (*pb.PortfolioItem, error) {
+) (*user.PortfolioItem, error) {
 	args := m.Called(ctx, userID, symbol)
 
-	return args.Get(0).(*pb.PortfolioItem), args.Error(1)
+	return args.Get(0).(*user.PortfolioItem), args.Error(1)
 }
 
 // SetPortfolioItem updates or inserts a portfolio item.
