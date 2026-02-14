@@ -44,7 +44,7 @@ export const Header = () => {
 
         {isAuthenticated && (
           <nav className="hidden md:flex items-center gap-1">
-            <NavLink to="/" className={(params) => getLinkStyle(params.isActive)}>
+            <NavLink to="/leaderboard" className={(params) => getLinkStyle(params.isActive)}>
               <IconTrophy className="w-4 h-4" />
               Ladder
             </NavLink>

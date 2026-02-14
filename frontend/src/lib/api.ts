@@ -1,7 +1,8 @@
 import { Quote } from './proto/exchange/v1/exchange';
+import { GetLeaderboardResponse, LeaderboardEntry } from './proto/leaderboard/v1/leaderboard';
 import { PortfolioItem, User } from './proto/user/v1/user';
 
-export type { PortfolioItem, Quote, User };
+export type { LeaderboardEntry, PortfolioItem, Quote, User };
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -57,6 +58,11 @@ export const login = async (email: string, password: string): Promise<User> => {
 
 export const logout = async (): Promise<void> => {
   return api.post('/logout', {});
+};
+
+export const getLeaderboard = async (limit = 10, offset = 0): Promise<GetLeaderboardResponse> => {
+  const json = await api.get(`/leaderboard?limit=${limit}&offset=${offset}`);
+  return GetLeaderboardResponse.fromJSON(json);
 };
 
 export const register = async (

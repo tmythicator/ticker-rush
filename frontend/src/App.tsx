@@ -40,8 +40,9 @@ function App() {
               <Route path="/register" element={<RegisterPage />} />
 
               <Route element={<ProtectedRoute />}>
-                <Route path="/" element={<LeaderboardPage />} />
+                <Route path="/" element={<Navigate to="/trade" replace />} />
                 <Route path="/trade" element={<DashboardPage />} />
+                <Route path="/leaderboard" element={<LeaderboardPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
               </Route>
 
