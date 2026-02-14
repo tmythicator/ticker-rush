@@ -4,7 +4,9 @@ package mocks
 import (
 	"context"
 
+	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/mock"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 )
@@ -48,6 +50,9 @@ type MockUserRepository struct {
 // GetUsers retrieves all users
 func (m *MockUserRepository) GetUsers(ctx context.Context) ([]*user.User, error) {
 	args := m.Called(ctx)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 
 	return args.Get(0).([]*user.User), args.Error(1)
 }
@@ -55,6 +60,9 @@ func (m *MockUserRepository) GetUsers(ctx context.Context) ([]*user.User, error)
 // GetUser retrieves a user by ID.
 func (m *MockUserRepository) GetUser(ctx context.Context, id int64) (*user.User, error) {
 	args := m.Called(ctx, id)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 
 	return args.Get(0).(*user.User), args.Error(1)
 }
@@ -173,4 +181,33 @@ func (m *MockPortfolioRepository) WithTx(tx service.Transaction) service.Portfol
 	args := m.Called(tx)
 
 	return args.Get(0).(service.PortfolioRepository)
+}
+
+// MockMarketRepository is a mock implementation of MarketRepository.
+type MockMarketRepository struct {
+	mock.Mock
+}
+
+// GetQuote retrieves a stock quote.
+func (m *MockMarketRepository) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error) {
+	args := m.Called(ctx, symbol)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*exchange.Quote), args.Error(1)
+}
+
+// SaveQuote saves a stock quote.
+func (m *MockMarketRepository) SaveQuote(ctx context.Context, quote *exchange.Quote) error {
+	args := m.Called(ctx, quote)
+
+	return args.Error(0)
+}
+
+// SubscribeToQuotes subscribes to quotes.
+func (m *MockMarketRepository) SubscribeToQuotes(ctx context.Context, symbol string) *redis.PubSub {
+	args := m.Called(ctx, symbol)
+
+	return args.Get(0).(*redis.PubSub)
 }
