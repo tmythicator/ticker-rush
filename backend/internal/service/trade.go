@@ -5,14 +5,13 @@ import (
 
 	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
-	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 )
 
 // TradeService handles stock trading operations.
 type TradeService struct {
 	userRepo      UserRepository
 	portfolioRepo PortfolioRepository
-	marketRepo    *valkey.MarketRepository
+	marketRepo    MarketRepository
 	transactor    Transactor
 }
 
@@ -20,7 +19,7 @@ type TradeService struct {
 func NewTradeService(
 	userRepo UserRepository,
 	portfolioRepo PortfolioRepository,
-	marketRepo *valkey.MarketRepository,
+	marketRepo MarketRepository,
 	transactor Transactor,
 ) *TradeService {
 	return &TradeService{

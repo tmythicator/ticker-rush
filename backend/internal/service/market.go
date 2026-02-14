@@ -7,17 +7,16 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
-	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 )
 
 // MarketService handles stock market data operations.
 type MarketService struct {
-	marketRepo     *valkey.MarketRepository
+	marketRepo     MarketRepository
 	allowedTickers []string
 }
 
 // NewMarketService creates a new instance of MarketService.
-func NewMarketService(marketRepo *valkey.MarketRepository, allowedTickers []string) *MarketService {
+func NewMarketService(marketRepo MarketRepository, allowedTickers []string) *MarketService {
 	return &MarketService{
 		marketRepo:     marketRepo,
 		allowedTickers: allowedTickers,

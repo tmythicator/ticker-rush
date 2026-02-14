@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 
+	"github.com/redis/go-redis/v9"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
 	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 )
 
@@ -15,6 +17,12 @@ type Transaction interface {
 // Transactor is responsible for creating transactions.
 type Transactor interface {
 	Begin(ctx context.Context) (Transaction, error)
+}
+
+type MarketRepository interface {
+	GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error)
+	SaveQuote(ctx context.Context, quote *exchange.Quote) error
+	SubscribeToQuotes(ctx context.Context, symbol string) *redis.PubSub
 }
 
 // UserRepository defines the interface for user persistence.
