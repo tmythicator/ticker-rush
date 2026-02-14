@@ -30,6 +30,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/db"
 	"github.com/tmythicator/ticker-rush/server/internal/api"
 	grpcapi "github.com/tmythicator/ticker-rush/server/internal/api/grpc"
@@ -40,31 +41,52 @@ import (
 	"github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
 	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
+	"github.com/tmythicator/ticker-rush/server/internal/worker"
+	"golang.org/x/sync/errgroup"
 	googlegrpc "google.golang.org/grpc"
 )
 
+type App struct {
+	cfg                *config.Config
+	userService        *service.UserService
+	tradeService       *service.TradeService
+	marketService      *service.MarketService
+	leaderboardService *service.LeaderBoardService
+	restHandler        *handler.RestHandler
+	valkeyClient       *redis.Client
+	postgreClient      *pgxpool.Pool
+}
+
 func main() {
-	ctx := context.Background()
-	// Load environment variables
 	if err := config.LoadEnv(); err != nil {
 		log.Fatalf("Failed to load .env: %v", err)
 	}
 
-	// Load config
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	app, err := NewApp(ctx, cfg)
+	if err != nil {
+		log.Fatalf("Failed to initialize app: %v", err)
+	}
+	defer app.Close()
+
+	if err := app.Run(ctx); err != nil {
+		log.Fatalf("App exited with error: %v", err)
+	}
+}
+
+func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	// Connect to Valkey
 	valkeyClient, err := valkey.NewClient(fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort))
 	if err != nil {
-		log.Fatalf("Valkey creation failed: %v", err)
+		return nil, fmt.Errorf("valkey creation failed: %w", err)
 	}
-
-	defer func() { _ = valkeyClient.Close() }()
-
-	log.Println("Connected to Valkey")
 
 	// Connect to Postgres
 	postgreConnStr := fmt.Sprintf(
@@ -76,30 +98,22 @@ func main() {
 		cfg.PostgresDB,
 	)
 
-	// Run embedded migrations
-	log.Println("Running database migrations...")
-
-	if migrateErr := db.Migrate(postgreConnStr); migrateErr != nil {
-		log.Fatalf("Migration failed: %v", migrateErr)
+	if err = db.Migrate(postgreConnStr); err != nil {
+		return nil, fmt.Errorf("migration failed: %w", err)
 	}
-
-	log.Println("Database migrations applied successfully")
 
 	postgreClient, err := pgxpool.New(ctx, postgreConnStr)
 	if err != nil {
-		log.Fatalf("Failed to create database pool: %v", err)
+		return nil, fmt.Errorf("failed to create database pool: %w", err)
 	}
 
-	defer postgreClient.Close()
-
-	log.Println("Connected to Postgres")
-
-	// Initialize repositories and services
+	// Initialize repositories
 	userRepo := postgres.NewUserRepository(postgreClient)
 	portfolioRepo := postgres.NewPortfolioRepository(postgreClient)
 	marketRepo := valkey.NewMarketRepository(valkeyClient)
 	transactor := postgres.NewPgxTransactor(postgreClient)
 
+	// Initialize services
 	userService := service.NewUserService(userRepo, portfolioRepo)
 	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, transactor)
 	marketService := service.NewMarketService(marketRepo, cfg.Tickers)
@@ -107,63 +121,97 @@ func main() {
 
 	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService)
 
-	// Initialize router
-	router, err := api.NewRouter(restHandler, cfg)
+	return &App{
+		cfg:                cfg,
+		userService:        userService,
+		tradeService:       tradeService,
+		marketService:      marketService,
+		leaderboardService: leaderboardService,
+		restHandler:        restHandler,
+		valkeyClient:       valkeyClient,
+		postgreClient:      postgreClient,
+	}, nil
+}
+
+func (a *App) Run(ctx context.Context) error {
+	g, ctx := errgroup.WithContext(ctx)
+
+	// HTTP Server
+	router, err := api.NewRouter(a.restHandler, a.cfg)
 	if err != nil {
-		log.Fatalf("Failed to create router: %v", err)
+		return fmt.Errorf("failed to create router: %w", err)
 	}
 
-	// Start HTTP server in a goroutine
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", cfg.ServerPort),
+		Addr:    fmt.Sprintf(":%d", a.cfg.ServerPort),
 		Handler: router,
 	}
 
-	go func() {
-		log.Printf("Exchange API running on :%d\n", cfg.ServerPort)
-
-		srvErr := srv.ListenAndServe()
-
-		if srvErr != nil && !errors.Is(srvErr, http.ErrServerClosed) {
-			log.Fatalf("Failed to start server: %v", srvErr)
+	g.Go(func() error {
+		log.Printf("Exchange API running on :%d\n", a.cfg.ServerPort)
+		if srvErr := srv.ListenAndServe(); srvErr != nil && !errors.Is(srvErr, http.ErrServerClosed) {
+			return fmt.Errorf("HTTP server error: %w", srvErr)
 		}
-	}()
 
-	// Init gRPC server
+		return nil
+	})
+
+	g.Go(func() error {
+		<-ctx.Done()
+		log.Println("Shutting down HTTP server...")
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		return srv.Shutdown(shutdownCtx)
+	})
+
+	// gRPC Server
 	grpcListener, err := net.Listen("tcp", fmt.Sprintf(":%d", 50051))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		return fmt.Errorf("failed to listen gRPC: %w", err)
 	}
 
 	grpcServer := googlegrpc.NewServer(
 		googlegrpc.UnaryInterceptor(middleware.GrpcAuthInterceptor),
 	)
-	exchangeServer := grpcapi.NewExchangeServer(tradeService, marketService)
+	exchangeServer := grpcapi.NewExchangeServer(a.tradeService, a.marketService)
 	exchange.RegisterExchangeServiceServer(grpcServer, exchangeServer)
 
-	go func() {
+	g.Go(func() error {
 		log.Printf("Exchange gRPC running on :%d\n", 50051)
-
-		err := grpcServer.Serve(grpcListener)
-		if err != nil {
-			log.Fatalf("failed to serve gRPC: %v", err)
+		if gErr := grpcServer.Serve(grpcListener); gErr != nil {
+			return fmt.Errorf("gRPC server error: %w", gErr)
 		}
-	}()
 
-	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 5 seconds.
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	log.Println("Shutting down server...")
+		return nil
+	})
 
-	grpcServer.GracefulStop()
+	g.Go(func() error {
+		<-ctx.Done()
+		log.Println("Shutting down gRPC server...")
+		grpcServer.GracefulStop()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+		return nil
+	})
 
-	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown: ", err)
+	// Leaderboard Worker
+	lbWorker := worker.NewLeaderboardWorker(a.leaderboardService, 10*time.Minute)
+	g.Go(func() error {
+		if lbErr := lbWorker.Start(ctx); lbErr != nil && !errors.Is(lbErr, context.Canceled) {
+			return fmt.Errorf("leaderboard worker error: %w", lbErr)
+		}
+
+		return nil
+	})
+
+	return g.Wait()
+}
+
+func (a *App) Close() {
+	if a.valkeyClient != nil {
+		_ = a.valkeyClient.Close()
 	}
-
-	log.Println("Server exiting")
+	if a.postgreClient != nil {
+		a.postgreClient.Close()
+	}
 }
