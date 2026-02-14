@@ -32,14 +32,35 @@ func (r *UserRepository) GetUser(ctx context.Context, id int64) (*pb.User, error
 	}
 
 	return &pb.User{
-		Id:    u.ID,
-		Email: u.Email,
-		// PasswordHash is excluded from the query for security
+		Id:        u.ID,
+		Email:     u.Email,
 		Balance:   u.Balance,
 		CreatedAt: timestamppb.New(u.CreatedAt.Time),
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 	}, nil
+}
+
+// GetUsers retrieves all users.
+func (r *UserRepository) GetUsers(ctx context.Context) ([]*pb.User, error) {
+	res, err := r.queries.GetUsers(ctx)
+	if err != nil {
+		return nil, err
+	}
+	users := make([]*pb.User, len(res))
+
+	for i, u := range res {
+		users[i] = &pb.User{
+			Id:        u.ID,
+			Email:     u.Email,
+			FirstName: u.FirstName,
+			LastName:  u.LastName,
+			Balance:   u.Balance,
+			CreatedAt: timestamppb.New(u.CreatedAt.Time),
+		}
+	}
+
+	return users, nil
 }
 
 // WithTx returns a new UserRepository that uses the given transaction.

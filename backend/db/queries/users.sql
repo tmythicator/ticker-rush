@@ -33,3 +33,7 @@ WHERE id = $1 LIMIT 1 FOR UPDATE;
 SELECT id, email, password_hash, first_name, last_name, balance, created_at
 FROM users
 WHERE email = $1 LIMIT 1;
+
+-- name: GetUsers :many
+SELECT id, email, first_name, last_name, balance, created_at
+FROM users;

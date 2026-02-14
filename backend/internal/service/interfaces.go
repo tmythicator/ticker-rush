@@ -19,6 +19,7 @@ type Transactor interface {
 
 // UserRepository defines the interface for user persistence.
 type UserRepository interface {
+	GetUsers(ctx context.Context) ([]*pb.User, error)
 	GetUser(ctx context.Context, id int64) (*pb.User, error)
 	GetUserByEmail(
 		ctx context.Context,

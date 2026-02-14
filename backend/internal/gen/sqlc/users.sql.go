@@ -146,6 +146,47 @@ func (q *Queries) GetUserForUpdate(ctx context.Context, id int64) (GetUserForUpd
 	return i, err
 }
 
+const getUsers = `-- name: GetUsers :many
+SELECT id, email, first_name, last_name, balance, created_at
+FROM users
+`
+
+type GetUsersRow struct {
+	ID        int64
+	Email     string
+	FirstName string
+	LastName  string
+	Balance   float64
+	CreatedAt pgtype.Timestamptz
+}
+
+func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
+	rows, err := q.db.Query(ctx, getUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUsersRow
+	for rows.Next() {
+		var i GetUsersRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.FirstName,
+			&i.LastName,
+			&i.Balance,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateUser = `-- name: UpdateUser :exec
 UPDATE users
 SET email = $2,
