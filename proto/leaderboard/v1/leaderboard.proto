@@ -20,6 +20,7 @@ message GetLeaderboardRequest {
 message GetLeaderboardResponse {
   repeated LeaderboardEntry entries = 1;
   int32 total_count = 2;
+  int64 last_update = 3;
 }
 
 service LeaderBoardService {

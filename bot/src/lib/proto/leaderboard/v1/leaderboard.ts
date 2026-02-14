@@ -25,6 +25,7 @@ export interface GetLeaderboardRequest {
 export interface GetLeaderboardResponse {
   entries: LeaderboardEntry[];
   total_count: number;
+  last_update: string;
 }
 
 function createBaseLeaderboardEntry(): LeaderboardEntry {
@@ -244,7 +245,7 @@ export const GetLeaderboardRequest: MessageFns<GetLeaderboardRequest> = {
 };
 
 function createBaseGetLeaderboardResponse(): GetLeaderboardResponse {
-  return { entries: [], total_count: 0 };
+  return { entries: [], total_count: 0, last_update: "0" };
 }
 
 export const GetLeaderboardResponse: MessageFns<GetLeaderboardResponse> = {
@@ -254,6 +255,9 @@ export const GetLeaderboardResponse: MessageFns<GetLeaderboardResponse> = {
     }
     if (message.total_count !== 0) {
       writer.uint32(16).int32(message.total_count);
+    }
+    if (message.last_update !== "0") {
+      writer.uint32(24).int64(message.last_update);
     }
     return writer;
   },
@@ -281,6 +285,14 @@ export const GetLeaderboardResponse: MessageFns<GetLeaderboardResponse> = {
           message.total_count = reader.int32();
           continue;
         }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.last_update = reader.int64().toString();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -300,6 +312,11 @@ export const GetLeaderboardResponse: MessageFns<GetLeaderboardResponse> = {
         : isSet(object.total_count)
         ? globalThis.Number(object.total_count)
         : 0,
+      last_update: isSet(object.lastUpdate)
+        ? globalThis.String(object.lastUpdate)
+        : isSet(object.last_update)
+        ? globalThis.String(object.last_update)
+        : "0",
     };
   },
 
@@ -311,6 +328,9 @@ export const GetLeaderboardResponse: MessageFns<GetLeaderboardResponse> = {
     if (message.total_count !== 0) {
       obj.totalCount = Math.round(message.total_count);
     }
+    if (message.last_update !== "0") {
+      obj.lastUpdate = message.last_update;
+    }
     return obj;
   },
 
@@ -321,6 +341,7 @@ export const GetLeaderboardResponse: MessageFns<GetLeaderboardResponse> = {
     const message = createBaseGetLeaderboardResponse();
     message.entries = object.entries?.map((e) => LeaderboardEntry.fromPartial(e)) || [];
     message.total_count = object.total_count ?? 0;
+    message.last_update = object.last_update ?? "0";
     return message;
   },
 };

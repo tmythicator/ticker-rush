@@ -153,6 +153,7 @@ type GetLeaderboardResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Entries       []*LeaderboardEntry    `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
 	TotalCount    int32                  `protobuf:"varint,2,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
+	LastUpdate    int64                  `protobuf:"varint,3,opt,name=last_update,json=lastUpdate,proto3" json:"last_update,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -201,6 +202,13 @@ func (x *GetLeaderboardResponse) GetTotalCount() int32 {
 	return 0
 }
 
+func (x *GetLeaderboardResponse) GetLastUpdate() int64 {
+	if x != nil {
+		return x.LastUpdate
+	}
+	return 0
+}
+
 var File_leaderboard_v1_leaderboard_proto protoreflect.FileDescriptor
 
 const file_leaderboard_v1_leaderboard_proto_rawDesc = "" +
@@ -215,11 +223,13 @@ const file_leaderboard_v1_leaderboard_proto_rawDesc = "" +
 	"\tlast_name\x18\x05 \x01(\tR\blastName\"E\n" +
 	"\x15GetLeaderboardRequest\x12\x14\n" +
 	"\x05limit\x18\x01 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x02 \x01(\x05R\x06offset\"u\n" +
+	"\x06offset\x18\x02 \x01(\x05R\x06offset\"\x96\x01\n" +
 	"\x16GetLeaderboardResponse\x12:\n" +
 	"\aentries\x18\x01 \x03(\v2 .leaderboard.v1.LeaderboardEntryR\aentries\x12\x1f\n" +
 	"\vtotal_count\x18\x02 \x01(\x05R\n" +
-	"totalCount2u\n" +
+	"totalCount\x12\x1f\n" +
+	"\vlast_update\x18\x03 \x01(\x03R\n" +
+	"lastUpdate2u\n" +
 	"\x12LeaderBoardService\x12_\n" +
 	"\x0eGetLeaderboard\x12%.leaderboard.v1.GetLeaderboardRequest\x1a&.leaderboard.v1.GetLeaderboardResponseBUZSgithub.com/tmythicator/ticker-rush/server/internal/proto/leaderboard/v1;leaderboardb\x06proto3"
 

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"strconv"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/leaderboard/v1"
@@ -17,6 +18,7 @@ type LeaderBoardService struct {
 }
 
 const leaderboardKey = "leaderboard"
+const lastUpdateKey = "leaderboard:last_update"
 
 // NewLeaderBoardService creates a new instance of LeaderBoardService with required dependencies.
 func NewLeaderBoardService(
@@ -46,8 +48,8 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 
 		totalWorth := u.Balance
 
-		portfolio, err := s.portfolioRepo.GetPortfolio(ctx, u.Id)
-		if err != nil {
+		portfolio, errPortfolio := s.portfolioRepo.GetPortfolio(ctx, u.Id)
+		if errPortfolio != nil {
 			continue
 		}
 
@@ -66,6 +68,11 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 		}
 	}
 
+	err = s.redisClient.Set(ctx, lastUpdateKey, time.Now().Unix(), 0).Err()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -77,6 +84,20 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 	totalCount, err := s.redisClient.ZCard(ctx, leaderboardKey).Result()
 	if err != nil {
 		return nil, err
+	}
+
+	var lastUpdate int64
+	lastUpdateStr, errTime := s.redisClient.Get(ctx, lastUpdateKey).Result()
+	if errTime == nil {
+		lastUpdate, _ = strconv.ParseInt(lastUpdateStr, 10, 64)
+	}
+
+	if totalCount == 0 {
+		return &leaderboard.GetLeaderboardResponse{
+			Entries:    []*leaderboard.LeaderboardEntry{},
+			TotalCount: 0,
+			LastUpdate: lastUpdate,
+		}, nil
 	}
 
 	start := int64(req.GetOffset())
@@ -108,5 +129,9 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 		entries = append(entries, leadEntry)
 	}
 
-	return &leaderboard.GetLeaderboardResponse{Entries: entries, TotalCount: int32(totalCount)}, nil
+	return &leaderboard.GetLeaderboardResponse{
+		Entries:    entries,
+		TotalCount: int32(totalCount),
+		LastUpdate: lastUpdate,
+	}, nil
 }
