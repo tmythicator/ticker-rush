@@ -1,10 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
-import { type Quote } from '../lib/api';
-import { QUERY_KEY_QUOTE } from '../lib/queryKeys';
-import { useQuoteQuery } from './useQuoteQuery';
+import { type Quote } from '@/types';
+import { QUERY_KEY_QUOTE } from '@/lib/queryKeys';
+import { useQuoteQuery } from '@/hooks/useQuoteQuery';
 
-export const useQuotesSSE = (symbol: string) => {
+export const useQuotesSSE = (symbol: string | null) => {
   const [error, setError] = useState<Event | null>(null);
 
   const queryClient = useQueryClient();
@@ -27,6 +27,8 @@ export const useQuotesSSE = (symbol: string) => {
 
   // SSE worker
   useEffect(() => {
+    if (!symbol) return;
+
     const url = `${import.meta.env.VITE_API_URL}/quotes/events?symbol=${symbol}`;
     const eventSource = new EventSource(url);
 

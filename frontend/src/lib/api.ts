@@ -1,8 +1,4 @@
-import { Quote } from './proto/exchange/v1/exchange';
-import { GetLeaderboardResponse, LeaderboardEntry } from './proto/leaderboard/v1/leaderboard';
-import { PortfolioItem, User } from './proto/user/v1/user';
-
-export type { LeaderboardEntry, PortfolioItem, Quote, User };
+import { GetLeaderboardResponse, type Quote, type User } from '@/types';
 
 const API_URL = import.meta.env.VITE_API_URL;
 

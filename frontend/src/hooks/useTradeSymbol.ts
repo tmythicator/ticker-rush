@@ -1,25 +1,27 @@
-import { useEffect } from 'react';
+import { isTradeSymbol, type TradeSymbol } from '@/types';
+import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { TradeSymbol, isTradeSymbol } from '../types';
+import { useTickers } from './useTickers';
 
 export const useTradeSymbol = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [params, setParams] = useSearchParams();
+  const { data, isLoading } = useTickers();
+  const tickers = useMemo(() => data?.tickers ?? [], [data]);
 
-  const initialSymbolParam = searchParams.get('symbol');
-  const symbol: TradeSymbol =
-    initialSymbolParam && isTradeSymbol(initialSymbolParam)
-      ? (initialSymbolParam as TradeSymbol)
-      : TradeSymbol.AAPL;
-
-  const setSymbol = (newSymbol: TradeSymbol) => {
-    setSearchParams({ symbol: newSymbol });
-  };
+  const rawSymbol = params.get('symbol');
+  const isValid = rawSymbol && isTradeSymbol(rawSymbol, tickers);
+  const symbol = (isValid ? rawSymbol : (tickers[0] ?? null)) as TradeSymbol | null;
 
   useEffect(() => {
-    if (!initialSymbolParam || !isTradeSymbol(initialSymbolParam)) {
-      setSearchParams({ symbol: TradeSymbol.AAPL }, { replace: true });
+    if (!isLoading && tickers.length > 0 && rawSymbol !== symbol) {
+      setParams({ symbol: symbol! }, { replace: true });
     }
-  }, [initialSymbolParam, setSearchParams]);
+  }, [isLoading, tickers, rawSymbol, symbol, setParams]);
 
-  return { symbol, setSymbol };
+  return {
+    symbol,
+    setSymbol: (s: TradeSymbol) => setParams({ symbol: s }),
+    tickers,
+    isLoading,
+  };
 };
