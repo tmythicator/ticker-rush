@@ -90,6 +90,21 @@ The recommended way to start development is using [Nix](https://nixos.org):
 
 For detailed configuration and testing guidelines, refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
 
+## Configuration
+
+Ticker Rush uses environment variables for configuration. A `.env.example` file is provided in the project root.
+
+1.  **Copy the example**:
+    ```bash
+    cp .env.example .env
+    ```
+2.  **Update sensitive values**:
+    - `JWT_SECRET`: **CRITICAL**. Change this to a secure random string for production.
+    - `FINNHUB_API_KEY`: Get your free API key from [Finnhub.io](https://finnhub.io/).
+    - `TICKERS`: Comma-separated list of symbols to track (e.g., `AAPL,GOOG,BINANCE:BTCUSDT`).
+
+The application loads these values automatically on startup.
+
 ## License
 
 GNU Affero General Public License v3.0 (AGPL-3.0) — see [LICENSE](./LICENSE).
