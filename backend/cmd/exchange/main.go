@@ -58,9 +58,6 @@ type App struct {
 }
 
 func main() {
-	if err := config.LoadEnv(); err != nil {
-		log.Fatalf("Failed to load .env: %v", err)
-	}
 
 	cfg, err := config.LoadConfig()
 	if err != nil {

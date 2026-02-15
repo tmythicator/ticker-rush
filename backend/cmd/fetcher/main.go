@@ -36,16 +36,13 @@ import (
 )
 
 func main() {
-	if err := config.LoadEnv(); err != nil {
-		log.Printf("Failed to load .env: %v", err)
-	}
 
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	if err := cfg.ValidateFetcher(); err != nil {
+	if err := cfg.ValidateFinnhubKey(); err != nil {
 		log.Fatalf("Fetcher failed to start: %v", err)
 	}
 

@@ -2,89 +2,77 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"log"
-	"os"
 	"time"
+
+	"github.com/caarlos0/env/v11"
+	"github.com/joho/godotenv"
 )
 
 // Config holds the application configuration.
 type Config struct {
-	Tickers        []string
-	ServerPort     int
-	RedisHost      string
-	RedisPort      int
-	ClientPort     int
-	FetchInterval  time.Duration
-	SleepInterval  time.Duration
-	FinnhubKey     string
-	FinnhubTimeout time.Duration
-	PostgresUser   string
-	PostgresPass   string
-	PostgresDB     string
-	PostgresPort   int
-	PostgresHost   string
+	Tickers        []string      `env:"TICKERS" envDefault:"AAPL,BINANCE:BTCUSDT" envSeparator:","`
+	ServerPort     int           `env:"SERVER_PORT" envDefault:"8081"`
+	RedisHost      string        `env:"REDIS_HOST" envDefault:"localhost"`
+	RedisPort      int           `env:"REDIS_PORT" envDefault:"6379"`
+	ClientPort     int           `env:"CLIENT_PORT" envDefault:"5173"`
+	FetchInterval  time.Duration `env:"FETCH_INTERVAL" envDefault:"3s"`
+	SleepInterval  time.Duration `env:"SLEEP_INTERVAL" envDefault:"2s"`
+	FinnhubKey     string        `env:"FINNHUB_API_KEY"`
+	FinnhubTimeout time.Duration `env:"FINNHUB_TIMEOUT" envDefault:"10s"`
+	PostgresUser   string        `env:"POSTGRES_USER" envDefault:"postgres"`
+	PostgresPass   string        `env:"POSTGRES_PASSWORD" envDefault:"postgres"`
+	PostgresDB     string        `env:"POSTGRES_DB" envDefault:"ticker_rush"`
+	PostgresPort   int           `env:"POSTGRES_PORT" envDefault:"5432"`
+	PostgresHost   string        `env:"POSTGRES_HOST"`
+	JWTSecret      string        `env:"JWT_SECRET" envDefault:"secret"`
 }
 
 // LoadConfig loads the configuration from environment variables.
 func LoadConfig() (*Config, error) {
-	cfg := &Config{
-		Tickers: []string{
-			"AAPL",
-			"BINANCE:BTCUSDT",
-		},
-		ServerPort:     getEnvInt("SERVER_PORT", 8081),
-		RedisHost:      getEnvString("REDIS_HOST", "localhost"),
-		RedisPort:      getEnvInt("REDIS_PORT", 6379),
-		ClientPort:     getEnvInt("CLIENT_PORT", 5173),
-		FinnhubKey:     getEnvString("FINNHUB_API_KEY", ""),
-		FetchInterval:  3 * time.Second,
-		SleepInterval:  2 * time.Second,
-		FinnhubTimeout: 10 * time.Second,
-		PostgresUser:   getEnvString("POSTGRES_USER", "postgres"),
-		PostgresPass:   getEnvString("POSTGRES_PASSWORD", "postgres"),
-		PostgresDB:     getEnvString("POSTGRES_DB", "ticker_rush"),
-		PostgresPort:   getEnvInt("POSTGRES_PORT", 5432),
-		PostgresHost:   getEnvString("POSTGRES_HOST", os.Getenv("PGDATA")),
+	_ = godotenv.Load("../.env")
+
+	cfg := &Config{}
+	if err := env.Parse(cfg); err != nil {
+		return nil, fmt.Errorf("failed to parse config: %w", err)
 	}
-	log.Printf("config loaded: %s %s %s", cfg.PostgresUser, cfg.PostgresPass, cfg.PostgresDB)
+
+	log.Println("Configuration loaded:")
+	log.Printf("  TICKERS: %v", cfg.Tickers)
+	log.Printf("  SERVER_PORT: %d", cfg.ServerPort)
+	log.Printf("  REDIS_HOST: %s", cfg.RedisHost)
+	log.Printf("  REDIS_PORT: %d", cfg.RedisPort)
+	log.Printf("  CLIENT_PORT: %d", cfg.ClientPort)
+	log.Printf("  FETCH_INTERVAL: %s", cfg.FetchInterval)
+	log.Printf("  SLEEP_INTERVAL: %s", cfg.SleepInterval)
+	log.Printf("  FINNHUB_API_KEY: %s", maskString(cfg.FinnhubKey))
+	log.Printf("  FINNHUB_TIMEOUT: %s", cfg.FinnhubTimeout)
+	log.Printf("  POSTGRES_USER: %s", cfg.PostgresUser)
+	log.Printf("  POSTGRES_PASSWORD: %s", maskString(cfg.PostgresPass))
+	log.Printf("  POSTGRES_DB: %s", cfg.PostgresDB)
+	log.Printf("  POSTGRES_PORT: %d", cfg.PostgresPort)
+	log.Printf("  POSTGRES_HOST: %s", cfg.PostgresHost)
+	log.Printf("  JWT_SECRET: %s", maskString(cfg.JWTSecret))
 
 	return cfg, nil
 }
 
-// ValidateFetcher checks if the fetcher configuration is valid.
-func (c *Config) ValidateFetcher() error {
+func maskString(s string) string {
+	if len(s) == 0 {
+		return ""
+	}
+	if len(s) <= 4 {
+		return "****"
+	}
+	return s[:2] + "****" + s[len(s)-2:]
+}
+
+// ValidateFinnhubKey checks if the finnhub key is valid.
+func (c *Config) ValidateFinnhubKey() error {
 	if c.FinnhubKey == "" {
-		return errors.New("FINNHUB_API_KEY is not set")
+		return fmt.Errorf("FINNHUB_API_KEY is not set")
 	}
 
 	return nil
-}
-
-func getEnvInt(key string, defaultValue int) int {
-	val := os.Getenv(key)
-	if val == "" {
-		return defaultValue
-	}
-	// Remove any potential colon prefix if it exists, just in case
-	if val[0] == ':' {
-		val = val[1:]
-	}
-	// Parse int
-	var i int
-	if _, err := fmt.Sscanf(val, "%d", &i); err != nil {
-		return defaultValue
-	}
-
-	return i
-}
-
-func getEnvString(key, defaultValue string) string {
-	val := os.Getenv(key)
-	if val == "" {
-		return defaultValue
-	}
-
-	return val
 }
