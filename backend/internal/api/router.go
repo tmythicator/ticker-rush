@@ -42,7 +42,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 		api.POST("/register", handler.CreateUser)
 
 		protected := api.Group("/")
-		protected.Use(middleware.AuthMiddleware())
+		protected.Use(middleware.AuthMiddleware(cfg.JWTSecret))
 		{
 			protected.GET("/quotes/events", handler.StreamQuotes)
 			protected.GET("/quote", handler.GetQuote)

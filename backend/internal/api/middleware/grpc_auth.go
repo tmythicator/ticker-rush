@@ -17,31 +17,33 @@ type internalContextKey string
 const UserIDContextKey = internalContextKey("userID")
 
 // GrpcAuthInterceptor is a gRPC interceptor that validates the authorization token.
-func GrpcAuthInterceptor(
-	ctx context.Context,
-	req any,
-	info *grpc.UnaryServerInfo,
-	handler grpc.UnaryHandler,
-) (any, error) {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, status.Errorf(codes.Unauthenticated, "metadata is not provided")
+func GrpcAuthInterceptor(jwtSecret string) grpc.UnaryServerInterceptor {
+	return func(
+		ctx context.Context,
+		req any,
+		info *grpc.UnaryServerInfo,
+		handler grpc.UnaryHandler,
+	) (any, error) {
+		md, ok := metadata.FromIncomingContext(ctx)
+		if !ok {
+			return nil, status.Errorf(codes.Unauthenticated, "metadata is not provided")
+		}
+
+		values := md["authorization"]
+		if len(values) == 0 {
+			return nil, status.Errorf(codes.Unauthenticated, "authorization token is not provided")
+		}
+
+		accessToken := values[0]
+		tokenString := strings.TrimPrefix(accessToken, "Bearer ")
+
+		claims, err := service.ValidateToken(tokenString, jwtSecret)
+		if err != nil {
+			return nil, status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
+		}
+
+		newCtx := context.WithValue(ctx, UserIDContextKey, claims.UserID)
+
+		return handler(newCtx, req)
 	}
-
-	values := md["authorization"]
-	if len(values) == 0 {
-		return nil, status.Errorf(codes.Unauthenticated, "authorization token is not provided")
-	}
-
-	accessToken := values[0]
-	tokenString := strings.TrimPrefix(accessToken, "Bearer ")
-
-	claims, err := service.ValidateToken(tokenString)
-	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
-	}
-
-	newCtx := context.WithValue(ctx, UserIDContextKey, claims.UserID)
-
-	return handler(newCtx, req)
 }

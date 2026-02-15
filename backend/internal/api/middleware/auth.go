@@ -13,7 +13,7 @@ import (
 const UserIDKey = "userID"
 
 // AuthMiddleware is a Gin middleware that validates the authentication token from cookies.
-func AuthMiddleware() gin.HandlerFunc {
+func AuthMiddleware(jwtSecret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := c.Cookie("auth_token")
 		if err != nil {
@@ -28,7 +28,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		claims, err := service.ValidateToken(token)
+		claims, err := service.ValidateToken(token, jwtSecret)
 		if err != nil {
 			_ = c.AbortWithError(http.StatusUnauthorized, apperrors.ErrInvalidToken)
 

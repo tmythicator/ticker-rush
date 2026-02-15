@@ -22,6 +22,7 @@ type RestHandler struct {
 	tradeService  *service.TradeService
 	marketService *service.MarketService
 	leadService   *service.LeaderBoardService
+	jwtSecret     string
 }
 
 // NewRestHandler creates a new instance of RestHandler.
@@ -30,12 +31,14 @@ func NewRestHandler(
 	tradeService *service.TradeService,
 	marketService *service.MarketService,
 	leadService *service.LeaderBoardService,
+	jwtSecret string,
 ) *RestHandler {
 	return &RestHandler{
 		userService:   userService,
 		tradeService:  tradeService,
 		marketService: marketService,
 		leadService:   leadService,
+		jwtSecret:     jwtSecret,
 	}
 }
 
@@ -87,7 +90,7 @@ func (h *RestHandler) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := service.GenerateToken(user)
+	token, err := service.GenerateToken(user, h.jwtSecret)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 

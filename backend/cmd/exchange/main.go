@@ -116,7 +116,7 @@ func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	marketService := service.NewMarketService(marketRepo, cfg.Tickers)
 	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, valkeyClient)
 
-	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService)
+	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, cfg.JWTSecret)
 
 	return &App{
 		cfg:                cfg,
@@ -169,7 +169,7 @@ func (a *App) Run(ctx context.Context) error {
 	}
 
 	grpcServer := googlegrpc.NewServer(
-		googlegrpc.UnaryInterceptor(middleware.GrpcAuthInterceptor),
+		googlegrpc.UnaryInterceptor(middleware.GrpcAuthInterceptor(a.cfg.JWTSecret)),
 	)
 	exchangeServer := grpcapi.NewExchangeServer(a.tradeService, a.marketService)
 	exchange.RegisterExchangeServiceServer(grpcServer, exchangeServer)

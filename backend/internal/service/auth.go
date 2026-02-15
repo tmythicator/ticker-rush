@@ -3,22 +3,12 @@ package service
 
 import (
 	"errors"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
 	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 )
-
-func getSecretKey() []byte {
-	secret := os.Getenv("JWT_SECRET")
-	if secret == "" {
-		return []byte("super-secret-key-change-me")
-	}
-
-	return []byte(secret)
-}
 
 // Claims represents the JWT claims.
 type Claims struct {
@@ -28,7 +18,7 @@ type Claims struct {
 }
 
 // GenerateToken generates a new JWT token for the user.
-func GenerateToken(user *pb.User) (string, error) {
+func GenerateToken(user *pb.User, secret string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
 		UserID: user.GetId(),
@@ -41,16 +31,22 @@ func GenerateToken(user *pb.User) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(getSecretKey())
+	tokenString, err := token.SignedString([]byte(secret))
 
 	return tokenString, err
 }
 
 // ValidateToken validates the given JWT token string.
-func ValidateToken(tokenString string) (*Claims, error) {
+func ValidateToken(tokenString, secret string) (*Claims, error) {
 	claims := &Claims{}
 
-	token, err := jwt.ParseWithClaims(tokenString, claims, getKey)
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (any, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+
+		return []byte(secret), nil
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -60,12 +56,4 @@ func ValidateToken(tokenString string) (*Claims, error) {
 	}
 
 	return claims, nil
-}
-
-func getKey(token *jwt.Token) (any, error) {
-	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-		return nil, errors.New("unexpected signing method")
-	}
-
-	return getSecretKey(), nil
 }
