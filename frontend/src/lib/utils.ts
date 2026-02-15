@@ -1,6 +1,6 @@
-import { type PortfolioItem } from './api';
-import { type ClassValue, clsx } from 'clsx';
+import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { type PortfolioItem } from './api';
 
 /**
  * Calculates the total invested capital from a user's portfolio.
@@ -19,4 +19,12 @@ export const calculateInvestedCapital = (
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function formatLocalTime(timestamp: number | string): string {
+  if (!timestamp) return 'Never';
+  return new Intl.DateTimeFormat('en-GB', {
+    dateStyle: 'medium',
+    timeStyle: 'medium',
+  }).format(new Date(Number(timestamp) * 1000));
 }
