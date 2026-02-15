@@ -22,6 +22,7 @@ type RestHandler struct {
 	tradeService  *service.TradeService
 	marketService *service.MarketService
 	leadService   *service.LeaderBoardService
+	configService *service.ConfigService
 	jwtSecret     string
 }
 
@@ -31,6 +32,7 @@ func NewRestHandler(
 	tradeService *service.TradeService,
 	marketService *service.MarketService,
 	leadService *service.LeaderBoardService,
+	configService *service.ConfigService,
 	jwtSecret string,
 ) *RestHandler {
 	return &RestHandler{
@@ -38,6 +40,7 @@ func NewRestHandler(
 		tradeService:  tradeService,
 		marketService: marketService,
 		leadService:   leadService,
+		configService: configService,
 		jwtSecret:     jwtSecret,
 	}
 }
@@ -257,6 +260,11 @@ func (h *RestHandler) GetLeaderboard(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, resp)
+}
+
+// GetConfig returns the public configuration.
+func (h *RestHandler) GetConfig(c *gin.Context) {
+	c.JSON(http.StatusOK, h.configService.GetPublicConfig(c.Request.Context()))
 }
 
 // StreamQuotes handles SSE connection for real-time quotes.

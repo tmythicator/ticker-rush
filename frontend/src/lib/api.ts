@@ -73,3 +73,7 @@ export const register = async (
 ): Promise<User> => {
   return api.post('/register', { email, password, first_name, last_name });
 };
+
+export const getConfig = async (): Promise<{ tickers: string[] }> => {
+  return api.get('/config');
+};

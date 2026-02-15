@@ -115,8 +115,9 @@ func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, transactor)
 	marketService := service.NewMarketService(marketRepo, cfg.Tickers)
 	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, valkeyClient)
+	configService := service.NewConfigService(cfg)
 
-	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, cfg.JWTSecret)
+	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, configService, cfg.JWTSecret)
 
 	return &App{
 		cfg:                cfg,

@@ -116,14 +116,16 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 	tickers := []string{"AAPL", "GOOG", "BTC", "FAKE"}
 	marketService = service.NewMarketService(marketRepo, tickers)
 
-	restHandler = handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, testSecret)
-
-	// Mock Config for Router
+	// Mock Config Service
 	cfg := &config.Config{
 		ServerPort: 8080,
 		ClientPort: 3000,
 		JWTSecret:  testSecret,
+		Tickers:    tickers,
 	}
+	configService := service.NewConfigService(cfg)
+
+	restHandler = handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, configService, testSecret)
 
 	// Initialize Router
 	router, err := api.NewRouter(restHandler, cfg)

@@ -40,6 +40,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 		api.POST("/login", handler.Login)
 		api.POST("/logout", handler.Logout)
 		api.POST("/register", handler.CreateUser)
+		api.GET("/config", handler.GetConfig)
 
 		protected := api.Group("/")
 		protected.Use(middleware.AuthMiddleware(cfg.JWTSecret))
