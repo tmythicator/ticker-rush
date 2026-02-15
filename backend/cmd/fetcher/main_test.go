@@ -18,7 +18,7 @@ import (
 
 // MockFinnhubClient mocks the Finnhub API.
 type MockFinnhubClient struct {
-	FinnhubQuote finnhub.APIQuote
+	FinnhubQuote finnhub.Response
 }
 
 func (m *MockFinnhubClient) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error) {
@@ -41,7 +41,7 @@ func TestMarketFetcher(t *testing.T) {
 	})
 
 	// 2. Setup Mock Finnhub
-	mockQuote := finnhub.APIQuote{
+	mockQuote := finnhub.Response{
 		Change:       10.0,
 		CurrentPrice: 150.0,
 		Timestamp:    time.Now().Unix(),
@@ -56,7 +56,7 @@ func TestMarketFetcher(t *testing.T) {
 	ctx := t.Context()
 
 	// Start in a goroutine
-	go marketWorker.Start(ctx, "AAPL", 100*time.Millisecond, &sync.WaitGroup{})
+	go marketWorker.RunLoop(ctx, []string{"AAPL"}, 100*time.Millisecond, &sync.WaitGroup{})
 
 	// Wait for Redis update
 	time.Sleep(200 * time.Millisecond)
