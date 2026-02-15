@@ -1,6 +1,6 @@
-import { IconDollarSign, IconBriefcase, IconWallet } from '../icons/CustomIcons';
-import { type User } from '../../lib/api';
-import { calculateInvestedCapital } from '../../lib/utils';
+import { calculateInvestedCapital } from '@/lib/utils';
+import { type User } from '@/types';
+import { IconBriefcase, IconDollarSign, IconWallet } from '@icons/CustomIcons';
 import { StatCard } from './StatCard';
 
 interface DashboardStatsProps {

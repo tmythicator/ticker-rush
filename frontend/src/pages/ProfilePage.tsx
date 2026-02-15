@@ -1,6 +1,6 @@
-import { useAuth } from '../hooks/useAuth';
-import { Header, StatsGrid } from '../components/Profile';
-import { PortfolioTable } from '../components/PortfolioTable';
+import { useAuth } from '@/hooks/useAuth';
+import { Header, StatsGrid } from '@/components/Profile';
+import { PortfolioTable } from '@/components/PortfolioTable';
 
 export const ProfilePage = () => {
   const { user } = useAuth();

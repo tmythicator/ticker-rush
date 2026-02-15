@@ -1,4 +1,4 @@
-import { TradeAction } from '../../../types';
+import { TradeAction } from '@/types';
 
 export interface TradeButtonProps {
   type: TradeAction;

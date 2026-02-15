@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { buyStock, sellStock } from '../lib/api';
-import { QUERY_KEY_USER } from '../lib/queryKeys';
-import { TradeAction } from '../types';
+import { buyStock, sellStock } from '@/lib/api';
+import { QUERY_KEY_USER } from '@/lib/queryKeys';
+import { TradeAction } from '@/types';
 
 interface UseTradeOptions {
   symbol: string;

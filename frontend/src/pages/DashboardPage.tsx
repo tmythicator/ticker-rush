@@ -1,8 +1,8 @@
-import { MarketChart, TradePanel, DashboardStats } from '../components/Dashboard';
-import { PortfolioTable } from '../components/PortfolioTable';
-import { useQuotesSSE } from '../hooks/useQuotesSSE';
-import { useAuth } from '../hooks/useAuth';
-import { useTradeSymbol } from '../hooks/useTradeSymbol';
+import { MarketChart, TradePanel, DashboardStats } from '@/components/Dashboard';
+import { PortfolioTable } from '@/components/PortfolioTable';
+import { useQuotesSSE } from '@/hooks/useQuotesSSE';
+import { useAuth } from '@/hooks/useAuth';
+import { useTradeSymbol } from '@/hooks/useTradeSymbol';
 
 export const DashboardPage = () => {
   const { symbol, setSymbol } = useTradeSymbol();

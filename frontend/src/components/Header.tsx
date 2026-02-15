@@ -5,9 +5,9 @@ import {
   IconTrophy,
   IconUser,
   IconLogOut,
-} from './icons/CustomIcons';
+} from '@icons/CustomIcons';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { ThemeToggle } from './ThemeToggle';
 
 export const Header = () => {

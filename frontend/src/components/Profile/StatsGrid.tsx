@@ -1,7 +1,7 @@
-import { IconBriefcase, IconWallet, IconTrending } from '../icons/CustomIcons';
+import { IconBriefcase, IconWallet, IconTrending } from '@icons/CustomIcons';
 
-import { type User } from '../../lib/api';
-import { calculateInvestedCapital } from '../../lib/utils';
+import { type User } from '@/types';
+import { calculateInvestedCapital } from '@/lib/utils';
 
 interface StatsGridProps {
   user: User;
