@@ -7,13 +7,14 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
 )
 
-// APIQuote represents a stock quote from the Finnhub API.
-type APIQuote struct {
+// Response represents a stock quote from the Finnhub API.
+type Response struct {
 	CurrentPrice  float64 `json:"c"`  // c = Current price
 	Change        float64 `json:"d"`  // d = Change
 	PercentChange float64 `json:"dp"` // dp = Percent change
@@ -38,7 +39,9 @@ func NewClient(apiKey string, timeout time.Duration) *Client {
 
 // GetQuote fetches a stock quote for a given symbol.
 func (c *Client) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error) {
-	url := fmt.Sprintf("%s/quote?symbol=%s&token=%s", c.baseURL, symbol, c.apiKey)
+	apiSymbol := strings.TrimPrefix(symbol, "FH:")
+
+	url := fmt.Sprintf("%s/quote?symbol=%s&token=%s", c.baseURL, apiSymbol, c.apiKey)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -56,7 +59,7 @@ func (c *Client) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, 
 		return nil, fmt.Errorf("API status: %d", resp.StatusCode)
 	}
 
-	var fq APIQuote
+	var fq Response
 	if err := json.NewDecoder(resp.Body).Decode(&fq); err != nil {
 		return nil, fmt.Errorf("json error: %w", err)
 	}

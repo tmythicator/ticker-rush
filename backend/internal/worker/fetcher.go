@@ -12,61 +12,82 @@ import (
 	"github.com/tmythicator/ticker-rush/server/internal/repository/redis"
 )
 
-// FinnhubClient defines the interface for fetching quotes.
-type FinnhubClient interface {
+// QuoteProvider defines the interface for fetching quotes.
+type QuoteProvider interface {
 	GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error)
 }
 
 // MarketFetcher is a worker that fetches market data.
 type MarketFetcher struct {
-	client FinnhubClient
+	client QuoteProvider
 	repo   *redis.MarketRepository
 }
 
 // NewMarketFetcher creates a new instance of MarketFetcher.
-func NewMarketFetcher(client FinnhubClient, repo *redis.MarketRepository) *MarketFetcher {
+func NewMarketFetcher(client QuoteProvider, repo *redis.MarketRepository) *MarketFetcher {
 	return &MarketFetcher{
 		client: client,
 		repo:   repo,
 	}
 }
 
-// Start begins the fetching loop for a symbol.
-func (w *MarketFetcher) Start(
+// RunLoop begins the fetching loop for a list of symbols.
+// It processes tickers serially to ensure rate limits are respected.
+func (w *MarketFetcher) RunLoop(
 	ctx context.Context,
-	symbol string,
+	symbols []string,
 	fetchInterval time.Duration,
 	wg *sync.WaitGroup,
 ) {
-	ticker := time.NewTicker(fetchInterval)
-
-	// Initial fetch
-	lastQuote, err := w.processTicker(ctx, symbol, nil)
-	if err != nil {
-		log.Printf("[%s] Initial fetch failed (will retry in loop): %v", symbol, err)
+	if len(symbols) == 0 {
+		return
 	}
 
-	wg.Go(func() {
-		defer ticker.Stop()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		// Local cache for deduplication
+		lastQuotes := make(map[string]*exchange.Quote)
+
+		// Create a ticker for the interval between requests
+		// Note: This interval is the pause *between* requests, guaranteeing rate limit compliance.
+		delay := time.NewTicker(fetchInterval)
+		defer delay.Stop()
 
 		for {
-			select {
-			case <-ticker.C:
-				q, err := w.processTicker(ctx, symbol, lastQuote)
-				if err != nil {
-					log.Printf("[%s] Tick skipped: %v", symbol, err)
+			for _, symbol := range symbols {
+				// Check for cancellation before each fetch
+				select {
+				case <-ctx.Done():
+					log.Printf("Worker loop for %v stopped", symbols)
 
-					continue
+					return
+				default:
 				}
 
-				lastQuote = q
-			case <-ctx.Done():
-				log.Printf("Worker for %s stopped", symbol)
+				// Process the ticker
+				q, err := w.processTicker(ctx, symbol, lastQuotes[symbol])
+				if err != nil {
+					log.Printf("[%s] Fetch failed: %v", symbol, err)
+					// We continue to the next ticker even if one fails
+				} else {
+					// Update local cache if successful
+					lastQuotes[symbol] = q
+				}
 
-				return
+				// Wait for the rate limit interval
+				select {
+				case <-delay.C:
+					// Continue
+				case <-ctx.Done():
+					log.Printf("Worker loop for %v stopped", symbols)
+
+					return
+				}
 			}
 		}
-	})
+	}()
 }
 
 func (w *MarketFetcher) processTicker(
