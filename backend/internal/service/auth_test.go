@@ -1,7 +1,6 @@
 package service_test
 
 import (
-	"os"
 	"testing"
 	"time"
 
@@ -23,14 +22,7 @@ func TestAuthService_GenerateToken(t *testing.T) {
 		Email: testEmail,
 	}
 
-	err := os.Setenv("JWT_SECRET", secret)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	defer func() { _ = os.Unsetenv("JWT_SECRET") }()
-
-	tokenString, err := service.GenerateToken(user)
+	tokenString, err := service.GenerateToken(user, secret)
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, tokenString)
@@ -48,13 +40,6 @@ func TestAuthService_GenerateToken(t *testing.T) {
 func TestAuthService_ValidateToken(t *testing.T) {
 	const secret = "test-secret"
 
-	err := os.Setenv("JWT_SECRET", secret)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	defer func() { _ = os.Unsetenv("JWT_SECRET") }()
-
 	t.Run("Valid Token", func(t *testing.T) {
 		claims := &service.Claims{
 			UserID: 456,
@@ -67,7 +52,7 @@ func TestAuthService_ValidateToken(t *testing.T) {
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		tokenString, _ := token.SignedString([]byte(secret))
 
-		parsedClaims, err := service.ValidateToken(tokenString)
+		parsedClaims, err := service.ValidateToken(tokenString, secret)
 
 		assert.NoError(t, err)
 		assert.Equal(t, int64(456), parsedClaims.UserID)
@@ -81,7 +66,7 @@ func TestAuthService_ValidateToken(t *testing.T) {
 
 		tamperedToken := tokenString + "mutated"
 
-		_, err := service.ValidateToken(tamperedToken)
+		_, err := service.ValidateToken(tamperedToken, secret)
 		assert.Error(t, err)
 	})
 
@@ -96,7 +81,7 @@ func TestAuthService_ValidateToken(t *testing.T) {
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 		tokenString, _ := token.SignedString([]byte(secret))
 
-		_, err := service.ValidateToken(tokenString)
+		_, err := service.ValidateToken(tokenString, secret)
 		assert.Error(t, err)
 	})
 }

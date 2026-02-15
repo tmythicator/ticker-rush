@@ -30,7 +30,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const testEmail = "userTest@example.com"
+const (
+	testEmail  = "userTest@example.com"
+	testSecret = "test-secret"
+)
 
 var (
 	ctx           = context.Background()
@@ -113,12 +116,13 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 	tickers := []string{"AAPL", "GOOG", "BTC", "FAKE"}
 	marketService = service.NewMarketService(marketRepo, tickers)
 
-	restHandler = handler.NewRestHandler(userService, tradeService, marketService, leaderboardService)
+	restHandler = handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, testSecret)
 
 	// Mock Config for Router
 	cfg := &config.Config{
 		ServerPort: 8080,
 		ClientPort: 3000,
+		JWTSecret:  testSecret,
 	}
 
 	// Initialize Router
@@ -236,7 +240,7 @@ func TestBuyStock(t *testing.T) {
 	}
 
 	// Generate Token
-	token, _ := service.GenerateToken(user)
+	token, _ := service.GenerateToken(user, testSecret)
 
 	// Perform Buy
 	reqBody := fmt.Sprintf(`{"symbol": "%s", "count": %f}`, symbol, quantity)
@@ -299,7 +303,7 @@ func TestSellStock(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Generate Token
-	token, _ := service.GenerateToken(user)
+	token, _ := service.GenerateToken(user, testSecret)
 
 	// Perform Sell
 	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "count": %f}`, mockSellQuantity)
@@ -346,7 +350,7 @@ func TestInsufficientFunds(t *testing.T) {
 	user, _ := userRepo.GetUser(ctx, createdUser.GetId())
 
 	// Generate Token
-	token, _ := service.GenerateToken(user)
+	token, _ := service.GenerateToken(user, testSecret)
 
 	// balance < cost
 	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "count": %d}`, mockBuyQuantity)
@@ -396,7 +400,7 @@ func TestSellAllStock(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Generate Token
-	token, _ := service.GenerateToken(createdUser)
+	token, _ := service.GenerateToken(createdUser, testSecret)
 
 	// Perform Sell All
 	reqBody := fmt.Sprintf(`{"symbol": "%s", "count": %f}`, symbol, mockSellQuantity)
