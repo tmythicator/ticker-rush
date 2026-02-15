@@ -1,7 +1,8 @@
-import { useQuotesSSE } from '../hooks/useQuotesSSE';
-import { useTrade } from '../hooks/useTrade';
-import { TradeAction } from '../types';
-import { Modal } from './Modal';
+import { Modal } from '@/components/Modal';
+import { useQuotesSSE } from '@/hooks/useQuotesSSE';
+import { useTrade } from '@/hooks/useTrade';
+import { parseTicker } from '@/lib/utils';
+import { TradeAction } from '@/types';
 
 interface SellPositionModalProps {
   isOpen: boolean;
@@ -38,12 +39,14 @@ export const SellPositionModal = ({
   const isPriceLoading = isOpen && !quote && !sseError;
   const isPriceError = !!sseError;
 
+  const { symbol: displaySymbol } = parseTicker(symbol);
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`Sell ${symbol}?`}>
+    <Modal isOpen={isOpen} onClose={onClose} title={`Sell ${displaySymbol.toUpperCase()}?`}>
       <div className="space-y-4">
         <p className="text-muted-foreground text-sm">
           Are you sure you want to sell your entire position of{' '}
-          <strong className="text-foreground">{symbol}</strong>?
+          <strong className="text-foreground">{displaySymbol.toUpperCase()}</strong>?
         </p>
 
         <div className="bg-muted/50 rounded-lg p-4 space-y-2 border border-border">

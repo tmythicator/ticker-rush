@@ -1,4 +1,4 @@
-import { TradeSymbol } from '../../../types';
+import { type TradeSymbol } from '@/types';
 import { ChartSymbolIndicator } from './ChartSymbolIndicator';
 import { ChartSymbolPicker } from './ChartSymbolPicker';
 

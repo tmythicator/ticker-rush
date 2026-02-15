@@ -1,8 +1,12 @@
+import { IconArrowRight, IconBriefcase, IconTrash } from '@/components/icons/CustomIcons';
+import { SellPositionModal } from '@/components/SellPositionModal';
+import { parseTicker } from '@/lib/utils';
+import type { PortfolioItem } from '@/types';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { PortfolioItem } from '../lib/api';
-import { IconArrowRight, IconBriefcase, IconTrash } from './icons/CustomIcons';
-import { SellPositionModal } from './SellPositionModal';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { SourceBadge } from '@/components/shared/SourceBadge';
 
 interface PortfolioTableProps {
   portfolio: Record<string, PortfolioItem>;
@@ -23,7 +27,7 @@ export const PortfolioTable = ({ portfolio }: PortfolioTableProps) => {
   };
 
   return (
-    <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
+    <Card className="overflow-hidden">
       <div className="px-6 py-5 border-b border-border flex items-center justify-between">
         <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
           <IconBriefcase className="w-5 h-5 text-muted-foreground" />
@@ -42,46 +46,56 @@ export const PortfolioTable = ({ portfolio }: PortfolioTableProps) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {Object.values(portfolio).map((item) => (
-              <tr key={item.stock_symbol} className="hover:bg-muted/50 transition-colors">
-                <td className="px-6 py-4 font-bold text-foreground">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center font-bold text-xs text-muted-foreground">
-                      {item.stock_symbol[0]}
+            {Object.values(portfolio).map((item) => {
+              const { source, symbol } = parseTicker(item.stock_symbol);
+              return (
+                <tr key={item.stock_symbol} className="hover:bg-muted/50 transition-colors">
+                  <td className="px-6 py-4 font-bold text-foreground">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center font-bold text-xs text-muted-foreground">
+                        {symbol[0].toUpperCase()}
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <span className="text-sm font-bold">{symbol.toUpperCase()}</span>
+                        <SourceBadge source={source} />
+                      </div>
                     </div>
-                    {item.stock_symbol}
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-right font-mono text-muted-foreground">
-                  {item.quantity}
-                </td>
-                <td className="px-6 py-4 text-right font-mono text-muted-foreground">
-                  ${item.average_price.toFixed(2)}
-                </td>
-                <td className="px-6 py-4 text-right font-mono text-foreground font-bold">
-                  ${(item.quantity * item.average_price).toFixed(2)}
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <button
-                      onClick={() => handleSellClick(item)}
-                      className="text-xs font-bold text-destructive hover:bg-destructive/10 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
-                      title="Sell All"
-                    >
-                      <IconTrash className="w-3 h-3" />
-                      Sell All
-                    </button>
-                    <button
-                      onClick={() => handleTrade(item.stock_symbol)}
-                      className="text-xs font-bold text-primary hover:bg-primary/10 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
-                    >
-                      Trade
-                      <IconArrowRight className="w-3 h-3" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="px-6 py-4 text-right font-mono text-muted-foreground">
+                    {item.quantity}
+                  </td>
+                  <td className="px-6 py-4 text-right font-mono text-muted-foreground">
+                    ${item.average_price.toFixed(2)}
+                  </td>
+                  <td className="px-6 py-4 text-right font-mono text-foreground font-bold">
+                    ${(item.quantity * item.average_price).toFixed(2)}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleSellClick(item)}
+                        title="Sell All"
+                        className="h-8 px-3 text-xs"
+                      >
+                        <IconTrash className="w-3 h-3 mr-1" />
+                        Sell All
+                      </Button>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => handleTrade(item.stock_symbol)}
+                        className="h-8 px-3 text-xs"
+                      >
+                        Trade
+                        <IconArrowRight className="w-3 h-3 ml-1" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
             {Object.keys(portfolio).length === 0 && (
               <tr>
                 <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground italic">
@@ -102,6 +116,6 @@ export const PortfolioTable = ({ portfolio }: PortfolioTableProps) => {
           onSuccess={() => setSellModal({ isOpen: false })}
         />
       )}
-    </div>
+    </Card>
   );
 };

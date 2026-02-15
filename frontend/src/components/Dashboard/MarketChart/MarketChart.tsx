@@ -1,12 +1,12 @@
 import { useRef } from 'react';
-import { type Quote } from '../../../lib/api';
+import { type Quote } from '@/types';
 import { ChartBody } from './ChartBody';
-import { TradeSymbol } from '../../../types';
-import { useChart } from '../../../hooks/useChart';
-import { usePriceColor } from '../../../hooks/usePriceColor';
+import { type TradeSymbol } from '@/types';
+import { useChart } from '@/hooks/useChart';
+import { usePriceColor } from '@/hooks/usePriceColor';
 
 interface MarketChartProps {
-  symbol: TradeSymbol;
+  symbol: TradeSymbol | null;
   onSymbolChange: (s: TradeSymbol) => void;
   quote?: Quote;
   isLoading: boolean;
@@ -25,6 +25,14 @@ export const MarketChart = ({
   useChart({ chartContainerRef, quote, symbol });
 
   const priceColor = usePriceColor(quote?.price);
+
+  if (!symbol) {
+    return (
+      <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-muted/10 rounded-lg">
+        No active ticker selected. Check configuration.
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full relative group">

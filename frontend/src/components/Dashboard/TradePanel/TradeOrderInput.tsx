@@ -1,8 +1,10 @@
-import { TradeAction } from '../../../types';
+import { TradeAction, type TickerSource } from '@/types';
+import { SourceBadge } from '@/components/shared/SourceBadge';
 import { TradeButtons } from './TradeButtons';
 
 interface TradeOrderInputProps {
   symbol: string;
+  source?: TickerSource;
   quantity: string;
   setQuantity: (quantity: string) => void;
   error: string | null;
@@ -11,6 +13,7 @@ interface TradeOrderInputProps {
 
 export const TradeOrderInput = ({
   symbol,
+  source,
   quantity,
   setQuantity,
   error,
@@ -23,16 +26,14 @@ export const TradeOrderInput = ({
         <label className="block text-xs font-bold text-muted-foreground mb-2 uppercase tracking-wider">
           Symbol
         </label>
-        <div className="relative">
+        <div className="w-full bg-muted border border-border rounded-lg px-3 py-3 flex items-center gap-3 opacity-70">
+          {source && <SourceBadge source={source} />}
           <input
             type="text"
             value={symbol}
             disabled
-            className="w-full bg-muted border border-border rounded-lg px-4 py-3 font-mono text-sm font-bold text-muted-foreground opacity-70"
+            className="flex-1 bg-transparent border-none p-0 font-mono text-sm font-bold text-muted-foreground focus:outline-none"
           />
-          <div className="absolute right-3 top-3 text-xs font-bold text-muted-foreground">
-            STOCK
-          </div>
         </div>
       </div>
 

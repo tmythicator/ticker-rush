@@ -1,12 +1,15 @@
-import { IconTrending, IconRefresh } from '../../icons/CustomIcons';
+import { IconRefresh } from '@/components/icons/CustomIcons';
 
-export const TradePanelHeader = ({ isLoading }: { isLoading: boolean }) => {
+interface TradePanelHeaderProps {
+  isLoading: boolean;
+}
+
+export const TradePanelHeader = ({ isLoading }: TradePanelHeaderProps) => {
   return (
     <div className="flex items-center justify-between mb-6">
-      <h2 className="font-bold text-foreground flex items-center gap-2">
-        <IconTrending className="w-4 h-4 text-primary" />
-        Place Order
-      </h2>
+      <div className="flex items-center gap-2">
+        <h2 className="text-lg font-semibold text-foreground">Trade Asset</h2>
+      </div>
       {isLoading && <IconRefresh className="w-4 h-4 animate-spin text-muted-foreground" />}
     </div>
   );
