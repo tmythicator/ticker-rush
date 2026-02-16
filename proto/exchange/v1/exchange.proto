@@ -10,6 +10,7 @@ message Quote {
   double change = 3;
   double change_percent = 4;
   int64 timestamp = 5;
+  string source = 6;
 }
 
 service ExchangeService {

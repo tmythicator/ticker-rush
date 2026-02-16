@@ -8,6 +8,14 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type MarketQuote struct {
+	ID        int64
+	Symbol    string
+	Price     pgtype.Numeric
+	Source    string
+	CreatedAt pgtype.Timestamp
+}
+
 type PortfolioItem struct {
 	UserID       int64
 	StockSymbol  string

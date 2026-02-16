@@ -81,5 +81,6 @@ func (c *Client) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, 
 		Symbol:    symbol,
 		Price:     data.USD,
 		Timestamp: timestamp,
+		Source:    "CG",
 	}, nil
 }

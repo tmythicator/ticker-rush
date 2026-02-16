@@ -15,6 +15,7 @@ export interface Quote {
   change: number;
   change_percent: number;
   timestamp: string;
+  source: string;
 }
 
 export interface GetQuoteRequest {
@@ -48,7 +49,7 @@ export interface SellStockResponse {
 }
 
 function createBaseQuote(): Quote {
-  return { symbol: "", price: 0, change: 0, change_percent: 0, timestamp: "0" };
+  return { symbol: "", price: 0, change: 0, change_percent: 0, timestamp: "0", source: "" };
 }
 
 export const Quote: MessageFns<Quote> = {
@@ -67,6 +68,9 @@ export const Quote: MessageFns<Quote> = {
     }
     if (message.timestamp !== "0") {
       writer.uint32(40).int64(message.timestamp);
+    }
+    if (message.source !== "") {
+      writer.uint32(50).string(message.source);
     }
     return writer;
   },
@@ -118,6 +122,14 @@ export const Quote: MessageFns<Quote> = {
           message.timestamp = reader.int64().toString();
           continue;
         }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.source = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -138,6 +150,7 @@ export const Quote: MessageFns<Quote> = {
         ? globalThis.Number(object.change_percent)
         : 0,
       timestamp: isSet(object.timestamp) ? globalThis.String(object.timestamp) : "0",
+      source: isSet(object.source) ? globalThis.String(object.source) : "",
     };
   },
 
@@ -158,6 +171,9 @@ export const Quote: MessageFns<Quote> = {
     if (message.timestamp !== "0") {
       obj.timestamp = message.timestamp;
     }
+    if (message.source !== "") {
+      obj.source = message.source;
+    }
     return obj;
   },
 
@@ -171,6 +187,7 @@ export const Quote: MessageFns<Quote> = {
     message.change = object.change ?? 0;
     message.change_percent = object.change_percent ?? 0;
     message.timestamp = object.timestamp ?? "0";
+    message.source = object.source ?? "";
     return message;
   },
 };

@@ -79,5 +79,6 @@ func (c *Client) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, 
 		Change:        fq.Change,
 		ChangePercent: fq.PercentChange,
 		Timestamp:     ts,
+		Source:        "FH",
 	}, nil
 }

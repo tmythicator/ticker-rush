@@ -28,6 +28,7 @@ type Quote struct {
 	Change        float64                `protobuf:"fixed64,3,opt,name=change,proto3" json:"change,omitempty"`
 	ChangePercent float64                `protobuf:"fixed64,4,opt,name=change_percent,json=changePercent,proto3" json:"change_percent,omitempty"`
 	Timestamp     int64                  `protobuf:"varint,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Source        string                 `protobuf:"bytes,6,opt,name=source,proto3" json:"source,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -95,6 +96,13 @@ func (x *Quote) GetTimestamp() int64 {
 		return x.Timestamp
 	}
 	return 0
+}
+
+func (x *Quote) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
 }
 
 type GetQuoteRequest struct {
@@ -413,13 +421,14 @@ var File_exchange_v1_exchange_proto protoreflect.FileDescriptor
 
 const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\n" +
-	"\x1aexchange/v1/exchange.proto\x12\vexchange.v1\"\x92\x01\n" +
+	"\x1aexchange/v1/exchange.proto\x12\vexchange.v1\"\xaa\x01\n" +
 	"\x05Quote\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x14\n" +
 	"\x05price\x18\x02 \x01(\x01R\x05price\x12\x16\n" +
 	"\x06change\x18\x03 \x01(\x01R\x06change\x12%\n" +
 	"\x0echange_percent\x18\x04 \x01(\x01R\rchangePercent\x12\x1c\n" +
-	"\ttimestamp\x18\x05 \x01(\x03R\ttimestamp\")\n" +
+	"\ttimestamp\x18\x05 \x01(\x03R\ttimestamp\x12\x16\n" +
+	"\x06source\x18\x06 \x01(\tR\x06source\")\n" +
 	"\x0fGetQuoteRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"<\n" +
 	"\x10GetQuoteResponse\x12(\n" +
