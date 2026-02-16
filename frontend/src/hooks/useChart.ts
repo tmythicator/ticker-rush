@@ -1,6 +1,14 @@
 import { getChartColors } from '@/lib/chartUtils';
 import { type Quote, type TradeSymbol } from '@/types';
-import { AreaSeries, ColorType, createChart, type ISeriesApi, type Time } from 'lightweight-charts';
+import {
+  AreaSeries,
+  ColorType,
+  createChart,
+  type ChartOptions,
+  type DeepPartial,
+  type ISeriesApi,
+  type Time,
+} from 'lightweight-charts';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useChartHistory } from './useChartHistory';
 import { useThemeObserver } from './useThemeObserver';
@@ -9,9 +17,10 @@ interface UseChartProps {
   chartContainerRef: React.RefObject<HTMLDivElement | null>;
   quote: Quote | null;
   symbol: TradeSymbol | null;
+  options?: DeepPartial<ChartOptions>;
 }
 
-export const useChart = ({ chartContainerRef, quote, symbol }: UseChartProps) => {
+export const useChart = ({ chartContainerRef, quote, symbol, options }: UseChartProps) => {
   const chartRef = useRef<ReturnType<typeof createChart> | null>(null);
   const seriesRef = useRef<ISeriesApi<'Area'> | null>(null);
 
@@ -23,18 +32,18 @@ export const useChart = ({ chartContainerRef, quote, symbol }: UseChartProps) =>
 
     chartRef.current.applyOptions({
       layout: {
-        background: { type: ColorType.Solid, color: colors.bgColor },
-        textColor: colors.textColor,
+        background: options?.layout?.background || { type: ColorType.Solid, color: colors.bgColor },
+        textColor: options?.layout?.textColor || colors.textColor,
       },
       grid: {
-        horzLines: { color: colors.borderColor },
-        vertLines: { color: colors.borderColor },
+        horzLines: { color: options?.grid?.horzLines?.color || colors.borderColor },
+        vertLines: { color: options?.grid?.vertLines?.color || colors.borderColor },
       },
       timeScale: {
-        borderColor: colors.borderColor,
+        borderColor: options?.timeScale?.borderColor || colors.borderColor,
       },
       rightPriceScale: {
-        borderColor: colors.borderColor,
+        borderColor: options?.rightPriceScale?.borderColor || colors.borderColor,
       },
     });
 
@@ -65,14 +74,17 @@ export const useChart = ({ chartContainerRef, quote, symbol }: UseChartProps) =>
           });
         },
       },
+      ...options,
       layout: {
         background: { type: ColorType.Solid, color: colors.bgColor },
         textColor: colors.textColor,
         attributionLogo: false,
+        ...options?.layout,
       },
       grid: {
         vertLines: { visible: false },
         horzLines: { color: colors.borderColor },
+        ...options?.grid,
       },
       width: chartContainerRef.current.clientWidth,
       height: 500,
@@ -81,9 +93,11 @@ export const useChart = ({ chartContainerRef, quote, symbol }: UseChartProps) =>
         timeVisible: true,
         secondsVisible: true,
         borderColor: colors.borderColor,
+        ...options?.timeScale,
       },
       rightPriceScale: {
         borderColor: colors.borderColor,
+        ...options?.rightPriceScale,
       },
     });
 
@@ -110,7 +124,7 @@ export const useChart = ({ chartContainerRef, quote, symbol }: UseChartProps) =>
 
       seriesRef.current = null;
     };
-  }, [chartContainerRef]);
+  }, [chartContainerRef, options]);
 
   // Update Data
   useEffect(() => {

@@ -41,17 +41,17 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 		api.POST("/logout", handler.Logout)
 		api.POST("/register", handler.CreateUser)
 		api.GET("/config", handler.GetConfig)
+		api.GET("/history", handler.GetHistory)
+		api.GET("/leaderboard", handler.GetLeaderboard)
 
 		protected := api.Group("/")
 		protected.Use(middleware.AuthMiddleware(cfg.JWTSecret))
 		{
 			protected.GET("/quotes/events", handler.StreamQuotes)
 			protected.GET("/quote", handler.GetQuote)
-			protected.GET("/history", handler.GetHistory)
 			protected.GET("/user/me", handler.GetMe)
 			protected.POST("/buy", handler.BuyStock)
 			protected.POST("/sell", handler.SellStock)
-			protected.GET("/leaderboard", handler.GetLeaderboard)
 		}
 	}
 
