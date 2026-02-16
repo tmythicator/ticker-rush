@@ -35,7 +35,7 @@ func (q *Queries) CreateQuote(ctx context.Context, arg CreateQuoteParams) error 
 
 const getHistoryForSymbol = `-- name: GetHistoryForSymbol :many
 WITH latest_quotes AS (
-    SELECT symbol, price, source, created_at
+    SELECT DISTINCT ON (created_at) symbol, price, source, created_at
     FROM market_quotes
     WHERE symbol = $1
     ORDER BY created_at DESC
