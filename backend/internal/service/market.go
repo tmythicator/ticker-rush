@@ -12,13 +12,19 @@ import (
 // MarketService handles stock market data operations.
 type MarketService struct {
 	marketRepo     MarketRepository
+	historyRepo    HistoryRepository
 	allowedTickers []string
 }
 
 // NewMarketService creates a new instance of MarketService.
-func NewMarketService(marketRepo MarketRepository, allowedTickers []string) *MarketService {
+func NewMarketService(
+	marketRepo MarketRepository,
+	historyRepo HistoryRepository,
+	allowedTickers []string,
+) *MarketService {
 	return &MarketService{
 		marketRepo:     marketRepo,
+		historyRepo:    historyRepo,
 		allowedTickers: allowedTickers,
 	}
 }
@@ -42,4 +48,13 @@ func (s *MarketService) SubscribeToQuotes(
 	}
 
 	return s.marketRepo.SubscribeToQuotes(ctx, symbol), nil
+}
+
+// GetHistory retrieves historical quotes for a symbol.
+func (s *MarketService) GetHistory(ctx context.Context, symbol string, limit int) ([]*exchange.Quote, error) {
+	if !slices.Contains(s.allowedTickers, symbol) {
+		return nil, apperrors.ErrSymbolNotAllowed
+	}
+
+	return s.historyRepo.GetHistory(ctx, symbol, limit)
 }

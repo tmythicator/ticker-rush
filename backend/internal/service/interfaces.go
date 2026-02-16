@@ -26,6 +26,12 @@ type MarketRepository interface {
 	SubscribeToQuotes(ctx context.Context, symbol string) *redis.PubSub
 }
 
+// HistoryRepository defines the interface for historical market data persistence.
+type HistoryRepository interface {
+	SaveQuote(ctx context.Context, quote *exchange.Quote) error
+	GetHistory(ctx context.Context, symbol string, limit int) ([]*exchange.Quote, error)
+}
+
 // UserRepository defines the interface for user persistence.
 type UserRepository interface {
 	GetUsers(ctx context.Context) ([]*user.User, error)

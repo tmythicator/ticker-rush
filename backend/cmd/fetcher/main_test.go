@@ -29,6 +29,17 @@ func (m *MockFinnhubClient) GetQuote(ctx context.Context, symbol string) (*excha
 	}, nil
 }
 
+// MockHistoryRepository mocks the history storage.
+type MockHistoryRepository struct{}
+
+func (m *MockHistoryRepository) SaveQuote(ctx context.Context, quote *exchange.Quote) error {
+	return nil
+}
+
+func (m *MockHistoryRepository) GetHistory(ctx context.Context, symbol string, limit int) ([]*exchange.Quote, error) {
+	return nil, nil
+}
+
 func TestMarketFetcher(t *testing.T) {
 	// 1. Setup Miniredis
 	mr, err := miniredis.Run()
@@ -50,7 +61,8 @@ func TestMarketFetcher(t *testing.T) {
 
 	// 3. Setup Worker
 	marketRepo := redis.NewMarketRepository(rdb)
-	marketWorker := worker.NewMarketFetcher(mockClient, marketRepo)
+	historyRepo := &MockHistoryRepository{}
+	marketWorker := worker.NewMarketFetcher(mockClient, marketRepo, historyRepo)
 
 	// 4. Run Worker logic (simulate one tick)
 	ctx := t.Context()

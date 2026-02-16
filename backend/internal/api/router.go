@@ -47,6 +47,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 		{
 			protected.GET("/quotes/events", handler.StreamQuotes)
 			protected.GET("/quote", handler.GetQuote)
+			protected.GET("/history", handler.GetHistory)
 			protected.GET("/user/me", handler.GetMe)
 			protected.POST("/buy", handler.BuyStock)
 			protected.POST("/sell", handler.SellStock)

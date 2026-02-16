@@ -10,6 +10,7 @@ import (
 
 	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/repository/redis"
+	"github.com/tmythicator/ticker-rush/server/internal/service"
 )
 
 // QuoteProvider defines the interface for fetching quotes.
@@ -19,15 +20,21 @@ type QuoteProvider interface {
 
 // MarketFetcher is a worker that fetches market data.
 type MarketFetcher struct {
-	client QuoteProvider
-	repo   *redis.MarketRepository
+	client      QuoteProvider
+	currentRepo *redis.MarketRepository
+	historyRepo service.HistoryRepository
 }
 
 // NewMarketFetcher creates a new instance of MarketFetcher.
-func NewMarketFetcher(client QuoteProvider, repo *redis.MarketRepository) *MarketFetcher {
+func NewMarketFetcher(
+	client QuoteProvider,
+	currentRepo *redis.MarketRepository,
+	historyRepo service.HistoryRepository,
+) *MarketFetcher {
 	return &MarketFetcher{
-		client: client,
-		repo:   repo,
+		client:      client,
+		currentRepo: currentRepo,
+		historyRepo: historyRepo,
 	}
 }
 
@@ -107,11 +114,20 @@ func (w *MarketFetcher) processTicker(
 		return lastQuote, nil
 	}
 
-	if err := w.repo.SaveQuote(ctx, quote); err != nil {
+	if err := w.currentRepo.SaveQuote(ctx, quote); err != nil {
 		log.Printf("[%s] Redis Error: %v", symbol, err)
 
 		return nil, err
 	}
+
+	// Async save to history (don't block the loop)
+	go func(q *exchange.Quote) {
+		saveCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := w.historyRepo.SaveQuote(saveCtx, q); err != nil {
+			log.Printf("[%s] History Clean Error: %v", q.Symbol, err)
+		}
+	}(quote)
 
 	log.Printf(
 		"[%s] Updated: $%.2f (ts: %d)",

@@ -87,6 +87,17 @@ func setupTestPostgres(t *testing.T) string {
 	return connStr
 }
 
+// MockHistoryRepository mocks the history storage.
+type MockHistoryRepository struct{}
+
+func (m *MockHistoryRepository) SaveQuote(ctx context.Context, quote *exchange.Quote) error {
+	return nil
+}
+
+func (m *MockHistoryRepository) GetHistory(ctx context.Context, symbol string, limit int) ([]*exchange.Quote, error) {
+	return nil, nil // Return empty history for tests
+}
+
 func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.Pool) {
 	mr, _ := miniredis.Run()
 	valkeyClient = redis.NewClient(&redis.Options{
@@ -107,6 +118,7 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 	portfolioRepo = postgreRepo.NewPortfolioRepository(dbPool)
 	marketRepo = redisRepo.NewMarketRepository(valkeyClient)
 	transactor := postgreRepo.NewPgxTransactor(dbPool)
+	historyRepo := &MockHistoryRepository{}
 
 	userService = service.NewUserService(userRepo, portfolioRepo)
 	tradeService = service.NewTradeService(userRepo, portfolioRepo, marketRepo, transactor)
@@ -114,7 +126,7 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 
 	// Mock config tickers
 	tickers := []string{"AAPL", "GOOG", "BTC", "FAKE"}
-	marketService = service.NewMarketService(marketRepo, tickers)
+	marketService = service.NewMarketService(marketRepo, historyRepo, tickers)
 
 	// Mock Config Service
 	cfg := &config.Config{

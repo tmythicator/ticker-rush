@@ -329,3 +329,34 @@ func (h *RestHandler) SendHeartbeat(w io.Writer) {
 		f.Flush()
 	}
 }
+
+// GetHistory handles requests for historical market data.
+func (h *RestHandler) GetHistory(c *gin.Context) {
+	symbol := c.Query("symbol")
+	if symbol == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
+
+		return
+	}
+
+	limit := 100
+	if l := c.Query("limit"); l != "" {
+		if val, err := strconv.Atoi(l); err == nil {
+			limit = val
+		}
+	}
+
+	history, err := h.marketService.GetHistory(c.Request.Context(), symbol, limit)
+	if err != nil {
+		if errors.Is(err, apperrors.ErrSymbolNotAllowed) {
+			c.JSON(http.StatusForbidden, gin.H{"error": "symbol not allowed"})
+
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, history)
+}
