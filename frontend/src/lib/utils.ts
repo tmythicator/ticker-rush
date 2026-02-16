@@ -39,3 +39,21 @@ export function parseTicker(ticker: string): { source: TickerSource; symbol: str
 
   return { source: 'FH', symbol: ticker };
 }
+
+/**
+ * Calculates the maximum quantity of an asset that can be purchased.
+ *
+ * @param buyingPower The user's available buying power.
+ * @param price The current price of the asset.
+ * @param percentage The fraction of buying power to use (default 1.0 = 100%).
+ * @returns The quantity formatted to 6 decimal places.
+ */
+export const calculateMaxBuyQuantity = (
+  buyingPower: number,
+  price: number,
+  percentage: number = 1.0,
+): string => {
+  if (!buyingPower || !price || price <= 0) return '0.000000';
+  const adjustedPercentage = percentage >= 1.0 ? 0.999999 : percentage;
+  return ((buyingPower * adjustedPercentage) / price).toFixed(6);
+};

@@ -50,7 +50,7 @@ export const TradePanel = ({ quote, onTradeSuccess }: TradePanelProps) => {
   }
 
   return (
-    <Card className="p-6 flex flex-col h-full relative">
+    <Card className="p-6 flex flex-col h-full relative overflow-hidden">
       <TradePanelHeader isLoading={isLoading} />
       <TradeOrderInput
         symbol={displaySymbol.toUpperCase()}
@@ -59,6 +59,8 @@ export const TradePanel = ({ quote, onTradeSuccess }: TradePanelProps) => {
         setQuantity={setQuantity}
         error={error}
         handleTrade={handleTrade}
+        buyingPower={buyingPower}
+        price={currentPrice}
       />
 
       <div className="flex-1" />

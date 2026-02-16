@@ -1,6 +1,7 @@
 import { TradeAction, type TickerSource } from '@/types';
 import { SourceBadge } from '@/components/shared/SourceBadge';
 import { TradeButtons } from './TradeButtons';
+import { MaxButton, PercentageSelector } from './BuyingPowerControls';
 
 interface TradeOrderInputProps {
   symbol: string;
@@ -9,6 +10,8 @@ interface TradeOrderInputProps {
   setQuantity: (quantity: string) => void;
   error: string | null;
   handleTrade: (action: TradeAction) => void;
+  buyingPower?: number;
+  price?: number;
 }
 
 export const TradeOrderInput = ({
@@ -18,6 +21,8 @@ export const TradeOrderInput = ({
   setQuantity,
   error,
   handleTrade,
+  buyingPower,
+  price,
 }: TradeOrderInputProps) => {
   return (
     <div className="space-y-5 flex-1">
@@ -49,9 +54,17 @@ export const TradeOrderInput = ({
             placeholder="0.0"
             min="0"
             step="any"
-            className="w-full bg-background border border-border rounded-lg px-4 py-3 font-mono text-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm placeholder:text-muted-foreground text-foreground"
+            className="w-full bg-background border border-border rounded-lg px-4 py-3 font-mono text-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm placeholder:text-muted-foreground text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
+          {buyingPower !== undefined && price && price > 0 && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
+              <MaxButton buyingPower={buyingPower} price={price} onSelect={setQuantity} />
+            </div>
+          )}
         </div>
+        {buyingPower !== undefined && price && price > 0 && (
+          <PercentageSelector buyingPower={buyingPower} price={price} onSelect={setQuantity} />
+        )}
       </div>
       <TradeButtons handleTrade={handleTrade} />
     </div>
