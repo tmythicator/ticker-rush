@@ -1,5 +1,5 @@
 // Ticker Rush
-// Copyright (C) 2025 Alexandr Timchenko
+// Copyright (C) 2025-2026 Alexandr Timchenko
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
