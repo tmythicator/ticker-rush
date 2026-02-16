@@ -81,3 +81,15 @@ func (c *Config) ValidateFinnhubKey() error {
 
 	return nil
 }
+
+// DatabaseURL returns the PostgreSQL connection string.
+func (c *Config) DatabaseURL() string {
+	return fmt.Sprintf(
+		"postgres://%s:%s@%s:%d/%s",
+		c.PostgresUser,
+		c.PostgresPass,
+		c.PostgresHost,
+		c.PostgresPort,
+		c.PostgresDB,
+	)
+}

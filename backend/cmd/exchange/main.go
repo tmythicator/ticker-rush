@@ -86,14 +86,7 @@ func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	}
 
 	// Connect to Postgres
-	postgreConnStr := fmt.Sprintf(
-		"postgres://%s:%s@%s:%d/%s",
-		cfg.PostgresUser,
-		cfg.PostgresPass,
-		cfg.PostgresHost,
-		cfg.PostgresPort,
-		cfg.PostgresDB,
-	)
+	postgreConnStr := cfg.DatabaseURL()
 
 	if err = db.Migrate(postgreConnStr); err != nil {
 		return nil, fmt.Errorf("migration failed: %w", err)

@@ -132,6 +132,12 @@ tasks:
     cmds:
       - sqlc generate
 
+  backend:migrate:
+    desc: Run database migrations
+    dir: backend
+    cmds:
+      - go run cmd/migrate/main.go
+
   backend:build:
     desc: Build the backend services
     dir: backend
