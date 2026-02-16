@@ -1,12 +1,13 @@
 import { getChartColors } from '@/lib/chartUtils';
 import { type Quote, type TradeSymbol } from '@/types';
 import { AreaSeries, ColorType, createChart, type ISeriesApi, type Time } from 'lightweight-charts';
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useChartHistory } from './useChartHistory';
 import { useThemeObserver } from './useThemeObserver';
 
 interface UseChartProps {
   chartContainerRef: React.RefObject<HTMLDivElement | null>;
-  quote?: Quote;
+  quote: Quote | null;
   symbol: TradeSymbol | null;
 }
 
@@ -14,12 +15,7 @@ export const useChart = ({ chartContainerRef, quote, symbol }: UseChartProps) =>
   const chartRef = useRef<ReturnType<typeof createChart> | null>(null);
   const seriesRef = useRef<ISeriesApi<'Area'> | null>(null);
 
-  // Reset data when symbol changes
-  useEffect(() => {
-    if (seriesRef.current) {
-      seriesRef.current.setData([]);
-    }
-  }, [symbol]);
+  useChartHistory(symbol, seriesRef);
 
   const updateChartColors = () => {
     if (!chartRef.current) return;
@@ -54,11 +50,21 @@ export const useChart = ({ chartContainerRef, quote, symbol }: UseChartProps) =>
   useThemeObserver(updateChartColors);
 
   // Initialize Chart
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!chartContainerRef.current) return;
 
     const colors = getChartColors();
     const chart = createChart(chartContainerRef.current, {
+      localization: {
+        timeFormatter: (timestamp: number) => {
+          return new Date(timestamp * 1000).toLocaleTimeString(undefined, {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+          });
+        },
+      },
       layout: {
         background: { type: ColorType.Solid, color: colors.bgColor },
         textColor: colors.textColor,
@@ -101,6 +107,8 @@ export const useChart = ({ chartContainerRef, quote, symbol }: UseChartProps) =>
     return () => {
       window.removeEventListener('resize', handleResize);
       chart.remove();
+
+      seriesRef.current = null;
     };
   }, [chartContainerRef]);
 

@@ -73,3 +73,7 @@ export const register = async (
 export const getConfig = async (): Promise<{ tickers: string[] }> => {
   return api.get('/config');
 };
+
+export const getHistory = async (symbol: string, limit = 100): Promise<Quote[]> => {
+  return api.get(`/history?symbol=${symbol}&limit=${limit}`);
+};
