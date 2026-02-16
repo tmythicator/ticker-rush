@@ -17,7 +17,7 @@ export const DashboardPage = () => {
             key={symbol}
             symbol={symbol}
             onSymbolChange={setSymbol}
-            quote={quote || undefined}
+            quote={quote}
             isLoading={!quote}
             isError={!!isQuoteError}
           />
@@ -26,7 +26,7 @@ export const DashboardPage = () => {
         <PortfolioTable portfolio={user?.portfolio ?? {}} />
       </div>
       <div className="lg:col-span-3 flex flex-col gap-4 h-full">
-        {user && <TradePanel symbol={symbol} currentPrice={quote?.price} />}
+        {user && <TradePanel quote={quote} />}
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import { usePriceColor } from '@/hooks/usePriceColor';
 interface MarketChartProps {
   symbol: TradeSymbol | null;
   onSymbolChange: (s: TradeSymbol) => void;
-  quote?: Quote;
+  quote: Quote | null;
   isLoading: boolean;
   isError: boolean;
 }

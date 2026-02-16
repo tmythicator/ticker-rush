@@ -1,27 +1,32 @@
-import { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { useTrade } from '@/hooks/useTrade';
-import { TradeAction } from '@/types';
 import { TradeFooter } from '@/components/Dashboard/TradePanel/TradeFooter';
 import { TradeOrderInput } from '@/components/Dashboard/TradePanel/TradeOrderInput';
-import { parseTicker } from '@/lib/utils';
 import { TradePanelHeader } from '@/components/Dashboard/TradePanel/TradePanelHeader';
+import { Card } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
+import { useTrade } from '@/hooks/useTrade';
+import { parseTicker } from '@/lib/utils';
+import { TradeAction, type Quote, type TickerSource } from '@/types';
+import { useState } from 'react';
 
 export interface TradePanelProps {
-  symbol: string | null;
-  currentPrice?: number;
+  quote: Quote | null;
   onTradeSuccess?: () => void;
 }
 
-export const TradePanel = ({ symbol, currentPrice = 0, onTradeSuccess }: TradePanelProps) => {
+export const TradePanel = ({ quote, onTradeSuccess }: TradePanelProps) => {
   const [quantity, setQuantity] = useState<string>('');
   const { user } = useAuth();
   const buyingPower = user?.balance || 0;
-  const { source, symbol: displaySymbol } = parseTicker(symbol || '');
+
+  const currentPrice = quote?.price || 0;
+  const symbol = quote?.symbol || '';
+
+  const parsed = parseTicker(symbol);
+  const source = (quote?.source as TickerSource) || parsed.source;
+  const displaySymbol = parsed.symbol;
 
   const { executeTrade, isLoading, error } = useTrade({
-    symbol: symbol || '',
+    symbol: symbol,
     onSuccess: () => {
       setQuantity('');
       if (onTradeSuccess) onTradeSuccess();
