@@ -8,7 +8,7 @@ processes:
     command: task postgres:run
     readiness_probe:
       exec:
-        command: pg_isready -h "$PGDATA"
+        command: pg_isready -h "$PGDATA" -p "$POSTGRES_PORT" -U "$POSTGRES_USER"
 
   exchange:
     command: task postgres:create && task backend:run:exchange
