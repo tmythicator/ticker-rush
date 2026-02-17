@@ -21,6 +21,8 @@ require github.com/caarlos0/env/v11 v11.3.1
 
 require github.com/joho/godotenv v1.5.1
 
+require github.com/TwiN/go-away v1.8.1
+
 require (
 	dario.cat/mergo v1.0.2 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20250102033503-faa5f7b0171c // indirect
@@ -106,7 +108,7 @@ require (
 	golang.org/x/net v0.48.0 // indirect
 	golang.org/x/sync v0.19.0
 	golang.org/x/sys v0.39.0 // indirect
-	golang.org/x/text v0.32.0 // indirect
+	golang.org/x/text v0.34.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251213004720-97cd9d5aeac2 // indirect
 	google.golang.org/grpc v1.77.0
 	gopkg.in/yaml.v3 v3.0.1 // indirect
