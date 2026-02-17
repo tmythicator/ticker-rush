@@ -40,6 +40,7 @@ export const MarketChart = ({
         symbol={symbol}
         onSymbolChange={onSymbolChange}
         price={quote?.price}
+        isClosed={quote?.is_closed}
         priceColor={priceColor}
         isLoading={isLoading}
         isError={isError}

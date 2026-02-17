@@ -1,5 +1,6 @@
 interface ChartSymbolIndicatorProps {
   price: number | undefined;
+  isClosed?: boolean;
   priceColor: string;
   isLoading: boolean;
   isError: boolean;
@@ -7,6 +8,7 @@ interface ChartSymbolIndicatorProps {
 
 export const ChartSymbolIndicator = ({
   price,
+  isClosed,
   priceColor,
   isLoading,
   isError,
@@ -24,9 +26,15 @@ export const ChartSymbolIndicator = ({
           >
             {price ? `$${price.toFixed(2)}` : '—'}
           </span>
-          <span className="text-[10px] font-bold text-foreground/60 uppercase tracking-wider">
-            Live
-          </span>
+          {isClosed ? (
+            <span className="text-[10px] font-bold text-yellow-500 uppercase tracking-wider">
+              Market Closed
+            </span>
+          ) : (
+            <span className="text-[10px] font-bold text-foreground/60 uppercase tracking-wider">
+              Live
+            </span>
+          )}
         </>
       )}
     </div>

@@ -119,3 +119,44 @@ func TestTradeService_BuyStock_InsufficientFunds(t *testing.T) {
 	mockTx.AssertNotCalled(t, "Commit", mock.Anything)
 	mockTx.AssertCalled(t, "Rollback", mock.Anything)
 }
+
+func TestTradeService_BuyStock_MarketClosed(t *testing.T) {
+	const (
+		userID   int64   = 3
+		symbol   string  = "CLOSED_STOCK"
+		price    float64 = 150.0
+		quantity float64 = 1.0
+	)
+
+	// 1. Setup Market with STALE data (1 hour old)
+	mr, _ := miniredis.Run()
+	defer mr.Close()
+
+	rClient := redis.NewClient(&redis.Options{Addr: mr.Addr()})
+	marketRepo := app_redis.NewMarketRepository(rClient)
+
+	// Stale timestamp (1 hour ago)
+	staleTime := time.Now().Add(-1 * time.Hour).Unix()
+	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: staleTime}
+	bytes, _ := json.Marshal(quote)
+	rClient.Set(context.Background(), "market:"+symbol, bytes, 0)
+
+	// 2. Setup Mocks (Simulating repositories)
+	mockUserRepo := new(mocks.MockUserRepository)
+	mockPortRepo := new(mocks.MockPortfolioRepository)
+	mockTransactor := new(mocks.MockTransactor)
+	// Note: Transactor might not even be called if we fail early, but if it is, we expect no transaction start
+
+	ctx := context.Background()
+
+	// 3. Execute
+	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockTransactor)
+	_, err := tradeService.BuyStock(ctx, userID, symbol, quantity)
+
+	// 4. Verify
+	assert.Error(t, err)
+	assert.Equal(t, apperrors.ErrMarketClosed, err)
+
+	// verify that transaction was NOT started
+	mockTransactor.AssertNotCalled(t, "Begin", mock.Anything)
+}

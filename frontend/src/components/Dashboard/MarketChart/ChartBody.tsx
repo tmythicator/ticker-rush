@@ -5,6 +5,7 @@ import { ChartSymbolPicker } from './ChartSymbolPicker';
 interface ChartBodyProps {
   symbol: TradeSymbol;
   price: number | undefined;
+  isClosed: boolean | undefined;
   priceColor: string;
   isLoading: boolean;
   isError: boolean;
@@ -16,6 +17,7 @@ export const ChartBody = ({
   symbol,
   onSymbolChange,
   price,
+  isClosed,
   priceColor,
   isLoading,
   isError,
@@ -27,6 +29,7 @@ export const ChartBody = ({
         <div className="h-6 w-px bg-border mx-1"></div>
         <ChartSymbolIndicator
           price={price}
+          isClosed={isClosed}
           priceColor={priceColor}
           isLoading={isLoading}
           isError={isError}

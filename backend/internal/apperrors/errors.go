@@ -14,4 +14,6 @@ var (
 	ErrAuthRequired = errors.New("authentication required")
 	// ErrInvalidToken is returned when the authentication token is invalid.
 	ErrInvalidToken = errors.New("invalid token")
+	// ErrMarketClosed is returned when the market is closed.
+	ErrMarketClosed = errors.New("market is closed")
 )

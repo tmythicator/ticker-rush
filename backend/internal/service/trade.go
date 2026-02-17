@@ -45,6 +45,11 @@ func (s *TradeService) BuyStock(
 
 	cost := quote.GetPrice() * quantity
 
+	// 2. Check Market Status
+	if quote.GetIsClosed() {
+		return nil, apperrors.ErrMarketClosed
+	}
+
 	// START TRANSACTION
 	tx, err := s.transactor.Begin(ctx)
 	if err != nil {
@@ -120,6 +125,11 @@ func (s *TradeService) SellStock(
 	}
 
 	cost := quote.GetPrice() * quantity
+
+	// 2. Check Market Status
+	if quote.GetIsClosed() {
+		return nil, apperrors.ErrMarketClosed
+	}
 
 	// START TRANSACTION
 	tx, err := s.transactor.Begin(ctx)

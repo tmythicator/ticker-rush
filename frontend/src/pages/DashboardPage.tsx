@@ -1,5 +1,5 @@
 import { MarketChart, TradePanel, DashboardStats } from '@/components/Dashboard';
-import { PortfolioTable } from '@/components/PortfolioTable';
+import { PortfolioTable } from '@/components/PortfolioTable/PortfolioTable';
 import { useQuotesSSE } from '@/hooks/useQuotesSSE';
 import { useAuth } from '@/hooks/useAuth';
 import { useTradeSymbol } from '@/hooks/useTradeSymbol';

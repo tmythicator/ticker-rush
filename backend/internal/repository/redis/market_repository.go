@@ -3,6 +3,7 @@ package redis
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
@@ -28,6 +29,11 @@ func (r *MarketRepository) GetQuote(ctx context.Context, symbol string) (*exchan
 	var quote exchange.Quote
 	if err := json.Unmarshal([]byte(val), &quote); err != nil {
 		return nil, err
+	}
+
+	// Check if market is closed (data older than 30 minutes)
+	if time.Since(time.Unix(quote.Timestamp, 0)) > 30*time.Minute {
+		quote.IsClosed = true
 	}
 
 	return &quote, nil

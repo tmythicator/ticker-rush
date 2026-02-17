@@ -37,7 +37,7 @@ func (r *HistoryRepository) SaveQuote(ctx context.Context, quote *exchange.Quote
 		Symbol:    quote.GetSymbol(),
 		Price:     price,
 		Source:    quote.GetSource(),
-		CreatedAt: pgtype.Timestamp{Time: time.Unix(quote.GetTimestamp(), 0).UTC(), Valid: true},
+		CreatedAt: pgtype.Timestamptz{Time: time.Unix(quote.GetTimestamp(), 0).UTC(), Valid: true},
 	})
 }
 

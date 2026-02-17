@@ -61,6 +61,7 @@ export const TradePanel = ({ quote, onTradeSuccess }: TradePanelProps) => {
         handleTrade={handleTrade}
         buyingPower={buyingPower}
         price={currentPrice}
+        disabled={quote?.is_closed}
       />
 
       <div className="flex-1" />
