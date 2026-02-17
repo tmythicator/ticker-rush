@@ -16,8 +16,8 @@ var ctx = context.Background()
 
 func TestUserService_CreateUser(t *testing.T) {
 	const (
-		password     = "test33"
-		email        = "abc@gmail.com"
+		password     = "test134567"
+		username     = "newUsername"
 		startBalance = 10000.0
 	)
 
@@ -26,22 +26,23 @@ func TestUserService_CreateUser(t *testing.T) {
 
 	expectedUser := &pb.User{
 		Id:        1,
-		Email:     email,
+		Username:  username,
 		FirstName: "John",
 		LastName:  "Doe",
 	}
 
-	mockUserRepo.On("CreateUser", ctx, email, mock.MatchedBy(func(hashedPassword string) bool {
+	mockUserRepo.On("CreateUser", ctx, username, mock.MatchedBy(func(hashedPassword string) bool {
 		return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)) == nil
-	}), expectedUser.GetFirstName(), expectedUser.GetLastName(), startBalance).Return(expectedUser, nil)
+	}), expectedUser.GetFirstName(), expectedUser.GetLastName(), startBalance, "").Return(expectedUser, nil)
 
 	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo)
 	user, err := userService.CreateUser(
 		ctx,
-		email,
+		username,
 		password,
 		expectedUser.GetFirstName(),
 		expectedUser.GetLastName(),
+		"",
 	)
 
 	assert.NoError(t, err)
@@ -57,7 +58,7 @@ func TestUserService_GetUserWithPortfolio(t *testing.T) {
 	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo)
 
 	userID := int64(1)
-	expectedUser := &pb.User{Id: userID, Email: "test@test.com"}
+	expectedUser := &pb.User{Id: userID, Username: "userTest1"}
 
 	expectedPortfolioItems := []*pb.PortfolioItem{
 		{StockSymbol: "AAPL", Quantity: 10, AveragePrice: 150.0},
@@ -71,7 +72,7 @@ func TestUserService_GetUserWithPortfolio(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, expectedUser.GetId(), res.GetId())
-	assert.Equal(t, expectedUser.GetEmail(), res.GetEmail())
+	assert.Equal(t, expectedUser.GetUsername(), res.GetUsername())
 	assert.Len(t, res.GetPortfolio(), len(expectedPortfolioItems))
 
 	assert.Equal(t, expectedPortfolioItems[0], res.GetPortfolio()["AAPL"])
@@ -82,7 +83,7 @@ func TestUserService_Authenticate(t *testing.T) {
 	const (
 		truePassword  = "password123"
 		wrongPassword = "wrongpassword"
-		email         = "test@example.com"
+		username      = "userTest2"
 	)
 
 	mockUserRepo := new(mocks.MockUserRepository)
@@ -92,17 +93,17 @@ func TestUserService_Authenticate(t *testing.T) {
 
 	expectedUser := &pb.User{
 		Id:        1,
-		Email:     email,
+		Username:  username,
 		FirstName: "John",
 		LastName:  "Doe",
 	}
 
-	mockUserRepo.On("GetUserByEmail", ctx, email).Return(expectedUser, string(hashedPassword), nil)
+	mockUserRepo.On("GetUserByUsername", ctx, username).Return(expectedUser, string(hashedPassword), nil)
 
-	user, err := userService.Authenticate(ctx, email, truePassword)
+	user, err := userService.Authenticate(ctx, username, truePassword)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedUser, user)
 
-	_, err = userService.Authenticate(ctx, email, wrongPassword)
+	_, err = userService.Authenticate(ctx, username, wrongPassword)
 	assert.Error(t, err)
 }

@@ -31,8 +31,8 @@ import (
 )
 
 const (
-	testEmail  = "userTest@example.com"
-	testSecret = "test-secret"
+	testUsername = "test_user"
+	testSecret   = "test-secret"
 )
 
 var (
@@ -154,8 +154,8 @@ func TestCreateUser(t *testing.T) {
 	defer pool.Close()
 
 	reqBody := fmt.Sprintf(
-		`{"email": "%s", "password": "password123", "first_name": "Test", "last_name": "User"}`,
-		testEmail,
+		`{"username": "%s", "password": "password123", "first_name": "Test", "last_name": "User", "website": "test.com"}`,
+		testUsername,
 	)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/register", bytes.NewBufferString(reqBody))
@@ -168,10 +168,9 @@ func TestCreateUser(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &responseUser)
 	assert.NoError(t, err)
 
-	user, _, err := userRepo.GetUserByEmail(ctx, responseUser.GetEmail())
+	user, _, err := userRepo.GetUserByUsername(ctx, responseUser.GetUsername())
 	assert.NoError(t, err)
-	assert.Equal(t, testEmail, user.GetEmail())
-	assert.Equal(t, testEmail, user.GetEmail())
+	assert.Equal(t, testUsername, user.GetUsername())
 }
 
 func TestLogin(t *testing.T) {
@@ -181,11 +180,11 @@ func TestLogin(t *testing.T) {
 
 	// Create User first
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
-	_, err := userRepo.CreateUser(ctx, testEmail, string(hashedPassword), "Test", "User", 100.0)
+	_, err := userRepo.CreateUser(ctx, testUsername, string(hashedPassword), "Test", "User", 100.0, "https://example.com")
 	assert.NoError(t, err)
 
 	// Perform Login
-	reqBody := fmt.Sprintf(`{"email": "%s", "password": "password123"}`, testEmail)
+	reqBody := fmt.Sprintf(`{"username": "%s", "password": "password123"}`, testUsername)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/login", bytes.NewBufferString(reqBody))
 	router.ServeHTTP(w, req)
@@ -238,11 +237,12 @@ func TestBuyStock(t *testing.T) {
 	// Setup User
 	createdUser, err := userRepo.CreateUser(
 		ctx,
-		testEmail,
+		testUsername,
 		"password123",
 		"Marcel",
 		"Schulz",
 		balance,
+		"",
 	)
 	if err != nil {
 		t.Fatalf("Failed to create user: %v", err)
@@ -257,7 +257,7 @@ func TestBuyStock(t *testing.T) {
 	token, _ := service.GenerateToken(user, testSecret)
 
 	// Perform Buy
-	reqBody := fmt.Sprintf(`{"symbol": "%s", "count": %f}`, symbol, quantity)
+	reqBody := fmt.Sprintf(`{"symbol": "%s", "quantity": %f}`, symbol, quantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/buy", bytes.NewBufferString(reqBody))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
@@ -267,7 +267,7 @@ func TestBuyStock(t *testing.T) {
 
 	// Verify User State
 	updatedUser, _ := userRepo.GetUser(ctx, user.GetId())
-	assert.Equal(t, testEmail, updatedUser.GetEmail())
+	assert.Equal(t, testUsername, updatedUser.GetUsername())
 	assert.Equal(t, expectedBalance, updatedUser.GetBalance())
 
 	// Verify Portfolio State from Repo
@@ -298,11 +298,12 @@ func TestSellStock(t *testing.T) {
 	// Setup User
 	createdUser, _ := userRepo.CreateUser(
 		ctx,
-		testEmail,
+		testUsername,
 		"password123",
 		"Marcel",
 		"Schulz",
 		mockStartBalance,
+		"",
 	)
 	user, _ := userRepo.GetUser(ctx, createdUser.GetId())
 
@@ -320,7 +321,7 @@ func TestSellStock(t *testing.T) {
 	token, _ := service.GenerateToken(user, testSecret)
 
 	// Perform Sell
-	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "count": %f}`, mockSellQuantity)
+	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "quantity": %f}`, mockSellQuantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/sell", bytes.NewBufferString(reqBody))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
@@ -355,11 +356,12 @@ func TestInsufficientFunds(t *testing.T) {
 
 	createdUser, _ := userRepo.CreateUser(
 		ctx,
-		testEmail,
+		testUsername,
 		"password123",
 		"Marcel",
 		"Schulz",
 		mockStartBalance,
+		"",
 	)
 	user, _ := userRepo.GetUser(ctx, createdUser.GetId())
 
@@ -367,7 +369,7 @@ func TestInsufficientFunds(t *testing.T) {
 	token, _ := service.GenerateToken(user, testSecret)
 
 	// balance < cost
-	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "count": %d}`, mockBuyQuantity)
+	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "quantity": %d}`, mockBuyQuantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/buy", bytes.NewBufferString(reqBody))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
@@ -399,11 +401,12 @@ func TestSellAllStock(t *testing.T) {
 	// Setup User (FIX: create user implicitly or explicitly)
 	createdUser, err := userRepo.CreateUser(
 		ctx,
-		testEmail,
+		testUsername,
 		"password123",
 		"Marcel",
 		"Schulz",
 		mockStartBalance,
+		"",
 	)
 	if err != nil {
 		t.Fatalf("Failed to create user: %v", err)
@@ -417,7 +420,7 @@ func TestSellAllStock(t *testing.T) {
 	token, _ := service.GenerateToken(createdUser, testSecret)
 
 	// Perform Sell All
-	reqBody := fmt.Sprintf(`{"symbol": "%s", "count": %f}`, symbol, mockSellQuantity)
+	reqBody := fmt.Sprintf(`{"symbol": "%s", "quantity": %f}`, symbol, mockSellQuantity)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/sell", bytes.NewBufferString(reqBody))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})

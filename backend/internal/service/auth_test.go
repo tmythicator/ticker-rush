@@ -12,14 +12,14 @@ import (
 
 func TestAuthService_GenerateToken(t *testing.T) {
 	const (
-		testEmail  = "test@example.com"
-		testUserID = int64(123)
-		secret     = "test-secret"
+		testUsername = "testuser"
+		testUserID   = int64(123)
+		secret       = "test-secret"
 	)
 
 	user := &pb.User{
-		Id:    testUserID,
-		Email: testEmail,
+		Id:       testUserID,
+		Username: testUsername,
 	}
 
 	tokenString, err := service.GenerateToken(user, secret)
@@ -34,29 +34,42 @@ func TestAuthService_GenerateToken(t *testing.T) {
 	claims, ok := token.Claims.(jwt.MapClaims)
 	assert.True(t, ok)
 	assert.Equal(t, float64(testUserID), claims["user_id"])
-	assert.Equal(t, testEmail, claims["email"])
+	assert.Equal(t, testUsername, claims["username"])
 }
 
 func TestAuthService_ValidateToken(t *testing.T) {
 	const secret = "test-secret"
 
 	t.Run("Valid Token", func(t *testing.T) {
+		expirationTime := time.Now().Add(24 * time.Hour)
 		claims := &service.Claims{
-			UserID: 456,
-			Email:  "valid@example.com",
+			UserID:   456,
+			Username: "testuser",
 			RegisteredClaims: jwt.RegisteredClaims{
-				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+				ExpiresAt: jwt.NewNumericDate(expirationTime),
+				IssuedAt:  jwt.NewNumericDate(time.Now()),
 				Issuer:    "ticker-rush",
 			},
 		}
+
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		tokenString, _ := token.SignedString([]byte(secret))
+		tokenString, err := token.SignedString([]byte(secret))
+		if err != nil {
+			t.Fatalf("Failed to sign token: %v", err)
+		}
 
+		// Validate the token
 		parsedClaims, err := service.ValidateToken(tokenString, secret)
+		if err != nil {
+			t.Fatalf("ValidateToken failed: %v", err)
+		}
 
-		assert.NoError(t, err)
-		assert.Equal(t, int64(456), parsedClaims.UserID)
-		assert.Equal(t, "valid@example.com", parsedClaims.Email)
+		if parsedClaims.UserID != claims.UserID {
+			t.Errorf("Expected UserID %d, got %d", claims.UserID, parsedClaims.UserID)
+		}
+		if parsedClaims.Username != claims.Username {
+			t.Errorf("Expected Username %s, got %s", claims.Username, parsedClaims.Username)
+		}
 	})
 
 	t.Run("Invalid Token (Mutated)", func(t *testing.T) {

@@ -55,9 +55,7 @@ func TestTradeService_BuyStock_Success(t *testing.T) {
 	mockUserRepo.On("GetUserForUpdate", mock.Anything, userID).Return(initialUser, nil)
 	mockPortRepo.On("GetPortfolioItemForUpdate", mock.Anything, userID, symbol).
 		Return(&user.PortfolioItem{}, assert.AnError)
-	mockUserRepo.On("SaveUser", mock.Anything, mock.MatchedBy(func(u *user.User) bool {
-		return u.GetBalance() == expectedBalance
-	})).Return(nil)
+	mockUserRepo.On("UpdateUserBalance", mock.Anything, userID, expectedBalance).Return(nil)
 	mockPortRepo.On("SetPortfolioItem", mock.Anything, userID, symbol, quantity, price).Return(nil)
 	mockTx.On("Commit", mock.Anything).Return(nil)
 	mockTx.On("Rollback", mock.Anything).Return(nil)

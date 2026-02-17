@@ -67,12 +67,12 @@ func (m *MockUserRepository) GetUser(ctx context.Context, id int64) (*user.User,
 	return args.Get(0).(*user.User), args.Error(1)
 }
 
-// GetUserByEmail retrieves a user by email.
-func (m *MockUserRepository) GetUserByEmail(
+// GetUserByUsername retrieves a user by username.
+func (m *MockUserRepository) GetUserByUsername(
 	ctx context.Context,
-	email string,
+	username string,
 ) (*user.User, string, error) {
-	args := m.Called(ctx, email)
+	args := m.Called(ctx, username)
 	if args.Get(0) == nil {
 		return nil, "", args.Error(2)
 	}
@@ -83,13 +83,14 @@ func (m *MockUserRepository) GetUserByEmail(
 // CreateUser creates a new user.
 func (m *MockUserRepository) CreateUser(
 	ctx context.Context,
-	email string,
+	username string,
 	hashedPassword string,
 	firstName string,
 	lastName string,
 	balance float64,
+	website string,
 ) (*user.User, error) {
-	args := m.Called(ctx, email, hashedPassword, firstName, lastName, balance)
+	args := m.Called(ctx, username, hashedPassword, firstName, lastName, balance, website)
 
 	return args.Get(0).(*user.User), args.Error(1)
 }
@@ -101,9 +102,16 @@ func (m *MockUserRepository) GetUserForUpdate(ctx context.Context, id int64) (*u
 	return args.Get(0).(*user.User), args.Error(1)
 }
 
-// SaveUser updates a user.
-func (m *MockUserRepository) SaveUser(ctx context.Context, user *user.User) error {
+// UpdateUserProfile updates a user's profile.
+func (m *MockUserRepository) UpdateUserProfile(ctx context.Context, user *user.User) error {
 	args := m.Called(ctx, user)
+
+	return args.Error(0)
+}
+
+// UpdateUserBalance updates the user's balance.
+func (m *MockUserRepository) UpdateUserBalance(ctx context.Context, id int64, balance float64) error {
+	args := m.Called(ctx, id, balance)
 
 	return args.Error(0)
 }
