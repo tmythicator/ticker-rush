@@ -85,13 +85,14 @@ func (x *PortfolioItem) GetAveragePrice() float64 {
 type User struct {
 	state         protoimpl.MessageState    `protogen:"open.v1"`
 	Id            int64                     `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Email         string                    `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	Username      string                    `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	PasswordHash  string                    `protobuf:"bytes,3,opt,name=password_hash,json=passwordHash,proto3" json:"password_hash,omitempty"`
 	Balance       float64                   `protobuf:"fixed64,4,opt,name=balance,proto3" json:"balance,omitempty"`
-	CreatedAt     *timestamppb.Timestamp    `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	FirstName     string                    `protobuf:"bytes,7,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	LastName      string                    `protobuf:"bytes,8,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	Portfolio     map[string]*PortfolioItem `protobuf:"bytes,9,rep,name=portfolio,proto3" json:"portfolio,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	CreatedAt     *timestamppb.Timestamp    `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	FirstName     string                    `protobuf:"bytes,6,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	LastName      string                    `protobuf:"bytes,7,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	Portfolio     map[string]*PortfolioItem `protobuf:"bytes,8,rep,name=portfolio,proto3" json:"portfolio,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Website       string                    `protobuf:"bytes,9,opt,name=website,proto3" json:"website,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -133,9 +134,9 @@ func (x *User) GetId() int64 {
 	return 0
 }
 
-func (x *User) GetEmail() string {
+func (x *User) GetUsername() string {
 	if x != nil {
-		return x.Email
+		return x.Username
 	}
 	return ""
 }
@@ -182,6 +183,141 @@ func (x *User) GetPortfolio() map[string]*PortfolioItem {
 	return nil
 }
 
+func (x *User) GetWebsite() string {
+	if x != nil {
+		return x.Website
+	}
+	return ""
+}
+
+type CreateUserRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	FirstName     string                 `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	LastName      string                 `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	Website       string                 `protobuf:"bytes,5,opt,name=website,proto3" json:"website,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateUserRequest) Reset() {
+	*x = CreateUserRequest{}
+	mi := &file_user_v1_user_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateUserRequest) ProtoMessage() {}
+
+func (x *CreateUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_user_v1_user_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateUserRequest.ProtoReflect.Descriptor instead.
+func (*CreateUserRequest) Descriptor() ([]byte, []int) {
+	return file_user_v1_user_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *CreateUserRequest) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *CreateUserRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *CreateUserRequest) GetFirstName() string {
+	if x != nil {
+		return x.FirstName
+	}
+	return ""
+}
+
+func (x *CreateUserRequest) GetLastName() string {
+	if x != nil {
+		return x.LastName
+	}
+	return ""
+}
+
+func (x *CreateUserRequest) GetWebsite() string {
+	if x != nil {
+		return x.Website
+	}
+	return ""
+}
+
+type LoginRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LoginRequest) Reset() {
+	*x = LoginRequest{}
+	mi := &file_user_v1_user_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoginRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoginRequest) ProtoMessage() {}
+
+func (x *LoginRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_user_v1_user_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
+func (*LoginRequest) Descriptor() ([]byte, []int) {
+	return file_user_v1_user_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *LoginRequest) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *LoginRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
 var File_user_v1_user_proto protoreflect.FileDescriptor
 
 const file_user_v1_user_proto_rawDesc = "" +
@@ -190,21 +326,32 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\rPortfolioItem\x12!\n" +
 	"\fstock_symbol\x18\x01 \x01(\tR\vstockSymbol\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x01R\bquantity\x12#\n" +
-	"\raverage_price\x18\x03 \x01(\x01R\faveragePrice\"\xf4\x02\n" +
+	"\raverage_price\x18\x03 \x01(\x01R\faveragePrice\"\x94\x03\n" +
 	"\x04User\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x14\n" +
-	"\x05email\x18\x02 \x01(\tR\x05email\x12#\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
+	"\busername\x18\x02 \x01(\tR\busername\x12#\n" +
 	"\rpassword_hash\x18\x03 \x01(\tR\fpasswordHash\x12\x18\n" +
 	"\abalance\x18\x04 \x01(\x01R\abalance\x129\n" +
 	"\n" +
-	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12\x1d\n" +
+	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"first_name\x18\a \x01(\tR\tfirstName\x12\x1b\n" +
-	"\tlast_name\x18\b \x01(\tR\blastName\x12:\n" +
-	"\tportfolio\x18\t \x03(\v2\x1c.user.v1.User.PortfolioEntryR\tportfolio\x1aT\n" +
+	"first_name\x18\x06 \x01(\tR\tfirstName\x12\x1b\n" +
+	"\tlast_name\x18\a \x01(\tR\blastName\x12:\n" +
+	"\tportfolio\x18\b \x03(\v2\x1c.user.v1.User.PortfolioEntryR\tportfolio\x12\x18\n" +
+	"\awebsite\x18\t \x01(\tR\awebsite\x1aT\n" +
 	"\x0ePortfolioEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
-	"\x05value\x18\x02 \x01(\v2\x16.user.v1.PortfolioItemR\x05value:\x028\x01BGZEgithub.com/tmythicator/ticker-rush/server/internal/proto/user/v1;userb\x06proto3"
+	"\x05value\x18\x02 \x01(\v2\x16.user.v1.PortfolioItemR\x05value:\x028\x01\"\xa1\x01\n" +
+	"\x11CreateUserRequest\x12\x1a\n" +
+	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1d\n" +
+	"\n" +
+	"first_name\x18\x03 \x01(\tR\tfirstName\x12\x1b\n" +
+	"\tlast_name\x18\x04 \x01(\tR\blastName\x12\x18\n" +
+	"\awebsite\x18\x05 \x01(\tR\awebsite\"F\n" +
+	"\fLoginRequest\x12\x1a\n" +
+	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpasswordBGZEgithub.com/tmythicator/ticker-rush/server/internal/proto/user/v1;userb\x06proto3"
 
 var (
 	file_user_v1_user_proto_rawDescOnce sync.Once
@@ -218,16 +365,18 @@ func file_user_v1_user_proto_rawDescGZIP() []byte {
 	return file_user_v1_user_proto_rawDescData
 }
 
-var file_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_user_v1_user_proto_goTypes = []any{
 	(*PortfolioItem)(nil),         // 0: user.v1.PortfolioItem
 	(*User)(nil),                  // 1: user.v1.User
-	nil,                           // 2: user.v1.User.PortfolioEntry
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(*CreateUserRequest)(nil),     // 2: user.v1.CreateUserRequest
+	(*LoginRequest)(nil),          // 3: user.v1.LoginRequest
+	nil,                           // 4: user.v1.User.PortfolioEntry
+	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
 }
 var file_user_v1_user_proto_depIdxs = []int32{
-	3, // 0: user.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	2, // 1: user.v1.User.portfolio:type_name -> user.v1.User.PortfolioEntry
+	5, // 0: user.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	4, // 1: user.v1.User.portfolio:type_name -> user.v1.User.PortfolioEntry
 	0, // 2: user.v1.User.PortfolioEntry.value:type_name -> user.v1.PortfolioItem
 	3, // [3:3] is the sub-list for method output_type
 	3, // [3:3] is the sub-list for method input_type
@@ -247,7 +396,7 @@ func file_user_v1_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_v1_user_proto_rawDesc), len(file_user_v1_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

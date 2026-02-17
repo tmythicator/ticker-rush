@@ -11,6 +11,7 @@ message Quote {
   double change_percent = 4;
   int64 timestamp = 5;
   string source = 6;
+  bool is_closed = 7;
 }
 
 service ExchangeService {

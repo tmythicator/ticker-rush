@@ -20,7 +20,7 @@ type CreateQuoteParams struct {
 	Symbol    string
 	Price     pgtype.Numeric
 	Source    string
-	CreatedAt pgtype.Timestamp
+	CreatedAt pgtype.Timestamptz
 }
 
 func (q *Queries) CreateQuote(ctx context.Context, arg CreateQuoteParams) error {
@@ -53,7 +53,7 @@ type GetHistoryForSymbolRow struct {
 	Symbol    string
 	Price     pgtype.Numeric
 	Source    string
-	CreatedAt pgtype.Timestamp
+	CreatedAt pgtype.Timestamptz
 }
 
 func (q *Queries) GetHistoryForSymbol(ctx context.Context, arg GetHistoryForSymbolParams) ([]GetHistoryForSymbolRow, error) {

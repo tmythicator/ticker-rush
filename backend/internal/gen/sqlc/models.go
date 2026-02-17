@@ -9,11 +9,10 @@ import (
 )
 
 type MarketQuote struct {
-	ID        int64
 	Symbol    string
 	Price     pgtype.Numeric
 	Source    string
-	CreatedAt pgtype.Timestamp
+	CreatedAt pgtype.Timestamptz
 }
 
 type PortfolioItem struct {
@@ -25,10 +24,11 @@ type PortfolioItem struct {
 
 type User struct {
 	ID           int64
-	Email        string
+	Username     string
 	PasswordHash string
 	FirstName    string
 	LastName     string
+	Website      string
 	Balance      float64
 	CreatedAt    pgtype.Timestamptz
 }

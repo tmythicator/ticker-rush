@@ -12,73 +12,78 @@ import (
 )
 
 const checkUserExists = `-- name: CheckUserExists :one
-SELECT EXISTS(SELECT 1 FROM users WHERE id = $1)
+SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)
 `
 
-func (q *Queries) CheckUserExists(ctx context.Context, id int64) (bool, error) {
-	row := q.db.QueryRow(ctx, checkUserExists, id)
+func (q *Queries) CheckUserExists(ctx context.Context, username string) (bool, error) {
+	row := q.db.QueryRow(ctx, checkUserExists, username)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (email, password_hash, first_name, last_name, balance, created_at)
-VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, email, first_name, last_name, balance, created_at
+INSERT INTO users (username, password_hash, first_name, last_name, balance, website, created_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, username, first_name, last_name, balance, website, created_at
 `
 
 type CreateUserParams struct {
-	Email        string
+	Username     string
 	PasswordHash string
 	FirstName    string
 	LastName     string
 	Balance      float64
+	Website      string
 	CreatedAt    pgtype.Timestamptz
 }
 
 type CreateUserRow struct {
 	ID        int64
-	Email     string
+	Username  string
 	FirstName string
 	LastName  string
 	Balance   float64
+	Website   string
 	CreatedAt pgtype.Timestamptz
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
 	row := q.db.QueryRow(ctx, createUser,
-		arg.Email,
+		arg.Username,
 		arg.PasswordHash,
 		arg.FirstName,
 		arg.LastName,
 		arg.Balance,
+		arg.Website,
 		arg.CreatedAt,
 	)
 	var i CreateUserRow
 	err := row.Scan(
 		&i.ID,
-		&i.Email,
+		&i.Username,
 		&i.FirstName,
 		&i.LastName,
 		&i.Balance,
+		&i.Website,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, email, first_name, last_name, balance, created_at
+SELECT id, username, first_name, last_name, balance, website, created_at
 FROM users
 WHERE id = $1 LIMIT 1
 `
 
 type GetUserRow struct {
 	ID        int64
-	Email     string
+	Username  string
 	FirstName string
 	LastName  string
 	Balance   float64
+	Website   string
 	CreatedAt pgtype.Timestamptz
 }
 
@@ -87,48 +92,62 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (GetUserRow, error) {
 	var i GetUserRow
 	err := row.Scan(
 		&i.ID,
-		&i.Email,
+		&i.Username,
 		&i.FirstName,
 		&i.LastName,
 		&i.Balance,
+		&i.Website,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
-const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, password_hash, first_name, last_name, balance, created_at
+const getUserByUsername = `-- name: GetUserByUsername :one
+SELECT id, username, password_hash, first_name, last_name, balance, website, created_at
 FROM users
-WHERE email = $1 LIMIT 1
+WHERE username = $1 LIMIT 1
 `
 
-func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRow(ctx, getUserByEmail, email)
-	var i User
+type GetUserByUsernameRow struct {
+	ID           int64
+	Username     string
+	PasswordHash string
+	FirstName    string
+	LastName     string
+	Balance      float64
+	Website      string
+	CreatedAt    pgtype.Timestamptz
+}
+
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error) {
+	row := q.db.QueryRow(ctx, getUserByUsername, username)
+	var i GetUserByUsernameRow
 	err := row.Scan(
 		&i.ID,
-		&i.Email,
+		&i.Username,
 		&i.PasswordHash,
 		&i.FirstName,
 		&i.LastName,
 		&i.Balance,
+		&i.Website,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getUserForUpdate = `-- name: GetUserForUpdate :one
-SELECT id, email, first_name, last_name, balance, created_at
+SELECT id, username, first_name, last_name, balance, website, created_at
 FROM users
 WHERE id = $1 LIMIT 1 FOR UPDATE
 `
 
 type GetUserForUpdateRow struct {
 	ID        int64
-	Email     string
+	Username  string
 	FirstName string
 	LastName  string
 	Balance   float64
+	Website   string
 	CreatedAt pgtype.Timestamptz
 }
 
@@ -137,26 +156,28 @@ func (q *Queries) GetUserForUpdate(ctx context.Context, id int64) (GetUserForUpd
 	var i GetUserForUpdateRow
 	err := row.Scan(
 		&i.ID,
-		&i.Email,
+		&i.Username,
 		&i.FirstName,
 		&i.LastName,
 		&i.Balance,
+		&i.Website,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getUsers = `-- name: GetUsers :many
-SELECT id, email, first_name, last_name, balance, created_at
+SELECT id, username, first_name, last_name, balance, website, created_at
 FROM users
 `
 
 type GetUsersRow struct {
 	ID        int64
-	Email     string
+	Username  string
 	FirstName string
 	LastName  string
 	Balance   float64
+	Website   string
 	CreatedAt pgtype.Timestamptz
 }
 
@@ -171,10 +192,11 @@ func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
 		var i GetUsersRow
 		if err := rows.Scan(
 			&i.ID,
-			&i.Email,
+			&i.Username,
 			&i.FirstName,
 			&i.LastName,
 			&i.Balance,
+			&i.Website,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -185,34 +207,6 @@ func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
 		return nil, err
 	}
 	return items, nil
-}
-
-const updateUser = `-- name: UpdateUser :exec
-UPDATE users
-SET email = $2,
-    first_name = $3,
-    last_name = $4,
-    balance = $5
-WHERE id = $1
-`
-
-type UpdateUserParams struct {
-	ID        int64
-	Email     string
-	FirstName string
-	LastName  string
-	Balance   float64
-}
-
-func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
-	_, err := q.db.Exec(ctx, updateUser,
-		arg.ID,
-		arg.Email,
-		arg.FirstName,
-		arg.LastName,
-		arg.Balance,
-	)
-	return err
 }
 
 const updateUserBalance = `-- name: UpdateUserBalance :exec
@@ -228,5 +222,30 @@ type UpdateUserBalanceParams struct {
 
 func (q *Queries) UpdateUserBalance(ctx context.Context, arg UpdateUserBalanceParams) error {
 	_, err := q.db.Exec(ctx, updateUserBalance, arg.ID, arg.Balance)
+	return err
+}
+
+const updateUserProfile = `-- name: UpdateUserProfile :exec
+UPDATE users
+SET first_name = $2,
+    last_name = $3,
+    website = $4
+WHERE id = $1
+`
+
+type UpdateUserProfileParams struct {
+	ID        int64
+	FirstName string
+	LastName  string
+	Website   string
+}
+
+func (q *Queries) UpdateUserProfile(ctx context.Context, arg UpdateUserProfileParams) error {
+	_, err := q.db.Exec(ctx, updateUserProfile,
+		arg.ID,
+		arg.FirstName,
+		arg.LastName,
+		arg.Website,
+	)
 	return err
 }

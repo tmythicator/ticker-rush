@@ -16,6 +16,7 @@ export interface Quote {
   change_percent: number;
   timestamp: string;
   source: string;
+  is_closed: boolean;
 }
 
 export interface GetQuoteRequest {
@@ -49,7 +50,7 @@ export interface SellStockResponse {
 }
 
 function createBaseQuote(): Quote {
-  return { symbol: "", price: 0, change: 0, change_percent: 0, timestamp: "0", source: "" };
+  return { symbol: "", price: 0, change: 0, change_percent: 0, timestamp: "0", source: "", is_closed: false };
 }
 
 export const Quote: MessageFns<Quote> = {
@@ -71,6 +72,9 @@ export const Quote: MessageFns<Quote> = {
     }
     if (message.source !== "") {
       writer.uint32(50).string(message.source);
+    }
+    if (message.is_closed !== false) {
+      writer.uint32(56).bool(message.is_closed);
     }
     return writer;
   },
@@ -130,6 +134,14 @@ export const Quote: MessageFns<Quote> = {
           message.source = reader.string();
           continue;
         }
+        case 7: {
+          if (tag !== 56) {
+            break;
+          }
+
+          message.is_closed = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -151,6 +163,11 @@ export const Quote: MessageFns<Quote> = {
         : 0,
       timestamp: isSet(object.timestamp) ? globalThis.String(object.timestamp) : "0",
       source: isSet(object.source) ? globalThis.String(object.source) : "",
+      is_closed: isSet(object.isClosed)
+        ? globalThis.Boolean(object.isClosed)
+        : isSet(object.is_closed)
+        ? globalThis.Boolean(object.is_closed)
+        : false,
     };
   },
 
@@ -174,6 +191,9 @@ export const Quote: MessageFns<Quote> = {
     if (message.source !== "") {
       obj.source = message.source;
     }
+    if (message.is_closed !== false) {
+      obj.isClosed = message.is_closed;
+    }
     return obj;
   },
 
@@ -188,6 +208,7 @@ export const Quote: MessageFns<Quote> = {
     message.change_percent = object.change_percent ?? 0;
     message.timestamp = object.timestamp ?? "0";
     message.source = object.source ?? "";
+    message.is_closed = object.is_closed ?? false;
     return message;
   },
 };
