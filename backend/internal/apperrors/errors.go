@@ -16,4 +16,14 @@ var (
 	ErrInvalidToken = errors.New("invalid token")
 	// ErrMarketClosed is returned when the market is closed.
 	ErrMarketClosed = errors.New("market is closed")
+	// ErrInvalidUsernameFormat is returned when the username does not match the required format.
+	ErrInvalidUsernameFormat = errors.New("invalid username: must be 3-20 alphanumeric characters or underscores")
+	// ErrPasswordTooShort is returned when the password is shorter than the required length.
+	ErrPasswordTooShort = errors.New("password must be at least 8 characters long")
+	// ErrNameRequired is returned when the first or last name is empty.
+	ErrNameRequired = errors.New("first name and last name are required")
+	// ErrProfanityDetected is returned when profanity is found in user input.
+	ErrProfanityDetected = errors.New("profanity detected in username or name")
+	// ErrUsernameNotAllowed is returned when a username is in the blocklist.
+	ErrUsernameNotAllowed = errors.New("username is not allowed")
 )

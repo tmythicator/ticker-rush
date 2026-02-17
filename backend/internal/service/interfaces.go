@@ -36,21 +36,23 @@ type HistoryRepository interface {
 type UserRepository interface {
 	GetUsers(ctx context.Context) ([]*user.User, error)
 	GetUser(ctx context.Context, id int64) (*user.User, error)
-	GetUserByEmail(
+	GetUserByUsername(
 		ctx context.Context,
-		email string,
+		username string,
 	) (*user.User, string, error) // Returns user, hash, error
 	CreateUser(
 		ctx context.Context,
-		email string,
+		username string,
 		hashedPassword string,
 		firstName string,
 		lastName string,
 		balance float64,
+		website string,
 	) (*user.User, error)
 
 	GetUserForUpdate(ctx context.Context, id int64) (*user.User, error)
-	SaveUser(ctx context.Context, user *user.User) error
+	UpdateUserProfile(ctx context.Context, user *user.User) error
+	UpdateUserBalance(ctx context.Context, id int64, balance float64) error
 	WithTx(tx Transaction) UserRepository
 }
 

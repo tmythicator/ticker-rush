@@ -12,8 +12,8 @@ import (
 
 // Claims represents the JWT claims.
 type Claims struct {
-	UserID int64  `json:"user_id"`
-	Email  string `json:"email"`
+	UserID   int64  `json:"user_id"`
+	Username string `json:"username"`
 	jwt.RegisteredClaims
 }
 
@@ -21,8 +21,8 @@ type Claims struct {
 func GenerateToken(user *pb.User, secret string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
-		UserID: user.GetId(),
-		Email:  user.GetEmail(),
+		UserID:   user.GetId(),
+		Username: user.GetUsername(),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

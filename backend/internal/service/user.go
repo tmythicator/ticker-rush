@@ -2,9 +2,18 @@ package service
 
 import (
 	"context"
+	"slices"
 
+	"regexp"
+
+	goaway "github.com/TwiN/go-away"
+	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 	"golang.org/x/crypto/bcrypt"
+)
+
+var (
+	usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9_]{3,20}$`)
 )
 
 // UserService handles user-related business logic.
@@ -24,17 +33,44 @@ func NewUserService(userRepo UserRepository, portfolioRepo PortfolioRepository) 
 // CreateUser registers a new user.
 func (s *UserService) CreateUser(
 	ctx context.Context,
-	email string,
+	username string,
 	password string,
 	firstName string,
 	lastName string,
+	website string,
 ) (*user.User, error) {
+	// 1. Validate Username Format
+	if !usernameRegex.MatchString(username) {
+		return nil, apperrors.ErrInvalidUsernameFormat
+	}
+
+	// Validate Password Length
+	if len(password) < 8 {
+		return nil, apperrors.ErrPasswordTooShort
+	}
+
+	// Validate Names
+	if len(firstName) == 0 || len(lastName) == 0 {
+		return nil, apperrors.ErrNameRequired
+	}
+
+	// 2. Profanity Check
+	if goaway.IsProfane(username) || goaway.IsProfane(firstName) || goaway.IsProfane(lastName) {
+		return nil, apperrors.ErrProfanityDetected
+	}
+
+	// 3. Reserved usernames
+	blockedNames := []string{"admin", "administrator", "system", "mod", "moderator", "support", "help"}
+	if slices.Contains(blockedNames, username) {
+		return nil, apperrors.ErrUsernameNotAllowed
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 
-	return s.userRepo.CreateUser(ctx, email, string(hashedPassword), firstName, lastName, 10000)
+	return s.userRepo.CreateUser(ctx, username, string(hashedPassword), firstName, lastName, 10000, website)
 }
 
 // GetUser retrieves a user by ID.
@@ -69,13 +105,13 @@ func (s *UserService) GetUserWithPortfolio(ctx context.Context, id int64) (*user
 	return fetchedUser, nil
 }
 
-// Authenticate verifies user credentials.
+// Authenticate checks user credentials.
 func (s *UserService) Authenticate(
 	ctx context.Context,
-	email string,
+	username string,
 	password string,
 ) (*user.User, error) {
-	user, passwordHash, err := s.userRepo.GetUserByEmail(ctx, email)
+	user, passwordHash, err := s.userRepo.GetUserByUsername(ctx, username)
 	if err != nil {
 		return nil, err
 	}

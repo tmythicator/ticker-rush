@@ -33,11 +33,12 @@ func (r *UserRepository) GetUser(ctx context.Context, id int64) (*pb.User, error
 
 	return &pb.User{
 		Id:        u.ID,
-		Email:     u.Email,
+		Username:  u.Username,
 		Balance:   u.Balance,
 		CreatedAt: timestamppb.New(u.CreatedAt.Time),
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
+		Website:   u.Website,
 	}, nil
 }
 
@@ -52,11 +53,12 @@ func (r *UserRepository) GetUsers(ctx context.Context) ([]*pb.User, error) {
 	for i, u := range res {
 		users[i] = &pb.User{
 			Id:        u.ID,
-			Email:     u.Email,
+			Username:  u.Username,
 			FirstName: u.FirstName,
 			LastName:  u.LastName,
 			Balance:   u.Balance,
 			CreatedAt: timestamppb.New(u.CreatedAt.Time),
+			Website:   u.Website,
 		}
 	}
 
@@ -79,38 +81,47 @@ func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*pb.Us
 
 	return &pb.User{
 		Id:        u.ID,
-		Email:     u.Email,
+		Username:  u.Username,
 		Balance:   u.Balance,
 		CreatedAt: timestamppb.New(u.CreatedAt.Time),
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
+		Website:   u.Website,
 	}, nil
 }
 
-// SaveUser updates an existing user.
-func (r *UserRepository) SaveUser(ctx context.Context, user *pb.User) error {
-	err := r.queries.UpdateUser(ctx, db.UpdateUserParams{
+// UpdateUserProfile updates an existing user's profile.
+func (r *UserRepository) UpdateUserProfile(ctx context.Context, user *pb.User) error {
+	err := r.queries.UpdateUserProfile(ctx, db.UpdateUserProfileParams{
 		ID:        user.GetId(),
-		Email:     user.GetEmail(),
 		FirstName: user.GetFirstName(),
 		LastName:  user.GetLastName(),
-		Balance:   user.GetBalance(),
+		Website:   user.GetWebsite(),
 	})
 
 	return err
 }
 
+// UpdateUserBalance updates the user's balance.
+func (r *UserRepository) UpdateUserBalance(ctx context.Context, id int64, balance float64) error {
+	return r.queries.UpdateUserBalance(ctx, db.UpdateUserBalanceParams{
+		ID:      id,
+		Balance: balance,
+	})
+}
+
 // CreateUser creates a new user in the database.
 func (r *UserRepository) CreateUser(
 	ctx context.Context,
-	email string,
+	username string,
 	hashedPassword string,
 	firstName string,
 	lastName string,
 	balance float64,
+	website string,
 ) (*pb.User, error) {
 	user, err := r.queries.CreateUser(ctx, db.CreateUserParams{
-		Email:        email,
+		Username:     username,
 		PasswordHash: hashedPassword,
 		FirstName:    firstName,
 		LastName:     lastName,
@@ -123,30 +134,32 @@ func (r *UserRepository) CreateUser(
 
 	return &pb.User{
 		Id:        user.ID,
-		Email:     user.Email,
+		Username:  user.Username,
 		Balance:   user.Balance,
 		CreatedAt: timestamppb.New(user.CreatedAt.Time),
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
+		Website:   user.Website,
 	}, nil
 }
 
-// GetUserByEmail retrieves a user by email, returning the user and password hash.
-func (r *UserRepository) GetUserByEmail(
+// GetUserByUsername retrieves a user by username, returning the user and password hash.
+func (r *UserRepository) GetUserByUsername(
 	ctx context.Context,
-	email string,
+	username string,
 ) (*pb.User, string, error) {
-	u, err := r.queries.GetUserByEmail(ctx, email)
+	u, err := r.queries.GetUserByUsername(ctx, username)
 	if err != nil {
 		return nil, "", err
 	}
 
 	return &pb.User{
 		Id:        u.ID,
-		Email:     u.Email,
+		Username:  u.Username,
 		Balance:   u.Balance,
 		CreatedAt: timestamppb.New(u.CreatedAt.Time),
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
+		Website:   u.Website,
 	}, u.PasswordHash, nil
 }

@@ -95,7 +95,7 @@ func (s *TradeService) BuyStock(
 	newAvgPrice := newTotalValue / newTotalQuantity
 
 	// 6. Persistence
-	if err := txUserRepo.SaveUser(ctx, user); err != nil {
+	if err := txUserRepo.UpdateUserBalance(ctx, user.GetId(), user.GetBalance()); err != nil {
 		return nil, err
 	}
 
@@ -164,7 +164,7 @@ func (s *TradeService) SellStock(
 	item.Quantity = item.GetQuantity() - quantity
 
 	// 6. Persistence
-	if err := txUserRepo.SaveUser(ctx, user); err != nil {
+	if err := txUserRepo.UpdateUserBalance(ctx, user.GetId(), user.GetBalance()); err != nil {
 		return nil, err
 	}
 
