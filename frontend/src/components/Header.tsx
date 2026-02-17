@@ -70,9 +70,9 @@ export const Header = () => {
             </div>
             <div
               className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full border-2 border-background shadow-sm flex items-center justify-center text-white font-bold text-xs cursor-default"
-              title={user.email}
+              title={user.username}
             >
-              {user.first_name ? user.first_name[0] : user.email[0]}
+              {user.first_name[0]}
             </div>
             <button
               onClick={handleLogout}

@@ -28,7 +28,7 @@ export const RegisterPage = () => {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
       firstName: '',
       lastName: '',
@@ -41,8 +41,8 @@ export const RegisterPage = () => {
     error: backendError,
   } = useMutation({
     mutationFn: async (data: RegisterFormData) => {
-      await apiRegister(data.email, data.password, data.firstName, data.lastName);
-      return apiLogin(data.email, data.password);
+      await apiRegister(data.username, data.password, data.firstName, data.lastName);
+      return apiLogin(data.username, data.password);
     },
     onSuccess: (user) => {
       login(user);
@@ -73,6 +73,14 @@ export const RegisterPage = () => {
             className="space-y-4"
             noValidate
           >
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input id="username" {...register('username')} required />
+              {errors.username && (
+                <p className="text-destructive text-sm font-medium">{errors.username.message}</p>
+              )}
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name</Label>
@@ -89,13 +97,7 @@ export const RegisterPage = () => {
                 )}
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" {...register('email')} required />
-              {errors.email && (
-                <p className="text-destructive text-sm font-medium">{errors.email.message}</p>
-              )}
-            </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" {...register('password')} required />

@@ -21,7 +21,7 @@ export const LoginPage = () => {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
     },
   });
@@ -32,7 +32,7 @@ export const LoginPage = () => {
     error: backendError,
   } = useMutation({
     mutationFn: async (data: LoginFormData) => {
-      return apiLogin(data.email, data.password);
+      return apiLogin(data.username, data.password);
     },
     onSuccess: (user) => {
       login(user);
@@ -57,10 +57,10 @@ export const LoginPage = () => {
           )}
           <form onSubmit={handleSubmit((data) => loginUser(data))} className="space-y-4" noValidate>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" required {...register('email')} />
-              {errors.email && (
-                <p className="text-destructive text-sm font-medium">{errors.email.message}</p>
+              <Label htmlFor="username">Username</Label>
+              <Input id="username" type="text" required {...register('username')} />
+              {errors.username && (
+                <p className="text-destructive text-sm font-medium">{errors.username.message}</p>
               )}
             </div>
             <div className="space-y-2">

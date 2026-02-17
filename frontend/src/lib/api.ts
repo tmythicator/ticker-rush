@@ -40,16 +40,16 @@ export const getUser = async (): Promise<User> => {
   return api.get(`/user/me`);
 };
 
-export const buyStock = async (symbol: string, count: number): Promise<User> => {
-  return api.post('/buy', { symbol, count });
+export const buyStock = async (symbol: string, quantity: number): Promise<User> => {
+  return api.post('/buy', { symbol, quantity });
 };
 
-export const sellStock = async (symbol: string, count: number): Promise<User> => {
-  return api.post('/sell', { symbol, count });
+export const sellStock = async (symbol: string, quantity: number): Promise<User> => {
+  return api.post('/sell', { symbol, quantity });
 };
 
-export const login = async (email: string, password: string): Promise<User> => {
-  return api.post('/login', { email, password });
+export const login = async (username: string, password: string): Promise<User> => {
+  return api.post('/login', { username, password });
 };
 
 export const logout = async (): Promise<void> => {
@@ -62,12 +62,12 @@ export const getLeaderboard = async (limit = 10, offset = 0): Promise<GetLeaderb
 };
 
 export const register = async (
-  email: string,
+  username: string,
   password: string,
   first_name: string,
   last_name: string,
 ): Promise<User> => {
-  return api.post('/register', { email, password, first_name, last_name });
+  return api.post('/register', { username, password, first_name, last_name });
 };
 
 export const getConfig = async (): Promise<{ tickers: string[] }> => {
