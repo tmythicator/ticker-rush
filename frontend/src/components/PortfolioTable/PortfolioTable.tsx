@@ -1,16 +1,17 @@
+import { PortfolioRow } from '@/components/PortfolioTable/PortfolioRow';
 import { SellPositionModal } from '@/components/SellPositionModal';
+import { IconBriefcase } from '@/components/icons/CustomIcons';
+import { Card } from '@/components/ui/card';
 import type { PortfolioItem } from '@/types';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card } from '@/components/ui/card';
-import { PortfolioRow } from '@/components/PortfolioTable/PortfolioRow';
-import { IconBriefcase } from '@/components/icons/CustomIcons';
 
 interface PortfolioTableProps {
   portfolio: Record<string, PortfolioItem>;
+  isReadOnly?: boolean;
 }
 
-export const PortfolioTable = ({ portfolio }: PortfolioTableProps) => {
+export const PortfolioTable = ({ portfolio, isReadOnly = false }: PortfolioTableProps) => {
   const navigate = useNavigate();
   const [sellModal, setSellModal] = useState<{ isOpen: boolean; item?: PortfolioItem }>({
     isOpen: false,
@@ -40,9 +41,10 @@ export const PortfolioTable = ({ portfolio }: PortfolioTableProps) => {
               <th className="px-6 py-4 text-right">Quantity</th>
               <th className="px-6 py-4 text-right">Avg Price</th>
               <th className="px-6 py-4 text-right">Total Cost</th>
-              <th className="px-6 py-4 text-right">Actions</th>
+              {!isReadOnly && <th className="px-6 py-4 text-right">Actions</th>}
             </tr>
           </thead>
+
           <tbody className="divide-y divide-border">
             {Object.values(portfolio).map((item) => (
               <PortfolioRow
@@ -50,12 +52,16 @@ export const PortfolioTable = ({ portfolio }: PortfolioTableProps) => {
                 item={item}
                 onSellClick={handleSellClick}
                 onTradeClick={handleTrade}
+                isReadOnly={isReadOnly}
               />
             ))}
             {Object.keys(portfolio).length === 0 && (
               <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground italic">
-                  No assets found in your portfolio. Start trading!
+                <td
+                  colSpan={isReadOnly ? 4 : 5}
+                  className="px-6 py-12 text-center text-muted-foreground italic"
+                >
+                  No assets found in your portfolio.{!isReadOnly && ' Start trading!'}
                 </td>
               </tr>
             )}

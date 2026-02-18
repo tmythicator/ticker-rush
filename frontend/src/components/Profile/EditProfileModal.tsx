@@ -1,11 +1,11 @@
 import { Modal } from '@/components/Modal';
+import { FormField } from '@/components/ui/form-field';
 import { useAuth } from '@/hooks/useAuth';
 import { updateUser } from '@/lib/api';
-import { type UpdateUserFormData, updateUserSchema } from '@/lib/schemas';
+import { updateUserSchema, type UpdateUserFormData } from '@/lib/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -19,7 +19,8 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
   const {
     register,
     handleSubmit,
-    reset,
+    setValue,
+    control,
     formState: { errors },
   } = useForm<UpdateUserFormData>({
     resolver: zodResolver(updateUserSchema),
@@ -27,19 +28,11 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
       firstName: user?.first_name || '',
       lastName: user?.last_name || '',
       website: user?.website || '',
+      isPublic: user?.is_public || false,
     },
   });
 
-  // Reset form when modal opens or user changes
-  useEffect(() => {
-    if (isOpen && user) {
-      reset({
-        firstName: user.first_name,
-        lastName: user.last_name,
-        website: user.website,
-      });
-    }
-  }, [isOpen, user, reset]);
+  const isPublic = useWatch({ control, name: 'isPublic' });
 
   const mutation = useMutation({
     mutationFn: (data: UpdateUserFormData) =>
@@ -47,6 +40,7 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
         first_name: data.firstName,
         last_name: data.lastName,
         website: data.website || '',
+        is_public: data.isPublic,
       }),
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(['user'], updatedUser);
@@ -55,72 +49,84 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
     },
   });
 
-  const onSubmit = (data: UpdateUserFormData) => {
-    mutation.mutate(data);
-  };
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Edit Profile">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="space-y-2">
-          <label htmlFor="firstName" className="text-sm font-medium text-foreground">
-            First Name
-          </label>
-          <input
-            {...register('firstName')}
-            id="firstName"
-            className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 placeholder:text-muted-foreground text-foreground"
-            placeholder="John"
-          />
-          {errors.firstName && (
-            <p className="text-xs text-destructive">{errors.firstName.message}</p>
-          )}
+      <form onSubmit={handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+            Personal Information
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              label="First Name"
+              id="firstName"
+              register={register}
+              error={errors.firstName?.message}
+              placeholder="John"
+            />
+            <FormField
+              label="Last Name"
+              id="lastName"
+              register={register}
+              error={errors.lastName?.message}
+              placeholder="Doe"
+            />
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="lastName" className="text-sm font-medium text-foreground">
-            Last Name
-          </label>
-          <input
-            {...register('lastName')}
-            id="lastName"
-            className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 placeholder:text-muted-foreground text-foreground"
-            placeholder="Doe"
-          />
-          {errors.lastName && <p className="text-xs text-destructive">{errors.lastName.message}</p>}
-        </div>
-
-        <div className="space-y-2">
-          <label htmlFor="website" className="text-sm font-medium text-foreground">
-            Website
-          </label>
-          <input
-            {...register('website')}
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+            Public Profile
+          </h3>
+          <FormField
+            label="Website"
             id="website"
-            className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 placeholder:text-muted-foreground text-foreground"
+            register={register}
+            error={errors.website?.message}
             placeholder="https://example.com"
           />
-          {errors.website && <p className="text-xs text-destructive">{errors.website.message}</p>}
+
+          <div
+            className="bg-muted/30 p-4 rounded-xl border border-border/50 flex items-center justify-between group cursor-pointer hover:bg-muted/50 transition-colors"
+            onClick={() => setValue('isPublic', !isPublic, { shouldDirty: true })}
+          >
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-foreground">Profile Visibility</span>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+                  {isPublic ? 'Public' : 'Private'}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                When public, your portfolio allocation is visible on the leaderboard.
+              </p>
+            </div>
+            <input
+              type="checkbox"
+              {...register('isPublic')}
+              className="h-5 w-5 rounded border-border text-primary focus:ring-primary/50 bg-background accent-primary cursor-pointer"
+            />
+          </div>
         </div>
 
         {mutation.isError && (
-          <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
-            {(mutation.error as any).message || 'Failed to update profile'}
+          <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium">
+            {mutation.error instanceof Error ? mutation.error.message : 'Failed to update profile'}
           </div>
         )}
 
-        <div className="flex gap-3 pt-2">
+        <div className="flex gap-3 pt-4">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 px-4 py-2 bg-muted text-foreground font-medium rounded-lg hover:bg-muted/80 transition-colors"
+            className="flex-1 px-4 py-2.5 bg-muted text-foreground font-medium rounded-xl hover:bg-muted/80 transition-colors"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={mutation.isPending}
-            className="flex-1 px-4 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2.5 bg-primary text-primary-foreground font-medium rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20"
           >
             {mutation.isPending ? 'Saving...' : 'Save Changes'}
           </button>
