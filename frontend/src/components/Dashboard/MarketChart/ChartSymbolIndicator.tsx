@@ -1,18 +1,16 @@
+import { usePriceColor } from '@/hooks/usePriceColor';
+import { type Quote } from '@/types';
+
 interface ChartSymbolIndicatorProps {
-  price: number | undefined;
-  isClosed?: boolean;
-  priceColor: string;
+  quote: Quote | null;
   isLoading: boolean;
   isError: boolean;
 }
 
-export const ChartSymbolIndicator = ({
-  price,
-  isClosed,
-  priceColor,
-  isLoading,
-  isError,
-}: ChartSymbolIndicatorProps) => {
+export const ChartSymbolIndicator = ({ quote, isLoading, isError }: ChartSymbolIndicatorProps) => {
+  const price = quote?.price;
+  const isClosed = quote?.is_closed;
+  const priceColor = usePriceColor(price);
   return (
     <div className="px-2 flex flex-col items-end min-w-[80px]">
       {isLoading ? (

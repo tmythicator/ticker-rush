@@ -1,8 +1,8 @@
-import { parseTicker } from '@/lib/utils';
 import { IconChevronDown } from '@/components/icons/CustomIcons';
-import { isTradeSymbol, type TradeSymbol } from '@/types';
-import { useTickers } from '@/hooks/useTickers';
 import { SourceBadge } from '@/components/shared/SourceBadge';
+import { useTickers } from '@/hooks/useTickers';
+import { parseTicker } from '@/lib/utils';
+import { isTradeSymbol, type TradeSymbol } from '@/types';
 
 interface ChartSymbolPickerProps {
   symbol: TradeSymbol | null;

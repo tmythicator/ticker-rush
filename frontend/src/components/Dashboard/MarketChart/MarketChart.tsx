@@ -1,9 +1,8 @@
-import { useRef } from 'react';
-import { type Quote } from '@/types';
-import { ChartBody } from './ChartBody';
-import { type TradeSymbol } from '@/types';
 import { useChart } from '@/hooks/useChart';
-import { usePriceColor } from '@/hooks/usePriceColor';
+import { type Quote, type TradeSymbol } from '@/types';
+import { useRef } from 'react';
+import { ChartSymbolIndicator } from './ChartSymbolIndicator';
+import { ChartSymbolPicker } from './ChartSymbolPicker';
 
 interface MarketChartProps {
   symbol: TradeSymbol | null;
@@ -24,8 +23,6 @@ export const MarketChart = ({
 
   useChart({ chartContainerRef, quote, symbol });
 
-  const priceColor = usePriceColor(quote?.price);
-
   if (!symbol) {
     return (
       <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-muted/10 rounded-lg">
@@ -36,15 +33,13 @@ export const MarketChart = ({
 
   return (
     <div className="w-full h-full relative group">
-      <ChartBody
-        symbol={symbol}
-        onSymbolChange={onSymbolChange}
-        price={quote?.price}
-        isClosed={quote?.is_closed}
-        priceColor={priceColor}
-        isLoading={isLoading}
-        isError={isError}
-      />
+      <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
+        <div className="bg-background/90 backdrop-blur-md p-1.5 rounded-xl shadow-lg border border-border/60 flex items-center gap-1 transition-all hover:shadow-xl hover:scale-[1.02]">
+          <ChartSymbolPicker symbol={symbol} onSymbolChange={onSymbolChange} />
+          <div className="h-6 w-px bg-border mx-1"></div>
+          <ChartSymbolIndicator quote={quote} isLoading={isLoading} isError={isError} />
+        </div>
+      </div>
       <div className="w-full h-full relative group">
         <div ref={chartContainerRef} className="w-full h-[500px]" />
       </div>
