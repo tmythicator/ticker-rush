@@ -32,7 +32,7 @@
           golangci-lint
         ];
         frontend-tools = with pkgs; [
-          nodejs_20
+          nodejs_24
           nodePackages.pnpm
         ];
         proto-tools = with pkgs; [
