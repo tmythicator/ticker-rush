@@ -1,11 +1,13 @@
-import { IconMedal, IconRefresh, IconTrophy } from '@/components/icons/CustomIcons';
+import { IconLock, IconMedal, IconRefresh, IconTrophy } from '@/components/icons/CustomIcons';
 import { getLeaderboard } from '@/lib/api';
+import { QUERY_KEY_LEADERBOARD } from '@/lib/queryKeys';
 import { formatLocalTime } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 
 export function Leaderboard() {
   const { data, isLoading, error } = useQuery({
-    queryKey: ['leaderboard'],
+    queryKey: QUERY_KEY_LEADERBOARD,
     queryFn: () => getLeaderboard(10, 0),
     refetchInterval: 60000, // Refresh every minute
   });
@@ -48,8 +50,23 @@ export function Leaderboard() {
                   {entry.rank > 3 && entry.rank}
                 </td>
                 <td className="px-6 py-4 font-medium">
-                  {entry.first_name} {entry.last_name}
+                  {entry.is_public ? (
+                    <Link
+                      to={`/users/${entry.username}`}
+                      className="hover:text-primary hover:underline transition-colors flex items-center gap-2"
+                    >
+                      {entry.first_name} {entry.last_name}
+                    </Link>
+                  ) : (
+                    <div className="flex items-center gap-2 text-muted-foreground cursor-not-allowed">
+                      <span>
+                        {entry.first_name} {entry.last_name}
+                      </span>
+                      <IconLock className="w-4 h-4" />
+                    </div>
+                  )}
                 </td>
+
                 <td className="px-6 py-4 text-right font-mono text-emerald-500 font-bold">
                   $
                   {entry.total_net_worth?.toLocaleString(undefined, {
