@@ -35,6 +35,9 @@
           nodejs_24
           nodePackages.pnpm
         ];
+        bot-tools = with pkgs; [
+          bun
+        ];
         proto-tools = with pkgs; [
           buf
           protobuf
@@ -51,13 +54,13 @@
           process-compose
           docker-compose
           go-task
-          bun
         ];
 
       in
       {
         devShells.default = pkgs.mkShell {
-          buildInputs = backend-tools ++ frontend-tools ++ proto-tools ++ db-tools ++ infra-tools;
+          buildInputs =
+            backend-tools ++ frontend-tools ++ bot-tools ++ proto-tools ++ db-tools ++ infra-tools;
 
           shellHook = ''
             # Export environment config for the setup script
