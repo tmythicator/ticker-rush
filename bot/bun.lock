@@ -5,17 +5,17 @@
     "": {
       "name": "bot",
       "dependencies": {
-        "@langchain/community": "^1.1.9",
-        "@langchain/openai": "^1.2.3",
-        "langchain": "^1.2.15",
+        "@langchain/community": "^1.1.16",
+        "@langchain/openai": "^1.2.8",
+        "langchain": "^1.2.25",
         "zod": "^4.3.6",
       },
       "devDependencies": {
         "@types/bun": "latest",
-        "ts-proto": "^2.11.1",
+        "ts-proto": "^2.11.2",
       },
       "peerDependencies": {
-        "typescript": "^5",
+        "typescript": "^5.9.3",
       },
     },
   },
