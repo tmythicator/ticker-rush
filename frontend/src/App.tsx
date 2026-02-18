@@ -25,6 +25,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
 import { LoginPage } from './pages/LoginPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { PublicProfilePage } from './pages/PublicProfilePage';
 import { RegisterPage } from './pages/RegisterPage';
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/leaderboard" element={<LeaderboardPage />} />
+              <Route path="/users/:username" element={<PublicProfilePage />} />
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/trade" element={<DashboardPage />} />

@@ -95,3 +95,7 @@ export const getHistory = async (symbol: string, limit = 100): Promise<Quote[]> 
 export const updateUser = async (data: UpdateUserRequest): Promise<User> => {
   return api.put('/user/me', data);
 };
+
+export const getPublicProfile = async (username: string): Promise<User> => {
+  return api.get(`/users/${username}`);
+};
