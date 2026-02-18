@@ -30,5 +30,6 @@ type User struct {
 	LastName     string
 	Website      string
 	Balance      float64
+	IsPublic     bool
 	CreatedAt    pgtype.Timestamptz
 }

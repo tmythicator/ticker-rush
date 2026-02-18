@@ -28,6 +28,8 @@ type LeaderboardEntry struct {
 	TotalNetWorth float64                `protobuf:"fixed64,3,opt,name=total_net_worth,json=totalNetWorth,proto3" json:"total_net_worth,omitempty"`
 	FirstName     string                 `protobuf:"bytes,4,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
 	LastName      string                 `protobuf:"bytes,5,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	Username      string                 `protobuf:"bytes,6,opt,name=username,proto3" json:"username,omitempty"`
+	IsPublic      bool                   `protobuf:"varint,7,opt,name=is_public,json=isPublic,proto3" json:"is_public,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -95,6 +97,20 @@ func (x *LeaderboardEntry) GetLastName() string {
 		return x.LastName
 	}
 	return ""
+}
+
+func (x *LeaderboardEntry) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *LeaderboardEntry) GetIsPublic() bool {
+	if x != nil {
+		return x.IsPublic
+	}
+	return false
 }
 
 type GetLeaderboardRequest struct {
@@ -213,14 +229,16 @@ var File_leaderboard_v1_leaderboard_proto protoreflect.FileDescriptor
 
 const file_leaderboard_v1_leaderboard_proto_rawDesc = "" +
 	"\n" +
-	" leaderboard/v1/leaderboard.proto\x12\x0eleaderboard.v1\"\xa3\x01\n" +
+	" leaderboard/v1/leaderboard.proto\x12\x0eleaderboard.v1\"\xdc\x01\n" +
 	"\x10LeaderboardEntry\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x12\n" +
 	"\x04rank\x18\x02 \x01(\x05R\x04rank\x12&\n" +
 	"\x0ftotal_net_worth\x18\x03 \x01(\x01R\rtotalNetWorth\x12\x1d\n" +
 	"\n" +
 	"first_name\x18\x04 \x01(\tR\tfirstName\x12\x1b\n" +
-	"\tlast_name\x18\x05 \x01(\tR\blastName\"E\n" +
+	"\tlast_name\x18\x05 \x01(\tR\blastName\x12\x1a\n" +
+	"\busername\x18\x06 \x01(\tR\busername\x12\x1b\n" +
+	"\tis_public\x18\a \x01(\bR\bisPublic\"E\n" +
 	"\x15GetLeaderboardRequest\x12\x14\n" +
 	"\x05limit\x18\x01 \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\x02 \x01(\x05R\x06offset\"\x96\x01\n" +

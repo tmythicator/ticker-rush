@@ -15,6 +15,8 @@ export interface LeaderboardEntry {
   total_net_worth: number;
   first_name: string;
   last_name: string;
+  username: string;
+  is_public: boolean;
 }
 
 export interface GetLeaderboardRequest {
@@ -29,7 +31,7 @@ export interface GetLeaderboardResponse {
 }
 
 function createBaseLeaderboardEntry(): LeaderboardEntry {
-  return { user_id: "0", rank: 0, total_net_worth: 0, first_name: "", last_name: "" };
+  return { user_id: "0", rank: 0, total_net_worth: 0, first_name: "", last_name: "", username: "", is_public: false };
 }
 
 export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
@@ -48,6 +50,12 @@ export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
     }
     if (message.last_name !== "") {
       writer.uint32(42).string(message.last_name);
+    }
+    if (message.username !== "") {
+      writer.uint32(50).string(message.username);
+    }
+    if (message.is_public !== false) {
+      writer.uint32(56).bool(message.is_public);
     }
     return writer;
   },
@@ -99,6 +107,22 @@ export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
           message.last_name = reader.string();
           continue;
         }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          message.username = reader.string();
+          continue;
+        }
+        case 7: {
+          if (tag !== 56) {
+            break;
+          }
+
+          message.is_public = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -131,6 +155,12 @@ export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
         : isSet(object.last_name)
         ? globalThis.String(object.last_name)
         : "",
+      username: isSet(object.username) ? globalThis.String(object.username) : "",
+      is_public: isSet(object.isPublic)
+        ? globalThis.Boolean(object.isPublic)
+        : isSet(object.is_public)
+        ? globalThis.Boolean(object.is_public)
+        : false,
     };
   },
 
@@ -151,6 +181,12 @@ export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
     if (message.last_name !== "") {
       obj.lastName = message.last_name;
     }
+    if (message.username !== "") {
+      obj.username = message.username;
+    }
+    if (message.is_public !== false) {
+      obj.isPublic = message.is_public;
+    }
     return obj;
   },
 
@@ -164,6 +200,8 @@ export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
     message.total_net_worth = object.total_net_worth ?? 0;
     message.first_name = object.first_name ?? "";
     message.last_name = object.last_name ?? "";
+    message.username = object.username ?? "";
+    message.is_public = object.is_public ?? false;
     return message;
   },
 };

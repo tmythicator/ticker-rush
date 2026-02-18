@@ -17,6 +17,7 @@ export const updateUserSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   website: z.url().optional().or(z.literal('')),
+  isPublic: z.boolean(),
 });
 
 export type UpdateUserFormData = z.infer<typeof updateUserSchema>;

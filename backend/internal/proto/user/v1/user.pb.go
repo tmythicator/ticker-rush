@@ -93,6 +93,7 @@ type User struct {
 	LastName      string                    `protobuf:"bytes,7,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
 	Portfolio     map[string]*PortfolioItem `protobuf:"bytes,8,rep,name=portfolio,proto3" json:"portfolio,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Website       string                    `protobuf:"bytes,9,opt,name=website,proto3" json:"website,omitempty"`
+	IsPublic      bool                      `protobuf:"varint,10,opt,name=is_public,json=isPublic,proto3" json:"is_public,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -190,6 +191,13 @@ func (x *User) GetWebsite() string {
 	return ""
 }
 
+func (x *User) GetIsPublic() bool {
+	if x != nil {
+		return x.IsPublic
+	}
+	return false
+}
+
 type CreateUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
@@ -271,6 +279,7 @@ type UpdateUserRequest struct {
 	FirstName     string                 `protobuf:"bytes,1,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
 	LastName      string                 `protobuf:"bytes,2,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
 	Website       string                 `protobuf:"bytes,3,opt,name=website,proto3" json:"website,omitempty"`
+	IsPublic      bool                   `protobuf:"varint,4,opt,name=is_public,json=isPublic,proto3" json:"is_public,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -324,6 +333,13 @@ func (x *UpdateUserRequest) GetWebsite() string {
 		return x.Website
 	}
 	return ""
+}
+
+func (x *UpdateUserRequest) GetIsPublic() bool {
+	if x != nil {
+		return x.IsPublic
+	}
+	return false
 }
 
 type LoginRequest struct {
@@ -386,7 +402,7 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\rPortfolioItem\x12!\n" +
 	"\fstock_symbol\x18\x01 \x01(\tR\vstockSymbol\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x01R\bquantity\x12#\n" +
-	"\raverage_price\x18\x03 \x01(\x01R\faveragePrice\"\x94\x03\n" +
+	"\raverage_price\x18\x03 \x01(\x01R\faveragePrice\"\xb1\x03\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12#\n" +
@@ -398,7 +414,9 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"first_name\x18\x06 \x01(\tR\tfirstName\x12\x1b\n" +
 	"\tlast_name\x18\a \x01(\tR\blastName\x12:\n" +
 	"\tportfolio\x18\b \x03(\v2\x1c.user.v1.User.PortfolioEntryR\tportfolio\x12\x18\n" +
-	"\awebsite\x18\t \x01(\tR\awebsite\x1aT\n" +
+	"\awebsite\x18\t \x01(\tR\awebsite\x12\x1b\n" +
+	"\tis_public\x18\n" +
+	" \x01(\bR\bisPublic\x1aT\n" +
 	"\x0ePortfolioEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
 	"\x05value\x18\x02 \x01(\v2\x16.user.v1.PortfolioItemR\x05value:\x028\x01\"\xa1\x01\n" +
@@ -408,12 +426,13 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\n" +
 	"first_name\x18\x03 \x01(\tR\tfirstName\x12\x1b\n" +
 	"\tlast_name\x18\x04 \x01(\tR\blastName\x12\x18\n" +
-	"\awebsite\x18\x05 \x01(\tR\awebsite\"i\n" +
+	"\awebsite\x18\x05 \x01(\tR\awebsite\"\x86\x01\n" +
 	"\x11UpdateUserRequest\x12\x1d\n" +
 	"\n" +
 	"first_name\x18\x01 \x01(\tR\tfirstName\x12\x1b\n" +
 	"\tlast_name\x18\x02 \x01(\tR\blastName\x12\x18\n" +
-	"\awebsite\x18\x03 \x01(\tR\awebsite\"F\n" +
+	"\awebsite\x18\x03 \x01(\tR\awebsite\x12\x1b\n" +
+	"\tis_public\x18\x04 \x01(\bR\bisPublic\"F\n" +
 	"\fLoginRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpasswordBGZEgithub.com/tmythicator/ticker-rush/server/internal/proto/user/v1;userb\x06proto3"

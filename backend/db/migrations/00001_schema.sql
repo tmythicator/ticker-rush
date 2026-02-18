@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     last_name TEXT NOT NULL CHECK (char_length(last_name) > 0),
     website TEXT NOT NULL DEFAULT '',
     balance NUMERIC NOT NULL,
+    is_public BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     CONSTRAINT users_username_length_check CHECK (char_length(username) >= 3 AND char_length(username) <= 20)
 );

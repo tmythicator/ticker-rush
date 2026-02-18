@@ -26,6 +26,7 @@ export interface User {
   last_name: string;
   portfolio: { [key: string]: PortfolioItem };
   website: string;
+  is_public: boolean;
 }
 
 export interface User_PortfolioEntry {
@@ -45,6 +46,7 @@ export interface UpdateUserRequest {
   first_name: string;
   last_name: string;
   website: string;
+  is_public: boolean;
 }
 
 export interface LoginRequest {
@@ -163,6 +165,7 @@ function createBaseUser(): User {
     last_name: "",
     portfolio: {},
     website: "",
+    is_public: false,
   };
 }
 
@@ -194,6 +197,9 @@ export const User: MessageFns<User> = {
     });
     if (message.website !== "") {
       writer.uint32(74).string(message.website);
+    }
+    if (message.is_public !== false) {
+      writer.uint32(80).bool(message.is_public);
     }
     return writer;
   },
@@ -280,6 +286,14 @@ export const User: MessageFns<User> = {
           message.website = reader.string();
           continue;
         }
+        case 10: {
+          if (tag !== 80) {
+            break;
+          }
+
+          message.is_public = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -324,6 +338,11 @@ export const User: MessageFns<User> = {
         )
         : {},
       website: isSet(object.website) ? globalThis.String(object.website) : "",
+      is_public: isSet(object.isPublic)
+        ? globalThis.Boolean(object.isPublic)
+        : isSet(object.is_public)
+        ? globalThis.Boolean(object.is_public)
+        : false,
     };
   },
 
@@ -362,6 +381,9 @@ export const User: MessageFns<User> = {
     if (message.website !== "") {
       obj.website = message.website;
     }
+    if (message.is_public !== false) {
+      obj.isPublic = message.is_public;
+    }
     return obj;
   },
 
@@ -387,6 +409,7 @@ export const User: MessageFns<User> = {
       {},
     );
     message.website = object.website ?? "";
+    message.is_public = object.is_public ?? false;
     return message;
   },
 };
@@ -602,7 +625,7 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
 };
 
 function createBaseUpdateUserRequest(): UpdateUserRequest {
-  return { first_name: "", last_name: "", website: "" };
+  return { first_name: "", last_name: "", website: "", is_public: false };
 }
 
 export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
@@ -615,6 +638,9 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
     }
     if (message.website !== "") {
       writer.uint32(26).string(message.website);
+    }
+    if (message.is_public !== false) {
+      writer.uint32(32).bool(message.is_public);
     }
     return writer;
   },
@@ -650,6 +676,14 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
           message.website = reader.string();
           continue;
         }
+        case 4: {
+          if (tag !== 32) {
+            break;
+          }
+
+          message.is_public = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -672,6 +706,11 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
         ? globalThis.String(object.last_name)
         : "",
       website: isSet(object.website) ? globalThis.String(object.website) : "",
+      is_public: isSet(object.isPublic)
+        ? globalThis.Boolean(object.isPublic)
+        : isSet(object.is_public)
+        ? globalThis.Boolean(object.is_public)
+        : false,
     };
   },
 
@@ -686,6 +725,9 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
     if (message.website !== "") {
       obj.website = message.website;
     }
+    if (message.is_public !== false) {
+      obj.isPublic = message.is_public;
+    }
     return obj;
   },
 
@@ -697,6 +739,7 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
     message.first_name = object.first_name ?? "";
     message.last_name = object.last_name ?? "";
     message.website = object.website ?? "";
+    message.is_public = object.is_public ?? false;
     return message;
   },
 };

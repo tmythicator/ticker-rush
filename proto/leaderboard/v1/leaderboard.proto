@@ -10,6 +10,8 @@ message LeaderboardEntry {
   double total_net_worth = 3;
   string first_name = 4;
   string last_name = 5;
+  string username = 6;
+  bool is_public = 7;
 }
 
 message GetLeaderboardRequest {
