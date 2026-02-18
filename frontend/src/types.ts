@@ -3,7 +3,7 @@ export * from './lib/api';
 export type { Quote } from './lib/proto/exchange/v1/exchange';
 export { GetLeaderboardResponse } from './lib/proto/leaderboard/v1/leaderboard';
 export type { LeaderboardEntry } from './lib/proto/leaderboard/v1/leaderboard';
-export type { PortfolioItem, User } from './lib/proto/user/v1/user';
+export type { PortfolioItem, User, UpdateUserRequest } from './lib/proto/user/v1/user';
 
 export const TradeAction = {
   BUY: 'BUY',

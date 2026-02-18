@@ -41,6 +41,12 @@ export interface CreateUserRequest {
   website: string;
 }
 
+export interface UpdateUserRequest {
+  first_name: string;
+  last_name: string;
+  website: string;
+}
+
 export interface LoginRequest {
   username: string;
   password: string;
@@ -588,6 +594,106 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
     const message = createBaseCreateUserRequest();
     message.username = object.username ?? "";
     message.password = object.password ?? "";
+    message.first_name = object.first_name ?? "";
+    message.last_name = object.last_name ?? "";
+    message.website = object.website ?? "";
+    return message;
+  },
+};
+
+function createBaseUpdateUserRequest(): UpdateUserRequest {
+  return { first_name: "", last_name: "", website: "" };
+}
+
+export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
+  encode(message: UpdateUserRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.first_name !== "") {
+      writer.uint32(10).string(message.first_name);
+    }
+    if (message.last_name !== "") {
+      writer.uint32(18).string(message.last_name);
+    }
+    if (message.website !== "") {
+      writer.uint32(26).string(message.website);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UpdateUserRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateUserRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.first_name = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.last_name = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.website = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateUserRequest {
+    return {
+      first_name: isSet(object.firstName)
+        ? globalThis.String(object.firstName)
+        : isSet(object.first_name)
+        ? globalThis.String(object.first_name)
+        : "",
+      last_name: isSet(object.lastName)
+        ? globalThis.String(object.lastName)
+        : isSet(object.last_name)
+        ? globalThis.String(object.last_name)
+        : "",
+      website: isSet(object.website) ? globalThis.String(object.website) : "",
+    };
+  },
+
+  toJSON(message: UpdateUserRequest): unknown {
+    const obj: any = {};
+    if (message.first_name !== "") {
+      obj.firstName = message.first_name;
+    }
+    if (message.last_name !== "") {
+      obj.lastName = message.last_name;
+    }
+    if (message.website !== "") {
+      obj.website = message.website;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateUserRequest>, I>>(base?: I): UpdateUserRequest {
+    return UpdateUserRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateUserRequest>, I>>(object: I): UpdateUserRequest {
+    const message = createBaseUpdateUserRequest();
     message.first_name = object.first_name ?? "";
     message.last_name = object.last_name ?? "";
     message.website = object.website ?? "";

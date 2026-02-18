@@ -12,3 +12,11 @@ export const registerSchema = loginSchema.extend({
 
 export type RegisterFormData = z.infer<typeof registerSchema>;
 export type LoginFormData = z.infer<typeof loginSchema>;
+
+export const updateUserSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  website: z.url().optional().or(z.literal('')),
+});
+
+export type UpdateUserFormData = z.infer<typeof updateUserSchema>;

@@ -68,12 +68,14 @@ export const Header = () => {
               <IconWallet className="w-4 h-4 text-muted-foreground" />
               <span className="tabular-nums font-mono">${user.balance.toFixed(2)}</span>
             </div>
-            <div
-              className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full border-2 border-background shadow-sm flex items-center justify-center text-white font-bold text-xs cursor-default"
-              title={user.username}
-            >
-              {user.first_name[0]}
-            </div>
+            <NavLink to="/profile" className="block">
+              <div
+                className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full border-2 border-background shadow-sm flex items-center justify-center text-white font-bold text-xs cursor-pointer hover:opacity-90 transition-opacity"
+                title={user.username}
+              >
+                {user.first_name[0]}
+              </div>
+            </NavLink>
             <button
               onClick={handleLogout}
               className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"

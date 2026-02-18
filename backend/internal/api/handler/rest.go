@@ -114,6 +114,43 @@ func (h *RestHandler) Logout(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }
 
+// UpdateUser handles user profile updates.
+func (h *RestHandler) UpdateUser(c *gin.Context) {
+	userID, exists := c.Get(middleware.UserIDKey)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+
+		return
+	}
+
+	var req user.UpdateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+
+		return
+	}
+
+	updatedUser, err := h.userService.UpdateUser(
+		c.Request.Context(),
+		userID.(int64),
+		req.FirstName,
+		req.LastName,
+		req.Website,
+	)
+	if err != nil {
+		if errors.Is(err, apperrors.ErrNameRequired) || errors.Is(err, apperrors.ErrProfanityDetected) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, updatedUser)
+}
+
 // GetMe returns the current user's profile.
 func (h *RestHandler) GetMe(c *gin.Context) {
 	userID, exists := c.Get(middleware.UserIDKey)

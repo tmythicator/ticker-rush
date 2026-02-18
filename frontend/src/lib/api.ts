@@ -1,4 +1,4 @@
-import { GetLeaderboardResponse, type Quote, type User } from '@/types';
+import { GetLeaderboardResponse, type Quote, type UpdateUserRequest, type User } from '@/types';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -19,6 +19,20 @@ export const api = {
   post: async (endpoint: string, body: unknown) => {
     const res = await fetch(`${API_URL}${endpoint}`, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new ApiError(errorData.error || `Error: ${res.status}`, res.status);
+    }
+    return res.json();
+  },
+  put: async (endpoint: string, body: unknown) => {
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -76,4 +90,8 @@ export const getConfig = async (): Promise<{ tickers: string[] }> => {
 
 export const getHistory = async (symbol: string, limit = 100): Promise<Quote[]> => {
   return api.get(`/history?symbol=${symbol}&limit=${limit}`);
+};
+
+export const updateUser = async (data: UpdateUserRequest): Promise<User> => {
+  return api.put('/user/me', data);
 };

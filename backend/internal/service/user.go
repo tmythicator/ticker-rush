@@ -123,3 +123,39 @@ func (s *UserService) Authenticate(
 
 	return user, nil
 }
+
+// UpdateUser updates a user's profile.
+func (s *UserService) UpdateUser(
+	ctx context.Context,
+	id int64,
+	firstName string,
+	lastName string,
+	website string,
+) (*user.User, error) {
+	// Validate Names
+	if len(firstName) == 0 || len(lastName) == 0 {
+		return nil, apperrors.ErrNameRequired
+	}
+
+	// Profanity Check
+	if goaway.IsProfane(firstName) || goaway.IsProfane(lastName) {
+		return nil, apperrors.ErrProfanityDetected
+	}
+
+	// Get existing user to preserve other fields
+	existingUser, err := s.userRepo.GetUser(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	// Update fields
+	existingUser.FirstName = firstName
+	existingUser.LastName = lastName
+	existingUser.Website = website
+
+	if err := s.userRepo.UpdateUserProfile(ctx, existingUser); err != nil {
+		return nil, err
+	}
+
+	return existingUser, nil
+}
