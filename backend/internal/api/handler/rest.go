@@ -136,7 +136,9 @@ func (h *RestHandler) UpdateUser(c *gin.Context) {
 		req.FirstName,
 		req.LastName,
 		req.Website,
+		req.IsPublic,
 	)
+
 	if err != nil {
 		if errors.Is(err, apperrors.ErrNameRequired) || errors.Is(err, apperrors.ErrProfanityDetected) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -149,6 +151,30 @@ func (h *RestHandler) UpdateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, updatedUser)
+}
+
+// GetPublicProfile handles retrieving a user's public profile.
+func (h *RestHandler) GetPublicProfile(c *gin.Context) {
+	username := c.Param("username")
+	if username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
+
+		return
+	}
+
+	publicProfile, err := h.userService.GetPublicProfile(c.Request.Context(), username)
+	if err != nil {
+		if errors.Is(err, apperrors.ErrUserNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found or profile is private"})
+
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch profile"})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, publicProfile)
 }
 
 // GetMe returns the current user's profile.

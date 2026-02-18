@@ -48,6 +48,7 @@ type UserRepository interface {
 		lastName string,
 		balance float64,
 		website string,
+		isPublic bool,
 	) (*user.User, error)
 
 	GetUserForUpdate(ctx context.Context, id int64) (*user.User, error)

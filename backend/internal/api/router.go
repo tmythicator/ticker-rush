@@ -43,6 +43,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 		api.GET("/config", handler.GetConfig)
 		api.GET("/history", handler.GetHistory)
 		api.GET("/leaderboard", handler.GetLeaderboard)
+		api.GET("/users/:username", handler.GetPublicProfile)
 
 		protected := api.Group("/")
 		protected.Use(middleware.AuthMiddleware(cfg.JWTSecret))

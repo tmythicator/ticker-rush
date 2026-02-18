@@ -180,7 +180,7 @@ func TestLogin(t *testing.T) {
 
 	// Create User first
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
-	_, err := userRepo.CreateUser(ctx, testUsername, string(hashedPassword), "Test", "User", 100.0, "https://example.com")
+	_, err := userRepo.CreateUser(ctx, testUsername, string(hashedPassword), "Test", "User", 100.0, "https://example.com", false)
 	assert.NoError(t, err)
 
 	// Perform Login
@@ -243,6 +243,7 @@ func TestBuyStock(t *testing.T) {
 		"Schulz",
 		balance,
 		"",
+		false,
 	)
 	if err != nil {
 		t.Fatalf("Failed to create user: %v", err)
@@ -304,6 +305,7 @@ func TestSellStock(t *testing.T) {
 		"Schulz",
 		mockStartBalance,
 		"",
+		false,
 	)
 	user, _ := userRepo.GetUser(ctx, createdUser.GetId())
 
@@ -362,6 +364,7 @@ func TestInsufficientFunds(t *testing.T) {
 		"Schulz",
 		mockStartBalance,
 		"",
+		false,
 	)
 	user, _ := userRepo.GetUser(ctx, createdUser.GetId())
 
@@ -407,6 +410,7 @@ func TestSellAllStock(t *testing.T) {
 		"Schulz",
 		mockStartBalance,
 		"",
+		false,
 	)
 	if err != nil {
 		t.Fatalf("Failed to create user: %v", err)
@@ -435,4 +439,91 @@ func TestSellAllStock(t *testing.T) {
 	// Should be deleted
 	_, err = portfolioRepo.GetPortfolioItem(ctx, createdUser.GetId(), symbol)
 	assert.Error(t, err, "Portfolio item should be removed (not found error expected)")
+}
+
+func TestGetPublicProfile(t *testing.T) {
+	router, mr, pool := setupTestRouter(t)
+	defer mr.Close()
+	defer pool.Close()
+
+	// 1. Create Public User
+	publicUsername := "public_user"
+	_, err := userRepo.CreateUser(ctx, publicUsername, "pass", "Public", "User", 1000, "", true)
+	assert.NoError(t, err)
+
+	// 2. Create Private User
+	privateUsername := "private_user"
+	_, err = userRepo.CreateUser(ctx, privateUsername, "pass", "Private", "User", 1000, "", false)
+	assert.NoError(t, err)
+
+	t.Run("Get Public Profile - Success", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, "/api/users/"+publicUsername, nil)
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		var userResp user.User
+		err := json.Unmarshal(w.Body.Bytes(), &userResp)
+		assert.NoError(t, err)
+		assert.Equal(t, publicUsername, userResp.Username)
+	})
+
+	t.Run("Get Private Profile - Forbidden/NotFound", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, "/api/users/"+privateUsername, nil)
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusNotFound, w.Code)
+	})
+
+	t.Run("Get Non-Existent Profile - NotFound", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, "/api/users/non_existent", nil)
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusNotFound, w.Code)
+	})
+}
+
+func TestUpdateUser_Privacy(t *testing.T) {
+	router, mr, pool := setupTestRouter(t)
+	defer mr.Close()
+	defer pool.Close()
+
+	// 1. Create Initial Private User
+	username := "privacy_tester"
+	createdUser, err := userRepo.CreateUser(ctx, username, "pass", "Privacy", "Tester", 1000, "", false)
+	assert.NoError(t, err)
+
+	// 2. Generate Token
+	token, _ := service.GenerateToken(createdUser, testSecret)
+
+	// 3. Update to Public
+	reqBody := `{"first_name": "Privacy", "last_name": "Tester", "website": "", "is_public": true}`
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPut, "/api/user/me", bytes.NewBufferString(reqBody))
+	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	// Verify DB state
+	updatedUser, err := userRepo.GetUser(ctx, createdUser.GetId())
+	assert.NoError(t, err)
+	assert.True(t, updatedUser.IsPublic, "User should be public after update")
+
+	// 4. Update back to Private
+	reqBody = `{"first_name": "Privacy", "last_name": "Tester", "website": "", "is_public": false}`
+	w = httptest.NewRecorder()
+	req, _ = http.NewRequest(http.MethodPut, "/api/user/me", bytes.NewBufferString(reqBody))
+	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	// Verify DB state
+	updatedUser, err = userRepo.GetUser(ctx, createdUser.GetId())
+	assert.NoError(t, err)
+	assert.False(t, updatedUser.IsPublic, "User should be private after second update")
 }

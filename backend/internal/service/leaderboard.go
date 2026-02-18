@@ -118,6 +118,7 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 			totalCount--
 
 			continue
+
 		}
 		leadEntry := &leaderboard.LeaderboardEntry{
 			UserId:        user.Id,
@@ -125,7 +126,10 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 			TotalNetWorth: item.Score,
 			FirstName:     user.FirstName,
 			LastName:      user.LastName,
+			Username:      user.Username,
+			IsPublic:      user.IsPublic,
 		}
+
 		entries = append(entries, leadEntry)
 	}
 

@@ -89,8 +89,9 @@ func (m *MockUserRepository) CreateUser(
 	lastName string,
 	balance float64,
 	website string,
+	isPublic bool,
 ) (*user.User, error) {
-	args := m.Called(ctx, username, hashedPassword, firstName, lastName, balance, website)
+	args := m.Called(ctx, username, hashedPassword, firstName, lastName, balance, website, isPublic)
 
 	return args.Get(0).(*user.User), args.Error(1)
 }

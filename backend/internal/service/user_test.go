@@ -33,7 +33,7 @@ func TestUserService_CreateUser(t *testing.T) {
 
 	mockUserRepo.On("CreateUser", ctx, username, mock.MatchedBy(func(hashedPassword string) bool {
 		return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)) == nil
-	}), expectedUser.GetFirstName(), expectedUser.GetLastName(), startBalance, "").Return(expectedUser, nil)
+	}), expectedUser.GetFirstName(), expectedUser.GetLastName(), startBalance, "", false).Return(expectedUser, nil)
 
 	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo)
 	user, err := userService.CreateUser(
@@ -106,4 +106,60 @@ func TestUserService_Authenticate(t *testing.T) {
 
 	_, err = userService.Authenticate(ctx, username, wrongPassword)
 	assert.Error(t, err)
+}
+
+func TestUserService_GetPublicProfile(t *testing.T) {
+	mockUserRepo := new(mocks.MockUserRepository)
+	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
+	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo)
+
+	t.Run("Public User", func(t *testing.T) {
+		username := "publicUser"
+		expectedUser := &pb.User{
+			Id:        1,
+			Username:  username,
+			FirstName: "Public",
+			LastName:  "User",
+			IsPublic:  true,
+		}
+		expectedPortfolio := []*pb.PortfolioItem{
+			{StockSymbol: "AAPL", Quantity: 10, AveragePrice: 150.0},
+		}
+
+		mockUserRepo.On("GetUserByUsername", ctx, username).Return(expectedUser, "", nil).Once()
+		mockPortfolioRepo.On("GetPortfolio", ctx, expectedUser.Id).Return(expectedPortfolio, nil).Once()
+
+		res, err := userService.GetPublicProfile(ctx, username)
+
+		assert.NoError(t, err)
+		assert.Equal(t, expectedUser.Id, res.Id)
+		assert.Len(t, res.Portfolio, 1)
+		assert.Equal(t, "AAPL", res.Portfolio["AAPL"].StockSymbol)
+	})
+
+	t.Run("Private User", func(t *testing.T) {
+		username := "privateUser"
+		expectedUser := &pb.User{
+			Id:       2,
+			Username: username,
+			IsPublic: false,
+		}
+
+		mockUserRepo.On("GetUserByUsername", ctx, username).Return(expectedUser, "", nil).Once()
+
+		_, err := userService.GetPublicProfile(ctx, username)
+
+		assert.Error(t, err)
+		assert.Equal(t, "user not found", err.Error())
+	})
+
+	t.Run("User Not Found", func(t *testing.T) {
+		username := "unknownUser"
+
+		mockUserRepo.On("GetUserByUsername", ctx, username).Return(nil, "", assert.AnError).Once()
+
+		_, err := userService.GetPublicProfile(ctx, username)
+
+		assert.Error(t, err)
+	})
 }

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -39,6 +40,7 @@ func (r *UserRepository) GetUser(ctx context.Context, id int64) (*pb.User, error
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 		Website:   u.Website,
+		IsPublic:  u.IsPublic,
 	}, nil
 }
 
@@ -59,6 +61,7 @@ func (r *UserRepository) GetUsers(ctx context.Context) ([]*pb.User, error) {
 			Balance:   u.Balance,
 			CreatedAt: timestamppb.New(u.CreatedAt.Time),
 			Website:   u.Website,
+			IsPublic:  u.IsPublic,
 		}
 	}
 
@@ -87,7 +90,9 @@ func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*pb.Us
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 		Website:   u.Website,
+		IsPublic:  u.IsPublic,
 	}, nil
+
 }
 
 // UpdateUserProfile updates an existing user's profile.
@@ -97,6 +102,7 @@ func (r *UserRepository) UpdateUserProfile(ctx context.Context, user *pb.User) e
 		FirstName: user.GetFirstName(),
 		LastName:  user.GetLastName(),
 		Website:   user.GetWebsite(),
+		IsPublic:  user.GetIsPublic(),
 	})
 
 	return err
@@ -119,28 +125,33 @@ func (r *UserRepository) CreateUser(
 	lastName string,
 	balance float64,
 	website string,
+	isPublic bool,
 ) (*pb.User, error) {
-	user, err := r.queries.CreateUser(ctx, db.CreateUserParams{
+	u, err := r.queries.CreateUser(ctx, db.CreateUserParams{
 		Username:     username,
 		PasswordHash: hashedPassword,
 		FirstName:    firstName,
 		LastName:     lastName,
 		Balance:      balance,
-		CreatedAt:    pgtype.Timestamptz{Time: timestamppb.Now().AsTime(), Valid: true},
+		Website:      website,
+		CreatedAt:    pgtype.Timestamptz{Time: time.Now(), Valid: true},
+		IsPublic:     isPublic,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.User{
-		Id:        user.ID,
-		Username:  user.Username,
-		Balance:   user.Balance,
-		CreatedAt: timestamppb.New(user.CreatedAt.Time),
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Website:   user.Website,
+		Id:        u.ID,
+		Username:  u.Username,
+		Balance:   u.Balance,
+		CreatedAt: timestamppb.New(u.CreatedAt.Time),
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		Website:   u.Website,
+		IsPublic:  u.IsPublic,
 	}, nil
+
 }
 
 // GetUserByUsername retrieves a user by username, returning the user and password hash.
@@ -161,5 +172,7 @@ func (r *UserRepository) GetUserByUsername(
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 		Website:   u.Website,
+		IsPublic:  u.IsPublic,
 	}, u.PasswordHash, nil
+
 }

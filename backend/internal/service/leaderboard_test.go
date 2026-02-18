@@ -92,8 +92,14 @@ func TestLeaderBoardService_GetLeaderboard(t *testing.T) {
 	redisClient.ZAdd(ctx, "leaderboard", redis.Z{Score: 2500, Member: "1"})
 	redisClient.ZAdd(ctx, "leaderboard", redis.Z{Score: 1500, Member: "3"})
 
-	mockUserRepo.On("GetUser", ctx, int64(2)).Return(&user.User{Id: 2, FirstName: "Bob", LastName: "B"}, nil)
-	mockUserRepo.On("GetUser", ctx, int64(1)).Return(&user.User{Id: 1, FirstName: "Alice", LastName: "A"}, nil)
+	mockUserRepo.On("GetUser", ctx, int64(2)).Return(&user.User{Id: 2, FirstName: "Bob", LastName: "B", IsPublic: false}, nil)
+	mockUserRepo.On("GetUser", ctx, int64(1)).Return(&user.User{
+		Id:        1,
+		Username:  "user1",
+		FirstName: "First1",
+		LastName:  "Last1",
+		IsPublic:  true,
+	}, nil)
 	// User 3 is missing (testing cleanup)
 	mockUserRepo.On("GetUser", ctx, int64(3)).Return(nil, assert.AnError)
 
@@ -114,11 +120,15 @@ func TestLeaderBoardService_GetLeaderboard(t *testing.T) {
 	assert.Equal(t, int32(1), resp.Entries[0].Rank)
 	assert.Equal(t, 3000.0, resp.Entries[0].TotalNetWorth)
 	assert.Equal(t, "Bob", resp.Entries[0].FirstName)
+	assert.Equal(t, "B", resp.Entries[0].LastName)
+	assert.False(t, resp.Entries[0].IsPublic)
 
 	assert.Equal(t, int64(1), resp.Entries[1].UserId)
 	assert.Equal(t, int32(2), resp.Entries[1].Rank)
 	assert.Equal(t, 2500.0, resp.Entries[1].TotalNetWorth)
-	assert.Equal(t, "Alice", resp.Entries[1].FirstName)
+	assert.Equal(t, "First1", resp.Entries[1].FirstName)
+	assert.Equal(t, "Last1", resp.Entries[1].LastName)
+	assert.True(t, resp.Entries[1].IsPublic)
 
 	// Verify User 3 was removed from Redis
 	exists := redisClient.ZScore(ctx, "leaderboard", "3").Val()

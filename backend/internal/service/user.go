@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
+	"errors"
 	"slices"
 
 	"regexp"
 
 	goaway "github.com/TwiN/go-away"
+	"github.com/jackc/pgx/v5"
 	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 	"golang.org/x/crypto/bcrypt"
@@ -70,7 +72,7 @@ func (s *UserService) CreateUser(
 		return nil, err
 	}
 
-	return s.userRepo.CreateUser(ctx, username, string(hashedPassword), firstName, lastName, 10000, website)
+	return s.userRepo.CreateUser(ctx, username, string(hashedPassword), firstName, lastName, 10000, website, false)
 }
 
 // GetUser retrieves a user by ID.
@@ -131,6 +133,7 @@ func (s *UserService) UpdateUser(
 	firstName string,
 	lastName string,
 	website string,
+	isPublic bool,
 ) (*user.User, error) {
 	// Validate Names
 	if len(firstName) == 0 || len(lastName) == 0 {
@@ -152,10 +155,46 @@ func (s *UserService) UpdateUser(
 	existingUser.FirstName = firstName
 	existingUser.LastName = lastName
 	existingUser.Website = website
+	existingUser.IsPublic = isPublic
 
 	if err := s.userRepo.UpdateUserProfile(ctx, existingUser); err != nil {
 		return nil, err
 	}
 
 	return existingUser, nil
+}
+
+// GetPublicProfile retrieves a user's public profile if enabled.
+func (s *UserService) GetPublicProfile(ctx context.Context, username string) (*user.User, error) {
+	targetUser, _, err := s.userRepo.GetUserByUsername(ctx, username)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, apperrors.ErrUserNotFound
+		}
+
+		return nil, err
+	}
+
+	if !targetUser.IsPublic {
+		return nil, apperrors.ErrUserNotFound
+	}
+
+	portfolio, err := s.portfolioRepo.GetPortfolio(ctx, targetUser.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	if targetUser.Portfolio == nil {
+		targetUser.Portfolio = make(map[string]*user.PortfolioItem)
+	}
+
+	for _, item := range portfolio {
+		targetUser.Portfolio[item.GetStockSymbol()] = &user.PortfolioItem{
+			StockSymbol:  item.GetStockSymbol(),
+			Quantity:     item.GetQuantity(),
+			AveragePrice: item.GetAveragePrice(),
+		}
+	}
+
+	return targetUser, nil
 }

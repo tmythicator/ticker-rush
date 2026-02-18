@@ -24,6 +24,8 @@ var (
 	ErrNameRequired = errors.New("first name and last name are required")
 	// ErrProfanityDetected is returned when profanity is found in user input.
 	ErrProfanityDetected = errors.New("profanity detected in username or name")
+	// ErrUserNotFound is returned when a user is not found.
+	ErrUserNotFound = errors.New("user not found")
 	// ErrUsernameNotAllowed is returned when a username is in the blocklist.
 	ErrUsernameNotAllowed = errors.New("username is not allowed")
 )
