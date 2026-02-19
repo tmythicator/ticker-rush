@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import { PortfolioTable } from '@/components/PortfolioTable/PortfolioTable';
 import { StatsGrid } from '@/components/Profile/StatsGrid';
-import { IconRefresh } from '@/components/icons/CustomIcons';
+import { IconLock, IconRefresh } from '@/components/icons/CustomIcons';
 import { QUERY_KEY_PUBLIC_PROFILE } from '@/lib/queryKeys';
 import { getPublicProfile } from '@/types';
 
@@ -32,7 +32,7 @@ export const PublicProfilePage = () => {
   if (error || !user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <div className="text-4xl">🔒</div>
+        <IconLock className="w-8 h-8 text-primary" />
         <h1 className="text-2xl font-bold text-foreground">Profile Unavailable</h1>
         <p className="text-muted-foreground">This profile is private or does not exist.</p>
       </div>
@@ -67,7 +67,7 @@ export const PublicProfilePage = () => {
           </div>
         </div>
 
-        <StatsGrid user={user} />
+        <StatsGrid {...user} />
 
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-foreground">Portfolio</h2>

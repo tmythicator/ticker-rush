@@ -40,7 +40,9 @@ export const PortfolioTable = ({ portfolio, isReadOnly = false }: PortfolioTable
               <th className="px-6 py-4">Asset</th>
               <th className="px-6 py-4 text-right">Quantity</th>
               <th className="px-6 py-4 text-right">Avg Price</th>
-              <th className="px-6 py-4 text-right">Total Cost</th>
+              <th className="px-6 py-4 text-right">Current Price</th>
+              <th className="px-6 py-4 text-right">Market Value</th>
+              <th className="px-6 py-4 text-right">P&L</th>
               {!isReadOnly && <th className="px-6 py-4 text-right">Actions</th>}
             </tr>
           </thead>
@@ -58,7 +60,7 @@ export const PortfolioTable = ({ portfolio, isReadOnly = false }: PortfolioTable
             {Object.keys(portfolio).length === 0 && (
               <tr>
                 <td
-                  colSpan={isReadOnly ? 4 : 5}
+                  colSpan={isReadOnly ? 6 : 7}
                   className="px-6 py-12 text-center text-muted-foreground italic"
                 >
                   No assets found in your portfolio.{!isReadOnly && ' Start trading!'}

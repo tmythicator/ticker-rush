@@ -1,6 +1,6 @@
+import { type PortfolioItem, type TickerSource } from '@/types';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { type PortfolioItem, type TickerSource } from '@/types';
 
 /**
  * Calculates the total invested capital from a user's portfolio.
@@ -56,4 +56,14 @@ export const calculateMaxBuyQuantity = (
   if (!buyingPower || !price || price <= 0) return '0.000000';
   const adjustedPercentage = percentage >= 1.0 ? 0.999999 : percentage;
   return ((buyingPower * adjustedPercentage) / price).toFixed(6);
+};
+
+/**
+ * Formats a number as a currency string with a sign (e.g. "+$123.45", "-$123.45").
+ * @param value The value to format.
+ * @returns The formatted string.
+ */
+export const formatCurrencyWithSign = (value: number): string => {
+  const sign = value >= 0 ? '+' : '-';
+  return `${sign}$${Math.abs(value).toFixed(2)}`;
 };

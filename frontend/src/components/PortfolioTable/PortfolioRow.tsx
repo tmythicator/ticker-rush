@@ -2,8 +2,8 @@ import { IconArrowRight, IconTrash } from '@/components/icons/CustomIcons';
 import { SourceBadge } from '@/components/shared/SourceBadge';
 import { Button } from '@/components/ui/button';
 import { useQuoteQuery } from '@/hooks/useQuoteQuery';
-import { parseTicker } from '@/lib/utils';
-import type { PortfolioItem } from '@/types';
+import { formatCurrencyWithSign, parseTicker } from '@/lib/utils';
+import type { PortfolioItem, Quote } from '@/types';
 
 interface PortfolioRowProps {
   item: PortfolioItem;
@@ -23,6 +23,33 @@ export const PortfolioRow = ({
 
   const isMarketClosed = quote?.is_closed;
 
+  const getPnLColorClass = (q: Quote | undefined) => {
+    if (q) {
+      return (q.price - item.average_price) * item.quantity >= 0
+        ? 'text-green-500'
+        : 'text-red-500';
+    }
+
+    return 'text-muted-foreground';
+  };
+
+  const getPnLElement = (q: Quote | undefined) => {
+    if (q) {
+      const pnl = (q.price - item.average_price) * item.quantity;
+      return <>{formatCurrencyWithSign(pnl)}</>;
+    }
+
+    return <span className="animate-pulse">...</span>;
+  };
+
+  const getMarketValueElement = (q: Quote | undefined) => {
+    if (q) {
+      return <>{`$${(q.price * item.quantity).toFixed(2)}`}</>;
+    }
+
+    return <span className="animate-pulse">...</span>;
+  };
+
   return (
     <tr key={item.stock_symbol} className="hover:bg-muted/50 transition-colors">
       <td className="px-6 py-4 font-bold text-foreground">
@@ -40,8 +67,14 @@ export const PortfolioRow = ({
       <td className="px-6 py-4 text-right font-mono text-muted-foreground">
         ${item.average_price.toFixed(2)}
       </td>
+      <td className="px-6 py-4 text-right font-mono text-foreground font-medium">
+        {quote ? `$${quote.price.toFixed(2)}` : <span className="animate-pulse">...</span>}
+      </td>
       <td className="px-6 py-4 text-right font-mono text-foreground font-bold">
-        ${(item.quantity * item.average_price).toFixed(2)}
+        {getMarketValueElement(quote)}
+      </td>
+      <td className={`px-6 py-4 text-right font-mono font-bold ${getPnLColorClass(quote)}`}>
+        {getPnLElement(quote)}
       </td>
       {!isReadOnly && (
         <td className="px-6 py-4 text-right">
