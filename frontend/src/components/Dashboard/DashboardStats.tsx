@@ -31,9 +31,11 @@ export const DashboardStats = ({ user }: DashboardStatsProps) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div className="flex sm:grid sm:grid-cols-3 gap-4 lg:gap-6 overflow-x-auto pb-4 sm:pb-0 snap-x no-scrollbar">
       {stats.map((stat, i) => (
-        <StatCard key={i} {...stat} />
+        <div key={i} className="snap-center min-w-[240px] sm:min-w-0">
+          <StatCard {...stat} />
+        </div>
       ))}
     </div>
   );

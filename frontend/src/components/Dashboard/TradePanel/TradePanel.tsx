@@ -21,6 +21,10 @@ export const TradePanel = ({ quote, onTradeSuccess }: TradePanelProps) => {
   const currentPrice = quote?.price || 0;
   const symbol = quote?.symbol || '';
 
+  // Calculate current position quantity
+  const position = user?.portfolio?.[symbol];
+  const positionQuantity = position?.quantity || 0;
+
   const parsed = parseTicker(symbol);
   const source = (quote?.source as TickerSource) || parsed.source;
   const displaySymbol = parsed.symbol;
@@ -62,6 +66,7 @@ export const TradePanel = ({ quote, onTradeSuccess }: TradePanelProps) => {
         buyingPower={buyingPower}
         price={currentPrice}
         disabled={quote?.is_closed}
+        positionQuantity={positionQuantity}
       />
 
       <div className="flex-1" />

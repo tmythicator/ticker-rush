@@ -13,6 +13,7 @@ interface TradeOrderInputProps {
   buyingPower?: number;
   price?: number;
   disabled?: boolean;
+  positionQuantity?: number;
 }
 
 export const TradeOrderInput = ({
@@ -25,6 +26,7 @@ export const TradeOrderInput = ({
   buyingPower,
   price,
   disabled,
+  positionQuantity = 0,
 }: TradeOrderInputProps) => {
   return (
     <div className={`space-y-5 flex-1 ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -45,8 +47,16 @@ export const TradeOrderInput = ({
       </div>
 
       <div>
-        <label className="block text-xs font-bold text-muted-foreground mb-2 uppercase tracking-wider">
-          Quantity
+        <label className="block text-xs font-bold text-muted-foreground mb-2 uppercase tracking-wider flex justify-between">
+          <span>Quantity</span>
+          {positionQuantity > 0 && (
+            <button
+              onClick={() => setQuantity(positionQuantity.toString())}
+              className="text-xs text-blue-500 hover:text-blue-600 font-bold transition-colors"
+            >
+              Sell All ({positionQuantity})
+            </button>
+          )}
         </label>
         <div className="relative">
           <input
