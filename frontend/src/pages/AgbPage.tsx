@@ -23,9 +23,9 @@ export const AgbPage = () => {
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-2 text-foreground/90">3. User Obligations</h2>
         <p className="text-muted-foreground">
-          Users must provide accurate information during registration. You are responsible for keeping
-          your login credentials confidential. The platform must not be used for any unlawful
-          activities or automated scraping without permission.
+          Users must provide accurate information during registration. You are responsible for
+          keeping your login credentials confidential. The platform must not be used for any
+          unlawful activities or automated scraping without permission.
         </p>
       </section>
 
@@ -50,8 +50,9 @@ export const AgbPage = () => {
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-2 text-foreground/90">6. Changes to the AGB</h2>
         <p className="text-muted-foreground mb-4">
-          We reserve the right to amend these terms. Significant changes will be communicated to users,
-          and continued use of the platform following modifications implies acceptance of the new AGB.
+          We reserve the right to amend these terms. Significant changes will be communicated to
+          users, and continued use of the platform following modifications implies acceptance of the
+          new AGB.
         </p>
       </section>
     </div>

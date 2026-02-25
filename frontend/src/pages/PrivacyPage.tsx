@@ -83,20 +83,21 @@ export const PrivacyPage = () => {
         <h2 className="text-xl font-semibold mb-2 text-foreground/90">5. User Account</h2>
         <p className="text-muted-foreground mb-4">
           To use functions such as the leaderboard and trading, you must register. We use the data
-          entered for the purpose of using the respective offer or service. Registration and usage 
-          of the platform require explicit acceptance of our General Terms and Conditions (AGB) and 
+          entered for the purpose of using the respective offer or service. Registration and usage
+          of the platform require explicit acceptance of our General Terms and Conditions (AGB) and
           this Privacy Policy.
         </p>
         <p className="text-muted-foreground mb-4">
           <strong>Leaderboards & Public Profiles:</strong> By default, all registered user accounts
-          are completely private. While your account might technically rank on our leaderboards based
-          on your trading performance, other users cannot view or navigate to your personal profile.
+          are completely private. While your account might technically rank on our leaderboards
+          based on your trading performance, other users cannot view or navigate to your personal
+          profile.
         </p>
         <p className="text-muted-foreground mb-4">
-          As an option, you can explicitly choose to make your profile public in your account settings. 
-          If you opt-in to a public profile, other users can view your trading portfolio. Additionally, 
-          you optionally have the ability to link a personal website or social network to your profile 
-          if you wish to share it with others.
+          As an option, you can explicitly choose to make your profile public in your account
+          settings. If you opt-in to a public profile, other users can view your trading portfolio.
+          Additionally, you optionally have the ability to link a personal website or social network
+          to your profile if you wish to share it with others.
         </p>
       </section>
     </div>
