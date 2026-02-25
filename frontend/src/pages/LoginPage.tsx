@@ -1,14 +1,14 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
-import { useNavigate, Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { login as apiLogin } from '@/lib/api';
 import { loginSchema, type LoginFormData } from '@/lib/schemas';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const LoginPage = () => {
   const { login } = useAuth();
@@ -32,7 +32,8 @@ export const LoginPage = () => {
     error: backendError,
   } = useMutation({
     mutationFn: async (data: LoginFormData) => {
-      return apiLogin(data.username, data.password);
+      const { username, password } = data;
+      return apiLogin({ username, password });
     },
     onSuccess: (user) => {
       login(user);

@@ -6,6 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { User } from "../../user/v1/user";
 
 export const protobufPackage = "exchange.v1";
 
@@ -27,6 +28,15 @@ export interface GetQuoteResponse {
   quote: Quote | undefined;
 }
 
+export interface GetHistoryRequest {
+  symbol: string;
+  limit: number;
+}
+
+export interface GetHistoryResponse {
+  history: Quote[];
+}
+
 export interface BuyStockRequest {
   symbol: string;
   quantity: number;
@@ -34,8 +44,8 @@ export interface BuyStockRequest {
 
 export interface BuyStockResponse {
   success: boolean;
-  total_price: number;
   message: string;
+  user: User | undefined;
 }
 
 export interface SellStockRequest {
@@ -45,8 +55,8 @@ export interface SellStockRequest {
 
 export interface SellStockResponse {
   success: boolean;
-  total_proceeds: number;
   message: string;
+  user: User | undefined;
 }
 
 function createBaseQuote(): Quote {
@@ -329,6 +339,142 @@ export const GetQuoteResponse: MessageFns<GetQuoteResponse> = {
   },
 };
 
+function createBaseGetHistoryRequest(): GetHistoryRequest {
+  return { symbol: "", limit: 0 };
+}
+
+export const GetHistoryRequest: MessageFns<GetHistoryRequest> = {
+  encode(message: GetHistoryRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.symbol !== "") {
+      writer.uint32(10).string(message.symbol);
+    }
+    if (message.limit !== 0) {
+      writer.uint32(16).int32(message.limit);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetHistoryRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetHistoryRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.symbol = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.limit = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetHistoryRequest {
+    return {
+      symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : "",
+      limit: isSet(object.limit) ? globalThis.Number(object.limit) : 0,
+    };
+  },
+
+  toJSON(message: GetHistoryRequest): unknown {
+    const obj: any = {};
+    if (message.symbol !== "") {
+      obj.symbol = message.symbol;
+    }
+    if (message.limit !== 0) {
+      obj.limit = Math.round(message.limit);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetHistoryRequest>, I>>(base?: I): GetHistoryRequest {
+    return GetHistoryRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetHistoryRequest>, I>>(object: I): GetHistoryRequest {
+    const message = createBaseGetHistoryRequest();
+    message.symbol = object.symbol ?? "";
+    message.limit = object.limit ?? 0;
+    return message;
+  },
+};
+
+function createBaseGetHistoryResponse(): GetHistoryResponse {
+  return { history: [] };
+}
+
+export const GetHistoryResponse: MessageFns<GetHistoryResponse> = {
+  encode(message: GetHistoryResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.history) {
+      Quote.encode(v!, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetHistoryResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetHistoryResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.history.push(Quote.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetHistoryResponse {
+    return {
+      history: globalThis.Array.isArray(object?.history) ? object.history.map((e: any) => Quote.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: GetHistoryResponse): unknown {
+    const obj: any = {};
+    if (message.history?.length) {
+      obj.history = message.history.map((e) => Quote.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetHistoryResponse>, I>>(base?: I): GetHistoryResponse {
+    return GetHistoryResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetHistoryResponse>, I>>(object: I): GetHistoryResponse {
+    const message = createBaseGetHistoryResponse();
+    message.history = object.history?.map((e) => Quote.fromPartial(e)) || [];
+    return message;
+  },
+};
+
 function createBaseBuyStockRequest(): BuyStockRequest {
   return { symbol: "", quantity: 0 };
 }
@@ -406,7 +552,7 @@ export const BuyStockRequest: MessageFns<BuyStockRequest> = {
 };
 
 function createBaseBuyStockResponse(): BuyStockResponse {
-  return { success: false, total_price: 0, message: "" };
+  return { success: false, message: "", user: undefined };
 }
 
 export const BuyStockResponse: MessageFns<BuyStockResponse> = {
@@ -414,11 +560,11 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
     if (message.success !== false) {
       writer.uint32(8).bool(message.success);
     }
-    if (message.total_price !== 0) {
-      writer.uint32(17).double(message.total_price);
-    }
     if (message.message !== "") {
-      writer.uint32(26).string(message.message);
+      writer.uint32(18).string(message.message);
+    }
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(26).fork()).join();
     }
     return writer;
   },
@@ -439,11 +585,11 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
           continue;
         }
         case 2: {
-          if (tag !== 17) {
+          if (tag !== 18) {
             break;
           }
 
-          message.total_price = reader.double();
+          message.message = reader.string();
           continue;
         }
         case 3: {
@@ -451,7 +597,7 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
             break;
           }
 
-          message.message = reader.string();
+          message.user = User.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -466,12 +612,8 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
   fromJSON(object: any): BuyStockResponse {
     return {
       success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
-      total_price: isSet(object.totalPrice)
-        ? globalThis.Number(object.totalPrice)
-        : isSet(object.total_price)
-        ? globalThis.Number(object.total_price)
-        : 0,
       message: isSet(object.message) ? globalThis.String(object.message) : "",
+      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
     };
   },
 
@@ -480,11 +622,11 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
     if (message.success !== false) {
       obj.success = message.success;
     }
-    if (message.total_price !== 0) {
-      obj.totalPrice = message.total_price;
-    }
     if (message.message !== "") {
       obj.message = message.message;
+    }
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
     }
     return obj;
   },
@@ -495,8 +637,8 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
   fromPartial<I extends Exact<DeepPartial<BuyStockResponse>, I>>(object: I): BuyStockResponse {
     const message = createBaseBuyStockResponse();
     message.success = object.success ?? false;
-    message.total_price = object.total_price ?? 0;
     message.message = object.message ?? "";
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     return message;
   },
 };
@@ -578,7 +720,7 @@ export const SellStockRequest: MessageFns<SellStockRequest> = {
 };
 
 function createBaseSellStockResponse(): SellStockResponse {
-  return { success: false, total_proceeds: 0, message: "" };
+  return { success: false, message: "", user: undefined };
 }
 
 export const SellStockResponse: MessageFns<SellStockResponse> = {
@@ -586,11 +728,11 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
     if (message.success !== false) {
       writer.uint32(8).bool(message.success);
     }
-    if (message.total_proceeds !== 0) {
-      writer.uint32(17).double(message.total_proceeds);
-    }
     if (message.message !== "") {
-      writer.uint32(26).string(message.message);
+      writer.uint32(18).string(message.message);
+    }
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(26).fork()).join();
     }
     return writer;
   },
@@ -611,11 +753,11 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
           continue;
         }
         case 2: {
-          if (tag !== 17) {
+          if (tag !== 18) {
             break;
           }
 
-          message.total_proceeds = reader.double();
+          message.message = reader.string();
           continue;
         }
         case 3: {
@@ -623,7 +765,7 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
             break;
           }
 
-          message.message = reader.string();
+          message.user = User.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -638,12 +780,8 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
   fromJSON(object: any): SellStockResponse {
     return {
       success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
-      total_proceeds: isSet(object.totalProceeds)
-        ? globalThis.Number(object.totalProceeds)
-        : isSet(object.total_proceeds)
-        ? globalThis.Number(object.total_proceeds)
-        : 0,
       message: isSet(object.message) ? globalThis.String(object.message) : "",
+      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
     };
   },
 
@@ -652,11 +790,11 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
     if (message.success !== false) {
       obj.success = message.success;
     }
-    if (message.total_proceeds !== 0) {
-      obj.totalProceeds = message.total_proceeds;
-    }
     if (message.message !== "") {
       obj.message = message.message;
+    }
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
     }
     return obj;
   },
@@ -667,8 +805,8 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
   fromPartial<I extends Exact<DeepPartial<SellStockResponse>, I>>(object: I): SellStockResponse {
     const message = createBaseSellStockResponse();
     message.success = object.success ?? false;
-    message.total_proceeds = object.total_proceeds ?? 0;
     message.message = object.message ?? "";
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     return message;
   },
 };

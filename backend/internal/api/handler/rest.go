@@ -13,6 +13,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/api/middleware"
 	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/config/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/leaderboard/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
@@ -71,7 +72,7 @@ func (h *RestHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, createdUser)
+	c.JSON(http.StatusOK, &user.CreateUserResponse{User: createdUser})
 }
 
 // Login handles user authentication.
@@ -105,7 +106,7 @@ func (h *RestHandler) Login(c *gin.Context) {
 	}
 
 	c.SetCookie("auth_token", token, 3600*24, "/", "", false, true)
-	c.JSON(http.StatusOK, fullUser)
+	c.JSON(http.StatusOK, &user.LoginResponse{User: fullUser})
 }
 
 // Logout handles user logout.
@@ -150,7 +151,7 @@ func (h *RestHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, updatedUser)
+	c.JSON(http.StatusOK, &user.UpdateUserResponse{User: updatedUser})
 }
 
 // GetPublicProfile handles retrieving a user's public profile.
@@ -174,7 +175,7 @@ func (h *RestHandler) GetPublicProfile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, publicProfile)
+	c.JSON(http.StatusOK, &user.GetPublicProfileResponse{User: publicProfile})
 }
 
 // GetMe returns the current user's profile.
@@ -193,7 +194,7 @@ func (h *RestHandler) GetMe(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, fullUser)
+	c.JSON(http.StatusOK, &user.GetUserResponse{User: fullUser})
 }
 
 // GetQuote returns a stock quote for a given symbol.
@@ -222,7 +223,7 @@ func (h *RestHandler) GetQuote(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, quote)
+	c.JSON(http.StatusOK, &exchange.GetQuoteResponse{Quote: quote})
 }
 
 // BuyStock handles stock purchase requests.
@@ -273,7 +274,11 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, fullUser)
+	c.JSON(http.StatusOK, &exchange.BuyStockResponse{
+		Success: true,
+		Message: "Bought successfully",
+		User:    fullUser,
+	})
 }
 
 // SellStock handles stock sale requests.
@@ -324,7 +329,11 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, fullUser)
+	c.JSON(http.StatusOK, &exchange.SellStockResponse{
+		Success: true,
+		Message: "Sold successfully",
+		User:    fullUser,
+	})
 }
 
 // GetLeaderboard handles leaderboard fetching requests.
@@ -343,7 +352,12 @@ func (h *RestHandler) GetLeaderboard(c *gin.Context) {
 
 // GetConfig returns the public configuration.
 func (h *RestHandler) GetConfig(c *gin.Context) {
-	c.JSON(http.StatusOK, h.configService.GetPublicConfig(c.Request.Context()))
+	configData := h.configService.GetPublicConfig(c.Request.Context())
+	tickers := configData["tickers"].([]string)
+
+	c.JSON(http.StatusOK, &config.GetConfigResponse{
+		Tickers: tickers,
+	})
 }
 
 // StreamQuotes handles SSE connection for real-time quotes.
@@ -437,5 +451,7 @@ func (h *RestHandler) GetHistory(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, history)
+	c.JSON(http.StatusOK, &exchange.GetHistoryResponse{
+		History: history,
+	})
 }

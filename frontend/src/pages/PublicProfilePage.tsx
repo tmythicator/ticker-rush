@@ -16,7 +16,7 @@ export const PublicProfilePage = () => {
     error,
   } = useQuery({
     queryKey: QUERY_KEY_PUBLIC_PROFILE(username!),
-    queryFn: () => getPublicProfile(username!),
+    queryFn: () => getPublicProfile({ username: username! }),
     enabled: !!username,
     retry: false,
   });

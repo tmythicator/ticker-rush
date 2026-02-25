@@ -11,7 +11,7 @@ export const HomeChart = ({ symbol }: { symbol: TradeSymbol }) => {
 
   const { data: history } = useQuery({
     queryKey: QUERY_KEY_HISTORY(symbol),
-    queryFn: () => getHistory(symbol, 100),
+    queryFn: () => getHistory({ symbol, limit: 100 }),
     enabled: !!symbol,
     staleTime: 1000 * 60 * 3,
   });

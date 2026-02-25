@@ -1,4 +1,4 @@
-import { fetchQuote } from '@/lib/api';
+import { getQuote } from '@/lib/api';
 import { QUERY_KEY_QUOTE } from '@/lib/queryKeys';
 import { type PortfolioItem } from '@/types';
 import { useQueries } from '@tanstack/react-query';
@@ -10,7 +10,7 @@ export const usePortfolioValue = (portfolio: Record<string, PortfolioItem> | und
   const results = useQueries({
     queries: symbols.map((symbol) => ({
       queryKey: QUERY_KEY_QUOTE(symbol),
-      queryFn: () => fetchQuote(symbol),
+      queryFn: () => getQuote({ symbol }),
       staleTime: 1000 * 30,
       retry: false,
     })),

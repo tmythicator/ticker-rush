@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package config.v1;
+
+option go_package = "github.com/tmythicator/ticker-rush/server/internal/proto/config/v1;config";
+
+service ConfigService {
+  rpc GetConfig(GetConfigRequest) returns (GetConfigResponse);
+}
+
+message GetConfigRequest {}
+
+message GetConfigResponse {
+  repeated string tickers = 1;
+}

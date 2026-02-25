@@ -131,7 +131,7 @@ export const useChart = ({ chartContainerRef, quote, symbol, options }: UseChart
     if (quote && seriesRef.current && symbol) {
       try {
         seriesRef.current.update({
-          time: quote.timestamp as Time,
+          time: parseInt(quote.timestamp, 10) as Time,
           value: quote.price,
         });
       } catch (e) {

@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package exchange.v1;
 
+import "user/v1/user.proto";
+
 option go_package = "github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1;exchange";
 
 message Quote {
@@ -18,6 +20,7 @@ service ExchangeService {
   rpc GetQuote(GetQuoteRequest) returns (GetQuoteResponse);
   rpc BuyStock(BuyStockRequest) returns (BuyStockResponse);
   rpc SellStock(SellStockRequest) returns (SellStockResponse);
+  rpc GetHistory(GetHistoryRequest) returns (GetHistoryResponse);
 }
 
 message GetQuoteRequest {
@@ -28,6 +31,15 @@ message GetQuoteResponse {
   Quote quote = 1;
 }
 
+message GetHistoryRequest {
+  string symbol = 1;
+  int32 limit = 2;
+}
+
+message GetHistoryResponse {
+  repeated Quote history = 1;
+}
+
 message BuyStockRequest {
   string symbol = 1;
   double quantity = 2;
@@ -35,8 +47,8 @@ message BuyStockRequest {
 
 message BuyStockResponse {
   bool success = 1;
-  double total_price = 2;
-  string message = 3;
+  string message = 2;
+  user.v1.User user = 3;
 }
 
 message SellStockRequest {
@@ -46,6 +58,6 @@ message SellStockRequest {
 
 message SellStockResponse {
   bool success = 1;
-  double total_proceeds = 2;
-  string message = 3;
+  string message = 2;
+  user.v1.User user = 3;
 }

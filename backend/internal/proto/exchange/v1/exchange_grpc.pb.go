@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ExchangeService_GetQuote_FullMethodName  = "/exchange.v1.ExchangeService/GetQuote"
-	ExchangeService_BuyStock_FullMethodName  = "/exchange.v1.ExchangeService/BuyStock"
-	ExchangeService_SellStock_FullMethodName = "/exchange.v1.ExchangeService/SellStock"
+	ExchangeService_GetQuote_FullMethodName   = "/exchange.v1.ExchangeService/GetQuote"
+	ExchangeService_BuyStock_FullMethodName   = "/exchange.v1.ExchangeService/BuyStock"
+	ExchangeService_SellStock_FullMethodName  = "/exchange.v1.ExchangeService/SellStock"
+	ExchangeService_GetHistory_FullMethodName = "/exchange.v1.ExchangeService/GetHistory"
 )
 
 // ExchangeServiceClient is the client API for ExchangeService service.
@@ -31,6 +32,7 @@ type ExchangeServiceClient interface {
 	GetQuote(ctx context.Context, in *GetQuoteRequest, opts ...grpc.CallOption) (*GetQuoteResponse, error)
 	BuyStock(ctx context.Context, in *BuyStockRequest, opts ...grpc.CallOption) (*BuyStockResponse, error)
 	SellStock(ctx context.Context, in *SellStockRequest, opts ...grpc.CallOption) (*SellStockResponse, error)
+	GetHistory(ctx context.Context, in *GetHistoryRequest, opts ...grpc.CallOption) (*GetHistoryResponse, error)
 }
 
 type exchangeServiceClient struct {
@@ -71,6 +73,16 @@ func (c *exchangeServiceClient) SellStock(ctx context.Context, in *SellStockRequ
 	return out, nil
 }
 
+func (c *exchangeServiceClient) GetHistory(ctx context.Context, in *GetHistoryRequest, opts ...grpc.CallOption) (*GetHistoryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetHistoryResponse)
+	err := c.cc.Invoke(ctx, ExchangeService_GetHistory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ExchangeServiceServer is the server API for ExchangeService service.
 // All implementations must embed UnimplementedExchangeServiceServer
 // for forward compatibility.
@@ -78,6 +90,7 @@ type ExchangeServiceServer interface {
 	GetQuote(context.Context, *GetQuoteRequest) (*GetQuoteResponse, error)
 	BuyStock(context.Context, *BuyStockRequest) (*BuyStockResponse, error)
 	SellStock(context.Context, *SellStockRequest) (*SellStockResponse, error)
+	GetHistory(context.Context, *GetHistoryRequest) (*GetHistoryResponse, error)
 	mustEmbedUnimplementedExchangeServiceServer()
 }
 
@@ -96,6 +109,9 @@ func (UnimplementedExchangeServiceServer) BuyStock(context.Context, *BuyStockReq
 }
 func (UnimplementedExchangeServiceServer) SellStock(context.Context, *SellStockRequest) (*SellStockResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SellStock not implemented")
+}
+func (UnimplementedExchangeServiceServer) GetHistory(context.Context, *GetHistoryRequest) (*GetHistoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetHistory not implemented")
 }
 func (UnimplementedExchangeServiceServer) mustEmbedUnimplementedExchangeServiceServer() {}
 func (UnimplementedExchangeServiceServer) testEmbeddedByValue()                         {}
@@ -172,6 +188,24 @@ func _ExchangeService_SellStock_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ExchangeService_GetHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetHistoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExchangeServiceServer).GetHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ExchangeService_GetHistory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExchangeServiceServer).GetHistory(ctx, req.(*GetHistoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ExchangeService_ServiceDesc is the grpc.ServiceDesc for ExchangeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -190,6 +224,10 @@ var ExchangeService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SellStock",
 			Handler:    _ExchangeService_SellStock_Handler,
+		},
+		{
+			MethodName: "GetHistory",
+			Handler:    _ExchangeService_GetHistory_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

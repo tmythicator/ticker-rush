@@ -209,7 +209,7 @@ tasks:
     dir: frontend
     cmds:
       - pnpm lint
-      - pnpm tsc --noEmit
+      - pnpm tsc --noEmit -p tsconfig.app.json
 
   frontend:check-format:
     desc: Check frontend code formatting

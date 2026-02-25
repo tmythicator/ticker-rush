@@ -20,8 +20,8 @@ export const useTrade = (options: UseTradeOptions) => {
       if (quantity <= 0) throw new Error('Quantity must be positive');
 
       return action === TradeAction.BUY
-        ? buyStock(options.symbol, quantity)
-        : sellStock(options.symbol, quantity);
+        ? buyStock({ symbol: options.symbol, quantity })
+        : sellStock({ symbol: options.symbol, quantity });
     },
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(QUERY_KEY_USER, updatedUser);
