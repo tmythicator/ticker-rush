@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
 	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/service"
 	"github.com/tmythicator/ticker-rush/server/internal/service/mocks"
@@ -33,7 +34,7 @@ func TestUserService_CreateUser(t *testing.T) {
 
 	mockUserRepo.On("CreateUser", ctx, username, mock.MatchedBy(func(hashedPassword string) bool {
 		return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)) == nil
-	}), expectedUser.GetFirstName(), expectedUser.GetLastName(), startBalance, "", false).Return(expectedUser, nil)
+	}), expectedUser.GetFirstName(), expectedUser.GetLastName(), startBalance, "", false, mock.AnythingOfType("time.Time")).Return(expectedUser, nil)
 
 	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo)
 	user, err := userService.CreateUser(
@@ -43,6 +44,7 @@ func TestUserService_CreateUser(t *testing.T) {
 		expectedUser.GetFirstName(),
 		expectedUser.GetLastName(),
 		"",
+		true,
 	)
 
 	assert.NoError(t, err)
@@ -50,6 +52,28 @@ func TestUserService_CreateUser(t *testing.T) {
 	assert.Equal(t, expectedUser, user)
 
 	mockUserRepo.AssertExpectations(t)
+}
+
+func TestUserService_CreateUser_AgbNotAccepted(t *testing.T) {
+	mockUserRepo := new(mocks.MockUserRepository)
+	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
+
+	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo)
+	user, err := userService.CreateUser(
+		ctx,
+		"username",
+		"password",
+		"First",
+		"Last",
+		"",
+		false,
+	)
+
+	assert.Error(t, err)
+	assert.Nil(t, user)
+	assert.Equal(t, apperrors.ErrAGBNotAccepted, err)
+
+	mockUserRepo.AssertNotCalled(t, "CreateUser")
 }
 
 func TestUserService_GetUserWithPortfolio(t *testing.T) {

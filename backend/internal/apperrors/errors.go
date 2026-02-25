@@ -28,4 +28,6 @@ var (
 	ErrUserNotFound = errors.New("user not found")
 	// ErrUsernameNotAllowed is returned when a username is in the blocklist.
 	ErrUsernameNotAllowed = errors.New("username is not allowed")
+	// ErrAGBNotAccepted is returned when the user has not accepted the terms and conditions.
+	ErrAGBNotAccepted = errors.New("you must accept the terms and conditions")
 )

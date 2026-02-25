@@ -154,7 +154,7 @@ func TestCreateUser(t *testing.T) {
 	defer pool.Close()
 
 	reqBody := fmt.Sprintf(
-		`{"username": "%s", "password": "password123", "first_name": "Test", "last_name": "User", "website": "test.com"}`,
+		`{"username": "%s", "password": "password123", "first_name": "Test", "last_name": "User", "website": "test.com", "agb_accepted": true}`,
 		testUsername,
 	)
 	w := httptest.NewRecorder()
@@ -173,6 +173,19 @@ func TestCreateUser(t *testing.T) {
 	assert.Equal(t, testUsername, user.GetUsername())
 }
 
+func TestCreateUser_AgbNotAccepted(t *testing.T) {
+	router, mr, pool := setupTestRouter(t)
+	defer mr.Close()
+	defer pool.Close()
+
+	reqBody := `{"username": "test_user_2", "password": "password123", "first_name": "Test", "last_name": "User", "website": "test.com", "agb_accepted": false}`
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPost, "/api/register", bytes.NewBufferString(reqBody))
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
 func TestLogin(t *testing.T) {
 	router, mr, pool := setupTestRouter(t)
 	defer mr.Close()
@@ -180,7 +193,7 @@ func TestLogin(t *testing.T) {
 
 	// Create User first
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
-	_, err := userRepo.CreateUser(ctx, testUsername, string(hashedPassword), "Test", "User", 100.0, "https://example.com", false)
+	_, err := userRepo.CreateUser(ctx, testUsername, string(hashedPassword), "Test", "User", 100.0, "https://example.com", false, time.Now())
 	assert.NoError(t, err)
 
 	// Perform Login
@@ -243,6 +256,7 @@ func TestBuyStock(t *testing.T) {
 		balance,
 		"",
 		false,
+		time.Now(),
 	)
 	if err != nil {
 		t.Fatalf("Failed to create user: %v", err)
@@ -305,6 +319,7 @@ func TestSellStock(t *testing.T) {
 		mockStartBalance,
 		"",
 		false,
+		time.Now(),
 	)
 	user, _ := userRepo.GetUser(ctx, createdUser.GetId())
 
@@ -364,6 +379,7 @@ func TestInsufficientFunds(t *testing.T) {
 		mockStartBalance,
 		"",
 		false,
+		time.Now(),
 	)
 	user, _ := userRepo.GetUser(ctx, createdUser.GetId())
 
@@ -410,6 +426,7 @@ func TestSellAllStock(t *testing.T) {
 		mockStartBalance,
 		"",
 		false,
+		time.Now(),
 	)
 	if err != nil {
 		t.Fatalf("Failed to create user: %v", err)
@@ -447,12 +464,12 @@ func TestGetPublicProfile(t *testing.T) {
 
 	// 1. Create Public User
 	publicUsername := "public_user"
-	_, err := userRepo.CreateUser(ctx, publicUsername, "pass", "Public", "User", 1000, "", true)
+	_, err := userRepo.CreateUser(ctx, publicUsername, "pass", "Public", "User", 1000, "", true, time.Now())
 	assert.NoError(t, err)
 
 	// 2. Create Private User
 	privateUsername := "private_user"
-	_, err = userRepo.CreateUser(ctx, privateUsername, "pass", "Private", "User", 1000, "", false)
+	_, err = userRepo.CreateUser(ctx, privateUsername, "pass", "Private", "User", 1000, "", false, time.Now())
 	assert.NoError(t, err)
 
 	t.Run("Get Public Profile - Success", func(t *testing.T) {
@@ -492,7 +509,7 @@ func TestUpdateUser_Privacy(t *testing.T) {
 
 	// 1. Create Initial Private User
 	username := "privacy_tester"
-	createdUser, err := userRepo.CreateUser(ctx, username, "pass", "Privacy", "Tester", 1000, "", false)
+	createdUser, err := userRepo.CreateUser(ctx, username, "pass", "Privacy", "Tester", 10000, "", false, time.Now())
 	assert.NoError(t, err)
 
 	// 2. Generate Token
