@@ -7,6 +7,7 @@
 package exchange
 
 import (
+	v1 "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -256,8 +257,8 @@ func (x *BuyStockRequest) GetQuantity() float64 {
 type BuyStockResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	TotalPrice    float64                `protobuf:"fixed64,2,opt,name=total_price,json=totalPrice,proto3" json:"total_price,omitempty"`
-	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	User          *v1.User               `protobuf:"bytes,3,opt,name=user,proto3" json:"user,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -299,18 +300,18 @@ func (x *BuyStockResponse) GetSuccess() bool {
 	return false
 }
 
-func (x *BuyStockResponse) GetTotalPrice() float64 {
-	if x != nil {
-		return x.TotalPrice
-	}
-	return 0
-}
-
 func (x *BuyStockResponse) GetMessage() string {
 	if x != nil {
 		return x.Message
 	}
 	return ""
+}
+
+func (x *BuyStockResponse) GetUser() *v1.User {
+	if x != nil {
+		return x.User
+	}
+	return nil
 }
 
 type SellStockRequest struct {
@@ -368,8 +369,8 @@ func (x *SellStockRequest) GetQuantity() float64 {
 type SellStockResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	TotalProceeds float64                `protobuf:"fixed64,2,opt,name=total_proceeds,json=totalProceeds,proto3" json:"total_proceeds,omitempty"`
-	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	User          *v1.User               `protobuf:"bytes,3,opt,name=user,proto3" json:"user,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -411,13 +412,6 @@ func (x *SellStockResponse) GetSuccess() bool {
 	return false
 }
 
-func (x *SellStockResponse) GetTotalProceeds() float64 {
-	if x != nil {
-		return x.TotalProceeds
-	}
-	return 0
-}
-
 func (x *SellStockResponse) GetMessage() string {
 	if x != nil {
 		return x.Message
@@ -425,11 +419,18 @@ func (x *SellStockResponse) GetMessage() string {
 	return ""
 }
 
+func (x *SellStockResponse) GetUser() *v1.User {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
 var File_exchange_v1_exchange_proto protoreflect.FileDescriptor
 
 const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\n" +
-	"\x1aexchange/v1/exchange.proto\x12\vexchange.v1\"\xc7\x01\n" +
+	"\x1aexchange/v1/exchange.proto\x12\vexchange.v1\x1a\x12user/v1/user.proto\"\xc7\x01\n" +
 	"\x05Quote\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x14\n" +
 	"\x05price\x18\x02 \x01(\x01R\x05price\x12\x16\n" +
@@ -444,19 +445,18 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x05quote\x18\x01 \x01(\v2\x12.exchange.v1.QuoteR\x05quote\"E\n" +
 	"\x0fBuyStockRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x01R\bquantity\"g\n" +
+	"\bquantity\x18\x02 \x01(\x01R\bquantity\"i\n" +
 	"\x10BuyStockResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x1f\n" +
-	"\vtotal_price\x18\x02 \x01(\x01R\n" +
-	"totalPrice\x12\x18\n" +
-	"\amessage\x18\x03 \x01(\tR\amessage\"F\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12!\n" +
+	"\x04user\x18\x03 \x01(\v2\r.user.v1.UserR\x04user\"F\n" +
 	"\x10SellStockRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x01R\bquantity\"n\n" +
+	"\bquantity\x18\x02 \x01(\x01R\bquantity\"j\n" +
 	"\x11SellStockResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12%\n" +
-	"\x0etotal_proceeds\x18\x02 \x01(\x01R\rtotalProceeds\x12\x18\n" +
-	"\amessage\x18\x03 \x01(\tR\amessage2\xef\x01\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12!\n" +
+	"\x04user\x18\x03 \x01(\v2\r.user.v1.UserR\x04user2\xef\x01\n" +
 	"\x0fExchangeService\x12G\n" +
 	"\bGetQuote\x12\x1c.exchange.v1.GetQuoteRequest\x1a\x1d.exchange.v1.GetQuoteResponse\x12G\n" +
 	"\bBuyStock\x12\x1c.exchange.v1.BuyStockRequest\x1a\x1d.exchange.v1.BuyStockResponse\x12J\n" +
@@ -483,20 +483,23 @@ var file_exchange_v1_exchange_proto_goTypes = []any{
 	(*BuyStockResponse)(nil),  // 4: exchange.v1.BuyStockResponse
 	(*SellStockRequest)(nil),  // 5: exchange.v1.SellStockRequest
 	(*SellStockResponse)(nil), // 6: exchange.v1.SellStockResponse
+	(*v1.User)(nil),           // 7: user.v1.User
 }
 var file_exchange_v1_exchange_proto_depIdxs = []int32{
 	0, // 0: exchange.v1.GetQuoteResponse.quote:type_name -> exchange.v1.Quote
-	1, // 1: exchange.v1.ExchangeService.GetQuote:input_type -> exchange.v1.GetQuoteRequest
-	3, // 2: exchange.v1.ExchangeService.BuyStock:input_type -> exchange.v1.BuyStockRequest
-	5, // 3: exchange.v1.ExchangeService.SellStock:input_type -> exchange.v1.SellStockRequest
-	2, // 4: exchange.v1.ExchangeService.GetQuote:output_type -> exchange.v1.GetQuoteResponse
-	4, // 5: exchange.v1.ExchangeService.BuyStock:output_type -> exchange.v1.BuyStockResponse
-	6, // 6: exchange.v1.ExchangeService.SellStock:output_type -> exchange.v1.SellStockResponse
-	4, // [4:7] is the sub-list for method output_type
-	1, // [1:4] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	7, // 1: exchange.v1.BuyStockResponse.user:type_name -> user.v1.User
+	7, // 2: exchange.v1.SellStockResponse.user:type_name -> user.v1.User
+	1, // 3: exchange.v1.ExchangeService.GetQuote:input_type -> exchange.v1.GetQuoteRequest
+	3, // 4: exchange.v1.ExchangeService.BuyStock:input_type -> exchange.v1.BuyStockRequest
+	5, // 5: exchange.v1.ExchangeService.SellStock:input_type -> exchange.v1.SellStockRequest
+	2, // 6: exchange.v1.ExchangeService.GetQuote:output_type -> exchange.v1.GetQuoteResponse
+	4, // 7: exchange.v1.ExchangeService.BuyStock:output_type -> exchange.v1.BuyStockResponse
+	6, // 8: exchange.v1.ExchangeService.SellStock:output_type -> exchange.v1.SellStockResponse
+	6, // [6:9] is the sub-list for method output_type
+	3, // [3:6] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_exchange_v1_exchange_proto_init() }

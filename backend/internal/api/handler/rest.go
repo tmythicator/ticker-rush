@@ -71,7 +71,7 @@ func (h *RestHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, createdUser)
+	c.JSON(http.StatusOK, &user.CreateUserResponse{User: createdUser})
 }
 
 // Login handles user authentication.
@@ -105,7 +105,7 @@ func (h *RestHandler) Login(c *gin.Context) {
 	}
 
 	c.SetCookie("auth_token", token, 3600*24, "/", "", false, true)
-	c.JSON(http.StatusOK, fullUser)
+	c.JSON(http.StatusOK, &user.LoginResponse{User: fullUser})
 }
 
 // Logout handles user logout.
@@ -150,7 +150,7 @@ func (h *RestHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, updatedUser)
+	c.JSON(http.StatusOK, &user.UpdateUserResponse{User: updatedUser})
 }
 
 // GetPublicProfile handles retrieving a user's public profile.
@@ -174,7 +174,7 @@ func (h *RestHandler) GetPublicProfile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, publicProfile)
+	c.JSON(http.StatusOK, &user.GetPublicProfileResponse{User: publicProfile})
 }
 
 // GetMe returns the current user's profile.
@@ -193,7 +193,7 @@ func (h *RestHandler) GetMe(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, fullUser)
+	c.JSON(http.StatusOK, &user.GetUserResponse{User: fullUser})
 }
 
 // GetQuote returns a stock quote for a given symbol.
@@ -273,7 +273,11 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, fullUser)
+	c.JSON(http.StatusOK, &exchange.BuyStockResponse{
+		Success: true,
+		Message: "Bought successfully",
+		User:    fullUser,
+	})
 }
 
 // SellStock handles stock sale requests.
@@ -324,7 +328,11 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, fullUser)
+	c.JSON(http.StatusOK, &exchange.SellStockResponse{
+		Success: true,
+		Message: "Sold successfully",
+		User:    fullUser,
+	})
 }
 
 // GetLeaderboard handles leaderboard fetching requests.

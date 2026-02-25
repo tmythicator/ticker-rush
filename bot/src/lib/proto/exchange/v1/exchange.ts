@@ -6,6 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { User } from "../../user/v1/user";
 
 export const protobufPackage = "exchange.v1";
 
@@ -34,8 +35,8 @@ export interface BuyStockRequest {
 
 export interface BuyStockResponse {
   success: boolean;
-  total_price: number;
   message: string;
+  user: User | undefined;
 }
 
 export interface SellStockRequest {
@@ -45,8 +46,8 @@ export interface SellStockRequest {
 
 export interface SellStockResponse {
   success: boolean;
-  total_proceeds: number;
   message: string;
+  user: User | undefined;
 }
 
 function createBaseQuote(): Quote {
@@ -406,7 +407,7 @@ export const BuyStockRequest: MessageFns<BuyStockRequest> = {
 };
 
 function createBaseBuyStockResponse(): BuyStockResponse {
-  return { success: false, total_price: 0, message: "" };
+  return { success: false, message: "", user: undefined };
 }
 
 export const BuyStockResponse: MessageFns<BuyStockResponse> = {
@@ -414,11 +415,11 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
     if (message.success !== false) {
       writer.uint32(8).bool(message.success);
     }
-    if (message.total_price !== 0) {
-      writer.uint32(17).double(message.total_price);
-    }
     if (message.message !== "") {
-      writer.uint32(26).string(message.message);
+      writer.uint32(18).string(message.message);
+    }
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(26).fork()).join();
     }
     return writer;
   },
@@ -439,11 +440,11 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
           continue;
         }
         case 2: {
-          if (tag !== 17) {
+          if (tag !== 18) {
             break;
           }
 
-          message.total_price = reader.double();
+          message.message = reader.string();
           continue;
         }
         case 3: {
@@ -451,7 +452,7 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
             break;
           }
 
-          message.message = reader.string();
+          message.user = User.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -466,12 +467,8 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
   fromJSON(object: any): BuyStockResponse {
     return {
       success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
-      total_price: isSet(object.totalPrice)
-        ? globalThis.Number(object.totalPrice)
-        : isSet(object.total_price)
-        ? globalThis.Number(object.total_price)
-        : 0,
       message: isSet(object.message) ? globalThis.String(object.message) : "",
+      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
     };
   },
 
@@ -480,11 +477,11 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
     if (message.success !== false) {
       obj.success = message.success;
     }
-    if (message.total_price !== 0) {
-      obj.totalPrice = message.total_price;
-    }
     if (message.message !== "") {
       obj.message = message.message;
+    }
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
     }
     return obj;
   },
@@ -495,8 +492,8 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
   fromPartial<I extends Exact<DeepPartial<BuyStockResponse>, I>>(object: I): BuyStockResponse {
     const message = createBaseBuyStockResponse();
     message.success = object.success ?? false;
-    message.total_price = object.total_price ?? 0;
     message.message = object.message ?? "";
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     return message;
   },
 };
@@ -578,7 +575,7 @@ export const SellStockRequest: MessageFns<SellStockRequest> = {
 };
 
 function createBaseSellStockResponse(): SellStockResponse {
-  return { success: false, total_proceeds: 0, message: "" };
+  return { success: false, message: "", user: undefined };
 }
 
 export const SellStockResponse: MessageFns<SellStockResponse> = {
@@ -586,11 +583,11 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
     if (message.success !== false) {
       writer.uint32(8).bool(message.success);
     }
-    if (message.total_proceeds !== 0) {
-      writer.uint32(17).double(message.total_proceeds);
-    }
     if (message.message !== "") {
-      writer.uint32(26).string(message.message);
+      writer.uint32(18).string(message.message);
+    }
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(26).fork()).join();
     }
     return writer;
   },
@@ -611,11 +608,11 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
           continue;
         }
         case 2: {
-          if (tag !== 17) {
+          if (tag !== 18) {
             break;
           }
 
-          message.total_proceeds = reader.double();
+          message.message = reader.string();
           continue;
         }
         case 3: {
@@ -623,7 +620,7 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
             break;
           }
 
-          message.message = reader.string();
+          message.user = User.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -638,12 +635,8 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
   fromJSON(object: any): SellStockResponse {
     return {
       success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
-      total_proceeds: isSet(object.totalProceeds)
-        ? globalThis.Number(object.totalProceeds)
-        : isSet(object.total_proceeds)
-        ? globalThis.Number(object.total_proceeds)
-        : 0,
       message: isSet(object.message) ? globalThis.String(object.message) : "",
+      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
     };
   },
 
@@ -652,11 +645,11 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
     if (message.success !== false) {
       obj.success = message.success;
     }
-    if (message.total_proceeds !== 0) {
-      obj.totalProceeds = message.total_proceeds;
-    }
     if (message.message !== "") {
       obj.message = message.message;
+    }
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
     }
     return obj;
   },
@@ -667,8 +660,8 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
   fromPartial<I extends Exact<DeepPartial<SellStockResponse>, I>>(object: I): SellStockResponse {
     const message = createBaseSellStockResponse();
     message.success = object.success ?? false;
-    message.total_proceeds = object.total_proceeds ?? 0;
     message.message = object.message ?? "";
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     return message;
   },
 };

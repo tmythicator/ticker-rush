@@ -51,19 +51,23 @@ export const fetchQuote = async (symbol: string): Promise<Quote> => {
 };
 
 export const getUser = async (): Promise<User> => {
-  return api.get(`/user/me`);
+  const res = await api.get(`/user/me`);
+  return res.user;
 };
 
 export const buyStock = async (symbol: string, quantity: number): Promise<User> => {
-  return api.post('/buy', { symbol, quantity });
+  const res = await api.post('/buy', { symbol, quantity });
+  return res.user;
 };
 
 export const sellStock = async (symbol: string, quantity: number): Promise<User> => {
-  return api.post('/sell', { symbol, quantity });
+  const res = await api.post('/sell', { symbol, quantity });
+  return res.user;
 };
 
 export const login = async (username: string, password: string): Promise<User> => {
-  return api.post('/login', { username, password });
+  const res = await api.post('/login', { username, password });
+  return res.user;
 };
 
 export const logout = async (): Promise<void> => {
@@ -81,7 +85,8 @@ export const register = async (
   first_name: string,
   last_name: string,
 ): Promise<User> => {
-  return api.post('/register', { username, password, first_name, last_name });
+  const res = await api.post('/register', { username, password, first_name, last_name });
+  return res.user;
 };
 
 export const getConfig = async (): Promise<{ tickers: string[] }> => {
@@ -93,9 +98,11 @@ export const getHistory = async (symbol: string, limit = 100): Promise<Quote[]> 
 };
 
 export const updateUser = async (data: UpdateUserRequest): Promise<User> => {
-  return api.put('/user/me', data);
+  const res = await api.put('/user/me', data);
+  return res.user;
 };
 
 export const getPublicProfile = async (username: string): Promise<User> => {
-  return api.get(`/users/${username}`);
+  const res = await api.get(`/users/${username}`);
+  return res.user;
 };

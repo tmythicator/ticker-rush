@@ -19,14 +19,13 @@ export interface PortfolioItem {
 export interface User {
   id: string;
   username: string;
-  password_hash: string;
-  balance: number;
-  created_at: Date | undefined;
   first_name: string;
   last_name: string;
+  balance: number;
   portfolio: { [key: string]: PortfolioItem };
   website: string;
   is_public: boolean;
+  created_at: Date | undefined;
 }
 
 export interface User_PortfolioEntry {
@@ -42,6 +41,10 @@ export interface CreateUserRequest {
   website: string;
 }
 
+export interface CreateUserResponse {
+  user: User | undefined;
+}
+
 export interface UpdateUserRequest {
   first_name: string;
   last_name: string;
@@ -49,9 +52,25 @@ export interface UpdateUserRequest {
   is_public: boolean;
 }
 
+export interface UpdateUserResponse {
+  user: User | undefined;
+}
+
 export interface LoginRequest {
   username: string;
   password: string;
+}
+
+export interface LoginResponse {
+  user: User | undefined;
+}
+
+export interface GetUserResponse {
+  user: User | undefined;
+}
+
+export interface GetPublicProfileResponse {
+  user: User | undefined;
 }
 
 function createBasePortfolioItem(): PortfolioItem {
@@ -158,14 +177,13 @@ function createBaseUser(): User {
   return {
     id: "0",
     username: "",
-    password_hash: "",
-    balance: 0,
-    created_at: undefined,
     first_name: "",
     last_name: "",
+    balance: 0,
     portfolio: {},
     website: "",
     is_public: false,
+    created_at: undefined,
   };
 }
 
@@ -177,29 +195,26 @@ export const User: MessageFns<User> = {
     if (message.username !== "") {
       writer.uint32(18).string(message.username);
     }
-    if (message.password_hash !== "") {
-      writer.uint32(26).string(message.password_hash);
-    }
-    if (message.balance !== 0) {
-      writer.uint32(33).double(message.balance);
-    }
-    if (message.created_at !== undefined) {
-      Timestamp.encode(toTimestamp(message.created_at), writer.uint32(42).fork()).join();
-    }
     if (message.first_name !== "") {
-      writer.uint32(50).string(message.first_name);
+      writer.uint32(26).string(message.first_name);
     }
     if (message.last_name !== "") {
-      writer.uint32(58).string(message.last_name);
+      writer.uint32(34).string(message.last_name);
+    }
+    if (message.balance !== 0) {
+      writer.uint32(41).double(message.balance);
     }
     globalThis.Object.entries(message.portfolio).forEach(([key, value]: [string, PortfolioItem]) => {
-      User_PortfolioEntry.encode({ key: key as any, value }, writer.uint32(66).fork()).join();
+      User_PortfolioEntry.encode({ key: key as any, value }, writer.uint32(50).fork()).join();
     });
     if (message.website !== "") {
-      writer.uint32(74).string(message.website);
+      writer.uint32(58).string(message.website);
     }
     if (message.is_public !== false) {
-      writer.uint32(80).bool(message.is_public);
+      writer.uint32(64).bool(message.is_public);
+    }
+    if (message.created_at !== undefined) {
+      Timestamp.encode(toTimestamp(message.created_at), writer.uint32(74).fork()).join();
     }
     return writer;
   },
@@ -232,23 +247,23 @@ export const User: MessageFns<User> = {
             break;
           }
 
-          message.password_hash = reader.string();
+          message.first_name = reader.string();
           continue;
         }
         case 4: {
-          if (tag !== 33) {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.last_name = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 41) {
             break;
           }
 
           message.balance = reader.double();
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.created_at = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
         case 6: {
@@ -256,7 +271,10 @@ export const User: MessageFns<User> = {
             break;
           }
 
-          message.first_name = reader.string();
+          const entry6 = User_PortfolioEntry.decode(reader, reader.uint32());
+          if (entry6.value !== undefined) {
+            message.portfolio[entry6.key] = entry6.value;
+          }
           continue;
         }
         case 7: {
@@ -264,18 +282,15 @@ export const User: MessageFns<User> = {
             break;
           }
 
-          message.last_name = reader.string();
+          message.website = reader.string();
           continue;
         }
         case 8: {
-          if (tag !== 66) {
+          if (tag !== 64) {
             break;
           }
 
-          const entry8 = User_PortfolioEntry.decode(reader, reader.uint32());
-          if (entry8.value !== undefined) {
-            message.portfolio[entry8.key] = entry8.value;
-          }
+          message.is_public = reader.bool();
           continue;
         }
         case 9: {
@@ -283,15 +298,7 @@ export const User: MessageFns<User> = {
             break;
           }
 
-          message.website = reader.string();
-          continue;
-        }
-        case 10: {
-          if (tag !== 80) {
-            break;
-          }
-
-          message.is_public = reader.bool();
+          message.created_at = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -307,17 +314,6 @@ export const User: MessageFns<User> = {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "0",
       username: isSet(object.username) ? globalThis.String(object.username) : "",
-      password_hash: isSet(object.passwordHash)
-        ? globalThis.String(object.passwordHash)
-        : isSet(object.password_hash)
-        ? globalThis.String(object.password_hash)
-        : "",
-      balance: isSet(object.balance) ? globalThis.Number(object.balance) : 0,
-      created_at: isSet(object.createdAt)
-        ? fromJsonTimestamp(object.createdAt)
-        : isSet(object.created_at)
-        ? fromJsonTimestamp(object.created_at)
-        : undefined,
       first_name: isSet(object.firstName)
         ? globalThis.String(object.firstName)
         : isSet(object.first_name)
@@ -328,6 +324,7 @@ export const User: MessageFns<User> = {
         : isSet(object.last_name)
         ? globalThis.String(object.last_name)
         : "",
+      balance: isSet(object.balance) ? globalThis.Number(object.balance) : 0,
       portfolio: isObject(object.portfolio)
         ? (globalThis.Object.entries(object.portfolio) as [string, any][]).reduce(
           (acc: { [key: string]: PortfolioItem }, [key, value]: [string, any]) => {
@@ -343,6 +340,11 @@ export const User: MessageFns<User> = {
         : isSet(object.is_public)
         ? globalThis.Boolean(object.is_public)
         : false,
+      created_at: isSet(object.createdAt)
+        ? fromJsonTimestamp(object.createdAt)
+        : isSet(object.created_at)
+        ? fromJsonTimestamp(object.created_at)
+        : undefined,
     };
   },
 
@@ -354,20 +356,14 @@ export const User: MessageFns<User> = {
     if (message.username !== "") {
       obj.username = message.username;
     }
-    if (message.password_hash !== "") {
-      obj.passwordHash = message.password_hash;
-    }
-    if (message.balance !== 0) {
-      obj.balance = message.balance;
-    }
-    if (message.created_at !== undefined) {
-      obj.createdAt = message.created_at.toISOString();
-    }
     if (message.first_name !== "") {
       obj.firstName = message.first_name;
     }
     if (message.last_name !== "") {
       obj.lastName = message.last_name;
+    }
+    if (message.balance !== 0) {
+      obj.balance = message.balance;
     }
     if (message.portfolio) {
       const entries = globalThis.Object.entries(message.portfolio) as [string, PortfolioItem][];
@@ -384,6 +380,9 @@ export const User: MessageFns<User> = {
     if (message.is_public !== false) {
       obj.isPublic = message.is_public;
     }
+    if (message.created_at !== undefined) {
+      obj.createdAt = message.created_at.toISOString();
+    }
     return obj;
   },
 
@@ -394,11 +393,9 @@ export const User: MessageFns<User> = {
     const message = createBaseUser();
     message.id = object.id ?? "0";
     message.username = object.username ?? "";
-    message.password_hash = object.password_hash ?? "";
-    message.balance = object.balance ?? 0;
-    message.created_at = object.created_at ?? undefined;
     message.first_name = object.first_name ?? "";
     message.last_name = object.last_name ?? "";
+    message.balance = object.balance ?? 0;
     message.portfolio = (globalThis.Object.entries(object.portfolio ?? {}) as [string, PortfolioItem][]).reduce(
       (acc: { [key: string]: PortfolioItem }, [key, value]: [string, PortfolioItem]) => {
         if (value !== undefined) {
@@ -410,6 +407,7 @@ export const User: MessageFns<User> = {
     );
     message.website = object.website ?? "";
     message.is_public = object.is_public ?? false;
+    message.created_at = object.created_at ?? undefined;
     return message;
   },
 };
@@ -624,6 +622,64 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
   },
 };
 
+function createBaseCreateUserResponse(): CreateUserResponse {
+  return { user: undefined };
+}
+
+export const CreateUserResponse: MessageFns<CreateUserResponse> = {
+  encode(message: CreateUserResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): CreateUserResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateUserResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.user = User.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateUserResponse {
+    return { user: isSet(object.user) ? User.fromJSON(object.user) : undefined };
+  },
+
+  toJSON(message: CreateUserResponse): unknown {
+    const obj: any = {};
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<CreateUserResponse>, I>>(base?: I): CreateUserResponse {
+    return CreateUserResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<CreateUserResponse>, I>>(object: I): CreateUserResponse {
+    const message = createBaseCreateUserResponse();
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    return message;
+  },
+};
+
 function createBaseUpdateUserRequest(): UpdateUserRequest {
   return { first_name: "", last_name: "", website: "", is_public: false };
 }
@@ -744,6 +800,64 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
   },
 };
 
+function createBaseUpdateUserResponse(): UpdateUserResponse {
+  return { user: undefined };
+}
+
+export const UpdateUserResponse: MessageFns<UpdateUserResponse> = {
+  encode(message: UpdateUserResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): UpdateUserResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateUserResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.user = User.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateUserResponse {
+    return { user: isSet(object.user) ? User.fromJSON(object.user) : undefined };
+  },
+
+  toJSON(message: UpdateUserResponse): unknown {
+    const obj: any = {};
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UpdateUserResponse>, I>>(base?: I): UpdateUserResponse {
+    return UpdateUserResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UpdateUserResponse>, I>>(object: I): UpdateUserResponse {
+    const message = createBaseUpdateUserResponse();
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    return message;
+  },
+};
+
 function createBaseLoginRequest(): LoginRequest {
   return { username: "", password: "" };
 }
@@ -816,6 +930,180 @@ export const LoginRequest: MessageFns<LoginRequest> = {
     const message = createBaseLoginRequest();
     message.username = object.username ?? "";
     message.password = object.password ?? "";
+    return message;
+  },
+};
+
+function createBaseLoginResponse(): LoginResponse {
+  return { user: undefined };
+}
+
+export const LoginResponse: MessageFns<LoginResponse> = {
+  encode(message: LoginResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): LoginResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLoginResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.user = User.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LoginResponse {
+    return { user: isSet(object.user) ? User.fromJSON(object.user) : undefined };
+  },
+
+  toJSON(message: LoginResponse): unknown {
+    const obj: any = {};
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<LoginResponse>, I>>(base?: I): LoginResponse {
+    return LoginResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<LoginResponse>, I>>(object: I): LoginResponse {
+    const message = createBaseLoginResponse();
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    return message;
+  },
+};
+
+function createBaseGetUserResponse(): GetUserResponse {
+  return { user: undefined };
+}
+
+export const GetUserResponse: MessageFns<GetUserResponse> = {
+  encode(message: GetUserResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetUserResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUserResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.user = User.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUserResponse {
+    return { user: isSet(object.user) ? User.fromJSON(object.user) : undefined };
+  },
+
+  toJSON(message: GetUserResponse): unknown {
+    const obj: any = {};
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUserResponse>, I>>(base?: I): GetUserResponse {
+    return GetUserResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUserResponse>, I>>(object: I): GetUserResponse {
+    const message = createBaseGetUserResponse();
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    return message;
+  },
+};
+
+function createBaseGetPublicProfileResponse(): GetPublicProfileResponse {
+  return { user: undefined };
+}
+
+export const GetPublicProfileResponse: MessageFns<GetPublicProfileResponse> = {
+  encode(message: GetPublicProfileResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetPublicProfileResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetPublicProfileResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.user = User.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetPublicProfileResponse {
+    return { user: isSet(object.user) ? User.fromJSON(object.user) : undefined };
+  },
+
+  toJSON(message: GetPublicProfileResponse): unknown {
+    const obj: any = {};
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetPublicProfileResponse>, I>>(base?: I): GetPublicProfileResponse {
+    return GetPublicProfileResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetPublicProfileResponse>, I>>(object: I): GetPublicProfileResponse {
+    const message = createBaseGetPublicProfileResponse();
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     return message;
   },
 };

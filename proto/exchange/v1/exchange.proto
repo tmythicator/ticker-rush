@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package exchange.v1;
 
+import "user/v1/user.proto";
+
 option go_package = "github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1;exchange";
 
 message Quote {
@@ -35,8 +37,8 @@ message BuyStockRequest {
 
 message BuyStockResponse {
   bool success = 1;
-  double total_price = 2;
-  string message = 3;
+  string message = 2;
+  user.v1.User user = 3;
 }
 
 message SellStockRequest {
@@ -46,6 +48,6 @@ message SellStockRequest {
 
 message SellStockResponse {
   bool success = 1;
-  double total_proceeds = 2;
-  string message = 3;
+  string message = 2;
+  user.v1.User user = 3;
 }

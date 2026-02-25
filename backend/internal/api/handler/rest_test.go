@@ -163,12 +163,12 @@ func TestCreateUser(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var responseUser user.User
+	var resp user.CreateUserResponse
 
-	err := json.Unmarshal(w.Body.Bytes(), &responseUser)
+	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	assert.NoError(t, err)
 
-	user, _, err := userRepo.GetUserByUsername(ctx, responseUser.GetUsername())
+	user, _, err := userRepo.GetUserByUsername(ctx, resp.GetUser().GetUsername())
 	assert.NoError(t, err)
 	assert.Equal(t, testUsername, user.GetUsername())
 }
@@ -206,14 +206,13 @@ func TestLogin(t *testing.T) {
 
 	assert.True(t, found, "auth_token cookie should be present")
 
-	// Verify Response Body (Should NOT have token)
-	var response map[string]any
-
-	err = json.Unmarshal(w.Body.Bytes(), &response)
+	// Verify Response Body
+	var resp user.LoginResponse
+	err = json.Unmarshal(w.Body.Bytes(), &resp)
 	assert.NoError(t, err)
 
-	_, hasToken := response["token"]
-	assert.False(t, hasToken, "Response body should NOT contain token")
+	assert.NotNil(t, resp.User, "Response should contains user")
+	assert.Equal(t, testUsername, resp.User.Username)
 }
 
 func TestBuyStock(t *testing.T) {
@@ -463,10 +462,10 @@ func TestGetPublicProfile(t *testing.T) {
 
 		assert.Equal(t, http.StatusOK, w.Code)
 
-		var userResp user.User
-		err := json.Unmarshal(w.Body.Bytes(), &userResp)
+		var resp user.GetPublicProfileResponse
+		err := json.Unmarshal(w.Body.Bytes(), &resp)
 		assert.NoError(t, err)
-		assert.Equal(t, publicUsername, userResp.Username)
+		assert.Equal(t, publicUsername, resp.GetUser().GetUsername())
 	})
 
 	t.Run("Get Private Profile - Forbidden/NotFound", func(t *testing.T) {
