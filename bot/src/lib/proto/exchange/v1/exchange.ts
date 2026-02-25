@@ -28,6 +28,15 @@ export interface GetQuoteResponse {
   quote: Quote | undefined;
 }
 
+export interface GetHistoryRequest {
+  symbol: string;
+  limit: number;
+}
+
+export interface GetHistoryResponse {
+  history: Quote[];
+}
+
 export interface BuyStockRequest {
   symbol: string;
   quantity: number;
@@ -326,6 +335,142 @@ export const GetQuoteResponse: MessageFns<GetQuoteResponse> = {
   fromPartial<I extends Exact<DeepPartial<GetQuoteResponse>, I>>(object: I): GetQuoteResponse {
     const message = createBaseGetQuoteResponse();
     message.quote = (object.quote !== undefined && object.quote !== null) ? Quote.fromPartial(object.quote) : undefined;
+    return message;
+  },
+};
+
+function createBaseGetHistoryRequest(): GetHistoryRequest {
+  return { symbol: "", limit: 0 };
+}
+
+export const GetHistoryRequest: MessageFns<GetHistoryRequest> = {
+  encode(message: GetHistoryRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.symbol !== "") {
+      writer.uint32(10).string(message.symbol);
+    }
+    if (message.limit !== 0) {
+      writer.uint32(16).int32(message.limit);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetHistoryRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetHistoryRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.symbol = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 16) {
+            break;
+          }
+
+          message.limit = reader.int32();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetHistoryRequest {
+    return {
+      symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : "",
+      limit: isSet(object.limit) ? globalThis.Number(object.limit) : 0,
+    };
+  },
+
+  toJSON(message: GetHistoryRequest): unknown {
+    const obj: any = {};
+    if (message.symbol !== "") {
+      obj.symbol = message.symbol;
+    }
+    if (message.limit !== 0) {
+      obj.limit = Math.round(message.limit);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetHistoryRequest>, I>>(base?: I): GetHistoryRequest {
+    return GetHistoryRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetHistoryRequest>, I>>(object: I): GetHistoryRequest {
+    const message = createBaseGetHistoryRequest();
+    message.symbol = object.symbol ?? "";
+    message.limit = object.limit ?? 0;
+    return message;
+  },
+};
+
+function createBaseGetHistoryResponse(): GetHistoryResponse {
+  return { history: [] };
+}
+
+export const GetHistoryResponse: MessageFns<GetHistoryResponse> = {
+  encode(message: GetHistoryResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.history) {
+      Quote.encode(v!, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetHistoryResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetHistoryResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.history.push(Quote.decode(reader, reader.uint32()));
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetHistoryResponse {
+    return {
+      history: globalThis.Array.isArray(object?.history) ? object.history.map((e: any) => Quote.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: GetHistoryResponse): unknown {
+    const obj: any = {};
+    if (message.history?.length) {
+      obj.history = message.history.map((e) => Quote.toJSON(e));
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetHistoryResponse>, I>>(base?: I): GetHistoryResponse {
+    return GetHistoryResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetHistoryResponse>, I>>(object: I): GetHistoryResponse {
+    const message = createBaseGetHistoryResponse();
+    message.history = object.history?.map((e) => Quote.fromPartial(e)) || [];
     return message;
   },
 };

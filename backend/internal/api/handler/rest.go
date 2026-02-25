@@ -13,6 +13,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/api/middleware"
 	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
+	"github.com/tmythicator/ticker-rush/server/internal/proto/config/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/leaderboard/v1"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
@@ -351,7 +352,12 @@ func (h *RestHandler) GetLeaderboard(c *gin.Context) {
 
 // GetConfig returns the public configuration.
 func (h *RestHandler) GetConfig(c *gin.Context) {
-	c.JSON(http.StatusOK, h.configService.GetPublicConfig(c.Request.Context()))
+	configData := h.configService.GetPublicConfig(c.Request.Context())
+	tickers := configData["tickers"].([]string)
+
+	c.JSON(http.StatusOK, &config.GetConfigResponse{
+		Tickers: tickers,
+	})
 }
 
 // StreamQuotes handles SSE connection for real-time quotes.
