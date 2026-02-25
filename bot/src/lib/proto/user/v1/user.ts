@@ -69,6 +69,10 @@ export interface GetUserResponse {
   user: User | undefined;
 }
 
+export interface GetPublicProfileRequest {
+  username: string;
+}
+
 export interface GetPublicProfileResponse {
   user: User | undefined;
 }
@@ -1046,6 +1050,64 @@ export const GetUserResponse: MessageFns<GetUserResponse> = {
   fromPartial<I extends Exact<DeepPartial<GetUserResponse>, I>>(object: I): GetUserResponse {
     const message = createBaseGetUserResponse();
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    return message;
+  },
+};
+
+function createBaseGetPublicProfileRequest(): GetPublicProfileRequest {
+  return { username: "" };
+}
+
+export const GetPublicProfileRequest: MessageFns<GetPublicProfileRequest> = {
+  encode(message: GetPublicProfileRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.username !== "") {
+      writer.uint32(10).string(message.username);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetPublicProfileRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetPublicProfileRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.username = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetPublicProfileRequest {
+    return { username: isSet(object.username) ? globalThis.String(object.username) : "" };
+  },
+
+  toJSON(message: GetPublicProfileRequest): unknown {
+    const obj: any = {};
+    if (message.username !== "") {
+      obj.username = message.username;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetPublicProfileRequest>, I>>(base?: I): GetPublicProfileRequest {
+    return GetPublicProfileRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetPublicProfileRequest>, I>>(object: I): GetPublicProfileRequest {
+    const message = createBaseGetPublicProfileRequest();
+    message.username = object.username ?? "";
     return message;
   },
 };

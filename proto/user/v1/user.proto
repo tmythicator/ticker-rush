@@ -60,6 +60,10 @@ message GetUserResponse {
   User user = 1;
 }
 
+message GetPublicProfileRequest {
+  string username = 1;
+}
+
 message GetPublicProfileResponse {
   User user = 1;
 }
