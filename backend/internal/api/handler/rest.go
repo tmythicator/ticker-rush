@@ -445,5 +445,7 @@ func (h *RestHandler) GetHistory(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, history)
+	c.JSON(http.StatusOK, &exchange.GetHistoryResponse{
+		History: history,
+	})
 }

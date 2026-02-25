@@ -202,6 +202,102 @@ func (x *GetQuoteResponse) GetQuote() *Quote {
 	return nil
 }
 
+type GetHistoryRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetHistoryRequest) Reset() {
+	*x = GetHistoryRequest{}
+	mi := &file_exchange_v1_exchange_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetHistoryRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetHistoryRequest) ProtoMessage() {}
+
+func (x *GetHistoryRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_exchange_v1_exchange_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetHistoryRequest.ProtoReflect.Descriptor instead.
+func (*GetHistoryRequest) Descriptor() ([]byte, []int) {
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetHistoryRequest) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+func (x *GetHistoryRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+type GetHistoryResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	History       []*Quote               `protobuf:"bytes,1,rep,name=history,proto3" json:"history,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetHistoryResponse) Reset() {
+	*x = GetHistoryResponse{}
+	mi := &file_exchange_v1_exchange_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetHistoryResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetHistoryResponse) ProtoMessage() {}
+
+func (x *GetHistoryResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_exchange_v1_exchange_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetHistoryResponse.ProtoReflect.Descriptor instead.
+func (*GetHistoryResponse) Descriptor() ([]byte, []int) {
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *GetHistoryResponse) GetHistory() []*Quote {
+	if x != nil {
+		return x.History
+	}
+	return nil
+}
+
 type BuyStockRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
@@ -212,7 +308,7 @@ type BuyStockRequest struct {
 
 func (x *BuyStockRequest) Reset() {
 	*x = BuyStockRequest{}
-	mi := &file_exchange_v1_exchange_proto_msgTypes[3]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -224,7 +320,7 @@ func (x *BuyStockRequest) String() string {
 func (*BuyStockRequest) ProtoMessage() {}
 
 func (x *BuyStockRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_exchange_v1_exchange_proto_msgTypes[3]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -237,7 +333,7 @@ func (x *BuyStockRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuyStockRequest.ProtoReflect.Descriptor instead.
 func (*BuyStockRequest) Descriptor() ([]byte, []int) {
-	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{3}
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *BuyStockRequest) GetSymbol() string {
@@ -265,7 +361,7 @@ type BuyStockResponse struct {
 
 func (x *BuyStockResponse) Reset() {
 	*x = BuyStockResponse{}
-	mi := &file_exchange_v1_exchange_proto_msgTypes[4]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -277,7 +373,7 @@ func (x *BuyStockResponse) String() string {
 func (*BuyStockResponse) ProtoMessage() {}
 
 func (x *BuyStockResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_exchange_v1_exchange_proto_msgTypes[4]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -290,7 +386,7 @@ func (x *BuyStockResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuyStockResponse.ProtoReflect.Descriptor instead.
 func (*BuyStockResponse) Descriptor() ([]byte, []int) {
-	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{4}
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *BuyStockResponse) GetSuccess() bool {
@@ -324,7 +420,7 @@ type SellStockRequest struct {
 
 func (x *SellStockRequest) Reset() {
 	*x = SellStockRequest{}
-	mi := &file_exchange_v1_exchange_proto_msgTypes[5]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -336,7 +432,7 @@ func (x *SellStockRequest) String() string {
 func (*SellStockRequest) ProtoMessage() {}
 
 func (x *SellStockRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_exchange_v1_exchange_proto_msgTypes[5]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -349,7 +445,7 @@ func (x *SellStockRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SellStockRequest.ProtoReflect.Descriptor instead.
 func (*SellStockRequest) Descriptor() ([]byte, []int) {
-	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{5}
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *SellStockRequest) GetSymbol() string {
@@ -377,7 +473,7 @@ type SellStockResponse struct {
 
 func (x *SellStockResponse) Reset() {
 	*x = SellStockResponse{}
-	mi := &file_exchange_v1_exchange_proto_msgTypes[6]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -389,7 +485,7 @@ func (x *SellStockResponse) String() string {
 func (*SellStockResponse) ProtoMessage() {}
 
 func (x *SellStockResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_exchange_v1_exchange_proto_msgTypes[6]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -402,7 +498,7 @@ func (x *SellStockResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SellStockResponse.ProtoReflect.Descriptor instead.
 func (*SellStockResponse) Descriptor() ([]byte, []int) {
-	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{6}
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *SellStockResponse) GetSuccess() bool {
@@ -442,7 +538,12 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x0fGetQuoteRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"<\n" +
 	"\x10GetQuoteResponse\x12(\n" +
-	"\x05quote\x18\x01 \x01(\v2\x12.exchange.v1.QuoteR\x05quote\"E\n" +
+	"\x05quote\x18\x01 \x01(\v2\x12.exchange.v1.QuoteR\x05quote\"A\n" +
+	"\x11GetHistoryRequest\x12\x16\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x14\n" +
+	"\x05limit\x18\x02 \x01(\x05R\x05limit\"B\n" +
+	"\x12GetHistoryResponse\x12,\n" +
+	"\ahistory\x18\x01 \x03(\v2\x12.exchange.v1.QuoteR\ahistory\"E\n" +
 	"\x0fBuyStockRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x01R\bquantity\"i\n" +
@@ -456,11 +557,13 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x11SellStockResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12!\n" +
-	"\x04user\x18\x03 \x01(\v2\r.user.v1.UserR\x04user2\xef\x01\n" +
+	"\x04user\x18\x03 \x01(\v2\r.user.v1.UserR\x04user2\xbe\x02\n" +
 	"\x0fExchangeService\x12G\n" +
 	"\bGetQuote\x12\x1c.exchange.v1.GetQuoteRequest\x1a\x1d.exchange.v1.GetQuoteResponse\x12G\n" +
 	"\bBuyStock\x12\x1c.exchange.v1.BuyStockRequest\x1a\x1d.exchange.v1.BuyStockResponse\x12J\n" +
-	"\tSellStock\x12\x1d.exchange.v1.SellStockRequest\x1a\x1e.exchange.v1.SellStockResponseBOZMgithub.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1;exchangeb\x06proto3"
+	"\tSellStock\x12\x1d.exchange.v1.SellStockRequest\x1a\x1e.exchange.v1.SellStockResponse\x12M\n" +
+	"\n" +
+	"GetHistory\x12\x1e.exchange.v1.GetHistoryRequest\x1a\x1f.exchange.v1.GetHistoryResponseBOZMgithub.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1;exchangeb\x06proto3"
 
 var (
 	file_exchange_v1_exchange_proto_rawDescOnce sync.Once
@@ -474,32 +577,37 @@ func file_exchange_v1_exchange_proto_rawDescGZIP() []byte {
 	return file_exchange_v1_exchange_proto_rawDescData
 }
 
-var file_exchange_v1_exchange_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_exchange_v1_exchange_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_exchange_v1_exchange_proto_goTypes = []any{
-	(*Quote)(nil),             // 0: exchange.v1.Quote
-	(*GetQuoteRequest)(nil),   // 1: exchange.v1.GetQuoteRequest
-	(*GetQuoteResponse)(nil),  // 2: exchange.v1.GetQuoteResponse
-	(*BuyStockRequest)(nil),   // 3: exchange.v1.BuyStockRequest
-	(*BuyStockResponse)(nil),  // 4: exchange.v1.BuyStockResponse
-	(*SellStockRequest)(nil),  // 5: exchange.v1.SellStockRequest
-	(*SellStockResponse)(nil), // 6: exchange.v1.SellStockResponse
-	(*v1.User)(nil),           // 7: user.v1.User
+	(*Quote)(nil),              // 0: exchange.v1.Quote
+	(*GetQuoteRequest)(nil),    // 1: exchange.v1.GetQuoteRequest
+	(*GetQuoteResponse)(nil),   // 2: exchange.v1.GetQuoteResponse
+	(*GetHistoryRequest)(nil),  // 3: exchange.v1.GetHistoryRequest
+	(*GetHistoryResponse)(nil), // 4: exchange.v1.GetHistoryResponse
+	(*BuyStockRequest)(nil),    // 5: exchange.v1.BuyStockRequest
+	(*BuyStockResponse)(nil),   // 6: exchange.v1.BuyStockResponse
+	(*SellStockRequest)(nil),   // 7: exchange.v1.SellStockRequest
+	(*SellStockResponse)(nil),  // 8: exchange.v1.SellStockResponse
+	(*v1.User)(nil),            // 9: user.v1.User
 }
 var file_exchange_v1_exchange_proto_depIdxs = []int32{
 	0, // 0: exchange.v1.GetQuoteResponse.quote:type_name -> exchange.v1.Quote
-	7, // 1: exchange.v1.BuyStockResponse.user:type_name -> user.v1.User
-	7, // 2: exchange.v1.SellStockResponse.user:type_name -> user.v1.User
-	1, // 3: exchange.v1.ExchangeService.GetQuote:input_type -> exchange.v1.GetQuoteRequest
-	3, // 4: exchange.v1.ExchangeService.BuyStock:input_type -> exchange.v1.BuyStockRequest
-	5, // 5: exchange.v1.ExchangeService.SellStock:input_type -> exchange.v1.SellStockRequest
-	2, // 6: exchange.v1.ExchangeService.GetQuote:output_type -> exchange.v1.GetQuoteResponse
-	4, // 7: exchange.v1.ExchangeService.BuyStock:output_type -> exchange.v1.BuyStockResponse
-	6, // 8: exchange.v1.ExchangeService.SellStock:output_type -> exchange.v1.SellStockResponse
-	6, // [6:9] is the sub-list for method output_type
-	3, // [3:6] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	0, // 1: exchange.v1.GetHistoryResponse.history:type_name -> exchange.v1.Quote
+	9, // 2: exchange.v1.BuyStockResponse.user:type_name -> user.v1.User
+	9, // 3: exchange.v1.SellStockResponse.user:type_name -> user.v1.User
+	1, // 4: exchange.v1.ExchangeService.GetQuote:input_type -> exchange.v1.GetQuoteRequest
+	5, // 5: exchange.v1.ExchangeService.BuyStock:input_type -> exchange.v1.BuyStockRequest
+	7, // 6: exchange.v1.ExchangeService.SellStock:input_type -> exchange.v1.SellStockRequest
+	3, // 7: exchange.v1.ExchangeService.GetHistory:input_type -> exchange.v1.GetHistoryRequest
+	2, // 8: exchange.v1.ExchangeService.GetQuote:output_type -> exchange.v1.GetQuoteResponse
+	6, // 9: exchange.v1.ExchangeService.BuyStock:output_type -> exchange.v1.BuyStockResponse
+	8, // 10: exchange.v1.ExchangeService.SellStock:output_type -> exchange.v1.SellStockResponse
+	4, // 11: exchange.v1.ExchangeService.GetHistory:output_type -> exchange.v1.GetHistoryResponse
+	8, // [8:12] is the sub-list for method output_type
+	4, // [4:8] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_exchange_v1_exchange_proto_init() }
@@ -513,7 +621,7 @@ func file_exchange_v1_exchange_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_exchange_v1_exchange_proto_rawDesc), len(file_exchange_v1_exchange_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
