@@ -126,16 +126,18 @@ func (r *UserRepository) CreateUser(
 	balance float64,
 	website string,
 	isPublic bool,
+	agbAcceptedAt time.Time,
 ) (*pb.User, error) {
 	u, err := r.queries.CreateUser(ctx, db.CreateUserParams{
-		Username:     username,
-		PasswordHash: hashedPassword,
-		FirstName:    firstName,
-		LastName:     lastName,
-		Balance:      balance,
-		Website:      website,
-		CreatedAt:    pgtype.Timestamptz{Time: time.Now(), Valid: true},
-		IsPublic:     isPublic,
+		Username:      username,
+		PasswordHash:  hashedPassword,
+		FirstName:     firstName,
+		LastName:      lastName,
+		Balance:       balance,
+		Website:       website,
+		CreatedAt:     pgtype.Timestamptz{Time: time.Now(), Valid: true},
+		IsPublic:      isPublic,
+		AgbAcceptedAt: pgtype.Timestamptz{Time: agbAcceptedAt, Valid: true},
 	})
 	if err != nil {
 		return nil, err

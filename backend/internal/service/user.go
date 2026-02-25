@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"slices"
+	"time"
 
 	"regexp"
 
@@ -40,7 +41,13 @@ func (s *UserService) CreateUser(
 	firstName string,
 	lastName string,
 	website string,
+	agbAccepted bool,
 ) (*user.User, error) {
+	// Require AGB Acceptance
+	if !agbAccepted {
+		return nil, apperrors.ErrAGBNotAccepted
+	}
+
 	// 1. Validate Username Format
 	if !usernameRegex.MatchString(username) {
 		return nil, apperrors.ErrInvalidUsernameFormat
@@ -72,7 +79,7 @@ func (s *UserService) CreateUser(
 		return nil, err
 	}
 
-	return s.userRepo.CreateUser(ctx, username, string(hashedPassword), firstName, lastName, 10000, website, false)
+	return s.userRepo.CreateUser(ctx, username, string(hashedPassword), firstName, lastName, 10000, website, false, time.Now())
 }
 
 // GetUser retrieves a user by ID.

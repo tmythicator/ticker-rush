@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
@@ -49,6 +50,7 @@ type UserRepository interface {
 		balance float64,
 		website string,
 		isPublic bool,
+		agbAcceptedAt time.Time,
 	) (*user.User, error)
 
 	GetUserForUpdate(ctx context.Context, id int64) (*user.User, error)

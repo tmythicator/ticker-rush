@@ -3,6 +3,7 @@ package mocks
 
 import (
 	"context"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/mock"
@@ -90,8 +91,9 @@ func (m *MockUserRepository) CreateUser(
 	balance float64,
 	website string,
 	isPublic bool,
+	agbAcceptedAt time.Time,
 ) (*user.User, error) {
-	args := m.Called(ctx, username, hashedPassword, firstName, lastName, balance, website, isPublic)
+	args := m.Called(ctx, username, hashedPassword, firstName, lastName, balance, website, isPublic, agbAcceptedAt)
 
 	return args.Get(0).(*user.User), args.Error(1)
 }

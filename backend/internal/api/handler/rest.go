@@ -65,8 +65,14 @@ func (h *RestHandler) CreateUser(c *gin.Context) {
 		req.FirstName,
 		req.LastName,
 		req.Website,
+		req.AgbAccepted,
 	)
 	if err != nil {
+		if errors.Is(err, apperrors.ErrAGBNotAccepted) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 		return
