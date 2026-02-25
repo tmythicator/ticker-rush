@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 export function Leaderboard() {
   const { data, isLoading, error } = useQuery({
     queryKey: QUERY_KEY_LEADERBOARD,
-    queryFn: () => getLeaderboard(10, 0),
+    queryFn: () => getLeaderboard({ limit: 10, offset: 0 }),
     refetchInterval: 60000, // Refresh every minute
   });
 

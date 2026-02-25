@@ -11,7 +11,7 @@ interface ChartSymbolPickerProps {
 
 export const ChartSymbolPicker = ({ symbol, onSymbolChange }: ChartSymbolPickerProps) => {
   const { data: config } = useTickers();
-  const tickers = config?.tickers || [];
+  const tickers = config || [];
 
   const handleSymbolChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newSymbol = e.target.value;
@@ -35,7 +35,7 @@ export const ChartSymbolPicker = ({ symbol, onSymbolChange }: ChartSymbolPickerP
           {tickers.length === 0 ? (
             <option value="">No assets available</option>
           ) : (
-            tickers.map((t) => {
+            tickers.map((t: string) => {
               const { symbol: sym } = parseTicker(t);
               return (
                 <option key={t} value={t} className="bg-popover text-popover-foreground">

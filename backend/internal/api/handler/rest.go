@@ -223,7 +223,7 @@ func (h *RestHandler) GetQuote(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, quote)
+	c.JSON(http.StatusOK, &exchange.GetQuoteResponse{Quote: quote})
 }
 
 // BuyStock handles stock purchase requests.

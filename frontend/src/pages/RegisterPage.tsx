@@ -41,8 +41,14 @@ export const RegisterPage = () => {
     error: backendError,
   } = useMutation({
     mutationFn: async (data: RegisterFormData) => {
-      await apiRegister(data.username, data.password, data.firstName, data.lastName);
-      return apiLogin(data.username, data.password);
+      await apiRegister({
+        username: data.username,
+        password: data.password,
+        first_name: data.firstName,
+        last_name: data.lastName,
+        website: '',
+      });
+      return apiLogin({ username: data.username, password: data.password });
     },
     onSuccess: (user) => {
       login(user);

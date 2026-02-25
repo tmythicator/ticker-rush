@@ -11,12 +11,12 @@ export const useChartHistory = (
 ) => {
   const { data: history } = useQuery({
     queryKey: QUERY_KEY_HISTORY(symbol || ''),
-    queryFn: () => getHistory(symbol!, 100),
+    queryFn: () => getHistory({ symbol: symbol!, limit: 100 }),
     enabled: !!symbol,
     staleTime: 1000 * 60 * 5,
     select: (data) => {
       return data.map((q) => ({
-        time: q.timestamp as Time,
+        time: parseInt(q.timestamp, 10) as Time,
         value: q.price,
       }));
     },

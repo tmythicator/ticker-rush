@@ -6,7 +6,7 @@ import { useTickers } from './useTickers';
 export const useTradeSymbol = () => {
   const [params, setParams] = useSearchParams();
   const { data, isLoading } = useTickers();
-  const tickers = useMemo(() => data?.tickers ?? [], [data]);
+  const tickers = useMemo(() => data ?? [], [data]);
 
   const rawSymbol = params.get('symbol');
   const isValid = rawSymbol && isTradeSymbol(rawSymbol, tickers);
