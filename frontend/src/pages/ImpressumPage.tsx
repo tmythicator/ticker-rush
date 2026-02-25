@@ -8,17 +8,20 @@ export const ImpressumPage = () => {
           Information according to § 5 TMG
         </h2>
         <p className="text-muted-foreground">
-          [TODO: Name]
+          {import.meta.env.VITE_LEGAL_NAME || '[VITE_LEGAL_NAME]'}
           <br />
-          [TODO: Address, ZIP, City]
+          {import.meta.env.VITE_LEGAL_ADDRESS || '[VITE_LEGAL_ADDRESS]'},{' '}
+          {import.meta.env.VITE_LEGAL_CITY || '[VITE_LEGAL_CITY]'}
           <br />
-          [TODO: Country]
+          {import.meta.env.VITE_LEGAL_COUNTRY || '[VITE_LEGAL_COUNTRY]'}
         </p>
       </section>
 
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-2 text-foreground/90">Contact</h2>
-        <p className="text-muted-foreground">E-Mail: [Your Email Address]</p>
+        <p className="text-muted-foreground">
+          E-Mail: {import.meta.env.VITE_LEGAL_EMAIL || '[VITE_LEGAL_EMAIL]'}
+        </p>
       </section>
 
       <section className="mb-8">
@@ -28,11 +31,12 @@ export const ImpressumPage = () => {
         <p className="text-muted-foreground">
           Responsible for content according to § 55 paragraph 2 RStV:
           <br />
-          [TODO: Name]
+          {import.meta.env.VITE_LEGAL_NAME || '[VITE_LEGAL_NAME]'}
           <br />
-          [TODO: Address, ZIP, City]
+          {import.meta.env.VITE_LEGAL_ADDRESS || '[VITE_LEGAL_ADDRESS]'},{' '}
+          {import.meta.env.VITE_LEGAL_CITY || '[VITE_LEGAL_CITY]'}
           <br />
-          [TODO: Country]
+          {import.meta.env.VITE_LEGAL_COUNTRY || '[VITE_LEGAL_COUNTRY]'}
         </p>
       </section>
 

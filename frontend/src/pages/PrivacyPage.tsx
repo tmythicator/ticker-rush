@@ -37,11 +37,12 @@ export const PrivacyPage = () => {
           The responsible body for data processing on this website is:
           <br />
           <br />
-          [TODO: Name]
+          {import.meta.env.VITE_LEGAL_NAME || '[VITE_LEGAL_NAME]'}
           <br />
-          [TODO: Address, ZIP, City]
+          {import.meta.env.VITE_LEGAL_ADDRESS || '[VITE_LEGAL_ADDRESS]'},{' '}
+          {import.meta.env.VITE_LEGAL_CITY || '[VITE_LEGAL_CITY]'}
           <br />
-          E-Mail: [TODO: Email]
+          E-Mail: {import.meta.env.VITE_LEGAL_EMAIL || '[VITE_LEGAL_EMAIL]'}
         </p>
       </section>
 
