@@ -8,6 +8,9 @@ export const loginSchema = z.object({
 export const registerSchema = loginSchema.extend({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
+  agbAccepted: z.boolean().refine((val) => val === true, {
+    message: 'You must accept the Terms and Conditions and Privacy Policy',
+  }),
 });
 
 export type RegisterFormData = z.infer<typeof registerSchema>;
