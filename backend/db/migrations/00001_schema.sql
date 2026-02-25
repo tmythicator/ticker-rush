@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     balance NUMERIC NOT NULL,
     is_public BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    agb_accepted_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     CONSTRAINT users_username_length_check CHECK (char_length(username) >= 3 AND char_length(username) <= 20)
 );
 

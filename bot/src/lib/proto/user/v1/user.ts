@@ -39,6 +39,7 @@ export interface CreateUserRequest {
   first_name: string;
   last_name: string;
   website: string;
+  agb_accepted: boolean;
 }
 
 export interface CreateUserResponse {
@@ -495,7 +496,7 @@ export const User_PortfolioEntry: MessageFns<User_PortfolioEntry> = {
 };
 
 function createBaseCreateUserRequest(): CreateUserRequest {
-  return { username: "", password: "", first_name: "", last_name: "", website: "" };
+  return { username: "", password: "", first_name: "", last_name: "", website: "", agb_accepted: false };
 }
 
 export const CreateUserRequest: MessageFns<CreateUserRequest> = {
@@ -514,6 +515,9 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
     }
     if (message.website !== "") {
       writer.uint32(42).string(message.website);
+    }
+    if (message.agb_accepted !== false) {
+      writer.uint32(48).bool(message.agb_accepted);
     }
     return writer;
   },
@@ -565,6 +569,14 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
           message.website = reader.string();
           continue;
         }
+        case 6: {
+          if (tag !== 48) {
+            break;
+          }
+
+          message.agb_accepted = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -589,6 +601,11 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
         ? globalThis.String(object.last_name)
         : "",
       website: isSet(object.website) ? globalThis.String(object.website) : "",
+      agb_accepted: isSet(object.agbAccepted)
+        ? globalThis.Boolean(object.agbAccepted)
+        : isSet(object.agb_accepted)
+        ? globalThis.Boolean(object.agb_accepted)
+        : false,
     };
   },
 
@@ -609,6 +626,9 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
     if (message.website !== "") {
       obj.website = message.website;
     }
+    if (message.agb_accepted !== false) {
+      obj.agbAccepted = message.agb_accepted;
+    }
     return obj;
   },
 
@@ -622,6 +642,7 @@ export const CreateUserRequest: MessageFns<CreateUserRequest> = {
     message.first_name = object.first_name ?? "";
     message.last_name = object.last_name ?? "";
     message.website = object.website ?? "";
+    message.agb_accepted = object.agb_accepted ?? false;
     return message;
   },
 };

@@ -197,6 +197,7 @@ type CreateUserRequest struct {
 	FirstName     string                 `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
 	LastName      string                 `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
 	Website       string                 `protobuf:"bytes,5,opt,name=website,proto3" json:"website,omitempty"`
+	AgbAccepted   bool                   `protobuf:"varint,6,opt,name=agb_accepted,json=agbAccepted,proto3" json:"agb_accepted,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -264,6 +265,13 @@ func (x *CreateUserRequest) GetWebsite() string {
 		return x.Website
 	}
 	return ""
+}
+
+func (x *CreateUserRequest) GetAgbAccepted() bool {
+	if x != nil {
+		return x.AgbAccepted
+	}
+	return false
 }
 
 type CreateUserResponse struct {
@@ -673,14 +681,15 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x1aT\n" +
 	"\x0ePortfolioEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
-	"\x05value\x18\x02 \x01(\v2\x16.user.v1.PortfolioItemR\x05value:\x028\x01\"\xa1\x01\n" +
+	"\x05value\x18\x02 \x01(\v2\x16.user.v1.PortfolioItemR\x05value:\x028\x01\"\xc4\x01\n" +
 	"\x11CreateUserRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1d\n" +
 	"\n" +
 	"first_name\x18\x03 \x01(\tR\tfirstName\x12\x1b\n" +
 	"\tlast_name\x18\x04 \x01(\tR\blastName\x12\x18\n" +
-	"\awebsite\x18\x05 \x01(\tR\awebsite\"7\n" +
+	"\awebsite\x18\x05 \x01(\tR\awebsite\x12!\n" +
+	"\fagb_accepted\x18\x06 \x01(\bR\vagbAccepted\"7\n" +
 	"\x12CreateUserResponse\x12!\n" +
 	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"\x86\x01\n" +
 	"\x11UpdateUserRequest\x12\x1d\n" +

@@ -1,6 +1,6 @@
 -- name: CreateUser :one
-INSERT INTO users (username, password_hash, first_name, last_name, balance, website, created_at, is_public)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+INSERT INTO users (username, password_hash, first_name, last_name, balance, website, created_at, is_public, agb_accepted_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 RETURNING id, username, first_name, last_name, balance, website, created_at, is_public;
 
 

@@ -23,13 +23,14 @@ type PortfolioItem struct {
 }
 
 type User struct {
-	ID           int64
-	Username     string
-	PasswordHash string
-	FirstName    string
-	LastName     string
-	Website      string
-	Balance      float64
-	IsPublic     bool
-	CreatedAt    pgtype.Timestamptz
+	ID            int64
+	Username      string
+	PasswordHash  string
+	FirstName     string
+	LastName      string
+	Website       string
+	Balance       float64
+	IsPublic      bool
+	CreatedAt     pgtype.Timestamptz
+	AgbAcceptedAt pgtype.Timestamptz
 }

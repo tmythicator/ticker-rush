@@ -23,20 +23,21 @@ func (q *Queries) CheckUserExists(ctx context.Context, username string) (bool, e
 }
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (username, password_hash, first_name, last_name, balance, website, created_at, is_public)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+INSERT INTO users (username, password_hash, first_name, last_name, balance, website, created_at, is_public, agb_accepted_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 RETURNING id, username, first_name, last_name, balance, website, created_at, is_public
 `
 
 type CreateUserParams struct {
-	Username     string
-	PasswordHash string
-	FirstName    string
-	LastName     string
-	Balance      float64
-	Website      string
-	CreatedAt    pgtype.Timestamptz
-	IsPublic     bool
+	Username      string
+	PasswordHash  string
+	FirstName     string
+	LastName      string
+	Balance       float64
+	Website       string
+	CreatedAt     pgtype.Timestamptz
+	IsPublic      bool
+	AgbAcceptedAt pgtype.Timestamptz
 }
 
 type CreateUserRow struct {
@@ -60,6 +61,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateU
 		arg.Website,
 		arg.CreatedAt,
 		arg.IsPublic,
+		arg.AgbAcceptedAt,
 	)
 	var i CreateUserRow
 	err := row.Scan(
