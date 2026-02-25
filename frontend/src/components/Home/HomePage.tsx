@@ -5,8 +5,8 @@ import { HomeChart } from './HomeChart';
 
 export const HomePage = () => {
   return (
-    <div className="flex flex-col min-h-[calc(100vh-4rem)]">
-      <section className="flex-1 flex flex-col items-center justify-center relative overflow-hidden pt-20 pb-32">
+    <div className="flex-1 flex flex-col">
+      <section className="flex-1 flex flex-col items-center justify-center relative overflow-hidden pt-12 pb-20">
         <div className="container px-4 md:px-6 relative z-20 flex flex-col items-center text-center">
           <div className="space-y-4 max-w-3xl">
             <h1 className="text-4xl md:text-6xl font-black tracking-tighter sm:text-5xl text-gray-900 dark:bg-clip-text dark:text-transparent dark:bg-gradient-to-r dark:from-white dark:to-gray-500">

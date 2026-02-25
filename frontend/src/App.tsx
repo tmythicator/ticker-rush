@@ -17,13 +17,18 @@
  */
 
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { CookieBanner } from './components/CookieBanner';
+import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { HomePage } from './components/Home/HomePage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
+import { AgbPage } from './pages/AgbPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { ImpressumPage } from './pages/ImpressumPage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
 import { LoginPage } from './pages/LoginPage';
+import { PrivacyPage } from './pages/PrivacyPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { PublicProfilePage } from './pages/PublicProfilePage';
 import { RegisterPage } from './pages/RegisterPage';
@@ -32,7 +37,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
+        <div className="min-h-[100dvh] bg-background text-foreground flex flex-col font-sans">
           <Header />
 
           <main className="flex-1 flex flex-col">
@@ -42,6 +47,9 @@ function App() {
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/leaderboard" element={<LeaderboardPage />} />
               <Route path="/users/:username" element={<PublicProfilePage />} />
+              <Route path="/impressum" element={<ImpressumPage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/agb" element={<AgbPage />} />
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/trade" element={<DashboardPage />} />
@@ -51,6 +59,9 @@ function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
+
+          <CookieBanner />
+          <Footer />
         </div>
       </BrowserRouter>
     </AuthProvider>
