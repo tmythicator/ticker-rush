@@ -3,6 +3,8 @@ import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
 /// <reference types="vitest" />
+import { promises as fs } from 'fs';
+import { generateSitemapAndRobots } from './config/seo';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -11,7 +13,6 @@ export default defineConfig(({ mode }) => {
   const clientPort = parseInt(env.CLIENT_PORT) || 5173;
 
   return {
-    plugins: [react()],
     envDir: '../',
     resolve: {
       alias: {
@@ -64,5 +65,18 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    plugins: [
+      react(),
+      {
+        name: 'generate-seo-files',
+        apply: 'build',
+        buildStart: async () => {
+          const publicDir = path.resolve(__dirname, 'public');
+          await fs.mkdir(publicDir, { recursive: true });
+          const siteUrl = env.VITE_SITE_URL || 'https://example.com';
+          await generateSitemapAndRobots(publicDir, siteUrl);
+        },
+      },
+    ],
   };
 });

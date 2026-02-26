@@ -22,3 +22,7 @@ Thumbs.db
 /fetcher
 /backend/exchange
 /backend/fetcher
+
+# Auto-Generated SEO
+/frontend/public/sitemap.xml
+/frontend/public/robots.txt
