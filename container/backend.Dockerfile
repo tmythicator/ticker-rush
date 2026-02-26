@@ -16,6 +16,10 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /bin/exchange ./cmd/ex
 FROM builder AS build-fetcher
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /bin/fetcher ./cmd/fetcher
 
+# --- Build Migrate Stage ---
+FROM builder AS build-migrate
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /bin/migrate ./cmd/migrate
+
 # --- Final Exchange Image ---
 FROM gcr.io/distroless/static-debian12:latest AS exchange-image
 WORKDIR /app
@@ -29,3 +33,10 @@ WORKDIR /app
 COPY --from=build-fetcher /bin/fetcher .
 USER nonroot:nonroot
 CMD ["./fetcher"]
+
+# --- Final Migrate Image ---
+FROM gcr.io/distroless/static-debian12:latest AS migrate-image
+WORKDIR /app
+COPY --from=build-migrate /bin/migrate .
+USER nonroot:nonroot
+CMD ["./migrate"]
