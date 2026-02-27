@@ -3,7 +3,20 @@ import { IconArrowRight } from '@icons/CustomIcons';
 import { Link } from 'react-router-dom';
 import { HomeChart } from './HomeChart';
 
+import { useAuth } from '@/hooks/useAuth';
+import { Navigate } from 'react-router-dom';
+
 export const HomePage = () => {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (user) {
+    return <Navigate to="/profile" replace />;
+  }
+
   return (
     <div className="flex-1 flex flex-col">
       <section className="flex-1 flex flex-col items-center justify-center relative overflow-hidden pt-12 pb-20">

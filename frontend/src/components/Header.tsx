@@ -10,7 +10,7 @@ import {
   IconX,
 } from '@icons/CustomIcons';
 import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
 
 export const Header = () => {
@@ -40,14 +40,14 @@ export const Header = () => {
     <>
       <header className="h-16 bg-background border-b border-border flex items-center px-4 lg:px-8 justify-between sticky top-0 z-50">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="bg-primary p-1.5 rounded-lg shadow-sm">
               <IconActivity className="w-5 h-5 text-primary-foreground" />
             </div>
             <span className="font-bold text-lg tracking-tight text-foreground hidden sm:block">
               Ticker Rush
             </span>
-          </div>
+          </Link>
 
           {isAuthenticated && (
             <nav className="hidden md:flex items-center gap-1">
