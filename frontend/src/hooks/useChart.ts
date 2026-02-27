@@ -4,10 +4,11 @@ import {
   AreaSeries,
   ColorType,
   createChart,
+  TickMarkType,
   type ChartOptions,
   type DeepPartial,
   type ISeriesApi,
-  type Time,
+  type UTCTimestamp,
 } from 'lightweight-charts';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useChartHistory } from './useChartHistory';
@@ -93,6 +94,36 @@ export const useChart = ({ chartContainerRef, quote, symbol, options }: UseChart
         timeVisible: true,
         secondsVisible: true,
         borderColor: colors.borderColor,
+        tickMarkFormatter: (time: number, tickMarkType: TickMarkType, locale: string) => {
+          const date = new Date(time * 1000);
+          switch (tickMarkType) {
+            case TickMarkType.Year:
+              return date.getFullYear().toString();
+            case TickMarkType.Month:
+              return date.toLocaleString(locale, { month: 'short' });
+            case TickMarkType.DayOfMonth:
+              return date.getDate().toString();
+            case TickMarkType.Time:
+              return date.toLocaleTimeString(locale, {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+              });
+            case TickMarkType.TimeWithSeconds:
+              return date.toLocaleTimeString(locale, {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+              });
+            default:
+              return date.toLocaleTimeString(locale, {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+              });
+          }
+        },
         ...options?.timeScale,
       },
       rightPriceScale: {
@@ -130,8 +161,9 @@ export const useChart = ({ chartContainerRef, quote, symbol, options }: UseChart
   useEffect(() => {
     if (quote && seriesRef.current && symbol) {
       try {
+        const parsedTime = parseInt(quote.timestamp, 10) as UTCTimestamp;
         seriesRef.current.update({
-          time: parseInt(quote.timestamp, 10) as Time,
+          time: parsedTime,
           value: quote.price,
         });
       } catch (e) {

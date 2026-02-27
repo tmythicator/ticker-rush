@@ -11,7 +11,7 @@ export const useChartHistory = (
 ) => {
   const { data: history } = useQuery({
     queryKey: QUERY_KEY_HISTORY(symbol || ''),
-    queryFn: () => getHistory({ symbol: symbol!, limit: 100 }),
+    queryFn: () => getHistory({ symbol: symbol!, limit: 1000 }),
     enabled: !!symbol,
     staleTime: 1000 * 60 * 5,
     select: (data) => {
