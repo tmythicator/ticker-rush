@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/tmythicator/ticker-rush/server/internal/service"
+	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
 // LeaderboardWorker is a worker that periodically updates the leaderboard.

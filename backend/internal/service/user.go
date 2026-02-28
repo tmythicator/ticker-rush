@@ -10,9 +10,10 @@ import (
 
 	goaway "github.com/TwiN/go-away"
 	"github.com/jackc/pgx/v5"
-	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 )
 
 var (

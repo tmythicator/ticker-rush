@@ -31,19 +31,20 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
-	"github.com/tmythicator/ticker-rush/server/db"
-	"github.com/tmythicator/ticker-rush/server/internal/api"
-	grpcapi "github.com/tmythicator/ticker-rush/server/internal/api/grpc"
-	"github.com/tmythicator/ticker-rush/server/internal/api/handler"
-	"github.com/tmythicator/ticker-rush/server/internal/api/middleware"
-	"github.com/tmythicator/ticker-rush/server/internal/config"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/repository/postgres"
-	valkey "github.com/tmythicator/ticker-rush/server/internal/repository/redis"
-	"github.com/tmythicator/ticker-rush/server/internal/service"
-	"github.com/tmythicator/ticker-rush/server/internal/worker"
 	"golang.org/x/sync/errgroup"
 	googlegrpc "google.golang.org/grpc"
+
+	"github.com/tmythicator/ticker-rush/backend/db"
+	"github.com/tmythicator/ticker-rush/backend/internal/api"
+	grpcapi "github.com/tmythicator/ticker-rush/backend/internal/api/grpc"
+	"github.com/tmythicator/ticker-rush/backend/internal/api/handler"
+	"github.com/tmythicator/ticker-rush/backend/internal/api/middleware"
+	"github.com/tmythicator/ticker-rush/backend/internal/config"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/repository/postgres"
+	valkey "github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
+	"github.com/tmythicator/ticker-rush/backend/internal/service"
+	"github.com/tmythicator/ticker-rush/backend/internal/worker"
 )
 
 type App struct {

@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/tmythicator/ticker-rush/server/internal/config"
+	"github.com/tmythicator/ticker-rush/backend/internal/config"
 )
 
 // ConfigService handles configuration related operations.

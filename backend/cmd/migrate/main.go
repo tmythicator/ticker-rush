@@ -4,8 +4,8 @@ package main
 import (
 	"log"
 
-	"github.com/tmythicator/ticker-rush/server/db"
-	"github.com/tmythicator/ticker-rush/server/internal/config"
+	"github.com/tmythicator/ticker-rush/backend/db"
+	"github.com/tmythicator/ticker-rush/backend/internal/config"
 )
 
 func main() {

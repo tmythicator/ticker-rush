@@ -1,4 +1,4 @@
-module github.com/tmythicator/ticker-rush/server
+module github.com/tmythicator/ticker-rush/backend
 
 go 1.25.4
 

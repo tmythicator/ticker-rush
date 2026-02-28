@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/repository/redis"
-	"github.com/tmythicator/ticker-rush/server/internal/service"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
+	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
 // QuoteProvider defines the interface for fetching quotes.

@@ -7,7 +7,7 @@
 package exchange
 
 import (
-	v1 "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
+	v1 "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -563,7 +563,7 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\bBuyStock\x12\x1c.exchange.v1.BuyStockRequest\x1a\x1d.exchange.v1.BuyStockResponse\x12J\n" +
 	"\tSellStock\x12\x1d.exchange.v1.SellStockRequest\x1a\x1e.exchange.v1.SellStockResponse\x12M\n" +
 	"\n" +
-	"GetHistory\x12\x1e.exchange.v1.GetHistoryRequest\x1a\x1f.exchange.v1.GetHistoryResponseBOZMgithub.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1;exchangeb\x06proto3"
+	"GetHistory\x12\x1e.exchange.v1.GetHistoryRequest\x1a\x1f.exchange.v1.GetHistoryResponseBPZNgithub.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1;exchangeb\x06proto3"
 
 var (
 	file_exchange_v1_exchange_proto_rawDescOnce sync.Once

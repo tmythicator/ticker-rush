@@ -4,11 +4,12 @@ import (
 	"context"
 	"strings"
 
-	"github.com/tmythicator/ticker-rush/server/internal/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+
+	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
 type internalContextKey string

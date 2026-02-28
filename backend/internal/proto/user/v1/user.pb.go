@@ -710,7 +710,7 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\x17GetPublicProfileRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\"=\n" +
 	"\x18GetPublicProfileResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04userBGZEgithub.com/tmythicator/ticker-rush/server/internal/proto/user/v1;userb\x06proto3"
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04userBHZFgithub.com/tmythicator/ticker-rush/backend/internal/proto/user/v1;userb\x06proto3"
 
 var (
 	file_user_v1_user_proto_rawDescOnce sync.Once

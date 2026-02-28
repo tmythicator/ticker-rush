@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 )
 
 // Client is a client for the CoinGecko API.

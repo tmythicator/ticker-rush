@@ -10,10 +10,11 @@ import (
 	"github.com/alicebob/miniredis/v2"
 	go_redis "github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
-	"github.com/tmythicator/ticker-rush/server/internal/clients/finnhub"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/repository/redis"
-	"github.com/tmythicator/ticker-rush/server/internal/worker"
+
+	"github.com/tmythicator/ticker-rush/backend/internal/clients/finnhub"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
+	"github.com/tmythicator/ticker-rush/backend/internal/worker"
 )
 
 // MockFinnhubClient mocks the Finnhub API.

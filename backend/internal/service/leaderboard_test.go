@@ -7,11 +7,12 @@ import (
 	"github.com/alicebob/miniredis/v2"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/leaderboard/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/service"
-	"github.com/tmythicator/ticker-rush/server/internal/service/mocks"
+
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/service"
+	"github.com/tmythicator/ticker-rush/backend/internal/service/mocks"
 )
 
 func TestLeaderBoardService_UpdateLeaderboard(t *testing.T) {
