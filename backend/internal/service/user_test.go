@@ -6,10 +6,10 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
-	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/service"
-	"github.com/tmythicator/ticker-rush/server/internal/service/mocks"
+	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
+	pb "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/service"
+	"github.com/tmythicator/ticker-rush/backend/internal/service/mocks"
 	"golang.org/x/crypto/bcrypt"
 )
 

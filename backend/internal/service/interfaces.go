@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 )
 
 // Transaction represents a database transaction.

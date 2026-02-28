@@ -6,20 +6,20 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	db "github.com/tmythicator/ticker-rush/server/internal/gen/sqlc"
-	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/service"
+	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
+	pb "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
 // PortfolioRepository handles portfolio data persistence in PostgreSQL.
 type PortfolioRepository struct {
-	queries *db.Queries
+	queries *sqlc.Queries
 }
 
 // NewPortfolioRepository creates a new instance of PortfolioRepository.
 func NewPortfolioRepository(pool *pgxpool.Pool) *PortfolioRepository {
 	return &PortfolioRepository{
-		queries: db.New(pool),
+		queries: sqlc.New(pool),
 	}
 }
 
@@ -58,7 +58,7 @@ func (r *PortfolioRepository) GetPortfolioItem(
 	userID int64,
 	symbol string,
 ) (*pb.PortfolioItem, error) {
-	item, err := r.queries.GetPortfolioItem(ctx, db.GetPortfolioItemParams{
+	item, err := r.queries.GetPortfolioItem(ctx, sqlc.GetPortfolioItemParams{
 		UserID:      userID,
 		StockSymbol: symbol,
 	})
@@ -79,7 +79,7 @@ func (r *PortfolioRepository) GetPortfolioItemForUpdate(
 	userID int64,
 	symbol string,
 ) (*pb.PortfolioItem, error) {
-	item, err := r.queries.GetPortfolioItemForUpdate(ctx, db.GetPortfolioItemForUpdateParams{
+	item, err := r.queries.GetPortfolioItemForUpdate(ctx, sqlc.GetPortfolioItemForUpdateParams{
 		UserID:      userID,
 		StockSymbol: symbol,
 	})
@@ -102,7 +102,7 @@ func (r *PortfolioRepository) SetPortfolioItem(
 	quantity float64,
 	averagePrice float64,
 ) error {
-	return r.queries.SetPortfolioItem(ctx, db.SetPortfolioItemParams{
+	return r.queries.SetPortfolioItem(ctx, sqlc.SetPortfolioItemParams{
 		UserID:       userID,
 		StockSymbol:  symbol,
 		Quantity:     quantity,
@@ -116,7 +116,7 @@ func (r *PortfolioRepository) DeletePortfolioItem(
 	userID int64,
 	symbol string,
 ) error {
-	return r.queries.DeletePortfolioItem(ctx, db.DeletePortfolioItemParams{
+	return r.queries.DeletePortfolioItem(ctx, sqlc.DeletePortfolioItemParams{
 		UserID:      userID,
 		StockSymbol: symbol,
 	})

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/leaderboard/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1"
 )
 
 // LeaderBoardService handles the calculation and retrieval of user rankings.

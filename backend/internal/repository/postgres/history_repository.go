@@ -7,8 +7,8 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/tmythicator/ticker-rush/server/internal/gen/sqlc"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 )
 
 // HistoryRepository implements service.HistoryRepository for PostgreSQL.

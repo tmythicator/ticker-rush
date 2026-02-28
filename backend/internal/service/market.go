@@ -5,8 +5,8 @@ import (
 	"slices"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 )
 
 // MarketService handles stock market data operations.

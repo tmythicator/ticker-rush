@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 )
 
 // TradeService handles stock trading operations.

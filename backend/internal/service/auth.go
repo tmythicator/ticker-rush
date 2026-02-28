@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
-	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
+	pb "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 )
 
 // Claims represents the JWT claims.

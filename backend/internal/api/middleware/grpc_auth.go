@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/tmythicator/ticker-rush/server/internal/service"
+	"github.com/tmythicator/ticker-rush/backend/internal/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

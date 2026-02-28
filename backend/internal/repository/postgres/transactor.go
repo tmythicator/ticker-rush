@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/tmythicator/ticker-rush/server/internal/service"
+	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
 // PgxTransactor implements the Transactor interface using pgx.

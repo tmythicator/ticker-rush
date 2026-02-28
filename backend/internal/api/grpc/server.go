@@ -4,9 +4,9 @@ package grpc
 import (
 	"context"
 
-	"github.com/tmythicator/ticker-rush/server/internal/api/middleware"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/service"
+	"github.com/tmythicator/ticker-rush/backend/internal/api/middleware"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/service"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

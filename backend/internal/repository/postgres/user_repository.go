@@ -7,21 +7,21 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
-	db "github.com/tmythicator/ticker-rush/server/internal/gen/sqlc"
-	pb "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/service"
+	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
+	pb "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/service"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // UserRepository handles user data persistence in PostgreSQL.
 type UserRepository struct {
-	queries *db.Queries
+	queries *sqlc.Queries
 }
 
 // NewUserRepository creates a new instance of UserRepository.
 func NewUserRepository(pool *pgxpool.Pool) *UserRepository {
 	return &UserRepository{
-		queries: db.New(pool),
+		queries: sqlc.New(pool),
 	}
 }
 
@@ -97,7 +97,7 @@ func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*pb.Us
 
 // UpdateUserProfile updates an existing user's profile.
 func (r *UserRepository) UpdateUserProfile(ctx context.Context, user *pb.User) error {
-	err := r.queries.UpdateUserProfile(ctx, db.UpdateUserProfileParams{
+	err := r.queries.UpdateUserProfile(ctx, sqlc.UpdateUserProfileParams{
 		ID:        user.GetId(),
 		FirstName: user.GetFirstName(),
 		LastName:  user.GetLastName(),
@@ -110,7 +110,7 @@ func (r *UserRepository) UpdateUserProfile(ctx context.Context, user *pb.User) e
 
 // UpdateUserBalance updates the user's balance.
 func (r *UserRepository) UpdateUserBalance(ctx context.Context, id int64, balance float64) error {
-	return r.queries.UpdateUserBalance(ctx, db.UpdateUserBalanceParams{
+	return r.queries.UpdateUserBalance(ctx, sqlc.UpdateUserBalanceParams{
 		ID:      id,
 		Balance: balance,
 	})
@@ -128,7 +128,7 @@ func (r *UserRepository) CreateUser(
 	isPublic bool,
 	agbAcceptedAt time.Time,
 ) (*pb.User, error) {
-	u, err := r.queries.CreateUser(ctx, db.CreateUserParams{
+	u, err := r.queries.CreateUser(ctx, sqlc.CreateUserParams{
 		Username:      username,
 		PasswordHash:  hashedPassword,
 		FirstName:     firstName,

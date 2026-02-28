@@ -11,13 +11,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
-	"github.com/tmythicator/ticker-rush/server/internal/api/middleware"
-	"github.com/tmythicator/ticker-rush/server/internal/apperrors"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/config/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/leaderboard/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/proto/user/v1"
-	"github.com/tmythicator/ticker-rush/server/internal/service"
+	"github.com/tmythicator/ticker-rush/backend/internal/api/middleware"
+	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/config/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
 // RestHandler handles HTTP requests for the API.
