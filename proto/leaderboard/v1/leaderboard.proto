@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package leaderboard.v1;
 
-option go_package = "github.com/tmythicator/ticker-rush/server/internal/proto/leaderboard/v1;leaderboard";
+option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1;leaderboard";
 
 message LeaderboardEntry {
   int64 user_id = 1;

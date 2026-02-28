@@ -249,7 +249,7 @@ const file_leaderboard_v1_leaderboard_proto_rawDesc = "" +
 	"\vlast_update\x18\x03 \x01(\x03R\n" +
 	"lastUpdate2u\n" +
 	"\x12LeaderBoardService\x12_\n" +
-	"\x0eGetLeaderboard\x12%.leaderboard.v1.GetLeaderboardRequest\x1a&.leaderboard.v1.GetLeaderboardResponseBUZSgithub.com/tmythicator/ticker-rush/server/internal/proto/leaderboard/v1;leaderboardb\x06proto3"
+	"\x0eGetLeaderboard\x12%.leaderboard.v1.GetLeaderboardRequest\x1a&.leaderboard.v1.GetLeaderboardResponseBVZTgithub.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1;leaderboardb\x06proto3"
 
 var (
 	file_leaderboard_v1_leaderboard_proto_rawDescOnce sync.Once

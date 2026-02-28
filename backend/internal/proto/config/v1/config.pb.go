@@ -110,7 +110,7 @@ const file_config_v1_config_proto_rawDesc = "" +
 	"\x11GetConfigResponse\x12\x18\n" +
 	"\atickers\x18\x01 \x03(\tR\atickers2W\n" +
 	"\rConfigService\x12F\n" +
-	"\tGetConfig\x12\x1b.config.v1.GetConfigRequest\x1a\x1c.config.v1.GetConfigResponseBKZIgithub.com/tmythicator/ticker-rush/server/internal/proto/config/v1;configb\x06proto3"
+	"\tGetConfig\x12\x1b.config.v1.GetConfigRequest\x1a\x1c.config.v1.GetConfigResponseBLZJgithub.com/tmythicator/ticker-rush/backend/internal/proto/config/v1;configb\x06proto3"
 
 var (
 	file_config_v1_config_proto_rawDescOnce sync.Once

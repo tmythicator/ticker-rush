@@ -4,7 +4,7 @@ package user.v1;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/tmythicator/ticker-rush/server/internal/proto/user/v1;user";
+option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1;user";
 
 message PortfolioItem {
   string stock_symbol = 1;

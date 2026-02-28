@@ -4,7 +4,7 @@ package exchange.v1;
 
 import "user/v1/user.proto";
 
-option go_package = "github.com/tmythicator/ticker-rush/server/internal/proto/exchange/v1;exchange";
+option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1;exchange";
 
 message Quote {
   string symbol = 1;

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package config.v1;
 
-option go_package = "github.com/tmythicator/ticker-rush/server/internal/proto/config/v1;config";
+option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/config/v1;config";
 
 service ConfigService {
   rpc GetConfig(GetConfigRequest) returns (GetConfigResponse);
