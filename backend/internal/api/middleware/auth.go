@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )

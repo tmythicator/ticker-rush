@@ -4,11 +4,12 @@ package grpc
 import (
 	"context"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/api/middleware"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 // ExchangeServer implements the gRPC exchange service.

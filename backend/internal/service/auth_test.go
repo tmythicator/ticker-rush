@@ -6,6 +6,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
+
 	pb "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )

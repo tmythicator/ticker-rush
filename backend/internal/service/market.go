@@ -5,6 +5,7 @@ import (
 	"slices"
 
 	"github.com/redis/go-redis/v9"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 )

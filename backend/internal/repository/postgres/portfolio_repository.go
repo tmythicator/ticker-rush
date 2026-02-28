@@ -6,6 +6,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
 	pb "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"

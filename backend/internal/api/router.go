@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/api/handler"
 	"github.com/tmythicator/ticker-rush/backend/internal/api/middleware"
 	"github.com/tmythicator/ticker-rush/backend/internal/config"

@@ -17,6 +17,8 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/tmythicator/ticker-rush/backend/db"
 	"github.com/tmythicator/ticker-rush/backend/internal/api"
 	"github.com/tmythicator/ticker-rush/backend/internal/api/handler"
@@ -27,7 +29,6 @@ import (
 	postgreRepo "github.com/tmythicator/ticker-rush/backend/internal/repository/postgres"
 	redisRepo "github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
-	"golang.org/x/crypto/bcrypt"
 )
 
 const (

@@ -7,10 +7,11 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
 	pb "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // UserRepository handles user data persistence in PostgreSQL.

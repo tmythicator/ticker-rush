@@ -31,6 +31,9 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
+	"golang.org/x/sync/errgroup"
+	googlegrpc "google.golang.org/grpc"
+
 	"github.com/tmythicator/ticker-rush/backend/db"
 	"github.com/tmythicator/ticker-rush/backend/internal/api"
 	grpcapi "github.com/tmythicator/ticker-rush/backend/internal/api/grpc"
@@ -42,8 +45,6 @@ import (
 	valkey "github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 	"github.com/tmythicator/ticker-rush/backend/internal/worker"
-	"golang.org/x/sync/errgroup"
-	googlegrpc "google.golang.org/grpc"
 )
 
 type App struct {

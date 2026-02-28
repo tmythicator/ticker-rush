@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1"
 )
 

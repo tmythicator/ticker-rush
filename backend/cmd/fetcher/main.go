@@ -29,6 +29,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	go_redis "github.com/redis/go-redis/v9"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/clients/coingecko"
 	"github.com/tmythicator/ticker-rush/backend/internal/clients/finnhub"
 	"github.com/tmythicator/ticker-rush/backend/internal/config"
