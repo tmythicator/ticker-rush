@@ -1,7 +1,7 @@
 -- name: CreateUser :one
-INSERT INTO users (username, password_hash, first_name, last_name, balance, website, created_at, is_public, agb_accepted_at)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-RETURNING id, username, first_name, last_name, balance, website, created_at, is_public;
+INSERT INTO users (username, password_hash, first_name, last_name, website, created_at, is_public, agb_accepted_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+RETURNING id, username, first_name, last_name, website, created_at, is_public, is_admin;
 
 
 -- name: UpdateUserProfile :exec
@@ -13,32 +13,32 @@ SET first_name = $2,
 WHERE id = $1;
 
 
--- name: UpdateUserBalance :exec
+-- name: BanUser :exec
 UPDATE users
-SET balance = $2
+SET is_banned = TRUE
 WHERE id = $1;
 
 -- name: CheckUserExists :one
 SELECT EXISTS(SELECT 1 FROM users WHERE username = $1);
 
 -- name: GetUser :one
-SELECT id, username, first_name, last_name, balance, website, created_at, is_public
+SELECT id, username, first_name, last_name, website, created_at, is_public, is_admin
 FROM users
 WHERE id = $1 LIMIT 1;
 
 
 -- name: GetUserForUpdate :one
-SELECT id, username, first_name, last_name, balance, website, created_at, is_public
+SELECT id, username, first_name, last_name, website, created_at, is_public, is_admin
 FROM users
 WHERE id = $1 LIMIT 1 FOR UPDATE;
 
 
 -- name: GetUserByUsername :one
-SELECT id, username, password_hash, first_name, last_name, balance, website, created_at, is_public
+SELECT id, username, password_hash, first_name, last_name, website, created_at, is_public, is_admin
 FROM users
 WHERE username = $1 LIMIT 1;
 
 
 -- name: GetUsers :many
-SELECT id, username, first_name, last_name, balance, website, created_at, is_public
+SELECT id, username, first_name, last_name, website, created_at, is_public, is_admin
 FROM users;
