@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package ladder.v1;
+
+import "google/protobuf/timestamp.proto";
+import "user/v1/user.proto";
+
+option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1;ladder";
+
+// Ladder represents a competition cycle.
+message Ladder {
+  int64 id = 1;
+  string name = 2;
+  string type = 3;
+  google.protobuf.Timestamp start_time = 4;
+  google.protobuf.Timestamp end_time = 5;
+  bool is_active = 6;
+  google.protobuf.Timestamp created_at = 7;
+  double initial_balance = 8;
+  repeated string allowed_tickers = 9;
+}
+
+message PortfolioItem {
+  string stock_symbol = 1;
+  double quantity = 2;
+  double average_price = 3;
+}
+
+// LadderParticipant represents a user's standing in a ladder.
+message LadderParticipant {
+  int64 ladder_id = 1;
+  int64 user_id = 2;
+  double available_balance = 3;
+  double final_balance = 4;
+  int32 final_rank = 5;
+  google.protobuf.Timestamp created_at = 6;
+  map<string, PortfolioItem> portfolio = 7;
+}
+
+message LadderLeaderboardEntry {
+  LadderParticipant participant = 1;
+  string username = 2;
+}
+
+message ListLaddersRequest {}
+message ListLaddersResponse {
+  repeated Ladder ladders = 1;
+}
+
+message GetActiveLadderRequest {}
+message GetActiveLadderResponse {
+  Ladder ladder = 1;
+}
+
+message GetLadderLeaderboardRequest {
+  int64 ladder_id = 1;
+  int32 limit = 2;
+}
+message GetLadderLeaderboardResponse {
+  repeated LadderLeaderboardEntry entries = 1;
+}
+
+message GetMyLadderStatsRequest {
+  int64 ladder_id = 1;
+}
+message GetMyLadderStatsResponse {
+  LadderParticipant participant = 1;
+}

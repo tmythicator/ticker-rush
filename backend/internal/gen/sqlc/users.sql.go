@@ -11,6 +11,17 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const banUser = `-- name: BanUser :exec
+UPDATE users
+SET is_banned = TRUE
+WHERE id = $1
+`
+
+func (q *Queries) BanUser(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, banUser, id)
+	return err
+}
+
 const checkUserExists = `-- name: CheckUserExists :one
 SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)
 `
@@ -23,9 +34,9 @@ func (q *Queries) CheckUserExists(ctx context.Context, username string) (bool, e
 }
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (username, password_hash, first_name, last_name, balance, website, created_at, is_public, agb_accepted_at)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-RETURNING id, username, first_name, last_name, balance, website, created_at, is_public
+INSERT INTO users (username, password_hash, first_name, last_name, website, created_at, is_public, agb_accepted_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+RETURNING id, username, first_name, last_name, website, created_at, is_public, is_admin
 `
 
 type CreateUserParams struct {
@@ -33,7 +44,6 @@ type CreateUserParams struct {
 	PasswordHash  string
 	FirstName     string
 	LastName      string
-	Balance       float64
 	Website       string
 	CreatedAt     pgtype.Timestamptz
 	IsPublic      bool
@@ -45,10 +55,10 @@ type CreateUserRow struct {
 	Username  string
 	FirstName string
 	LastName  string
-	Balance   float64
 	Website   string
 	CreatedAt pgtype.Timestamptz
 	IsPublic  bool
+	IsAdmin   bool
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
@@ -57,7 +67,6 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateU
 		arg.PasswordHash,
 		arg.FirstName,
 		arg.LastName,
-		arg.Balance,
 		arg.Website,
 		arg.CreatedAt,
 		arg.IsPublic,
@@ -69,16 +78,16 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateU
 		&i.Username,
 		&i.FirstName,
 		&i.LastName,
-		&i.Balance,
 		&i.Website,
 		&i.CreatedAt,
 		&i.IsPublic,
+		&i.IsAdmin,
 	)
 	return i, err
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, username, first_name, last_name, balance, website, created_at, is_public
+SELECT id, username, first_name, last_name, website, created_at, is_public, is_admin
 FROM users
 WHERE id = $1 LIMIT 1
 `
@@ -88,10 +97,10 @@ type GetUserRow struct {
 	Username  string
 	FirstName string
 	LastName  string
-	Balance   float64
 	Website   string
 	CreatedAt pgtype.Timestamptz
 	IsPublic  bool
+	IsAdmin   bool
 }
 
 func (q *Queries) GetUser(ctx context.Context, id int64) (GetUserRow, error) {
@@ -102,16 +111,16 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (GetUserRow, error) {
 		&i.Username,
 		&i.FirstName,
 		&i.LastName,
-		&i.Balance,
 		&i.Website,
 		&i.CreatedAt,
 		&i.IsPublic,
+		&i.IsAdmin,
 	)
 	return i, err
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one
-SELECT id, username, password_hash, first_name, last_name, balance, website, created_at, is_public
+SELECT id, username, password_hash, first_name, last_name, website, created_at, is_public, is_admin
 FROM users
 WHERE username = $1 LIMIT 1
 `
@@ -122,10 +131,10 @@ type GetUserByUsernameRow struct {
 	PasswordHash string
 	FirstName    string
 	LastName     string
-	Balance      float64
 	Website      string
 	CreatedAt    pgtype.Timestamptz
 	IsPublic     bool
+	IsAdmin      bool
 }
 
 func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error) {
@@ -137,16 +146,16 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUs
 		&i.PasswordHash,
 		&i.FirstName,
 		&i.LastName,
-		&i.Balance,
 		&i.Website,
 		&i.CreatedAt,
 		&i.IsPublic,
+		&i.IsAdmin,
 	)
 	return i, err
 }
 
 const getUserForUpdate = `-- name: GetUserForUpdate :one
-SELECT id, username, first_name, last_name, balance, website, created_at, is_public
+SELECT id, username, first_name, last_name, website, created_at, is_public, is_admin
 FROM users
 WHERE id = $1 LIMIT 1 FOR UPDATE
 `
@@ -156,10 +165,10 @@ type GetUserForUpdateRow struct {
 	Username  string
 	FirstName string
 	LastName  string
-	Balance   float64
 	Website   string
 	CreatedAt pgtype.Timestamptz
 	IsPublic  bool
+	IsAdmin   bool
 }
 
 func (q *Queries) GetUserForUpdate(ctx context.Context, id int64) (GetUserForUpdateRow, error) {
@@ -170,16 +179,16 @@ func (q *Queries) GetUserForUpdate(ctx context.Context, id int64) (GetUserForUpd
 		&i.Username,
 		&i.FirstName,
 		&i.LastName,
-		&i.Balance,
 		&i.Website,
 		&i.CreatedAt,
 		&i.IsPublic,
+		&i.IsAdmin,
 	)
 	return i, err
 }
 
 const getUsers = `-- name: GetUsers :many
-SELECT id, username, first_name, last_name, balance, website, created_at, is_public
+SELECT id, username, first_name, last_name, website, created_at, is_public, is_admin
 FROM users
 `
 
@@ -188,10 +197,10 @@ type GetUsersRow struct {
 	Username  string
 	FirstName string
 	LastName  string
-	Balance   float64
 	Website   string
 	CreatedAt pgtype.Timestamptz
 	IsPublic  bool
+	IsAdmin   bool
 }
 
 func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
@@ -208,10 +217,10 @@ func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
 			&i.Username,
 			&i.FirstName,
 			&i.LastName,
-			&i.Balance,
 			&i.Website,
 			&i.CreatedAt,
 			&i.IsPublic,
+			&i.IsAdmin,
 		); err != nil {
 			return nil, err
 		}
@@ -221,22 +230,6 @@ func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
 		return nil, err
 	}
 	return items, nil
-}
-
-const updateUserBalance = `-- name: UpdateUserBalance :exec
-UPDATE users
-SET balance = $2
-WHERE id = $1
-`
-
-type UpdateUserBalanceParams struct {
-	ID      int64
-	Balance float64
-}
-
-func (q *Queries) UpdateUserBalance(ctx context.Context, arg UpdateUserBalanceParams) error {
-	_, err := q.db.Exec(ctx, updateUserBalance, arg.ID, arg.Balance)
-	return err
 }
 
 const updateUserProfile = `-- name: UpdateUserProfile :exec

@@ -10,27 +10,15 @@ import { Timestamp } from "../../google/protobuf/timestamp";
 
 export const protobufPackage = "user.v1";
 
-export interface PortfolioItem {
-  stock_symbol: string;
-  quantity: number;
-  average_price: number;
-}
-
 export interface User {
   id: string;
   username: string;
   first_name: string;
   last_name: string;
-  balance: number;
-  portfolio: { [key: string]: PortfolioItem };
   website: string;
   is_public: boolean;
+  is_admin: boolean;
   created_at: Date | undefined;
-}
-
-export interface User_PortfolioEntry {
-  key: string;
-  value: PortfolioItem | undefined;
 }
 
 export interface CreateUserRequest {
@@ -78,116 +66,15 @@ export interface GetPublicProfileResponse {
   user: User | undefined;
 }
 
-function createBasePortfolioItem(): PortfolioItem {
-  return { stock_symbol: "", quantity: 0, average_price: 0 };
-}
-
-export const PortfolioItem: MessageFns<PortfolioItem> = {
-  encode(message: PortfolioItem, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.stock_symbol !== "") {
-      writer.uint32(10).string(message.stock_symbol);
-    }
-    if (message.quantity !== 0) {
-      writer.uint32(17).double(message.quantity);
-    }
-    if (message.average_price !== 0) {
-      writer.uint32(25).double(message.average_price);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): PortfolioItem {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasePortfolioItem();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.stock_symbol = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 17) {
-            break;
-          }
-
-          message.quantity = reader.double();
-          continue;
-        }
-        case 3: {
-          if (tag !== 25) {
-            break;
-          }
-
-          message.average_price = reader.double();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): PortfolioItem {
-    return {
-      stock_symbol: isSet(object.stockSymbol)
-        ? globalThis.String(object.stockSymbol)
-        : isSet(object.stock_symbol)
-        ? globalThis.String(object.stock_symbol)
-        : "",
-      quantity: isSet(object.quantity) ? globalThis.Number(object.quantity) : 0,
-      average_price: isSet(object.averagePrice)
-        ? globalThis.Number(object.averagePrice)
-        : isSet(object.average_price)
-        ? globalThis.Number(object.average_price)
-        : 0,
-    };
-  },
-
-  toJSON(message: PortfolioItem): unknown {
-    const obj: any = {};
-    if (message.stock_symbol !== "") {
-      obj.stockSymbol = message.stock_symbol;
-    }
-    if (message.quantity !== 0) {
-      obj.quantity = message.quantity;
-    }
-    if (message.average_price !== 0) {
-      obj.averagePrice = message.average_price;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<PortfolioItem>, I>>(base?: I): PortfolioItem {
-    return PortfolioItem.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<PortfolioItem>, I>>(object: I): PortfolioItem {
-    const message = createBasePortfolioItem();
-    message.stock_symbol = object.stock_symbol ?? "";
-    message.quantity = object.quantity ?? 0;
-    message.average_price = object.average_price ?? 0;
-    return message;
-  },
-};
-
 function createBaseUser(): User {
   return {
     id: "0",
     username: "",
     first_name: "",
     last_name: "",
-    balance: 0,
-    portfolio: {},
     website: "",
     is_public: false,
+    is_admin: false,
     created_at: undefined,
   };
 }
@@ -206,17 +93,14 @@ export const User: MessageFns<User> = {
     if (message.last_name !== "") {
       writer.uint32(34).string(message.last_name);
     }
-    if (message.balance !== 0) {
-      writer.uint32(41).double(message.balance);
-    }
-    globalThis.Object.entries(message.portfolio).forEach(([key, value]: [string, PortfolioItem]) => {
-      User_PortfolioEntry.encode({ key: key as any, value }, writer.uint32(50).fork()).join();
-    });
     if (message.website !== "") {
-      writer.uint32(58).string(message.website);
+      writer.uint32(50).string(message.website);
     }
     if (message.is_public !== false) {
-      writer.uint32(64).bool(message.is_public);
+      writer.uint32(56).bool(message.is_public);
+    }
+    if (message.is_admin !== false) {
+      writer.uint32(64).bool(message.is_admin);
     }
     if (message.created_at !== undefined) {
       Timestamp.encode(toTimestamp(message.created_at), writer.uint32(74).fork()).join();
@@ -263,31 +147,20 @@ export const User: MessageFns<User> = {
           message.last_name = reader.string();
           continue;
         }
-        case 5: {
-          if (tag !== 41) {
-            break;
-          }
-
-          message.balance = reader.double();
-          continue;
-        }
         case 6: {
           if (tag !== 50) {
             break;
           }
 
-          const entry6 = User_PortfolioEntry.decode(reader, reader.uint32());
-          if (entry6.value !== undefined) {
-            message.portfolio[entry6.key] = entry6.value;
-          }
+          message.website = reader.string();
           continue;
         }
         case 7: {
-          if (tag !== 58) {
+          if (tag !== 56) {
             break;
           }
 
-          message.website = reader.string();
+          message.is_public = reader.bool();
           continue;
         }
         case 8: {
@@ -295,7 +168,7 @@ export const User: MessageFns<User> = {
             break;
           }
 
-          message.is_public = reader.bool();
+          message.is_admin = reader.bool();
           continue;
         }
         case 9: {
@@ -329,21 +202,16 @@ export const User: MessageFns<User> = {
         : isSet(object.last_name)
         ? globalThis.String(object.last_name)
         : "",
-      balance: isSet(object.balance) ? globalThis.Number(object.balance) : 0,
-      portfolio: isObject(object.portfolio)
-        ? (globalThis.Object.entries(object.portfolio) as [string, any][]).reduce(
-          (acc: { [key: string]: PortfolioItem }, [key, value]: [string, any]) => {
-            acc[key] = PortfolioItem.fromJSON(value);
-            return acc;
-          },
-          {},
-        )
-        : {},
       website: isSet(object.website) ? globalThis.String(object.website) : "",
       is_public: isSet(object.isPublic)
         ? globalThis.Boolean(object.isPublic)
         : isSet(object.is_public)
         ? globalThis.Boolean(object.is_public)
+        : false,
+      is_admin: isSet(object.isAdmin)
+        ? globalThis.Boolean(object.isAdmin)
+        : isSet(object.is_admin)
+        ? globalThis.Boolean(object.is_admin)
         : false,
       created_at: isSet(object.createdAt)
         ? fromJsonTimestamp(object.createdAt)
@@ -367,23 +235,14 @@ export const User: MessageFns<User> = {
     if (message.last_name !== "") {
       obj.lastName = message.last_name;
     }
-    if (message.balance !== 0) {
-      obj.balance = message.balance;
-    }
-    if (message.portfolio) {
-      const entries = globalThis.Object.entries(message.portfolio) as [string, PortfolioItem][];
-      if (entries.length > 0) {
-        obj.portfolio = {};
-        entries.forEach(([k, v]) => {
-          obj.portfolio[k] = PortfolioItem.toJSON(v);
-        });
-      }
-    }
     if (message.website !== "") {
       obj.website = message.website;
     }
     if (message.is_public !== false) {
       obj.isPublic = message.is_public;
+    }
+    if (message.is_admin !== false) {
+      obj.isAdmin = message.is_admin;
     }
     if (message.created_at !== undefined) {
       obj.createdAt = message.created_at.toISOString();
@@ -400,97 +259,10 @@ export const User: MessageFns<User> = {
     message.username = object.username ?? "";
     message.first_name = object.first_name ?? "";
     message.last_name = object.last_name ?? "";
-    message.balance = object.balance ?? 0;
-    message.portfolio = (globalThis.Object.entries(object.portfolio ?? {}) as [string, PortfolioItem][]).reduce(
-      (acc: { [key: string]: PortfolioItem }, [key, value]: [string, PortfolioItem]) => {
-        if (value !== undefined) {
-          acc[key] = PortfolioItem.fromPartial(value);
-        }
-        return acc;
-      },
-      {},
-    );
     message.website = object.website ?? "";
     message.is_public = object.is_public ?? false;
+    message.is_admin = object.is_admin ?? false;
     message.created_at = object.created_at ?? undefined;
-    return message;
-  },
-};
-
-function createBaseUser_PortfolioEntry(): User_PortfolioEntry {
-  return { key: "", value: undefined };
-}
-
-export const User_PortfolioEntry: MessageFns<User_PortfolioEntry> = {
-  encode(message: User_PortfolioEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.key !== "") {
-      writer.uint32(10).string(message.key);
-    }
-    if (message.value !== undefined) {
-      PortfolioItem.encode(message.value, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): User_PortfolioEntry {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUser_PortfolioEntry();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.key = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.value = PortfolioItem.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): User_PortfolioEntry {
-    return {
-      key: isSet(object.key) ? globalThis.String(object.key) : "",
-      value: isSet(object.value) ? PortfolioItem.fromJSON(object.value) : undefined,
-    };
-  },
-
-  toJSON(message: User_PortfolioEntry): unknown {
-    const obj: any = {};
-    if (message.key !== "") {
-      obj.key = message.key;
-    }
-    if (message.value !== undefined) {
-      obj.value = PortfolioItem.toJSON(message.value);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<User_PortfolioEntry>, I>>(base?: I): User_PortfolioEntry {
-    return User_PortfolioEntry.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<User_PortfolioEntry>, I>>(object: I): User_PortfolioEntry {
-    const message = createBaseUser_PortfolioEntry();
-    message.key = object.key ?? "";
-    message.value = (object.value !== undefined && object.value !== null)
-      ? PortfolioItem.fromPartial(object.value)
-      : undefined;
     return message;
   },
 };
@@ -1223,10 +995,6 @@ function fromJsonTimestamp(o: any): Date {
   } else {
     return fromTimestamp(Timestamp.fromJSON(o));
   }
-}
-
-function isObject(value: any): boolean {
-  return typeof value === "object" && value !== null;
 }
 
 function isSet(value: any): boolean {

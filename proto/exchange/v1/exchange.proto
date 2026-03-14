@@ -3,6 +3,7 @@ syntax = "proto3";
 package exchange.v1;
 
 import "user/v1/user.proto";
+import "ladder/v1/ladder.proto";
 
 option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1;exchange";
 
@@ -43,21 +44,23 @@ message GetHistoryResponse {
 message BuyStockRequest {
   string symbol = 1;
   double quantity = 2;
+  int64 ladder_id = 3;
 }
 
 message BuyStockResponse {
   bool success = 1;
   string message = 2;
-  user.v1.User user = 3;
+  ladder.v1.LadderParticipant participant = 3;
 }
 
 message SellStockRequest {
   string symbol = 1;
   double quantity = 2;
+  int64 ladder_id = 3;
 }
 
 message SellStockResponse {
   bool success = 1;
   string message = 2;
-  user.v1.User user = 3;
+  ladder.v1.LadderParticipant participant = 3;
 }
