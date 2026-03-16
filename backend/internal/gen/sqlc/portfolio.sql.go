@@ -7,48 +7,62 @@ package sqlc
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const deletePortfolioItem = `-- name: DeletePortfolioItem :exec
-DELETE FROM portfolio_items
-WHERE user_id = $1 AND stock_symbol = $2
+DELETE FROM ladder_portfolio_items
+WHERE ladder_id = $1 AND user_id = $2 AND stock_symbol = $3
 `
 
 type DeletePortfolioItemParams struct {
+	LadderID    int64
 	UserID      int64
 	StockSymbol string
 }
 
 func (q *Queries) DeletePortfolioItem(ctx context.Context, arg DeletePortfolioItemParams) error {
-	_, err := q.db.Exec(ctx, deletePortfolioItem, arg.UserID, arg.StockSymbol)
+	_, err := q.db.Exec(ctx, deletePortfolioItem, arg.LadderID, arg.UserID, arg.StockSymbol)
 	return err
 }
 
 const deleteUserPortfolio = `-- name: DeleteUserPortfolio :exec
-DELETE FROM portfolio_items
-WHERE user_id = $1
+DELETE FROM ladder_portfolio_items
+WHERE ladder_id = $1 AND user_id = $2
 `
 
-func (q *Queries) DeleteUserPortfolio(ctx context.Context, userID int64) error {
-	_, err := q.db.Exec(ctx, deleteUserPortfolio, userID)
+type DeleteUserPortfolioParams struct {
+	LadderID int64
+	UserID   int64
+}
+
+func (q *Queries) DeleteUserPortfolio(ctx context.Context, arg DeleteUserPortfolioParams) error {
+	_, err := q.db.Exec(ctx, deleteUserPortfolio, arg.LadderID, arg.UserID)
 	return err
 }
 
 const getPortfolio = `-- name: GetPortfolio :many
-SELECT user_id, stock_symbol, quantity, average_price FROM portfolio_items
-WHERE user_id = $1
+SELECT ladder_id, user_id, stock_symbol, quantity, average_price FROM ladder_portfolio_items
+WHERE ladder_id = $1 AND user_id = $2
 `
 
-func (q *Queries) GetPortfolio(ctx context.Context, userID int64) ([]PortfolioItem, error) {
-	rows, err := q.db.Query(ctx, getPortfolio, userID)
+type GetPortfolioParams struct {
+	LadderID int64
+	UserID   int64
+}
+
+func (q *Queries) GetPortfolio(ctx context.Context, arg GetPortfolioParams) ([]LadderPortfolioItem, error) {
+	rows, err := q.db.Query(ctx, getPortfolio, arg.LadderID, arg.UserID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []PortfolioItem
+	var items []LadderPortfolioItem
 	for rows.Next() {
-		var i PortfolioItem
+		var i LadderPortfolioItem
 		if err := rows.Scan(
+			&i.LadderID,
 			&i.UserID,
 			&i.StockSymbol,
 			&i.Quantity,
@@ -65,20 +79,22 @@ func (q *Queries) GetPortfolio(ctx context.Context, userID int64) ([]PortfolioIt
 }
 
 const getPortfolioItem = `-- name: GetPortfolioItem :one
-SELECT user_id, stock_symbol, quantity, average_price 
-FROM portfolio_items
-WHERE user_id = $1 AND stock_symbol = $2
+SELECT ladder_id, user_id, stock_symbol, quantity, average_price
+FROM ladder_portfolio_items
+WHERE ladder_id = $1 AND user_id = $2 AND stock_symbol = $3
 `
 
 type GetPortfolioItemParams struct {
+	LadderID    int64
 	UserID      int64
 	StockSymbol string
 }
 
-func (q *Queries) GetPortfolioItem(ctx context.Context, arg GetPortfolioItemParams) (PortfolioItem, error) {
-	row := q.db.QueryRow(ctx, getPortfolioItem, arg.UserID, arg.StockSymbol)
-	var i PortfolioItem
+func (q *Queries) GetPortfolioItem(ctx context.Context, arg GetPortfolioItemParams) (LadderPortfolioItem, error) {
+	row := q.db.QueryRow(ctx, getPortfolioItem, arg.LadderID, arg.UserID, arg.StockSymbol)
+	var i LadderPortfolioItem
 	err := row.Scan(
+		&i.LadderID,
 		&i.UserID,
 		&i.StockSymbol,
 		&i.Quantity,
@@ -88,20 +104,22 @@ func (q *Queries) GetPortfolioItem(ctx context.Context, arg GetPortfolioItemPara
 }
 
 const getPortfolioItemForUpdate = `-- name: GetPortfolioItemForUpdate :one
-SELECT user_id, stock_symbol, quantity, average_price 
-FROM portfolio_items
-WHERE user_id = $1 AND stock_symbol = $2 FOR UPDATE
+SELECT ladder_id, user_id, stock_symbol, quantity, average_price
+FROM ladder_portfolio_items
+WHERE ladder_id = $1 AND user_id = $2 AND stock_symbol = $3 FOR UPDATE
 `
 
 type GetPortfolioItemForUpdateParams struct {
+	LadderID    int64
 	UserID      int64
 	StockSymbol string
 }
 
-func (q *Queries) GetPortfolioItemForUpdate(ctx context.Context, arg GetPortfolioItemForUpdateParams) (PortfolioItem, error) {
-	row := q.db.QueryRow(ctx, getPortfolioItemForUpdate, arg.UserID, arg.StockSymbol)
-	var i PortfolioItem
+func (q *Queries) GetPortfolioItemForUpdate(ctx context.Context, arg GetPortfolioItemForUpdateParams) (LadderPortfolioItem, error) {
+	row := q.db.QueryRow(ctx, getPortfolioItemForUpdate, arg.LadderID, arg.UserID, arg.StockSymbol)
+	var i LadderPortfolioItem
 	err := row.Scan(
+		&i.LadderID,
 		&i.UserID,
 		&i.StockSymbol,
 		&i.Quantity,
@@ -111,23 +129,25 @@ func (q *Queries) GetPortfolioItemForUpdate(ctx context.Context, arg GetPortfoli
 }
 
 const setPortfolioItem = `-- name: SetPortfolioItem :exec
-INSERT INTO portfolio_items (user_id, stock_symbol, quantity, average_price)
-VALUES ($1, $2, $3, $4)
-ON CONFLICT (user_id, stock_symbol)
+INSERT INTO ladder_portfolio_items (ladder_id, user_id, stock_symbol, quantity, average_price)
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT (ladder_id, user_id, stock_symbol)
 DO UPDATE SET
-    quantity = EXCLUDED.quantity,
-    average_price = EXCLUDED.average_price
+   quantity = EXCLUDED.quantity,
+   average_price = EXCLUDED.average_price
 `
 
 type SetPortfolioItemParams struct {
+	LadderID     int64
 	UserID       int64
 	StockSymbol  string
-	Quantity     float64
-	AveragePrice float64
+	Quantity     pgtype.Numeric
+	AveragePrice pgtype.Numeric
 }
 
 func (q *Queries) SetPortfolioItem(ctx context.Context, arg SetPortfolioItemParams) error {
 	_, err := q.db.Exec(ctx, setPortfolioItem,
+		arg.LadderID,
 		arg.UserID,
 		arg.StockSymbol,
 		arg.Quantity,

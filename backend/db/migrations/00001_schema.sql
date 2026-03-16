@@ -14,14 +14,6 @@ CREATE TABLE IF NOT EXISTS users (
     CONSTRAINT users_username_length_check CHECK (char_length(username) >= 3 AND char_length(username) <= 20)
 );
 
-CREATE TABLE IF NOT EXISTS portfolio_items (
-    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    stock_symbol TEXT NOT NULL,
-    quantity NUMERIC NOT NULL DEFAULT 0,
-    average_price NUMERIC NOT NULL DEFAULT 0,
-    PRIMARY KEY (user_id, stock_symbol)
-);
-
 CREATE TABLE IF NOT EXISTS market_quotes (
     symbol TEXT NOT NULL DEFAUlT 'unknown',
     price NUMERIC NOT NULL,
@@ -38,8 +30,8 @@ CREATE TABLE IF NOT EXISTS ladders (
     start_time TIMESTAMP WITH TIME ZONE NOT NULL,
     end_time TIMESTAMP WITH TIME ZONE NOT NULL,
     initial_balance NUMERIC NOT NULL,
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    is_active BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS ladder_tickers (
@@ -49,29 +41,27 @@ CREATE TABLE IF NOT EXISTS ladder_tickers (
 );
 
 CREATE TABLE IF NOT EXISTS ladder_participants (
-    ladder_id BIGINT NOT NULL REFERENCES ladders(id),
-    user_id BIGINT NOT NULL REFERENCES users(id),
+    ladder_id BIGINT NOT NULL REFERENCES ladders(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     final_balance NUMERIC,
     final_rank INT,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    joined_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     PRIMARY KEY (ladder_id, user_id)
 );
 
 CREATE TABLE IF NOT EXISTS ladder_balances (
-    ladder_id BIGINT NOT NULL REFERENCES ladders(id),
-    user_id BIGINT NOT NULL REFERENCES users(id),
+    ladder_id BIGINT NOT NULL REFERENCES ladders(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     balance NUMERIC NOT NULL,
     PRIMARY KEY (ladder_id, user_id)
 );
 
 CREATE TABLE IF NOT EXISTS ladder_portfolio_items (
-    ladder_id BIGINT NOT NULL REFERENCES ladders(id),
-    user_id BIGINT NOT NULL REFERENCES users(id),
+    ladder_id BIGINT NOT NULL REFERENCES ladders(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     stock_symbol TEXT NOT NULL,
-    quantity NUMERIC NOT NULL,
-    average_price NUMERIC NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    quantity NUMERIC NOT NULL DEFAULT 0,
+    average_price NUMERIC NOT NULL DEFAULT 0,
     PRIMARY KEY (ladder_id, user_id, stock_symbol)
 );
 

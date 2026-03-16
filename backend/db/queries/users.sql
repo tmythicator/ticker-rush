@@ -42,3 +42,21 @@ WHERE username = $1 LIMIT 1;
 -- name: GetUsers :many
 SELECT id, username, first_name, last_name, website, created_at, is_public, is_admin
 FROM users;
+
+-- name: UpdateUserBalance :exec
+INSERT INTO ladder_balances (ladder_id, user_id, balance)
+VALUES ($1, $2, $3)
+ON CONFLICT (ladder_id, user_id)
+DO UPDATE SET balance = EXCLUDED.balance;
+
+-- name: GetUserBalanceForUpdate :one
+SELECT balance
+FROM ladder_balances
+WHERE ladder_id = $1 AND user_id = $2
+LIMIT 1 FOR UPDATE;
+
+-- name: GetUserBalance :one
+SELECT balance
+FROM ladder_balances
+WHERE ladder_id = $1 AND user_id = $2
+LIMIT 1;

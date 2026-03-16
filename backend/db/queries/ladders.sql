@@ -36,7 +36,7 @@ SET is_active = $2
 WHERE id = $1;
 
 -- name: GetLadderLeaderboard :many
-SELECT lp.ladder_id, lp.user_id, lp.final_balance, lp.final_rank, lp.created_at, u.username
+SELECT lp.ladder_id, lp.user_id, lp.final_balance, lp.final_rank, lp.joined_at, u.username
 FROM ladder_participants lp
 JOIN users u ON lp.user_id = u.id
 WHERE lp.ladder_id = $1
@@ -44,7 +44,7 @@ ORDER BY lp.final_rank ASC
 LIMIT $2;
 
 -- name: GetLadderParticipants :many
-SELECT ladder_id, user_id, final_balance, final_rank, created_at
+SELECT ladder_id, user_id, final_balance, final_rank, joined_at
 FROM ladder_participants
 WHERE ladder_id = $1;
 
@@ -77,17 +77,17 @@ SET balance = $3
 WHERE ladder_id = $1 AND user_id = $2;
 
 -- name: GetLadderPortfolio :many
-SELECT ladder_id, user_id, stock_symbol, quantity, average_price, created_at, updated_at
+SELECT ladder_id, user_id, stock_symbol, quantity, average_price
 FROM ladder_portfolio_items
 WHERE ladder_id = $1 AND user_id = $2;
 
 -- name: GetLadderPortfolioItem :one
-SELECT ladder_id, user_id, stock_symbol, quantity, average_price, created_at, updated_at
+SELECT ladder_id, user_id, stock_symbol, quantity, average_price
 FROM ladder_portfolio_items
 WHERE ladder_id = $1 AND user_id = $2 AND stock_symbol = $3 LIMIT 1;
 
 -- name: GetLadderPortfolioItemForUpdate :one
-SELECT ladder_id, user_id, stock_symbol, quantity, average_price, created_at, updated_at
+SELECT ladder_id, user_id, stock_symbol, quantity, average_price
 FROM ladder_portfolio_items
 WHERE ladder_id = $1 AND user_id = $2 AND stock_symbol = $3 LIMIT 1
 FOR UPDATE;
@@ -97,8 +97,7 @@ INSERT INTO ladder_portfolio_items (ladder_id, user_id, stock_symbol, quantity, 
 VALUES ($1, $2, $3, $4, $5)
 ON CONFLICT (ladder_id, user_id, stock_symbol) DO UPDATE SET
     quantity = EXCLUDED.quantity,
-    average_price = EXCLUDED.average_price,
-    updated_at = NOW();
+    average_price = EXCLUDED.average_price;
 
 -- name: DeleteLadderPortfolioItem :exec
 DELETE FROM ladder_portfolio_items

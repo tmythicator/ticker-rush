@@ -119,6 +119,44 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (GetUserRow, error) {
 	return i, err
 }
 
+const getUserBalance = `-- name: GetUserBalance :one
+SELECT balance
+FROM ladder_balances
+WHERE ladder_id = $1 AND user_id = $2
+LIMIT 1
+`
+
+type GetUserBalanceParams struct {
+	LadderID int64
+	UserID   int64
+}
+
+func (q *Queries) GetUserBalance(ctx context.Context, arg GetUserBalanceParams) (pgtype.Numeric, error) {
+	row := q.db.QueryRow(ctx, getUserBalance, arg.LadderID, arg.UserID)
+	var balance pgtype.Numeric
+	err := row.Scan(&balance)
+	return balance, err
+}
+
+const getUserBalanceForUpdate = `-- name: GetUserBalanceForUpdate :one
+SELECT balance
+FROM ladder_balances
+WHERE ladder_id = $1 AND user_id = $2
+LIMIT 1 FOR UPDATE
+`
+
+type GetUserBalanceForUpdateParams struct {
+	LadderID int64
+	UserID   int64
+}
+
+func (q *Queries) GetUserBalanceForUpdate(ctx context.Context, arg GetUserBalanceForUpdateParams) (pgtype.Numeric, error) {
+	row := q.db.QueryRow(ctx, getUserBalanceForUpdate, arg.LadderID, arg.UserID)
+	var balance pgtype.Numeric
+	err := row.Scan(&balance)
+	return balance, err
+}
+
 const getUserByUsername = `-- name: GetUserByUsername :one
 SELECT id, username, password_hash, first_name, last_name, website, created_at, is_public, is_admin
 FROM users
@@ -230,6 +268,24 @@ func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateUserBalance = `-- name: UpdateUserBalance :exec
+INSERT INTO ladder_balances (ladder_id, user_id, balance)
+VALUES ($1, $2, $3)
+ON CONFLICT (ladder_id, user_id)
+DO UPDATE SET balance = EXCLUDED.balance
+`
+
+type UpdateUserBalanceParams struct {
+	LadderID int64
+	UserID   int64
+	Balance  pgtype.Numeric
+}
+
+func (q *Queries) UpdateUserBalance(ctx context.Context, arg UpdateUserBalanceParams) error {
+	_, err := q.db.Exec(ctx, updateUserBalance, arg.LadderID, arg.UserID, arg.Balance)
+	return err
 }
 
 const updateUserProfile = `-- name: UpdateUserProfile :exec
