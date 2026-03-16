@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
-	pb "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
@@ -27,13 +27,13 @@ func NewUserRepository(pool *pgxpool.Pool) *UserRepository {
 }
 
 // GetUser retrieves a user by ID.
-func (r *UserRepository) GetUser(ctx context.Context, id int64) (*pb.User, error) {
+func (r *UserRepository) GetUser(ctx context.Context, id int64) (*user.User, error) {
 	u, err := r.queries.GetUser(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.User{
+	return &user.User{
 		Id:        u.ID,
 		Username:  u.Username,
 		CreatedAt: timestamppb.New(u.CreatedAt.Time),
@@ -45,15 +45,15 @@ func (r *UserRepository) GetUser(ctx context.Context, id int64) (*pb.User, error
 }
 
 // GetUsers retrieves all users.
-func (r *UserRepository) GetUsers(ctx context.Context) ([]*pb.User, error) {
+func (r *UserRepository) GetUsers(ctx context.Context) ([]*user.User, error) {
 	res, err := r.queries.GetUsers(ctx)
 	if err != nil {
 		return nil, err
 	}
-	users := make([]*pb.User, len(res))
+	users := make([]*user.User, len(res))
 
 	for i, u := range res {
-		users[i] = &pb.User{
+		users[i] = &user.User{
 			Id:        u.ID,
 			Username:  u.Username,
 			FirstName: u.FirstName,
@@ -75,13 +75,13 @@ func (r *UserRepository) WithTx(tx service.Transaction) service.UserRepository {
 }
 
 // GetUserForUpdate retrieves a user by ID with a lock for update.
-func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*pb.User, error) {
+func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*user.User, error) {
 	u, err := r.queries.GetUserForUpdate(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.User{
+	return &user.User{
 		Id:        u.ID,
 		Username:  u.Username,
 		CreatedAt: timestamppb.New(u.CreatedAt.Time),
@@ -90,24 +90,23 @@ func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*pb.Us
 		Website:   u.Website,
 		IsPublic:  u.IsPublic,
 	}, nil
-
 }
 
 // UpdateUserProfile updates an existing user's profile.
-func (r *UserRepository) UpdateUserProfile(ctx context.Context, user *pb.User) error {
+func (r *UserRepository) UpdateUserProfile(ctx context.Context, u *user.User) error {
 	err := r.queries.UpdateUserProfile(ctx, sqlc.UpdateUserProfileParams{
-		ID:        user.GetId(),
-		FirstName: user.GetFirstName(),
-		LastName:  user.GetLastName(),
-		Website:   user.GetWebsite(),
-		IsPublic:  user.GetIsPublic(),
+		ID:        u.GetId(),
+		FirstName: u.GetFirstName(),
+		LastName:  u.GetLastName(),
+		Website:   u.GetWebsite(),
+		IsPublic:  u.GetIsPublic(),
 	})
 
 	return err
 }
 
-// UpdateUserBalance updates the user's balance for specific ladder.
-func (r *UserRepository) UpdateUserBalance(ctx context.Context, ladderID int64, userID int64, balance float64) error {
+// UpdateUserBalance updates the user's balance for the given ladder.
+func (r *UserRepository) UpdateUserBalance(ctx context.Context, userID int64, ladderID int64, balance float64) error {
 	return r.queries.UpdateLadderBalance(ctx, sqlc.UpdateLadderBalanceParams{
 		LadderID: ladderID,
 		UserID:   userID,
@@ -115,8 +114,8 @@ func (r *UserRepository) UpdateUserBalance(ctx context.Context, ladderID int64, 
 	})
 }
 
-// GetUserBalance retrieves the user's balance for specific ladder.
-func (r *UserRepository) GetUserBalance(ctx context.Context, ladderID int64, userID int64) (float64, error) {
+// GetUserBalance retrieves the user's balance for the given ladder.
+func (r *UserRepository) GetUserBalance(ctx context.Context, userID int64, ladderID int64) (float64, error) {
 	balance, err := r.queries.GetLadderBalance(ctx, sqlc.GetLadderBalanceParams{
 		LadderID: ladderID,
 		UserID:   userID,
@@ -135,11 +134,12 @@ func (r *UserRepository) CreateUser(
 	hashedPassword string,
 	firstName string,
 	lastName string,
+	ladderID int64,
 	balance float64,
 	website string,
 	isPublic bool,
 	agbAcceptedAt time.Time,
-) (*pb.User, error) {
+) (*user.User, error) {
 	u, err := r.queries.CreateUser(ctx, sqlc.CreateUserParams{
 		Username:      username,
 		PasswordHash:  hashedPassword,
@@ -154,7 +154,16 @@ func (r *UserRepository) CreateUser(
 		return nil, err
 	}
 
-	return &pb.User{
+	err = r.queries.InsertLadderBalance(ctx, sqlc.InsertLadderBalanceParams{
+		LadderID: ladderID,
+		UserID:   u.ID,
+		Balance:  balance,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &user.User{
 		Id:        u.ID,
 		Username:  u.Username,
 		CreatedAt: timestamppb.New(u.CreatedAt.Time),
@@ -170,13 +179,13 @@ func (r *UserRepository) CreateUser(
 func (r *UserRepository) GetUserByUsername(
 	ctx context.Context,
 	username string,
-) (*pb.User, string, error) {
+) (*user.User, string, error) {
 	u, err := r.queries.GetUserByUsername(ctx, username)
 	if err != nil {
 		return nil, "", err
 	}
 
-	return &pb.User{
+	return &user.User{
 		Id:        u.ID,
 		Username:  u.Username,
 		CreatedAt: timestamppb.New(u.CreatedAt.Time),
@@ -185,5 +194,4 @@ func (r *UserRepository) GetUserByUsername(
 		Website:   u.Website,
 		IsPublic:  u.IsPublic,
 	}, u.PasswordHash, nil
-
 }

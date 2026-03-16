@@ -99,18 +99,19 @@ func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	}
 
 	// Initialize repositories
-	userRepo := postgres.NewUserRepository(postgreClient)
 	portfolioRepo := postgres.NewPortfolioRepository(postgreClient)
+	ladderRepo := postgres.NewLadderRepository(postgreClient)
+	userRepo := postgres.NewUserRepository(postgreClient)
 	marketRepo := valkey.NewMarketRepository(valkeyClient)
 	historyRepo := postgres.NewHistoryRepository(postgreClient)
 	transactor := postgres.NewPgxTransactor(postgreClient)
 
 	// Initialize services
-	userService := service.NewUserService(userRepo, portfolioRepo)
 	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, transactor)
 	marketService := service.NewMarketService(marketRepo, historyRepo, cfg.Tickers)
 	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, valkeyClient)
 	configService := service.NewConfigService(cfg)
+	userService := service.NewUserService(userRepo, portfolioRepo, ladderRepo)
 
 	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, configService, cfg.JWTSecret)
 

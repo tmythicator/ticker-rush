@@ -49,6 +49,7 @@ type UserRepository interface {
 		hashedPassword string,
 		firstName string,
 		lastName string,
+		ladderID int64,
 		balance float64,
 		website string,
 		isPublic bool,
@@ -57,9 +58,17 @@ type UserRepository interface {
 
 	GetUserForUpdate(ctx context.Context, id int64) (*user.User, error)
 	UpdateUserProfile(ctx context.Context, user *user.User) error
-	UpdateUserBalance(ctx context.Context, ladderID int64, userID int64, balance float64) error
-	GetUserBalance(ctx context.Context, ladderID int64, userID int64) (float64, error)
+	UpdateUserBalance(ctx context.Context, userID int64, ladderID int64, balance float64) error
+	GetUserBalance(ctx context.Context, userID int64, ladderID int64) (float64, error)
 	WithTx(tx Transaction) UserRepository
+}
+
+// LadderRepository defines the interface for ladder management.
+type LadderRepository interface {
+	GetActiveLadder(ctx context.Context) (int64, error)
+	GetLadder(ctx context.Context, id int64) (*ladder.Ladder, error)
+	GetAllowedTickers(ctx context.Context, ladderID int64) ([]*ladder.TickerInfo, error)
+	WithTx(tx Transaction) LadderRepository
 }
 
 // PortfolioRepository defines the interface for portfolio persistence.

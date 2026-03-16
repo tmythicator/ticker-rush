@@ -25,6 +25,7 @@ func TestUserService_CreateUser(t *testing.T) {
 
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
+	mockLadderRepo := new(mocks.MockLadderRepository)
 
 	expectedUser := &pb.User{
 		Id:        1,
@@ -33,11 +34,13 @@ func TestUserService_CreateUser(t *testing.T) {
 		LastName:  "Doe",
 	}
 
+	mockLadderRepo.On("GetActiveLadder", mock.Anything).Return(int64(1), nil)
+
 	mockUserRepo.On("CreateUser", ctx, username, mock.MatchedBy(func(hashedPassword string) bool {
 		return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)) == nil
-	}), expectedUser.GetFirstName(), expectedUser.GetLastName(), startBalance, "", false, mock.AnythingOfType("time.Time")).Return(expectedUser, nil)
+	}), expectedUser.GetFirstName(), expectedUser.GetLastName(), int64(1), startBalance, "", false, mock.AnythingOfType("time.Time")).Return(expectedUser, nil)
 
-	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo)
+	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
 	user, err := userService.CreateUser(
 		ctx,
 		username,
@@ -58,8 +61,8 @@ func TestUserService_CreateUser(t *testing.T) {
 func TestUserService_CreateUser_AgbNotAccepted(t *testing.T) {
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
-
-	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo)
+	mockLadderRepo := new(mocks.MockLadderRepository)
+	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
 	user, err := userService.CreateUser(
 		ctx,
 		"username",
@@ -80,7 +83,9 @@ func TestUserService_CreateUser_AgbNotAccepted(t *testing.T) {
 func TestUserService_GetUserWithPortfolio(t *testing.T) {
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
-	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo)
+	mockLadderRepo := new(mocks.MockLadderRepository)
+	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
+	mockLadderRepo.On("GetActiveLadder", ctx).Return(int64(1), nil)
 
 	userID := int64(1)
 	expectedUser := &pb.User{Id: userID, Username: "userTest1"}
@@ -91,7 +96,8 @@ func TestUserService_GetUserWithPortfolio(t *testing.T) {
 	}
 
 	mockUserRepo.On("GetUser", ctx, userID).Return(expectedUser, nil)
-	mockPortfolioRepo.On("GetPortfolio", ctx, userID).Return(expectedPortfolioItems, nil)
+	mockUserRepo.On("GetUserBalance", ctx, userID, int64(1)).Return(100.0, nil)
+	mockPortfolioRepo.On("GetPortfolio", ctx, userID, int64(1)).Return(expectedPortfolioItems, nil)
 
 	res, err := userService.GetUserWithPortfolio(ctx, userID)
 
@@ -112,7 +118,8 @@ func TestUserService_Authenticate(t *testing.T) {
 	)
 
 	mockUserRepo := new(mocks.MockUserRepository)
-	userService := service.NewUserService(mockUserRepo, nil)
+	mockLadderRepo := new(mocks.MockLadderRepository)
+	userService := service.NewUserService(mockUserRepo, nil, mockLadderRepo)
 
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(truePassword), bcrypt.DefaultCost)
 
@@ -136,7 +143,8 @@ func TestUserService_Authenticate(t *testing.T) {
 func TestUserService_GetPublicProfile(t *testing.T) {
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
-	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo)
+	mockLadderRepo := new(mocks.MockLadderRepository)
+	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
 
 	t.Run("Public User", func(t *testing.T) {
 		username := "publicUser"
@@ -150,9 +158,10 @@ func TestUserService_GetPublicProfile(t *testing.T) {
 		expectedPortfolio := []*pb.PortfolioItem{
 			{StockSymbol: "AAPL", Quantity: 10, AveragePrice: 150.0},
 		}
-
+		mockLadderRepo.On("GetActiveLadder", ctx).Return(int64(1), nil)
 		mockUserRepo.On("GetUserByUsername", ctx, username).Return(expectedUser, "", nil).Once()
-		mockPortfolioRepo.On("GetPortfolio", ctx, expectedUser.Id).Return(expectedPortfolio, nil).Once()
+		mockUserRepo.On("GetUserBalance", ctx, expectedUser.Id, int64(1)).Return(200.0, nil).Once()
+		mockPortfolioRepo.On("GetPortfolio", ctx, expectedUser.Id, int64(1)).Return(expectedPortfolio, nil).Once()
 
 		res, err := userService.GetPublicProfile(ctx, username)
 

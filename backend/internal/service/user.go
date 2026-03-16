@@ -24,13 +24,15 @@ var (
 type UserService struct {
 	userRepo      UserRepository
 	portfolioRepo PortfolioRepository
+	ladderRepo    LadderRepository
 }
 
 // NewUserService creates a new instance of UserService.
-func NewUserService(userRepo UserRepository, portfolioRepo PortfolioRepository) *UserService {
+func NewUserService(userRepo UserRepository, portfolioRepo PortfolioRepository, ladderRepo LadderRepository) *UserService {
 	return &UserService{
 		userRepo:      userRepo,
 		portfolioRepo: portfolioRepo,
+		ladderRepo:    ladderRepo,
 	}
 }
 
@@ -80,25 +82,49 @@ func (s *UserService) CreateUser(
 		return nil, err
 	}
 
-	return s.userRepo.CreateUser(ctx, username, string(hashedPassword), firstName, lastName, 10000, website, false, time.Now())
+	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.userRepo.CreateUser(ctx, username, string(hashedPassword), firstName, lastName, ladderID, 10000, website, false, time.Now())
 }
 
-// GetUser retrieves a user by ID.
+// GetUser retrieves a user by ID and populates balance for active ladder.
 func (s *UserService) GetUser(ctx context.Context, id int64) (*user.User, error) {
-	return s.userRepo.GetUser(ctx, id)
+	u, err := s.userRepo.GetUser(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
+	if err == nil {
+		balance, _ := s.userRepo.GetUserBalance(ctx, id, ladderID)
+		u.Balance = balance
+	}
+
+	return u, nil
 }
 
-// GetUserWithPortfolio retrieves a user and their portfolio.
+// GetUserWithPortfolio retrieves a user and their portfolio for the active ladder.
 func (s *UserService) GetUserWithPortfolio(ctx context.Context, id int64) (*user.User, error) {
 	fetchedUser, err := s.userRepo.GetUser(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	portfolio, err := s.portfolioRepo.GetPortfolio(ctx, id)
+	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
 	if err != nil {
 		return nil, err
 	}
+
+	portfolio, err := s.portfolioRepo.GetPortfolio(ctx, id, ladderID)
+	if err != nil {
+		return nil, err
+	}
+
+	balance, _ := s.userRepo.GetUserBalance(ctx, id, ladderID)
+	fetchedUser.Balance = balance
 
 	if fetchedUser.Portfolio == nil {
 		fetchedUser.Portfolio = make(map[string]*user.PortfolioItem)
@@ -172,7 +198,7 @@ func (s *UserService) UpdateUser(
 	return existingUser, nil
 }
 
-// GetPublicProfile retrieves a user's public profile if enabled.
+// GetPublicProfile retrieves a user's public profile if enabled, for the active ladder.
 func (s *UserService) GetPublicProfile(ctx context.Context, username string) (*user.User, error) {
 	targetUser, _, err := s.userRepo.GetUserByUsername(ctx, username)
 	if err != nil {
@@ -187,10 +213,18 @@ func (s *UserService) GetPublicProfile(ctx context.Context, username string) (*u
 		return nil, apperrors.ErrUserNotFound
 	}
 
-	portfolio, err := s.portfolioRepo.GetPortfolio(ctx, targetUser.Id)
+	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
 	if err != nil {
 		return nil, err
 	}
+
+	portfolio, err := s.portfolioRepo.GetPortfolio(ctx, targetUser.Id, ladderID)
+	if err != nil {
+		return nil, err
+	}
+
+	balance, _ := s.userRepo.GetUserBalance(ctx, targetUser.Id, ladderID)
+	targetUser.Balance = balance
 
 	if targetUser.Portfolio == nil {
 		targetUser.Portfolio = make(map[string]*user.PortfolioItem)

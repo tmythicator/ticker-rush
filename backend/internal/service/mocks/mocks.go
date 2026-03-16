@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
@@ -89,12 +90,13 @@ func (m *MockUserRepository) CreateUser(
 	hashedPassword string,
 	firstName string,
 	lastName string,
+	ladderID int64,
 	balance float64,
 	website string,
 	isPublic bool,
 	agbAcceptedAt time.Time,
 ) (*user.User, error) {
-	args := m.Called(ctx, username, hashedPassword, firstName, lastName, balance, website, isPublic, agbAcceptedAt)
+	args := m.Called(ctx, username, hashedPassword, firstName, lastName, ladderID, balance, website, isPublic, agbAcceptedAt)
 
 	return args.Get(0).(*user.User), args.Error(1)
 }
@@ -114,10 +116,17 @@ func (m *MockUserRepository) UpdateUserProfile(ctx context.Context, user *user.U
 }
 
 // UpdateUserBalance updates the user's balance.
-func (m *MockUserRepository) UpdateUserBalance(ctx context.Context, id int64, balance float64) error {
-	args := m.Called(ctx, id, balance)
+func (m *MockUserRepository) UpdateUserBalance(ctx context.Context, id int64, ladderID int64, balance float64) error {
+	args := m.Called(ctx, id, ladderID, balance)
 
 	return args.Error(0)
+}
+
+// GetUserBalance retrieves the user's balance.
+func (m *MockUserRepository) GetUserBalance(ctx context.Context, userID int64, ladderID int64) (float64, error) {
+	args := m.Called(ctx, userID, ladderID)
+
+	return args.Get(0).(float64), args.Error(1)
 }
 
 // WithTx returns a new UserRepository with the transaction.
@@ -222,4 +231,39 @@ func (m *MockMarketRepository) SubscribeToQuotes(ctx context.Context, symbol str
 	args := m.Called(ctx, symbol)
 
 	return args.Get(0).(*redis.PubSub)
+}
+
+// MockLadderRepository is a mock implementation of LadderRepository.
+type MockLadderRepository struct {
+	mock.Mock
+}
+
+// GetActiveLadder retrieves the currently active ladder ID.
+func (m *MockLadderRepository) GetActiveLadder(ctx context.Context) (int64, error) {
+	args := m.Called(ctx)
+	return args.Get(0).(int64), args.Error(1)
+}
+
+// GetLadder retrieves a ladder by ID.
+func (m *MockLadderRepository) GetLadder(ctx context.Context, id int64) (*ladder.Ladder, error) {
+	args := m.Called(ctx, id)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*ladder.Ladder), args.Error(1)
+}
+
+// GetAllowedTickers retrieves the allowed stock symbols for a given ladder.
+func (m *MockLadderRepository) GetAllowedTickers(ctx context.Context, ladderID int64) ([]*ladder.TickerInfo, error) {
+	args := m.Called(ctx, ladderID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*ladder.TickerInfo), args.Error(1)
+}
+
+// WithTx returns a new repository with a transaction.
+func (m *MockLadderRepository) WithTx(tx service.Transaction) service.LadderRepository {
+	args := m.Called(tx)
+	return args.Get(0).(service.LadderRepository)
 }
