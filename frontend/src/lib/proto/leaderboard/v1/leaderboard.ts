@@ -6,17 +6,14 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { User } from "../../user/v1/user";
 
 export const protobufPackage = "leaderboard.v1";
 
 export interface LeaderboardEntry {
-  user_id: string;
+  user: User | undefined;
   rank: number;
-  total_net_worth: number;
-  first_name: string;
-  last_name: string;
-  username: string;
-  is_public: boolean;
+  score: number;
 }
 
 export interface GetLeaderboardRequest {
@@ -31,31 +28,19 @@ export interface GetLeaderboardResponse {
 }
 
 function createBaseLeaderboardEntry(): LeaderboardEntry {
-  return { user_id: "0", rank: 0, total_net_worth: 0, first_name: "", last_name: "", username: "", is_public: false };
+  return { user: undefined, rank: 0, score: 0 };
 }
 
 export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
   encode(message: LeaderboardEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.user_id !== "0") {
-      writer.uint32(8).int64(message.user_id);
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(10).fork()).join();
     }
     if (message.rank !== 0) {
       writer.uint32(16).int32(message.rank);
     }
-    if (message.total_net_worth !== 0) {
-      writer.uint32(25).double(message.total_net_worth);
-    }
-    if (message.first_name !== "") {
-      writer.uint32(34).string(message.first_name);
-    }
-    if (message.last_name !== "") {
-      writer.uint32(42).string(message.last_name);
-    }
-    if (message.username !== "") {
-      writer.uint32(50).string(message.username);
-    }
-    if (message.is_public !== false) {
-      writer.uint32(56).bool(message.is_public);
+    if (message.score !== 0) {
+      writer.uint32(25).double(message.score);
     }
     return writer;
   },
@@ -68,11 +53,11 @@ export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.user_id = reader.int64().toString();
+          message.user = User.decode(reader, reader.uint32());
           continue;
         }
         case 2: {
@@ -88,39 +73,7 @@ export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
             break;
           }
 
-          message.total_net_worth = reader.double();
-          continue;
-        }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.first_name = reader.string();
-          continue;
-        }
-        case 5: {
-          if (tag !== 42) {
-            break;
-          }
-
-          message.last_name = reader.string();
-          continue;
-        }
-        case 6: {
-          if (tag !== 50) {
-            break;
-          }
-
-          message.username = reader.string();
-          continue;
-        }
-        case 7: {
-          if (tag !== 56) {
-            break;
-          }
-
-          message.is_public = reader.bool();
+          message.score = reader.double();
           continue;
         }
       }
@@ -134,58 +87,22 @@ export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
 
   fromJSON(object: any): LeaderboardEntry {
     return {
-      user_id: isSet(object.userId)
-        ? globalThis.String(object.userId)
-        : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "0",
+      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
       rank: isSet(object.rank) ? globalThis.Number(object.rank) : 0,
-      total_net_worth: isSet(object.totalNetWorth)
-        ? globalThis.Number(object.totalNetWorth)
-        : isSet(object.total_net_worth)
-        ? globalThis.Number(object.total_net_worth)
-        : 0,
-      first_name: isSet(object.firstName)
-        ? globalThis.String(object.firstName)
-        : isSet(object.first_name)
-        ? globalThis.String(object.first_name)
-        : "",
-      last_name: isSet(object.lastName)
-        ? globalThis.String(object.lastName)
-        : isSet(object.last_name)
-        ? globalThis.String(object.last_name)
-        : "",
-      username: isSet(object.username) ? globalThis.String(object.username) : "",
-      is_public: isSet(object.isPublic)
-        ? globalThis.Boolean(object.isPublic)
-        : isSet(object.is_public)
-        ? globalThis.Boolean(object.is_public)
-        : false,
+      score: isSet(object.score) ? globalThis.Number(object.score) : 0,
     };
   },
 
   toJSON(message: LeaderboardEntry): unknown {
     const obj: any = {};
-    if (message.user_id !== "0") {
-      obj.userId = message.user_id;
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
     }
     if (message.rank !== 0) {
       obj.rank = Math.round(message.rank);
     }
-    if (message.total_net_worth !== 0) {
-      obj.totalNetWorth = message.total_net_worth;
-    }
-    if (message.first_name !== "") {
-      obj.firstName = message.first_name;
-    }
-    if (message.last_name !== "") {
-      obj.lastName = message.last_name;
-    }
-    if (message.username !== "") {
-      obj.username = message.username;
-    }
-    if (message.is_public !== false) {
-      obj.isPublic = message.is_public;
+    if (message.score !== 0) {
+      obj.score = message.score;
     }
     return obj;
   },
@@ -195,13 +112,9 @@ export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
   },
   fromPartial<I extends Exact<DeepPartial<LeaderboardEntry>, I>>(object: I): LeaderboardEntry {
     const message = createBaseLeaderboardEntry();
-    message.user_id = object.user_id ?? "0";
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     message.rank = object.rank ?? 0;
-    message.total_net_worth = object.total_net_worth ?? 0;
-    message.first_name = object.first_name ?? "";
-    message.last_name = object.last_name ?? "";
-    message.username = object.username ?? "";
-    message.is_public = object.is_public ?? false;
+    message.score = object.score ?? 0;
     return message;
   },
 };

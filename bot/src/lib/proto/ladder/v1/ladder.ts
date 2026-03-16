@@ -7,6 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Timestamp } from "../../google/protobuf/timestamp";
+import { User } from "../../user/v1/user";
 
 export const protobufPackage = "ladder.v1";
 
@@ -20,34 +21,24 @@ export interface Ladder {
   is_active: boolean;
   created_at: Date | undefined;
   initial_balance: number;
-  allowed_tickers: string[];
+  allowed_tickers: TickerInfo[];
 }
 
-export interface PortfolioItem {
-  stock_symbol: string;
-  quantity: number;
-  average_price: number;
+export interface TickerInfo {
+  symbol: string;
+  source: string;
 }
 
 /** LadderParticipant represents a user's standing in a ladder. */
 export interface LadderParticipant {
   ladder_id: string;
-  user_id: string;
-  available_balance: number;
-  final_balance: number;
+  user: User | undefined;
   final_rank: number;
-  created_at: Date | undefined;
-  portfolio: { [key: string]: PortfolioItem };
-}
-
-export interface LadderParticipant_PortfolioEntry {
-  key: string;
-  value: PortfolioItem | undefined;
+  joined_at: Date | undefined;
 }
 
 export interface LadderLeaderboardEntry {
   participant: LadderParticipant | undefined;
-  username: string;
 }
 
 export interface ListLaddersRequest {
@@ -122,7 +113,7 @@ export const Ladder: MessageFns<Ladder> = {
       writer.uint32(65).double(message.initial_balance);
     }
     for (const v of message.allowed_tickers) {
-      writer.uint32(74).string(v!);
+      TickerInfo.encode(v!, writer.uint32(74).fork()).join();
     }
     return writer;
   },
@@ -203,7 +194,7 @@ export const Ladder: MessageFns<Ladder> = {
             break;
           }
 
-          message.allowed_tickers.push(reader.string());
+          message.allowed_tickers.push(TickerInfo.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -246,9 +237,9 @@ export const Ladder: MessageFns<Ladder> = {
         ? globalThis.Number(object.initial_balance)
         : 0,
       allowed_tickers: globalThis.Array.isArray(object?.allowedTickers)
-        ? object.allowedTickers.map((e: any) => globalThis.String(e))
+        ? object.allowedTickers.map((e: any) => TickerInfo.fromJSON(e))
         : globalThis.Array.isArray(object?.allowed_tickers)
-        ? object.allowed_tickers.map((e: any) => globalThis.String(e))
+        ? object.allowed_tickers.map((e: any) => TickerInfo.fromJSON(e))
         : [],
     };
   },
@@ -280,7 +271,7 @@ export const Ladder: MessageFns<Ladder> = {
       obj.initialBalance = message.initial_balance;
     }
     if (message.allowed_tickers?.length) {
-      obj.allowedTickers = message.allowed_tickers;
+      obj.allowedTickers = message.allowed_tickers.map((e) => TickerInfo.toJSON(e));
     }
     return obj;
   },
@@ -298,33 +289,30 @@ export const Ladder: MessageFns<Ladder> = {
     message.is_active = object.is_active ?? false;
     message.created_at = object.created_at ?? undefined;
     message.initial_balance = object.initial_balance ?? 0;
-    message.allowed_tickers = object.allowed_tickers?.map((e) => e) || [];
+    message.allowed_tickers = object.allowed_tickers?.map((e) => TickerInfo.fromPartial(e)) || [];
     return message;
   },
 };
 
-function createBasePortfolioItem(): PortfolioItem {
-  return { stock_symbol: "", quantity: 0, average_price: 0 };
+function createBaseTickerInfo(): TickerInfo {
+  return { symbol: "", source: "" };
 }
 
-export const PortfolioItem: MessageFns<PortfolioItem> = {
-  encode(message: PortfolioItem, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.stock_symbol !== "") {
-      writer.uint32(10).string(message.stock_symbol);
+export const TickerInfo: MessageFns<TickerInfo> = {
+  encode(message: TickerInfo, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.symbol !== "") {
+      writer.uint32(10).string(message.symbol);
     }
-    if (message.quantity !== 0) {
-      writer.uint32(17).double(message.quantity);
-    }
-    if (message.average_price !== 0) {
-      writer.uint32(25).double(message.average_price);
+    if (message.source !== "") {
+      writer.uint32(18).string(message.source);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): PortfolioItem {
+  decode(input: BinaryReader | Uint8Array, length?: number): TickerInfo {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasePortfolioItem();
+    const message = createBaseTickerInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -333,23 +321,15 @@ export const PortfolioItem: MessageFns<PortfolioItem> = {
             break;
           }
 
-          message.stock_symbol = reader.string();
+          message.symbol = reader.string();
           continue;
         }
         case 2: {
-          if (tag !== 17) {
+          if (tag !== 18) {
             break;
           }
 
-          message.quantity = reader.double();
-          continue;
-        }
-        case 3: {
-          if (tag !== 25) {
-            break;
-          }
-
-          message.average_price = reader.double();
+          message.source = reader.string();
           continue;
         }
       }
@@ -361,58 +341,37 @@ export const PortfolioItem: MessageFns<PortfolioItem> = {
     return message;
   },
 
-  fromJSON(object: any): PortfolioItem {
+  fromJSON(object: any): TickerInfo {
     return {
-      stock_symbol: isSet(object.stockSymbol)
-        ? globalThis.String(object.stockSymbol)
-        : isSet(object.stock_symbol)
-        ? globalThis.String(object.stock_symbol)
-        : "",
-      quantity: isSet(object.quantity) ? globalThis.Number(object.quantity) : 0,
-      average_price: isSet(object.averagePrice)
-        ? globalThis.Number(object.averagePrice)
-        : isSet(object.average_price)
-        ? globalThis.Number(object.average_price)
-        : 0,
+      symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : "",
+      source: isSet(object.source) ? globalThis.String(object.source) : "",
     };
   },
 
-  toJSON(message: PortfolioItem): unknown {
+  toJSON(message: TickerInfo): unknown {
     const obj: any = {};
-    if (message.stock_symbol !== "") {
-      obj.stockSymbol = message.stock_symbol;
+    if (message.symbol !== "") {
+      obj.symbol = message.symbol;
     }
-    if (message.quantity !== 0) {
-      obj.quantity = message.quantity;
-    }
-    if (message.average_price !== 0) {
-      obj.averagePrice = message.average_price;
+    if (message.source !== "") {
+      obj.source = message.source;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<PortfolioItem>, I>>(base?: I): PortfolioItem {
-    return PortfolioItem.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<TickerInfo>, I>>(base?: I): TickerInfo {
+    return TickerInfo.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<PortfolioItem>, I>>(object: I): PortfolioItem {
-    const message = createBasePortfolioItem();
-    message.stock_symbol = object.stock_symbol ?? "";
-    message.quantity = object.quantity ?? 0;
-    message.average_price = object.average_price ?? 0;
+  fromPartial<I extends Exact<DeepPartial<TickerInfo>, I>>(object: I): TickerInfo {
+    const message = createBaseTickerInfo();
+    message.symbol = object.symbol ?? "";
+    message.source = object.source ?? "";
     return message;
   },
 };
 
 function createBaseLadderParticipant(): LadderParticipant {
-  return {
-    ladder_id: "0",
-    user_id: "0",
-    available_balance: 0,
-    final_balance: 0,
-    final_rank: 0,
-    created_at: undefined,
-    portfolio: {},
-  };
+  return { ladder_id: "0", user: undefined, final_rank: 0, joined_at: undefined };
 }
 
 export const LadderParticipant: MessageFns<LadderParticipant> = {
@@ -420,24 +379,15 @@ export const LadderParticipant: MessageFns<LadderParticipant> = {
     if (message.ladder_id !== "0") {
       writer.uint32(8).int64(message.ladder_id);
     }
-    if (message.user_id !== "0") {
-      writer.uint32(16).int64(message.user_id);
-    }
-    if (message.available_balance !== 0) {
-      writer.uint32(25).double(message.available_balance);
-    }
-    if (message.final_balance !== 0) {
-      writer.uint32(33).double(message.final_balance);
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(18).fork()).join();
     }
     if (message.final_rank !== 0) {
-      writer.uint32(40).int32(message.final_rank);
+      writer.uint32(24).int32(message.final_rank);
     }
-    if (message.created_at !== undefined) {
-      Timestamp.encode(toTimestamp(message.created_at), writer.uint32(50).fork()).join();
+    if (message.joined_at !== undefined) {
+      Timestamp.encode(toTimestamp(message.joined_at), writer.uint32(34).fork()).join();
     }
-    globalThis.Object.entries(message.portfolio).forEach(([key, value]: [string, PortfolioItem]) => {
-      LadderParticipant_PortfolioEntry.encode({ key: key as any, value }, writer.uint32(58).fork()).join();
-    });
     return writer;
   },
 
@@ -457,54 +407,27 @@ export const LadderParticipant: MessageFns<LadderParticipant> = {
           continue;
         }
         case 2: {
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.user_id = reader.int64().toString();
+          message.user = User.decode(reader, reader.uint32());
           continue;
         }
         case 3: {
-          if (tag !== 25) {
-            break;
-          }
-
-          message.available_balance = reader.double();
-          continue;
-        }
-        case 4: {
-          if (tag !== 33) {
-            break;
-          }
-
-          message.final_balance = reader.double();
-          continue;
-        }
-        case 5: {
-          if (tag !== 40) {
+          if (tag !== 24) {
             break;
           }
 
           message.final_rank = reader.int32();
           continue;
         }
-        case 6: {
-          if (tag !== 50) {
+        case 4: {
+          if (tag !== 34) {
             break;
           }
 
-          message.created_at = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
-            break;
-          }
-
-          const entry7 = LadderParticipant_PortfolioEntry.decode(reader, reader.uint32());
-          if (entry7.value !== undefined) {
-            message.portfolio[entry7.key] = entry7.value;
-          }
+          message.joined_at = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -523,40 +446,17 @@ export const LadderParticipant: MessageFns<LadderParticipant> = {
         : isSet(object.ladder_id)
         ? globalThis.String(object.ladder_id)
         : "0",
-      user_id: isSet(object.userId)
-        ? globalThis.String(object.userId)
-        : isSet(object.user_id)
-        ? globalThis.String(object.user_id)
-        : "0",
-      available_balance: isSet(object.availableBalance)
-        ? globalThis.Number(object.availableBalance)
-        : isSet(object.available_balance)
-        ? globalThis.Number(object.available_balance)
-        : 0,
-      final_balance: isSet(object.finalBalance)
-        ? globalThis.Number(object.finalBalance)
-        : isSet(object.final_balance)
-        ? globalThis.Number(object.final_balance)
-        : 0,
+      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
       final_rank: isSet(object.finalRank)
         ? globalThis.Number(object.finalRank)
         : isSet(object.final_rank)
         ? globalThis.Number(object.final_rank)
         : 0,
-      created_at: isSet(object.createdAt)
-        ? fromJsonTimestamp(object.createdAt)
-        : isSet(object.created_at)
-        ? fromJsonTimestamp(object.created_at)
+      joined_at: isSet(object.joinedAt)
+        ? fromJsonTimestamp(object.joinedAt)
+        : isSet(object.joined_at)
+        ? fromJsonTimestamp(object.joined_at)
         : undefined,
-      portfolio: isObject(object.portfolio)
-        ? (globalThis.Object.entries(object.portfolio) as [string, any][]).reduce(
-          (acc: { [key: string]: PortfolioItem }, [key, value]: [string, any]) => {
-            acc[key] = PortfolioItem.fromJSON(value);
-            return acc;
-          },
-          {},
-        )
-        : {},
     };
   },
 
@@ -565,29 +465,14 @@ export const LadderParticipant: MessageFns<LadderParticipant> = {
     if (message.ladder_id !== "0") {
       obj.ladderId = message.ladder_id;
     }
-    if (message.user_id !== "0") {
-      obj.userId = message.user_id;
-    }
-    if (message.available_balance !== 0) {
-      obj.availableBalance = message.available_balance;
-    }
-    if (message.final_balance !== 0) {
-      obj.finalBalance = message.final_balance;
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
     }
     if (message.final_rank !== 0) {
       obj.finalRank = Math.round(message.final_rank);
     }
-    if (message.created_at !== undefined) {
-      obj.createdAt = message.created_at.toISOString();
-    }
-    if (message.portfolio) {
-      const entries = globalThis.Object.entries(message.portfolio) as [string, PortfolioItem][];
-      if (entries.length > 0) {
-        obj.portfolio = {};
-        entries.forEach(([k, v]) => {
-          obj.portfolio[k] = PortfolioItem.toJSON(v);
-        });
-      }
+    if (message.joined_at !== undefined) {
+      obj.joinedAt = message.joined_at.toISOString();
     }
     return obj;
   },
@@ -598,117 +483,21 @@ export const LadderParticipant: MessageFns<LadderParticipant> = {
   fromPartial<I extends Exact<DeepPartial<LadderParticipant>, I>>(object: I): LadderParticipant {
     const message = createBaseLadderParticipant();
     message.ladder_id = object.ladder_id ?? "0";
-    message.user_id = object.user_id ?? "0";
-    message.available_balance = object.available_balance ?? 0;
-    message.final_balance = object.final_balance ?? 0;
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     message.final_rank = object.final_rank ?? 0;
-    message.created_at = object.created_at ?? undefined;
-    message.portfolio = (globalThis.Object.entries(object.portfolio ?? {}) as [string, PortfolioItem][]).reduce(
-      (acc: { [key: string]: PortfolioItem }, [key, value]: [string, PortfolioItem]) => {
-        if (value !== undefined) {
-          acc[key] = PortfolioItem.fromPartial(value);
-        }
-        return acc;
-      },
-      {},
-    );
-    return message;
-  },
-};
-
-function createBaseLadderParticipant_PortfolioEntry(): LadderParticipant_PortfolioEntry {
-  return { key: "", value: undefined };
-}
-
-export const LadderParticipant_PortfolioEntry: MessageFns<LadderParticipant_PortfolioEntry> = {
-  encode(message: LadderParticipant_PortfolioEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.key !== "") {
-      writer.uint32(10).string(message.key);
-    }
-    if (message.value !== undefined) {
-      PortfolioItem.encode(message.value, writer.uint32(18).fork()).join();
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): LadderParticipant_PortfolioEntry {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseLadderParticipant_PortfolioEntry();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.key = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.value = PortfolioItem.decode(reader, reader.uint32());
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): LadderParticipant_PortfolioEntry {
-    return {
-      key: isSet(object.key) ? globalThis.String(object.key) : "",
-      value: isSet(object.value) ? PortfolioItem.fromJSON(object.value) : undefined,
-    };
-  },
-
-  toJSON(message: LadderParticipant_PortfolioEntry): unknown {
-    const obj: any = {};
-    if (message.key !== "") {
-      obj.key = message.key;
-    }
-    if (message.value !== undefined) {
-      obj.value = PortfolioItem.toJSON(message.value);
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<LadderParticipant_PortfolioEntry>, I>>(
-    base?: I,
-  ): LadderParticipant_PortfolioEntry {
-    return LadderParticipant_PortfolioEntry.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<LadderParticipant_PortfolioEntry>, I>>(
-    object: I,
-  ): LadderParticipant_PortfolioEntry {
-    const message = createBaseLadderParticipant_PortfolioEntry();
-    message.key = object.key ?? "";
-    message.value = (object.value !== undefined && object.value !== null)
-      ? PortfolioItem.fromPartial(object.value)
-      : undefined;
+    message.joined_at = object.joined_at ?? undefined;
     return message;
   },
 };
 
 function createBaseLadderLeaderboardEntry(): LadderLeaderboardEntry {
-  return { participant: undefined, username: "" };
+  return { participant: undefined };
 }
 
 export const LadderLeaderboardEntry: MessageFns<LadderLeaderboardEntry> = {
   encode(message: LadderLeaderboardEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.participant !== undefined) {
       LadderParticipant.encode(message.participant, writer.uint32(10).fork()).join();
-    }
-    if (message.username !== "") {
-      writer.uint32(18).string(message.username);
     }
     return writer;
   },
@@ -728,14 +517,6 @@ export const LadderLeaderboardEntry: MessageFns<LadderLeaderboardEntry> = {
           message.participant = LadderParticipant.decode(reader, reader.uint32());
           continue;
         }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.username = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -746,19 +527,13 @@ export const LadderLeaderboardEntry: MessageFns<LadderLeaderboardEntry> = {
   },
 
   fromJSON(object: any): LadderLeaderboardEntry {
-    return {
-      participant: isSet(object.participant) ? LadderParticipant.fromJSON(object.participant) : undefined,
-      username: isSet(object.username) ? globalThis.String(object.username) : "",
-    };
+    return { participant: isSet(object.participant) ? LadderParticipant.fromJSON(object.participant) : undefined };
   },
 
   toJSON(message: LadderLeaderboardEntry): unknown {
     const obj: any = {};
     if (message.participant !== undefined) {
       obj.participant = LadderParticipant.toJSON(message.participant);
-    }
-    if (message.username !== "") {
-      obj.username = message.username;
     }
     return obj;
   },
@@ -771,7 +546,6 @@ export const LadderLeaderboardEntry: MessageFns<LadderLeaderboardEntry> = {
     message.participant = (object.participant !== undefined && object.participant !== null)
       ? LadderParticipant.fromPartial(object.participant)
       : undefined;
-    message.username = object.username ?? "";
     return message;
   },
 };
@@ -1280,10 +1054,6 @@ function fromJsonTimestamp(o: any): Date {
   } else {
     return fromTimestamp(Timestamp.fromJSON(o));
   }
-}
-
-function isObject(value: any): boolean {
-  return typeof value === "object" && value !== null;
 }
 
 function isSet(value: any): boolean {

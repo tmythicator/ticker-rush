@@ -7,7 +7,7 @@
 package ladder
 
 import (
-	_ "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	v1 "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -34,7 +34,7 @@ type Ladder struct {
 	IsActive       bool                   `protobuf:"varint,6,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`
 	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	InitialBalance float64                `protobuf:"fixed64,8,opt,name=initial_balance,json=initialBalance,proto3" json:"initial_balance,omitempty"`
-	AllowedTickers []string               `protobuf:"bytes,9,rep,name=allowed_tickers,json=allowedTickers,proto3" json:"allowed_tickers,omitempty"`
+	AllowedTickers []*TickerInfo          `protobuf:"bytes,9,rep,name=allowed_tickers,json=allowedTickers,proto3" json:"allowed_tickers,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -125,36 +125,35 @@ func (x *Ladder) GetInitialBalance() float64 {
 	return 0
 }
 
-func (x *Ladder) GetAllowedTickers() []string {
+func (x *Ladder) GetAllowedTickers() []*TickerInfo {
 	if x != nil {
 		return x.AllowedTickers
 	}
 	return nil
 }
 
-type PortfolioItem struct {
+type TickerInfo struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	StockSymbol   string                 `protobuf:"bytes,1,opt,name=stock_symbol,json=stockSymbol,proto3" json:"stock_symbol,omitempty"`
-	Quantity      float64                `protobuf:"fixed64,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	AveragePrice  float64                `protobuf:"fixed64,3,opt,name=average_price,json=averagePrice,proto3" json:"average_price,omitempty"`
+	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	Source        string                 `protobuf:"bytes,2,opt,name=source,proto3" json:"source,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *PortfolioItem) Reset() {
-	*x = PortfolioItem{}
+func (x *TickerInfo) Reset() {
+	*x = TickerInfo{}
 	mi := &file_ladder_v1_ladder_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *PortfolioItem) String() string {
+func (x *TickerInfo) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PortfolioItem) ProtoMessage() {}
+func (*TickerInfo) ProtoMessage() {}
 
-func (x *PortfolioItem) ProtoReflect() protoreflect.Message {
+func (x *TickerInfo) ProtoReflect() protoreflect.Message {
 	mi := &file_ladder_v1_ladder_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -166,44 +165,34 @@ func (x *PortfolioItem) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PortfolioItem.ProtoReflect.Descriptor instead.
-func (*PortfolioItem) Descriptor() ([]byte, []int) {
+// Deprecated: Use TickerInfo.ProtoReflect.Descriptor instead.
+func (*TickerInfo) Descriptor() ([]byte, []int) {
 	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *PortfolioItem) GetStockSymbol() string {
+func (x *TickerInfo) GetSymbol() string {
 	if x != nil {
-		return x.StockSymbol
+		return x.Symbol
 	}
 	return ""
 }
 
-func (x *PortfolioItem) GetQuantity() float64 {
+func (x *TickerInfo) GetSource() string {
 	if x != nil {
-		return x.Quantity
+		return x.Source
 	}
-	return 0
-}
-
-func (x *PortfolioItem) GetAveragePrice() float64 {
-	if x != nil {
-		return x.AveragePrice
-	}
-	return 0
+	return ""
 }
 
 // LadderParticipant represents a user's standing in a ladder.
 type LadderParticipant struct {
-	state            protoimpl.MessageState    `protogen:"open.v1"`
-	LadderId         int64                     `protobuf:"varint,1,opt,name=ladder_id,json=ladderId,proto3" json:"ladder_id,omitempty"`
-	UserId           int64                     `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	AvailableBalance float64                   `protobuf:"fixed64,3,opt,name=available_balance,json=availableBalance,proto3" json:"available_balance,omitempty"`
-	FinalBalance     float64                   `protobuf:"fixed64,4,opt,name=final_balance,json=finalBalance,proto3" json:"final_balance,omitempty"`
-	FinalRank        int32                     `protobuf:"varint,5,opt,name=final_rank,json=finalRank,proto3" json:"final_rank,omitempty"`
-	CreatedAt        *timestamppb.Timestamp    `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	Portfolio        map[string]*PortfolioItem `protobuf:"bytes,7,rep,name=portfolio,proto3" json:"portfolio,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	LadderId      int64                  `protobuf:"varint,1,opt,name=ladder_id,json=ladderId,proto3" json:"ladder_id,omitempty"`
+	User          *v1.User               `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
+	FinalRank     int32                  `protobuf:"varint,3,opt,name=final_rank,json=finalRank,proto3" json:"final_rank,omitempty"`
+	JoinedAt      *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=joined_at,json=joinedAt,proto3" json:"joined_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LadderParticipant) Reset() {
@@ -243,25 +232,11 @@ func (x *LadderParticipant) GetLadderId() int64 {
 	return 0
 }
 
-func (x *LadderParticipant) GetUserId() int64 {
+func (x *LadderParticipant) GetUser() *v1.User {
 	if x != nil {
-		return x.UserId
+		return x.User
 	}
-	return 0
-}
-
-func (x *LadderParticipant) GetAvailableBalance() float64 {
-	if x != nil {
-		return x.AvailableBalance
-	}
-	return 0
-}
-
-func (x *LadderParticipant) GetFinalBalance() float64 {
-	if x != nil {
-		return x.FinalBalance
-	}
-	return 0
+	return nil
 }
 
 func (x *LadderParticipant) GetFinalRank() int32 {
@@ -271,16 +246,9 @@ func (x *LadderParticipant) GetFinalRank() int32 {
 	return 0
 }
 
-func (x *LadderParticipant) GetCreatedAt() *timestamppb.Timestamp {
+func (x *LadderParticipant) GetJoinedAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
-}
-
-func (x *LadderParticipant) GetPortfolio() map[string]*PortfolioItem {
-	if x != nil {
-		return x.Portfolio
+		return x.JoinedAt
 	}
 	return nil
 }
@@ -288,7 +256,6 @@ func (x *LadderParticipant) GetPortfolio() map[string]*PortfolioItem {
 type LadderLeaderboardEntry struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Participant   *LadderParticipant     `protobuf:"bytes,1,opt,name=participant,proto3" json:"participant,omitempty"`
-	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -328,13 +295,6 @@ func (x *LadderLeaderboardEntry) GetParticipant() *LadderParticipant {
 		return x.Participant
 	}
 	return nil
-}
-
-func (x *LadderLeaderboardEntry) GetUsername() string {
-	if x != nil {
-		return x.Username
-	}
-	return ""
 }
 
 type ListLaddersRequest struct {
@@ -685,7 +645,7 @@ var File_ladder_v1_ladder_proto protoreflect.FileDescriptor
 
 const file_ladder_v1_ladder_proto_rawDesc = "" +
 	"\n" +
-	"\x16ladder/v1/ladder.proto\x12\tladder.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x12user/v1/user.proto\"\xdc\x02\n" +
+	"\x16ladder/v1/ladder.proto\x12\tladder.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x12user/v1/user.proto\"\xf3\x02\n" +
 	"\x06Ladder\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
@@ -696,28 +656,20 @@ const file_ladder_v1_ladder_proto_rawDesc = "" +
 	"\tis_active\x18\x06 \x01(\bR\bisActive\x129\n" +
 	"\n" +
 	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12'\n" +
-	"\x0finitial_balance\x18\b \x01(\x01R\x0einitialBalance\x12'\n" +
-	"\x0fallowed_tickers\x18\t \x03(\tR\x0eallowedTickers\"s\n" +
-	"\rPortfolioItem\x12!\n" +
-	"\fstock_symbol\x18\x01 \x01(\tR\vstockSymbol\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x01R\bquantity\x12#\n" +
-	"\raverage_price\x18\x03 \x01(\x01R\faveragePrice\"\x98\x03\n" +
+	"\x0finitial_balance\x18\b \x01(\x01R\x0einitialBalance\x12>\n" +
+	"\x0fallowed_tickers\x18\t \x03(\v2\x15.ladder.v1.TickerInfoR\x0eallowedTickers\"<\n" +
+	"\n" +
+	"TickerInfo\x12\x16\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x16\n" +
+	"\x06source\x18\x02 \x01(\tR\x06source\"\xab\x01\n" +
 	"\x11LadderParticipant\x12\x1b\n" +
-	"\tladder_id\x18\x01 \x01(\x03R\bladderId\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\x03R\x06userId\x12+\n" +
-	"\x11available_balance\x18\x03 \x01(\x01R\x10availableBalance\x12#\n" +
-	"\rfinal_balance\x18\x04 \x01(\x01R\ffinalBalance\x12\x1d\n" +
+	"\tladder_id\x18\x01 \x01(\x03R\bladderId\x12!\n" +
+	"\x04user\x18\x02 \x01(\v2\r.user.v1.UserR\x04user\x12\x1d\n" +
 	"\n" +
-	"final_rank\x18\x05 \x01(\x05R\tfinalRank\x129\n" +
-	"\n" +
-	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12I\n" +
-	"\tportfolio\x18\a \x03(\v2+.ladder.v1.LadderParticipant.PortfolioEntryR\tportfolio\x1aV\n" +
-	"\x0ePortfolioEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12.\n" +
-	"\x05value\x18\x02 \x01(\v2\x18.ladder.v1.PortfolioItemR\x05value:\x028\x01\"t\n" +
+	"final_rank\x18\x03 \x01(\x05R\tfinalRank\x127\n" +
+	"\tjoined_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\bjoinedAt\"X\n" +
 	"\x16LadderLeaderboardEntry\x12>\n" +
-	"\vparticipant\x18\x01 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant\x12\x1a\n" +
-	"\busername\x18\x02 \x01(\tR\busername\"\x14\n" +
+	"\vparticipant\x18\x01 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant\"\x14\n" +
 	"\x12ListLaddersRequest\"B\n" +
 	"\x13ListLaddersResponse\x12+\n" +
 	"\aladders\x18\x01 \x03(\v2\x11.ladder.v1.LadderR\aladders\"\x18\n" +
@@ -746,10 +698,10 @@ func file_ladder_v1_ladder_proto_rawDescGZIP() []byte {
 	return file_ladder_v1_ladder_proto_rawDescData
 }
 
-var file_ladder_v1_ladder_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_ladder_v1_ladder_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_ladder_v1_ladder_proto_goTypes = []any{
 	(*Ladder)(nil),                       // 0: ladder.v1.Ladder
-	(*PortfolioItem)(nil),                // 1: ladder.v1.PortfolioItem
+	(*TickerInfo)(nil),                   // 1: ladder.v1.TickerInfo
 	(*LadderParticipant)(nil),            // 2: ladder.v1.LadderParticipant
 	(*LadderLeaderboardEntry)(nil),       // 3: ladder.v1.LadderLeaderboardEntry
 	(*ListLaddersRequest)(nil),           // 4: ladder.v1.ListLaddersRequest
@@ -760,21 +712,21 @@ var file_ladder_v1_ladder_proto_goTypes = []any{
 	(*GetLadderLeaderboardResponse)(nil), // 9: ladder.v1.GetLadderLeaderboardResponse
 	(*GetMyLadderStatsRequest)(nil),      // 10: ladder.v1.GetMyLadderStatsRequest
 	(*GetMyLadderStatsResponse)(nil),     // 11: ladder.v1.GetMyLadderStatsResponse
-	nil,                                  // 12: ladder.v1.LadderParticipant.PortfolioEntry
-	(*timestamppb.Timestamp)(nil),        // 13: google.protobuf.Timestamp
+	(*timestamppb.Timestamp)(nil),        // 12: google.protobuf.Timestamp
+	(*v1.User)(nil),                      // 13: user.v1.User
 }
 var file_ladder_v1_ladder_proto_depIdxs = []int32{
-	13, // 0: ladder.v1.Ladder.start_time:type_name -> google.protobuf.Timestamp
-	13, // 1: ladder.v1.Ladder.end_time:type_name -> google.protobuf.Timestamp
-	13, // 2: ladder.v1.Ladder.created_at:type_name -> google.protobuf.Timestamp
-	13, // 3: ladder.v1.LadderParticipant.created_at:type_name -> google.protobuf.Timestamp
-	12, // 4: ladder.v1.LadderParticipant.portfolio:type_name -> ladder.v1.LadderParticipant.PortfolioEntry
-	2,  // 5: ladder.v1.LadderLeaderboardEntry.participant:type_name -> ladder.v1.LadderParticipant
-	0,  // 6: ladder.v1.ListLaddersResponse.ladders:type_name -> ladder.v1.Ladder
-	0,  // 7: ladder.v1.GetActiveLadderResponse.ladder:type_name -> ladder.v1.Ladder
-	3,  // 8: ladder.v1.GetLadderLeaderboardResponse.entries:type_name -> ladder.v1.LadderLeaderboardEntry
-	2,  // 9: ladder.v1.GetMyLadderStatsResponse.participant:type_name -> ladder.v1.LadderParticipant
-	1,  // 10: ladder.v1.LadderParticipant.PortfolioEntry.value:type_name -> ladder.v1.PortfolioItem
+	12, // 0: ladder.v1.Ladder.start_time:type_name -> google.protobuf.Timestamp
+	12, // 1: ladder.v1.Ladder.end_time:type_name -> google.protobuf.Timestamp
+	12, // 2: ladder.v1.Ladder.created_at:type_name -> google.protobuf.Timestamp
+	1,  // 3: ladder.v1.Ladder.allowed_tickers:type_name -> ladder.v1.TickerInfo
+	13, // 4: ladder.v1.LadderParticipant.user:type_name -> user.v1.User
+	12, // 5: ladder.v1.LadderParticipant.joined_at:type_name -> google.protobuf.Timestamp
+	2,  // 6: ladder.v1.LadderLeaderboardEntry.participant:type_name -> ladder.v1.LadderParticipant
+	0,  // 7: ladder.v1.ListLaddersResponse.ladders:type_name -> ladder.v1.Ladder
+	0,  // 8: ladder.v1.GetActiveLadderResponse.ladder:type_name -> ladder.v1.Ladder
+	3,  // 9: ladder.v1.GetLadderLeaderboardResponse.entries:type_name -> ladder.v1.LadderLeaderboardEntry
+	2,  // 10: ladder.v1.GetMyLadderStatsResponse.participant:type_name -> ladder.v1.LadderParticipant
 	11, // [11:11] is the sub-list for method output_type
 	11, // [11:11] is the sub-list for method input_type
 	11, // [11:11] is the sub-list for extension type_name
@@ -793,7 +745,7 @@ func file_ladder_v1_ladder_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ladder_v1_ladder_proto_rawDesc), len(file_ladder_v1_ladder_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
