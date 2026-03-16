@@ -31,7 +31,8 @@ type User struct {
 	Website       string                 `protobuf:"bytes,6,opt,name=website,proto3" json:"website,omitempty"`
 	IsPublic      bool                   `protobuf:"varint,7,opt,name=is_public,json=isPublic,proto3" json:"is_public,omitempty"`
 	IsAdmin       bool                   `protobuf:"varint,8,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	IsBanned      bool                   `protobuf:"varint,9,opt,name=is_banned,json=isBanned,proto3" json:"is_banned,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -111,6 +112,13 @@ func (x *User) GetIsPublic() bool {
 func (x *User) GetIsAdmin() bool {
 	if x != nil {
 		return x.IsAdmin
+	}
+	return false
+}
+
+func (x *User) GetIsBanned() bool {
+	if x != nil {
+		return x.IsBanned
 	}
 	return false
 }
@@ -594,7 +602,7 @@ var File_user_v1_user_proto protoreflect.FileDescriptor
 
 const file_user_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x12user/v1/user.proto\x12\auser.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfb\x01\n" +
+	"\x12user/v1/user.proto\x12\auser.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x98\x02\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x1d\n" +
@@ -603,9 +611,11 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\tlast_name\x18\x04 \x01(\tR\blastName\x12\x18\n" +
 	"\awebsite\x18\x06 \x01(\tR\awebsite\x12\x1b\n" +
 	"\tis_public\x18\a \x01(\bR\bisPublic\x12\x19\n" +
-	"\bis_admin\x18\b \x01(\bR\aisAdmin\x129\n" +
+	"\bis_admin\x18\b \x01(\bR\aisAdmin\x12\x1b\n" +
+	"\tis_banned\x18\t \x01(\bR\bisBanned\x129\n" +
 	"\n" +
-	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xc4\x01\n" +
+	"created_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xc4\x01\n" +
 	"\x11CreateUserRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1d\n" +

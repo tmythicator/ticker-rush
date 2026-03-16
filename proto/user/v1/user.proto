@@ -6,7 +6,6 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1;user";
 
-
 message User {
   int64 id = 1;
   string username = 2;
@@ -15,7 +14,8 @@ message User {
   string website = 6;
   bool is_public = 7;
   bool is_admin = 8;
-  google.protobuf.Timestamp created_at = 9;
+  bool is_banned = 9;
+  google.protobuf.Timestamp created_at = 10;
 }
 
 message CreateUserRequest {

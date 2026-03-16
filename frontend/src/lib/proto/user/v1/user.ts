@@ -18,6 +18,7 @@ export interface User {
   website: string;
   is_public: boolean;
   is_admin: boolean;
+  is_banned: boolean;
   created_at: Date | undefined;
 }
 
@@ -75,6 +76,7 @@ function createBaseUser(): User {
     website: "",
     is_public: false,
     is_admin: false,
+    is_banned: false,
     created_at: undefined,
   };
 }
@@ -102,8 +104,11 @@ export const User: MessageFns<User> = {
     if (message.is_admin !== false) {
       writer.uint32(64).bool(message.is_admin);
     }
+    if (message.is_banned !== false) {
+      writer.uint32(72).bool(message.is_banned);
+    }
     if (message.created_at !== undefined) {
-      Timestamp.encode(toTimestamp(message.created_at), writer.uint32(74).fork()).join();
+      Timestamp.encode(toTimestamp(message.created_at), writer.uint32(82).fork()).join();
     }
     return writer;
   },
@@ -172,7 +177,15 @@ export const User: MessageFns<User> = {
           continue;
         }
         case 9: {
-          if (tag !== 74) {
+          if (tag !== 72) {
+            break;
+          }
+
+          message.is_banned = reader.bool();
+          continue;
+        }
+        case 10: {
+          if (tag !== 82) {
             break;
           }
 
@@ -213,6 +226,11 @@ export const User: MessageFns<User> = {
         : isSet(object.is_admin)
         ? globalThis.Boolean(object.is_admin)
         : false,
+      is_banned: isSet(object.isBanned)
+        ? globalThis.Boolean(object.isBanned)
+        : isSet(object.is_banned)
+        ? globalThis.Boolean(object.is_banned)
+        : false,
       created_at: isSet(object.createdAt)
         ? fromJsonTimestamp(object.createdAt)
         : isSet(object.created_at)
@@ -244,6 +262,9 @@ export const User: MessageFns<User> = {
     if (message.is_admin !== false) {
       obj.isAdmin = message.is_admin;
     }
+    if (message.is_banned !== false) {
+      obj.isBanned = message.is_banned;
+    }
     if (message.created_at !== undefined) {
       obj.createdAt = message.created_at.toISOString();
     }
@@ -262,6 +283,7 @@ export const User: MessageFns<User> = {
     message.website = object.website ?? "";
     message.is_public = object.is_public ?? false;
     message.is_admin = object.is_admin ?? false;
+    message.is_banned = object.is_banned ?? false;
     message.created_at = object.created_at ?? undefined;
     return message;
   },
