@@ -7,8 +7,6 @@ package sqlc
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const deletePortfolioItem = `-- name: DeletePortfolioItem :exec
@@ -141,8 +139,8 @@ type SetPortfolioItemParams struct {
 	LadderID     int64
 	UserID       int64
 	StockSymbol  string
-	Quantity     pgtype.Numeric
-	AveragePrice pgtype.Numeric
+	Quantity     float64
+	AveragePrice float64
 }
 
 func (q *Queries) SetPortfolioItem(ctx context.Context, arg SetPortfolioItemParams) error {

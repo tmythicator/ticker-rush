@@ -9,9 +9,9 @@ sql:
         out: "internal/gen/sqlc"
         sql_package: "pgx/v5"
         overrides:
-          - column: "users.balance"
+          - column: "ladder_balances.balance"
             go_type: "float64"
-          - column: "portfolio_items.quantity"
+          - column: "ladder_portfolio_items.quantity"
             go_type: "float64"
-          - column: "portfolio_items.average_price"
+          - column: "ladder_portfolio_items.average_price"
             go_type: "float64"

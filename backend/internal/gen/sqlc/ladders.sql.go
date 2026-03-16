@@ -191,9 +191,9 @@ type GetLadderBalanceParams struct {
 	UserID   int64
 }
 
-func (q *Queries) GetLadderBalance(ctx context.Context, arg GetLadderBalanceParams) (pgtype.Numeric, error) {
+func (q *Queries) GetLadderBalance(ctx context.Context, arg GetLadderBalanceParams) (float64, error) {
 	row := q.db.QueryRow(ctx, getLadderBalance, arg.LadderID, arg.UserID)
-	var balance pgtype.Numeric
+	var balance float64
 	err := row.Scan(&balance)
 	return balance, err
 }
@@ -210,9 +210,9 @@ type GetLadderBalanceForUpdateParams struct {
 	UserID   int64
 }
 
-func (q *Queries) GetLadderBalanceForUpdate(ctx context.Context, arg GetLadderBalanceForUpdateParams) (pgtype.Numeric, error) {
+func (q *Queries) GetLadderBalanceForUpdate(ctx context.Context, arg GetLadderBalanceForUpdateParams) (float64, error) {
 	row := q.db.QueryRow(ctx, getLadderBalanceForUpdate, arg.LadderID, arg.UserID)
-	var balance pgtype.Numeric
+	var balance float64
 	err := row.Scan(&balance)
 	return balance, err
 }
@@ -422,7 +422,7 @@ ON CONFLICT (ladder_id, user_id) DO NOTHING
 type InsertLadderBalanceParams struct {
 	LadderID int64
 	UserID   int64
-	Balance  pgtype.Numeric
+	Balance  float64
 }
 
 func (q *Queries) InsertLadderBalance(ctx context.Context, arg InsertLadderBalanceParams) error {
@@ -513,8 +513,8 @@ type SetLadderPortfolioItemParams struct {
 	LadderID     int64
 	UserID       int64
 	StockSymbol  string
-	Quantity     pgtype.Numeric
-	AveragePrice pgtype.Numeric
+	Quantity     float64
+	AveragePrice float64
 }
 
 func (q *Queries) SetLadderPortfolioItem(ctx context.Context, arg SetLadderPortfolioItemParams) error {
@@ -537,7 +537,7 @@ WHERE ladder_id = $1 AND user_id = $2
 type UpdateLadderBalanceParams struct {
 	LadderID int64
 	UserID   int64
-	Balance  pgtype.Numeric
+	Balance  float64
 }
 
 func (q *Queries) UpdateLadderBalance(ctx context.Context, arg UpdateLadderBalanceParams) error {

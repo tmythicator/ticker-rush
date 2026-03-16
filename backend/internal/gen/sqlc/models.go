@@ -22,7 +22,7 @@ type Ladder struct {
 type LadderBalance struct {
 	LadderID int64
 	UserID   int64
-	Balance  pgtype.Numeric
+	Balance  float64
 }
 
 type LadderParticipant struct {
@@ -37,8 +37,8 @@ type LadderPortfolioItem struct {
 	LadderID     int64
 	UserID       int64
 	StockSymbol  string
-	Quantity     pgtype.Numeric
-	AveragePrice pgtype.Numeric
+	Quantity     float64
+	AveragePrice float64
 }
 
 type LadderTicker struct {
