@@ -3,14 +3,9 @@ syntax = "proto3";
 package user.v1;
 
 import "google/protobuf/timestamp.proto";
+import "portfolio/v1/portfolio.proto";
 
 option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1;user";
-
-message PortfolioItem {
-  string stock_symbol = 1;
-  double quantity = 2;
-  double average_price = 3;
-}
 
 message User {
   int64 id = 1;
@@ -23,7 +18,8 @@ message User {
   bool is_banned = 8;
   google.protobuf.Timestamp created_at = 9;
   double balance = 10;
-  map<string, PortfolioItem> portfolio = 11;
+  map<string, portfolio.v1.PortfolioItem> portfolio = 11;
+  bool is_participating = 12;
 }
 
 message CreateUserRequest {

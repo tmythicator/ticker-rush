@@ -17,3 +17,5 @@ sql:
             go_type: "float64"
           - column: "ladders.initial_balance"
             go_type: "float64"
+          - column: "ladder_participants.final_balance"
+            go_type: "float64"
