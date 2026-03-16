@@ -36,7 +36,6 @@ func (r *UserRepository) GetUser(ctx context.Context, id int64) (*pb.User, error
 	return &pb.User{
 		Id:        u.ID,
 		Username:  u.Username,
-		Balance:   u.Balance,
 		CreatedAt: timestamppb.New(u.CreatedAt.Time),
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
@@ -59,7 +58,6 @@ func (r *UserRepository) GetUsers(ctx context.Context) ([]*pb.User, error) {
 			Username:  u.Username,
 			FirstName: u.FirstName,
 			LastName:  u.LastName,
-			Balance:   u.Balance,
 			CreatedAt: timestamppb.New(u.CreatedAt.Time),
 			Website:   u.Website,
 			IsPublic:  u.IsPublic,
@@ -86,7 +84,6 @@ func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*pb.Us
 	return &pb.User{
 		Id:        u.ID,
 		Username:  u.Username,
-		Balance:   u.Balance,
 		CreatedAt: timestamppb.New(u.CreatedAt.Time),
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
@@ -109,12 +106,26 @@ func (r *UserRepository) UpdateUserProfile(ctx context.Context, user *pb.User) e
 	return err
 }
 
-// UpdateUserBalance updates the user's balance.
-func (r *UserRepository) UpdateUserBalance(ctx context.Context, id int64, balance float64) error {
-	return r.queries.UpdateUserBalance(ctx, sqlc.UpdateUserBalanceParams{
-		ID:      id,
-		Balance: balance,
+// UpdateUserBalance updates the user's balance for specific ladder.
+func (r *UserRepository) UpdateUserBalance(ctx context.Context, ladderID int64, userID int64, balance float64) error {
+	return r.queries.UpdateLadderBalance(ctx, sqlc.UpdateLadderBalanceParams{
+		LadderID: ladderID,
+		UserID:   userID,
+		Balance:  balance,
 	})
+}
+
+// GetUserBalance retrieves the user's balance for specific ladder.
+func (r *UserRepository) GetUserBalance(ctx context.Context, ladderID int64, userID int64) (float64, error) {
+	balance, err := r.queries.GetLadderBalance(ctx, sqlc.GetLadderBalanceParams{
+		LadderID: ladderID,
+		UserID:   userID,
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	return balance, nil
 }
 
 // CreateUser creates a new user in the database.
@@ -134,7 +145,6 @@ func (r *UserRepository) CreateUser(
 		PasswordHash:  hashedPassword,
 		FirstName:     firstName,
 		LastName:      lastName,
-		Balance:       balance,
 		Website:       website,
 		CreatedAt:     pgtype.Timestamptz{Time: time.Now(), Valid: true},
 		IsPublic:      isPublic,
@@ -147,7 +157,6 @@ func (r *UserRepository) CreateUser(
 	return &pb.User{
 		Id:        u.ID,
 		Username:  u.Username,
-		Balance:   u.Balance,
 		CreatedAt: timestamppb.New(u.CreatedAt.Time),
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
@@ -170,7 +179,6 @@ func (r *UserRepository) GetUserByUsername(
 	return &pb.User{
 		Id:        u.ID,
 		Username:  u.Username,
-		Balance:   u.Balance,
 		CreatedAt: timestamppb.New(u.CreatedAt.Time),
 		FirstName: u.FirstName,
 		LastName:  u.LastName,

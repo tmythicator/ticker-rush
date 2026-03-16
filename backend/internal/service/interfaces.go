@@ -7,6 +7,7 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 )
 
@@ -56,27 +57,30 @@ type UserRepository interface {
 
 	GetUserForUpdate(ctx context.Context, id int64) (*user.User, error)
 	UpdateUserProfile(ctx context.Context, user *user.User) error
-	UpdateUserBalance(ctx context.Context, id int64, balance float64) error
+	UpdateUserBalance(ctx context.Context, ladderID int64, userID int64, balance float64) error
+	GetUserBalance(ctx context.Context, ladderID int64, userID int64) (float64, error)
 	WithTx(tx Transaction) UserRepository
 }
 
 // PortfolioRepository defines the interface for portfolio persistence.
 type PortfolioRepository interface {
-	GetPortfolio(ctx context.Context, userID int64) ([]*user.PortfolioItem, error)
-	GetPortfolioItem(ctx context.Context, userID int64, symbol string) (*user.PortfolioItem, error)
+	GetPortfolio(ctx context.Context, ladderID int64, userID int64) ([]*ladder.PortfolioItem, error)
+	GetPortfolioItem(ctx context.Context, ladderID int64, userID int64, symbol string) (*ladder.PortfolioItem, error)
 
 	GetPortfolioItemForUpdate(
 		ctx context.Context,
+		ladderID int64,
 		userID int64,
 		symbol string,
-	) (*user.PortfolioItem, error)
+	) (*ladder.PortfolioItem, error)
 	SetPortfolioItem(
 		ctx context.Context,
+		ladderID int64,
 		userID int64,
 		symbol string,
 		quantity float64,
 		averagePrice float64,
 	) error
-	DeletePortfolioItem(ctx context.Context, userID int64, symbol string) error
+	DeletePortfolioItem(ctx context.Context, ladderID int64, userID int64, symbol string) error
 	WithTx(tx Transaction) PortfolioRepository
 }
