@@ -15,3 +15,5 @@ sql:
             go_type: "float64"
           - column: "ladder_portfolio_items.average_price"
             go_type: "float64"
+          - column: "ladders.initial_balance"
+            go_type: "float64"

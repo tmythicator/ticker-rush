@@ -21,13 +21,13 @@ FROM ladders
 ORDER BY start_time DESC;
 
 -- name: GetLadderTickers :many
-SELECT stock_symbol
+SELECT stock_symbol, source
 FROM ladder_tickers
 WHERE ladder_id = $1;
 
 -- name: AddLadderTicker :exec
-INSERT INTO ladder_tickers (ladder_id, stock_symbol)
-VALUES ($1, $2)
+INSERT INTO ladder_tickers (ladder_id, stock_symbol, source)
+VALUES ($1, $2, $3)
 ON CONFLICT DO NOTHING;
 
 -- name: UpdateLadderStatus :exec

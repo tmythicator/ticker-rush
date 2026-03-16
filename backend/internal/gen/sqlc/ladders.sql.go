@@ -12,18 +12,19 @@ import (
 )
 
 const addLadderTicker = `-- name: AddLadderTicker :exec
-INSERT INTO ladder_tickers (ladder_id, stock_symbol)
-VALUES ($1, $2)
+INSERT INTO ladder_tickers (ladder_id, stock_symbol, source)
+VALUES ($1, $2, $3)
 ON CONFLICT DO NOTHING
 `
 
 type AddLadderTickerParams struct {
 	LadderID    int64
 	StockSymbol string
+	Source      string
 }
 
 func (q *Queries) AddLadderTicker(ctx context.Context, arg AddLadderTickerParams) error {
-	_, err := q.db.Exec(ctx, addLadderTicker, arg.LadderID, arg.StockSymbol)
+	_, err := q.db.Exec(ctx, addLadderTicker, arg.LadderID, arg.StockSymbol, arg.Source)
 	return err
 }
 
@@ -38,7 +39,7 @@ type CreateLadderParams struct {
 	Type           string
 	StartTime      pgtype.Timestamptz
 	EndTime        pgtype.Timestamptz
-	InitialBalance pgtype.Numeric
+	InitialBalance float64
 	IsActive       bool
 }
 
@@ -48,7 +49,7 @@ type CreateLadderRow struct {
 	Type           string
 	StartTime      pgtype.Timestamptz
 	EndTime        pgtype.Timestamptz
-	InitialBalance pgtype.Numeric
+	InitialBalance float64
 	IsActive       bool
 	CreatedAt      pgtype.Timestamptz
 }
@@ -126,7 +127,7 @@ type GetActiveLadderRow struct {
 	Type           string
 	StartTime      pgtype.Timestamptz
 	EndTime        pgtype.Timestamptz
-	InitialBalance pgtype.Numeric
+	InitialBalance float64
 	IsActive       bool
 	CreatedAt      pgtype.Timestamptz
 }
@@ -159,7 +160,7 @@ type GetLadderRow struct {
 	Type           string
 	StartTime      pgtype.Timestamptz
 	EndTime        pgtype.Timestamptz
-	InitialBalance pgtype.Numeric
+	InitialBalance float64
 	IsActive       bool
 	CreatedAt      pgtype.Timestamptz
 }
@@ -388,24 +389,29 @@ func (q *Queries) GetLadderPortfolioItemForUpdate(ctx context.Context, arg GetLa
 }
 
 const getLadderTickers = `-- name: GetLadderTickers :many
-SELECT stock_symbol
+SELECT stock_symbol, source
 FROM ladder_tickers
 WHERE ladder_id = $1
 `
 
-func (q *Queries) GetLadderTickers(ctx context.Context, ladderID int64) ([]string, error) {
+type GetLadderTickersRow struct {
+	StockSymbol string
+	Source      string
+}
+
+func (q *Queries) GetLadderTickers(ctx context.Context, ladderID int64) ([]GetLadderTickersRow, error) {
 	rows, err := q.db.Query(ctx, getLadderTickers, ladderID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []string
+	var items []GetLadderTickersRow
 	for rows.Next() {
-		var stock_symbol string
-		if err := rows.Scan(&stock_symbol); err != nil {
+		var i GetLadderTickersRow
+		if err := rows.Scan(&i.StockSymbol, &i.Source); err != nil {
 			return nil, err
 		}
-		items = append(items, stock_symbol)
+		items = append(items, i)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -467,7 +473,7 @@ type ListLaddersRow struct {
 	Type           string
 	StartTime      pgtype.Timestamptz
 	EndTime        pgtype.Timestamptz
-	InitialBalance pgtype.Numeric
+	InitialBalance float64
 	IsActive       bool
 	CreatedAt      pgtype.Timestamptz
 }

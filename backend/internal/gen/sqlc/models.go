@@ -14,7 +14,7 @@ type Ladder struct {
 	Type           string
 	StartTime      pgtype.Timestamptz
 	EndTime        pgtype.Timestamptz
-	InitialBalance pgtype.Numeric
+	InitialBalance float64
 	CreatedAt      pgtype.Timestamptz
 	IsActive       bool
 }
@@ -44,6 +44,7 @@ type LadderPortfolioItem struct {
 type LadderTicker struct {
 	LadderID    int64
 	StockSymbol string
+	Source      string
 }
 
 type MarketQuote struct {

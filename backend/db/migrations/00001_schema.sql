@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS ladders (
 CREATE TABLE IF NOT EXISTS ladder_tickers (
     ladder_id BIGINT NOT NULL REFERENCES ladders(id) ON DELETE CASCADE,
     stock_symbol TEXT NOT NULL,
+    source TEXT NOT NULL DEFAULT 'unknown',
     PRIMARY KEY (ladder_id, stock_symbol)
 );
 
