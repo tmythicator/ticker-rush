@@ -12,6 +12,7 @@ type TradeService struct {
 	userRepo      UserRepository
 	portfolioRepo PortfolioRepository
 	marketRepo    MarketRepository
+	ladderRepo    LadderRepository
 	transactor    Transactor
 }
 
@@ -20,17 +21,19 @@ func NewTradeService(
 	userRepo UserRepository,
 	portfolioRepo PortfolioRepository,
 	marketRepo MarketRepository,
+	ladderRepo LadderRepository,
 	transactor Transactor,
 ) *TradeService {
 	return &TradeService{
 		userRepo:      userRepo,
 		portfolioRepo: portfolioRepo,
 		marketRepo:    marketRepo,
+		ladderRepo:    ladderRepo,
 		transactor:    transactor,
 	}
 }
 
-// BuyStock purchases a stock for a user.
+// BuyStock purchases a stock for a user for the active ladder.
 func (s *TradeService) BuyStock(
 	ctx context.Context,
 	userID int64,
@@ -68,8 +71,27 @@ func (s *TradeService) BuyStock(
 		return nil, err
 	}
 
+	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check Participation
+	joined, err := s.ladderRepo.IsUserInLadder(ctx, ladderID, userID)
+	if err != nil {
+		return nil, err
+	}
+	if !joined {
+		return nil, apperrors.ErrNotJoinedLadder
+	}
+
 	// 3. Check Balance
-	if user.GetBalance() < cost {
+	balance, err := txUserRepo.GetUserBalance(ctx, userID, ladderID)
+	if err != nil {
+		return nil, err
+	}
+
+	if balance < cost {
 		return nil, apperrors.ErrInsufficientFunds
 	}
 
@@ -79,14 +101,14 @@ func (s *TradeService) BuyStock(
 		currentAvg float64
 	)
 
-	item, err := txPortfolioRepo.GetPortfolioItemForUpdate(ctx, user.GetId(), symbol)
+	item, err := txPortfolioRepo.GetPortfolioItemForUpdate(ctx, user.GetId(), ladderID, symbol)
 	if err == nil {
 		currentQty = item.GetQuantity()
 		currentAvg = item.GetAveragePrice()
 	}
 
 	// 5. Execute Trade Logic
-	user.Balance -= cost
+	newBalance := balance - cost
 
 	currentTotalValue := currentQty * currentAvg
 	newTotalValue := currentTotalValue + cost
@@ -95,11 +117,12 @@ func (s *TradeService) BuyStock(
 	newAvgPrice := newTotalValue / newTotalQuantity
 
 	// 6. Persistence
-	if err := txUserRepo.UpdateUserBalance(ctx, user.GetId(), user.GetBalance()); err != nil {
+	if err := txUserRepo.UpdateUserBalance(ctx, user.GetId(), ladderID, newBalance); err != nil {
 		return nil, err
 	}
+	user.Balance = newBalance
 
-	if err := txPortfolioRepo.SetPortfolioItem(ctx, user.GetId(), symbol, newTotalQuantity, newAvgPrice); err != nil {
+	if err := txPortfolioRepo.SetPortfolioItem(ctx, user.GetId(), ladderID, symbol, newTotalQuantity, newAvgPrice); err != nil {
 		return nil, err
 	}
 
@@ -111,7 +134,7 @@ func (s *TradeService) BuyStock(
 	return user, nil
 }
 
-// SellStock sells a stock for a user.
+// SellStock sells a stock for a user for the active ladder.
 func (s *TradeService) SellStock(
 	ctx context.Context,
 	userID int64,
@@ -143,8 +166,22 @@ func (s *TradeService) SellStock(
 	txUserRepo := s.userRepo.WithTx(tx)
 	txPortfolioRepo := s.portfolioRepo.WithTx(tx)
 
+	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// 1.5 Check Participation
+	joined, err := s.ladderRepo.IsUserInLadder(ctx, ladderID, userID)
+	if err != nil {
+		return nil, err
+	}
+	if !joined {
+		return nil, apperrors.ErrNotJoinedLadder
+	}
+
 	// 2. Check Portfolio Item
-	item, err := txPortfolioRepo.GetPortfolioItemForUpdate(ctx, userID, symbol)
+	item, err := txPortfolioRepo.GetPortfolioItemForUpdate(ctx, userID, ladderID, symbol)
 	if err != nil {
 		return nil, err
 	}
@@ -159,22 +196,29 @@ func (s *TradeService) SellStock(
 		return nil, err
 	}
 
-	// 4 Execute Trade Logic
-	user.Balance += cost
-	item.Quantity = item.GetQuantity() - quantity
-
-	// 6. Persistence
-	if err := txUserRepo.UpdateUserBalance(ctx, user.GetId(), user.GetBalance()); err != nil {
+	// Get Balance
+	balance, err := txUserRepo.GetUserBalance(ctx, userID, ladderID)
+	if err != nil {
 		return nil, err
 	}
 
+	// 4 Execute Trade Logic
+	newBalance := balance + cost
+	item.Quantity = item.GetQuantity() - quantity
+
+	// 6. Persistence
+	if err := txUserRepo.UpdateUserBalance(ctx, user.GetId(), ladderID, newBalance); err != nil {
+		return nil, err
+	}
+	user.Balance = newBalance
+
 	if item.GetQuantity() == 0 {
-		err := txPortfolioRepo.DeletePortfolioItem(ctx, userID, symbol)
+		err := txPortfolioRepo.DeletePortfolioItem(ctx, userID, ladderID, symbol)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		err := txPortfolioRepo.SetPortfolioItem(ctx, user.GetId(), symbol, item.GetQuantity(), item.GetAveragePrice())
+		err := txPortfolioRepo.SetPortfolioItem(ctx, user.GetId(), ladderID, symbol, item.GetQuantity(), item.GetAveragePrice())
 		if err != nil {
 			return nil, err
 		}

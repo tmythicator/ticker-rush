@@ -99,21 +99,21 @@ func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	}
 
 	// Initialize repositories
-	portfolioRepo := postgres.NewPortfolioRepository(postgreClient)
 	ladderRepo := postgres.NewLadderRepository(postgreClient)
 	userRepo := postgres.NewUserRepository(postgreClient)
+	portfolioRepo := postgres.NewPortfolioRepository(postgreClient)
 	marketRepo := valkey.NewMarketRepository(valkeyClient)
 	historyRepo := postgres.NewHistoryRepository(postgreClient)
 	transactor := postgres.NewPgxTransactor(postgreClient)
 
 	// Initialize services
-	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, transactor)
-	marketService := service.NewMarketService(marketRepo, historyRepo, cfg.Tickers)
-	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, valkeyClient)
-	configService := service.NewConfigService(cfg)
 	userService := service.NewUserService(userRepo, portfolioRepo, ladderRepo)
+	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
+	marketService := service.NewMarketService(marketRepo, historyRepo, ladderRepo)
+	ladderService := service.NewLadderService(ladderRepo, transactor)
+	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, ladderRepo, valkeyClient)
 
-	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, configService, cfg.JWTSecret)
+	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, ladderService, cfg.JWTSecret)
 
 	return &App{
 		cfg:                cfg,
