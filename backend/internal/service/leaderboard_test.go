@@ -129,8 +129,9 @@ func TestLeaderBoardService_GetLeaderboard(t *testing.T) {
 	assert.Equal(t, int64(2), resp.Entries[0].User.Id)
 	assert.Equal(t, int32(1), resp.Entries[0].Rank)
 	assert.Equal(t, 3000.0, resp.Entries[0].Score)
-	assert.Equal(t, "Bob", resp.Entries[0].User.FirstName)
-	assert.Equal(t, "B", resp.Entries[0].User.LastName)
+	assert.Equal(t, "Classified", resp.Entries[0].User.Username)
+	assert.Equal(t, "", resp.Entries[0].User.FirstName)
+	assert.Equal(t, "", resp.Entries[0].User.LastName)
 	assert.False(t, resp.Entries[0].User.IsPublic)
 
 	assert.Equal(t, int64(1), resp.Entries[1].User.Id)

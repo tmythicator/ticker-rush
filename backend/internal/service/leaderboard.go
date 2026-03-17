@@ -8,6 +8,7 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 )
 
 // LeaderBoardService handles the calculation and retrieval of user rankings.
@@ -142,7 +143,7 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 
 		}
 		leadEntry := &leaderboard.LeaderboardEntry{
-			User:  fetchedUser,
+			User:  s.anonymizeUser(fetchedUser),
 			Rank:  int32(i) + int32(start) + 1,
 			Score: item.Score,
 		}
@@ -155,4 +156,26 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 		TotalCount: int32(totalCount),
 		LastUpdate: lastUpdate,
 	}, nil
+}
+
+// anonymizeUser masks user fields if the user is not public.
+func (s *LeaderBoardService) anonymizeUser(u *user.User) *user.User {
+	if u.IsPublic {
+		return u
+	}
+
+	return &user.User{
+		Id:              u.Id,
+		Username:        "Classified",
+		FirstName:       "",
+		LastName:        "",
+		Website:         "",
+		IsPublic:        false,
+		IsAdmin:         false,
+		IsBanned:        u.IsBanned,
+		CreatedAt:       u.CreatedAt,
+		Balance:         0,
+		Portfolio:       nil,
+		IsParticipating: u.IsParticipating,
+	}
 }
