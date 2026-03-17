@@ -1,8 +1,7 @@
 import { IconChevronDown } from '@/components/icons/CustomIcons';
 import { SourceBadge } from '@/components/shared/SourceBadge';
 import { useTickers } from '@/hooks/useTickers';
-import { parseTicker } from '@/lib/utils';
-import { isTradeSymbol, type TradeSymbol } from '@/types';
+import { isTradeSymbol, type TickerSource, type TradeSymbol } from '@/types';
 
 interface ChartSymbolPickerProps {
   symbol: TradeSymbol | null;
@@ -20,7 +19,8 @@ export const ChartSymbolPicker = ({ symbol, onSymbolChange }: ChartSymbolPickerP
     }
   };
 
-  const { source } = parseTicker(symbol || '');
+  const tickerInfo = tickers.find((t) => t.symbol === symbol);
+  const source = (tickerInfo?.source ?? 'Finnhub') as TickerSource;
 
   return (
     <div className="relative group/select">
@@ -35,14 +35,15 @@ export const ChartSymbolPicker = ({ symbol, onSymbolChange }: ChartSymbolPickerP
           {tickers.length === 0 ? (
             <option value="">No assets available</option>
           ) : (
-            tickers.map((t: string) => {
-              const { symbol: sym } = parseTicker(t);
-              return (
-                <option key={t} value={t} className="bg-popover text-popover-foreground">
-                  {sym.toUpperCase()}
-                </option>
-              );
-            })
+            tickers.map((t) => (
+              <option
+                key={t.symbol}
+                value={t.symbol}
+                className="bg-popover text-popover-foreground"
+              >
+                {t.symbol.toUpperCase()}
+              </option>
+            ))
           )}
         </select>
         <IconChevronDown className="w-4 h-4 text-muted-foreground absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none group-hover/select:text-primary transition-colors" />

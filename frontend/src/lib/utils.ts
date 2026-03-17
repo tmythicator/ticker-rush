@@ -1,4 +1,4 @@
-import { type PortfolioItem, type TickerSource } from '@/types';
+import { type PortfolioItem } from '@/types';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -27,17 +27,6 @@ export function formatLocalTime(timestamp: number | string): string {
     dateStyle: 'medium',
     timeStyle: 'medium',
   }).format(new Date(Number(timestamp) * 1000));
-}
-
-export function parseTicker(ticker: string): { source: TickerSource; symbol: string } {
-  if (ticker.startsWith('FH:')) {
-    return { source: 'FH', symbol: ticker.slice(3) };
-  }
-  if (ticker.startsWith('CG:')) {
-    return { source: 'CG', symbol: ticker.slice(3) };
-  }
-
-  return { source: 'FH', symbol: ticker };
 }
 
 /**
