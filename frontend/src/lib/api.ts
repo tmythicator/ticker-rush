@@ -1,4 +1,3 @@
-import { GetConfigResponse } from './proto/config/v1/config';
 import {
   BuyStockRequest,
   BuyStockResponse,
@@ -10,6 +9,7 @@ import {
   SellStockResponse,
   type Quote,
 } from './proto/exchange/v1/exchange';
+import { GetActiveLadderResponse, Ladder } from './proto/ladder/v1/ladder';
 import { GetLeaderboardRequest, GetLeaderboardResponse } from './proto/leaderboard/v1/leaderboard';
 import {
   CreateUserRequest,
@@ -86,16 +86,16 @@ export const getUser = async (): Promise<User> => {
 
 export const buyStock = async (req: BuyStockRequest): Promise<User> => {
   const json = await api.post('/buy', req);
-  const { user } = BuyStockResponse.fromJSON(json);
-  if (!user) throw new Error('Update failed');
-  return user;
+  const { participant } = BuyStockResponse.fromJSON(json);
+  if (!participant?.user) throw new Error('Update failed');
+  return participant.user;
 };
 
 export const sellStock = async (req: SellStockRequest): Promise<User> => {
   const json = await api.post('/sell', req);
-  const { user } = SellStockResponse.fromJSON(json);
-  if (!user) throw new Error('Update failed');
-  return user;
+  const { participant } = SellStockResponse.fromJSON(json);
+  if (!participant?.user) throw new Error('Update failed');
+  return participant.user;
 };
 
 export const login = async (req: LoginRequest): Promise<User> => {
@@ -123,10 +123,14 @@ export const register = async (req: CreateUserRequest): Promise<User> => {
   return user;
 };
 
-export const getConfig = async (): Promise<string[]> => {
-  const json = await api.get('/config');
-  const { tickers } = GetConfigResponse.fromJSON(json);
-  return tickers;
+export const getActiveLadder = async (): Promise<Ladder | undefined> => {
+  const json = await api.get('/ladder/active');
+  const { ladder } = GetActiveLadderResponse.fromJSON(json);
+  return ladder;
+};
+
+export const joinLadder = async (): Promise<void> => {
+  await api.post('/ladder/join', {});
 };
 
 export const getHistory = async (req: GetHistoryRequest): Promise<Quote[]> => {
