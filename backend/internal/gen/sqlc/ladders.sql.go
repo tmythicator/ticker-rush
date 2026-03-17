@@ -235,7 +235,7 @@ type GetLadderLeaderboardParams struct {
 type GetLadderLeaderboardRow struct {
 	LadderID     int64
 	UserID       int64
-	FinalBalance pgtype.Numeric
+	FinalBalance float64
 	FinalRank    pgtype.Int4
 	JoinedAt     pgtype.Timestamptz
 	Username     string
@@ -447,7 +447,7 @@ ON CONFLICT (ladder_id, user_id) DO UPDATE SET
 type InsertLadderParticipantParams struct {
 	LadderID     int64
 	UserID       int64
-	FinalBalance pgtype.Numeric
+	FinalBalance float64
 	FinalRank    pgtype.Int4
 }
 
@@ -458,6 +458,41 @@ func (q *Queries) InsertLadderParticipant(ctx context.Context, arg InsertLadderP
 		arg.FinalBalance,
 		arg.FinalRank,
 	)
+	return err
+}
+
+const isUserInLadder = `-- name: IsUserInLadder :one
+SELECT EXISTS(
+    SELECT 1 FROM ladder_participants
+    WHERE ladder_id = $1 AND user_id = $2
+)
+`
+
+type IsUserInLadderParams struct {
+	LadderID int64
+	UserID   int64
+}
+
+func (q *Queries) IsUserInLadder(ctx context.Context, arg IsUserInLadderParams) (bool, error) {
+	row := q.db.QueryRow(ctx, isUserInLadder, arg.LadderID, arg.UserID)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
+const joinLadderParticipant = `-- name: JoinLadderParticipant :exec
+INSERT INTO ladder_participants (ladder_id, user_id)
+VALUES ($1, $2)
+ON CONFLICT (ladder_id, user_id) DO NOTHING
+`
+
+type JoinLadderParticipantParams struct {
+	LadderID int64
+	UserID   int64
+}
+
+func (q *Queries) JoinLadderParticipant(ctx context.Context, arg JoinLadderParticipantParams) error {
+	_, err := q.db.Exec(ctx, joinLadderParticipant, arg.LadderID, arg.UserID)
 	return err
 }
 

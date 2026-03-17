@@ -28,7 +28,7 @@ type LadderBalance struct {
 type LadderParticipant struct {
 	LadderID     int64
 	UserID       int64
-	FinalBalance pgtype.Numeric
+	FinalBalance float64
 	FinalRank    pgtype.Int4
 	JoinedAt     pgtype.Timestamptz
 }

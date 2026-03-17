@@ -55,6 +55,17 @@ ON CONFLICT (ladder_id, user_id) DO UPDATE SET
     final_balance = EXCLUDED.final_balance,
     final_rank = EXCLUDED.final_rank;
 
+-- name: JoinLadderParticipant :exec
+INSERT INTO ladder_participants (ladder_id, user_id)
+VALUES ($1, $2)
+ON CONFLICT (ladder_id, user_id) DO NOTHING;
+
+-- name: IsUserInLadder :one
+SELECT EXISTS(
+    SELECT 1 FROM ladder_participants
+    WHERE ladder_id = $1 AND user_id = $2
+);
+
 -- name: GetLadderBalance :one
 SELECT balance
 FROM ladder_balances

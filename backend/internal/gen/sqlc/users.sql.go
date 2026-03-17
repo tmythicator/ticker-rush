@@ -187,6 +187,87 @@ func (q *Queries) GetUserForUpdate(ctx context.Context, id int64) (GetUserForUpd
 	return i, err
 }
 
+const getUserWithPortfolioForActiveLadder = `-- name: GetUserWithPortfolioForActiveLadder :many
+WITH active_ladder AS (
+    SELECT id, initial_balance FROM ladders WHERE is_active = true LIMIT 1
+)
+SELECT u.id AS user_id,
+       u.username,
+       u.first_name,
+       u.last_name,
+       u.website,
+       u.created_at,
+       u.is_public,
+       u.is_admin,
+       u.is_banned,
+       COALESCE(al.id, 0)::bigint AS ladder_id,
+       COALESCE(lb.balance, al.initial_balance, 0.0) AS balance,
+       lpi.stock_symbol,
+       COALESCE(lpi.quantity, 0.0)::float8 AS quantity,
+       COALESCE(lpi.average_price, 0.0)::float8 AS average_price,
+       (lp.user_id IS NOT NULL)::boolean AS is_participating
+FROM users u
+LEFT JOIN active_ladder al ON TRUE
+LEFT JOIN ladder_participants lp ON u.id = lp.user_id AND lp.ladder_id = al.id
+LEFT JOIN ladder_portfolio_items lpi ON u.id = lpi.user_id AND lpi.ladder_id = al.id
+LEFT JOIN ladder_balances lb ON u.id = lb.user_id AND lb.ladder_id = al.id
+WHERE u.id = $1
+`
+
+type GetUserWithPortfolioForActiveLadderRow struct {
+	UserID          int64
+	Username        string
+	FirstName       string
+	LastName        string
+	Website         string
+	CreatedAt       pgtype.Timestamptz
+	IsPublic        bool
+	IsAdmin         bool
+	IsBanned        bool
+	LadderID        int64
+	Balance         float64
+	StockSymbol     pgtype.Text
+	Quantity        float64
+	AveragePrice    float64
+	IsParticipating bool
+}
+
+func (q *Queries) GetUserWithPortfolioForActiveLadder(ctx context.Context, id int64) ([]GetUserWithPortfolioForActiveLadderRow, error) {
+	rows, err := q.db.Query(ctx, getUserWithPortfolioForActiveLadder, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUserWithPortfolioForActiveLadderRow
+	for rows.Next() {
+		var i GetUserWithPortfolioForActiveLadderRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.Username,
+			&i.FirstName,
+			&i.LastName,
+			&i.Website,
+			&i.CreatedAt,
+			&i.IsPublic,
+			&i.IsAdmin,
+			&i.IsBanned,
+			&i.LadderID,
+			&i.Balance,
+			&i.StockSymbol,
+			&i.Quantity,
+			&i.AveragePrice,
+			&i.IsParticipating,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUsers = `-- name: GetUsers :many
 SELECT id, username, first_name, last_name, website, created_at, is_public, is_admin
 FROM users
