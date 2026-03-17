@@ -8,8 +8,10 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/mock"
 
+	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
@@ -90,13 +92,11 @@ func (m *MockUserRepository) CreateUser(
 	hashedPassword string,
 	firstName string,
 	lastName string,
-	ladderID int64,
-	balance float64,
 	website string,
 	isPublic bool,
 	agbAcceptedAt time.Time,
 ) (*user.User, error) {
-	args := m.Called(ctx, username, hashedPassword, firstName, lastName, ladderID, balance, website, isPublic, agbAcceptedAt)
+	args := m.Called(ctx, username, hashedPassword, firstName, lastName, website, isPublic, agbAcceptedAt)
 
 	return args.Get(0).(*user.User), args.Error(1)
 }
@@ -129,6 +129,13 @@ func (m *MockUserRepository) GetUserBalance(ctx context.Context, userID int64, l
 	return args.Get(0).(float64), args.Error(1)
 }
 
+// GetUserWithPortfolioForActiveLadder retrieves a user with their portfolio items.
+func (m *MockUserRepository) GetUserWithPortfolioForActiveLadder(ctx context.Context, userID int64) ([]sqlc.GetUserWithPortfolioForActiveLadderRow, error) {
+	args := m.Called(ctx, userID)
+
+	return args.Get(0).([]sqlc.GetUserWithPortfolioForActiveLadderRow), args.Error(1)
+}
+
 // WithTx returns a new UserRepository with the transaction.
 func (m *MockUserRepository) WithTx(tx service.Transaction) service.UserRepository {
 	args := m.Called(tx)
@@ -145,43 +152,47 @@ type MockPortfolioRepository struct {
 func (m *MockPortfolioRepository) GetPortfolio(
 	ctx context.Context,
 	userID int64,
-) ([]*user.PortfolioItem, error) {
-	args := m.Called(ctx, userID)
+	ladderID int64,
+) ([]*portfolio.PortfolioItem, error) {
+	args := m.Called(ctx, userID, ladderID)
 
-	return args.Get(0).([]*user.PortfolioItem), args.Error(1)
+	return args.Get(0).([]*portfolio.PortfolioItem), args.Error(1)
 }
 
 // GetPortfolioItem retrieves a portfolio item.
 func (m *MockPortfolioRepository) GetPortfolioItem(
 	ctx context.Context,
 	userID int64,
+	ladderID int64,
 	symbol string,
-) (*user.PortfolioItem, error) {
-	args := m.Called(ctx, userID, symbol)
+) (*portfolio.PortfolioItem, error) {
+	args := m.Called(ctx, userID, ladderID, symbol)
 
-	return args.Get(0).(*user.PortfolioItem), args.Error(1)
+	return args.Get(0).(*portfolio.PortfolioItem), args.Error(1)
 }
 
 // GetPortfolioItemForUpdate retrieves a portfolio item with a lock.
 func (m *MockPortfolioRepository) GetPortfolioItemForUpdate(
 	ctx context.Context,
 	userID int64,
+	ladderID int64,
 	symbol string,
-) (*user.PortfolioItem, error) {
-	args := m.Called(ctx, userID, symbol)
+) (*portfolio.PortfolioItem, error) {
+	args := m.Called(ctx, userID, ladderID, symbol)
 
-	return args.Get(0).(*user.PortfolioItem), args.Error(1)
+	return args.Get(0).(*portfolio.PortfolioItem), args.Error(1)
 }
 
 // SetPortfolioItem updates or inserts a portfolio item.
 func (m *MockPortfolioRepository) SetPortfolioItem(
 	ctx context.Context,
 	userID int64,
+	ladderID int64,
 	symbol string,
 	quantity float64,
 	averagePrice float64,
 ) error {
-	args := m.Called(ctx, userID, symbol, quantity, averagePrice)
+	args := m.Called(ctx, userID, ladderID, symbol, quantity, averagePrice)
 
 	return args.Error(0)
 }
@@ -190,9 +201,10 @@ func (m *MockPortfolioRepository) SetPortfolioItem(
 func (m *MockPortfolioRepository) DeletePortfolioItem(
 	ctx context.Context,
 	userID int64,
+	ladderID int64,
 	symbol string,
 ) error {
-	args := m.Called(ctx, userID, symbol)
+	args := m.Called(ctx, userID, ladderID, symbol)
 
 	return args.Error(0)
 }
@@ -260,6 +272,18 @@ func (m *MockLadderRepository) GetAllowedTickers(ctx context.Context, ladderID i
 		return nil, args.Error(1)
 	}
 	return args.Get(0).([]*ladder.TickerInfo), args.Error(1)
+}
+
+// JoinLadder mock implementation.
+func (m *MockLadderRepository) JoinLadder(ctx context.Context, ladderID int64, userID int64) error {
+	args := m.Called(ctx, ladderID, userID)
+	return args.Error(0)
+}
+
+// IsUserInLadder mock.
+func (m *MockLadderRepository) IsUserInLadder(ctx context.Context, ladderID int64, userID int64) (bool, error) {
+	args := m.Called(ctx, ladderID, userID)
+	return args.Bool(0), args.Error(1)
 }
 
 // WithTx returns a new repository with a transaction.
