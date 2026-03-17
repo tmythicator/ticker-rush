@@ -4,14 +4,12 @@ package leaderboard.v1;
 
 option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1;leaderboard";
 
+import "user/v1/user.proto";
+
 message LeaderboardEntry {
-  int64 user_id = 1;
+  user.v1.User user = 1;
   int32 rank = 2;
-  double total_net_worth = 3;
-  string first_name = 4;
-  string last_name = 5;
-  string username = 6;
-  bool is_public = 7;
+  double score = 3;
 }
 
 message GetLeaderboardRequest {

@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package config.v1;
 
+import "ladder/v1/ladder.proto";
+
 option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/config/v1;config";
 
 service ConfigService {
@@ -11,5 +13,5 @@ service ConfigService {
 message GetConfigRequest {}
 
 message GetConfigResponse {
-  repeated string tickers = 1;
+  repeated ladder.v1.TickerInfo tickers = 1;
 }

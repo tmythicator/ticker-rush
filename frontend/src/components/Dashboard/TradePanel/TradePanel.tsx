@@ -4,7 +4,6 @@ import { TradePanelHeader } from '@/components/Dashboard/TradePanel/TradePanelHe
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { useTrade } from '@/hooks/useTrade';
-import { parseTicker } from '@/lib/utils';
 import { TradeAction, type Quote, type TickerSource } from '@/types';
 import { useState } from 'react';
 
@@ -25,9 +24,8 @@ export const TradePanel = ({ quote, onTradeSuccess }: TradePanelProps) => {
   const position = user?.portfolio?.[symbol];
   const positionQuantity = position?.quantity || 0;
 
-  const parsed = parseTicker(symbol);
-  const source = (quote?.source as TickerSource) || parsed.source;
-  const displaySymbol = parsed.symbol;
+  const source = (quote?.source || 'Finnhub') as TickerSource;
+  const displaySymbol = quote?.symbol || symbol;
 
   const { executeTrade, isLoading, error } = useTrade({
     symbol: symbol,

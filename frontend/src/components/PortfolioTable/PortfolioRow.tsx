@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
 import { IconArrowRight, IconTrash } from '@/components/icons/CustomIcons';
 import { SourceBadge } from '@/components/shared/SourceBadge';
 import { Button } from '@/components/ui/button';
 import { useQuoteQuery } from '@/hooks/useQuoteQuery';
-import { formatCurrencyWithSign, parseTicker } from '@/lib/utils';
-import type { PortfolioItem, Quote } from '@/types';
+import { useTickers } from '@/hooks/useTickers';
+import { cn, formatCurrencyWithSign } from '@/lib/utils';
+import type { PortfolioItem, TickerSource } from '@/types';
 
 interface PortfolioRowProps {
   item: PortfolioItem;
@@ -18,47 +20,44 @@ export const PortfolioRow = ({
   onTradeClick,
   isReadOnly = false,
 }: PortfolioRowProps) => {
-  const { source, symbol } = parseTicker(item.stock_symbol);
+  const { data: config } = useTickers();
+
   const { data: quote } = useQuoteQuery(item.stock_symbol);
 
-  const isMarketClosed = quote?.is_closed;
+  const { symbol, source, isMarketClosed } = useMemo(() => {
+    const tickers = config ?? [];
+    const tickerInfo = tickers.find((t) => t.symbol === item.stock_symbol);
+    return {
+      symbol: (tickerInfo?.symbol ?? item.stock_symbol).toUpperCase(),
+      source: (tickerInfo?.source ?? quote?.source ?? 'Finnhub') as TickerSource,
+      isMarketClosed: quote?.is_closed ?? false,
+    };
+  }, [config, item.stock_symbol, quote?.source, quote?.is_closed]);
 
-  const getPnLColorClass = (q: Quote | undefined) => {
-    if (q) {
-      return (q.price - item.average_price) * item.quantity >= 0
-        ? 'text-green-500'
-        : 'text-red-500';
-    }
+  const { marketValue, pnl, pnlColorClass } = useMemo(() => {
+    if (!quote) return { marketValue: null, pnl: null, pnlColorClass: 'text-muted-foreground' };
 
-    return 'text-muted-foreground';
-  };
+    const currentMarketValue = quote.price * item.quantity;
+    const currentPnl = (quote.price - item.average_price) * item.quantity;
 
-  const getPnLElement = (q: Quote | undefined) => {
-    if (q) {
-      const pnl = (q.price - item.average_price) * item.quantity;
-      return <>{formatCurrencyWithSign(pnl)}</>;
-    }
+    return {
+      marketValue: `$${currentMarketValue.toFixed(2)}`,
+      pnl: formatCurrencyWithSign(currentPnl),
+      pnlColorClass: currentPnl >= 0 ? 'text-green-500' : 'text-red-500',
+    };
+  }, [quote, item.quantity, item.average_price]);
 
-    return <span className="animate-pulse">...</span>;
-  };
-
-  const getMarketValueElement = (q: Quote | undefined) => {
-    if (q) {
-      return <>{`$${(q.price * item.quantity).toFixed(2)}`}</>;
-    }
-
-    return <span className="animate-pulse">...</span>;
-  };
+  const loadingIndicator = <span className="animate-pulse">...</span>;
 
   return (
     <tr key={item.stock_symbol} className="hover:bg-muted/50 transition-colors">
       <td className="px-6 py-4 font-bold text-foreground">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center font-bold text-xs text-muted-foreground">
-            {symbol[0].toUpperCase()}
+            {symbol[0] ?? '?'}
           </div>
-          <div className="flex flex-col items-start">
-            <span className="text-sm font-bold">{symbol.toUpperCase()}</span>
+          <div className="flex flex-col items-start text-foreground font-bold">
+            <span className="text-sm font-bold">{symbol}</span>
             <SourceBadge source={source} />
           </div>
         </div>
@@ -68,13 +67,13 @@ export const PortfolioRow = ({
         ${item.average_price.toFixed(2)}
       </td>
       <td className="px-6 py-4 text-right font-mono text-foreground font-medium">
-        {quote ? `$${quote.price.toFixed(2)}` : <span className="animate-pulse">...</span>}
+        {quote ? `$${quote.price.toFixed(2)}` : loadingIndicator}
       </td>
       <td className="px-6 py-4 text-right font-mono text-foreground font-bold">
-        {getMarketValueElement(quote)}
+        {marketValue ?? loadingIndicator}
       </td>
-      <td className={`px-6 py-4 text-right font-mono font-bold ${getPnLColorClass(quote)}`}>
-        {getPnLElement(quote)}
+      <td className={cn('px-6 py-4 text-right font-mono font-bold', pnlColorClass)}>
+        {pnl ?? loadingIndicator}
       </td>
       {!isReadOnly && (
         <td className="px-6 py-4 text-right">

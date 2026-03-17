@@ -10,7 +10,7 @@ export const useTradeSymbol = () => {
 
   const rawSymbol = params.get('symbol');
   const isValid = rawSymbol && isTradeSymbol(rawSymbol, tickers);
-  const symbol = (isValid ? rawSymbol : (tickers[0] ?? null)) as TradeSymbol | null;
+  const symbol = (isValid ? rawSymbol : (tickers[0]?.symbol ?? null)) as TradeSymbol | null;
 
   useEffect(() => {
     if (!isLoading && tickers.length > 0 && rawSymbol !== symbol) {

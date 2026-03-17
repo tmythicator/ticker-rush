@@ -3,25 +3,23 @@ syntax = "proto3";
 package user.v1;
 
 import "google/protobuf/timestamp.proto";
+import "portfolio/v1/portfolio.proto";
 
 option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1;user";
-
-message PortfolioItem {
-  string stock_symbol = 1;
-  double quantity = 2;
-  double average_price = 3;
-}
 
 message User {
   int64 id = 1;
   string username = 2;
   string first_name = 3;
   string last_name = 4;
-  double balance = 5;
-  map<string, PortfolioItem> portfolio = 6;
-  string website = 7;
-  bool is_public = 8;
+  string website = 5;
+  bool is_public = 6;
+  bool is_admin = 7;
+  bool is_banned = 8;
   google.protobuf.Timestamp created_at = 9;
+  double balance = 10;
+  map<string, portfolio.v1.PortfolioItem> portfolio = 11;
+  bool is_participating = 12;
 }
 
 message CreateUserRequest {

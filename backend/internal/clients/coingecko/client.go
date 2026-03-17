@@ -78,7 +78,7 @@ func (c *Client) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, 
 	timestamp := time.Now().Unix()
 
 	return &exchange.Quote{
-		Symbol:    symbol,
+		Symbol:    id,
 		Price:     data.USD,
 		Timestamp: timestamp,
 		Source:    "CG",

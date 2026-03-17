@@ -1,5 +1,10 @@
-import { DashboardStats, MarketChart, TradePanel } from '@/components/Dashboard';
-import { IconMoon } from '@/components/icons/CustomIcons';
+import {
+  DashboardStats,
+  JoinLadderButton,
+  MarketChart,
+  MarketStatusGuard,
+  TradePanel,
+} from '@/components/Dashboard';
 import { PortfolioTable } from '@/components/PortfolioTable/PortfolioTable';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuotesSSE } from '@/hooks/useQuotesSSE';
@@ -15,6 +20,12 @@ export const DashboardPage = () => {
       <div className="lg:col-span-9 flex flex-col gap-6">
         <DashboardStats user={user} />
 
+        {!user?.is_participating && (
+          <div className="animate-in fade-in slide-in-from-top-4 duration-500">
+            <JoinLadderButton />
+          </div>
+        )}
+
         <div className="bg-card rounded-lg shadow-sm border border-border p-1 overflow-hidden h-[500px] relative">
           <MarketChart
             key={symbol}
@@ -26,42 +37,19 @@ export const DashboardPage = () => {
           />
         </div>
 
-        {/* Mobile Trade Panel (Between Chart and Portfolio) */}
         <div className="lg:hidden" id="trade-panel-mobile">
-          {user &&
-            (quote?.is_closed ? (
-              <div className="bg-card rounded-lg shadow-sm border border-border p-6 flex flex-col items-center justify-center text-center">
-                <IconMoon className="w-8 h-8 mb-4 text-primary" />
-                <h3 className="text-xl font-bold text-foreground">Market Closed</h3>
-                <p className="text-muted-foreground mt-2">
-                  Trading is currently unavailable.
-                  <br />
-                  Please come back during market hours.
-                </p>
-              </div>
-            ) : (
-              <TradePanel quote={quote} />
-            ))}
+          <MarketStatusGuard user={user} quote={quote}>
+            <TradePanel quote={quote} />
+          </MarketStatusGuard>
         </div>
 
         <PortfolioTable portfolio={user?.portfolio ?? {}} />
       </div>
-      <div className="hidden lg:flex lg:col-span-3 flex-col gap-4 h-full" id="trade-panel-desktop">
-        {user &&
-          (quote?.is_closed ? (
-            <div className="bg-card rounded-lg shadow-sm border border-border p-6 flex flex-col items-center justify-center text-center h-full">
-              <IconMoon className="w-8 h-8 mb-4 text-primary" />
 
-              <h3 className="text-xl font-bold text-foreground">Market Closed</h3>
-              <p className="text-muted-foreground mt-2">
-                Trading is currently unavailable.
-                <br />
-                Please come back during market hours.
-              </p>
-            </div>
-          ) : (
-            <TradePanel quote={quote} />
-          ))}
+      <div className="hidden lg:flex lg:col-span-3 flex-col gap-4 h-full" id="trade-panel-desktop">
+        <MarketStatusGuard user={user} quote={quote}>
+          <TradePanel quote={quote} />
+        </MarketStatusGuard>
       </div>
     </div>
   );

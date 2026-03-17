@@ -8,18 +8,50 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Ladder struct {
+	ID             int64
+	Name           string
+	Type           string
+	StartTime      pgtype.Timestamptz
+	EndTime        pgtype.Timestamptz
+	InitialBalance float64
+	CreatedAt      pgtype.Timestamptz
+	IsActive       bool
+}
+
+type LadderBalance struct {
+	LadderID int64
+	UserID   int64
+	Balance  float64
+}
+
+type LadderParticipant struct {
+	LadderID     int64
+	UserID       int64
+	FinalBalance float64
+	FinalRank    pgtype.Int4
+	JoinedAt     pgtype.Timestamptz
+}
+
+type LadderPortfolioItem struct {
+	LadderID     int64
+	UserID       int64
+	StockSymbol  string
+	Quantity     float64
+	AveragePrice float64
+}
+
+type LadderTicker struct {
+	LadderID    int64
+	StockSymbol string
+	Source      string
+}
+
 type MarketQuote struct {
 	Symbol    string
 	Price     pgtype.Numeric
 	Source    string
 	CreatedAt pgtype.Timestamptz
-}
-
-type PortfolioItem struct {
-	UserID       int64
-	StockSymbol  string
-	Quantity     float64
-	AveragePrice float64
 }
 
 type User struct {
@@ -29,8 +61,9 @@ type User struct {
 	FirstName     string
 	LastName      string
 	Website       string
-	Balance       float64
 	IsPublic      bool
+	IsAdmin       bool
+	IsBanned      bool
 	CreatedAt     pgtype.Timestamptz
 	AgbAcceptedAt pgtype.Timestamptz
 }

@@ -41,7 +41,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 		api.POST("/login", handler.Login)
 		api.POST("/logout", handler.Logout)
 		api.POST("/register", handler.CreateUser)
-		api.GET("/config", handler.GetConfig)
+		api.GET("/ladder/active", handler.GetActiveLadder)
 		api.GET("/history", handler.GetHistory)
 		api.GET("/leaderboard", handler.GetLeaderboard)
 		api.GET("/users/:username", handler.GetPublicProfile)
@@ -49,6 +49,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 		protected := api.Group("/")
 		protected.Use(middleware.AuthMiddleware(cfg.JWTSecret))
 		{
+			protected.POST("/ladder/join", handler.JoinLadder)
 			protected.GET("/quotes/events", handler.StreamQuotes)
 			protected.GET("/quote", handler.GetQuote)
 			protected.GET("/user/me", handler.GetMe)

@@ -8,7 +8,10 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/mock"
 
+	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
@@ -89,12 +92,11 @@ func (m *MockUserRepository) CreateUser(
 	hashedPassword string,
 	firstName string,
 	lastName string,
-	balance float64,
 	website string,
 	isPublic bool,
 	agbAcceptedAt time.Time,
 ) (*user.User, error) {
-	args := m.Called(ctx, username, hashedPassword, firstName, lastName, balance, website, isPublic, agbAcceptedAt)
+	args := m.Called(ctx, username, hashedPassword, firstName, lastName, website, isPublic, agbAcceptedAt)
 
 	return args.Get(0).(*user.User), args.Error(1)
 }
@@ -114,10 +116,24 @@ func (m *MockUserRepository) UpdateUserProfile(ctx context.Context, user *user.U
 }
 
 // UpdateUserBalance updates the user's balance.
-func (m *MockUserRepository) UpdateUserBalance(ctx context.Context, id int64, balance float64) error {
-	args := m.Called(ctx, id, balance)
+func (m *MockUserRepository) UpdateUserBalance(ctx context.Context, id int64, ladderID int64, balance float64) error {
+	args := m.Called(ctx, id, ladderID, balance)
 
 	return args.Error(0)
+}
+
+// GetUserBalance retrieves the user's balance.
+func (m *MockUserRepository) GetUserBalance(ctx context.Context, userID int64, ladderID int64) (float64, error) {
+	args := m.Called(ctx, userID, ladderID)
+
+	return args.Get(0).(float64), args.Error(1)
+}
+
+// GetUserWithPortfolioForActiveLadder retrieves a user with their portfolio items.
+func (m *MockUserRepository) GetUserWithPortfolioForActiveLadder(ctx context.Context, userID int64) ([]sqlc.GetUserWithPortfolioForActiveLadderRow, error) {
+	args := m.Called(ctx, userID)
+
+	return args.Get(0).([]sqlc.GetUserWithPortfolioForActiveLadderRow), args.Error(1)
 }
 
 // WithTx returns a new UserRepository with the transaction.
@@ -136,43 +152,47 @@ type MockPortfolioRepository struct {
 func (m *MockPortfolioRepository) GetPortfolio(
 	ctx context.Context,
 	userID int64,
-) ([]*user.PortfolioItem, error) {
-	args := m.Called(ctx, userID)
+	ladderID int64,
+) ([]*portfolio.PortfolioItem, error) {
+	args := m.Called(ctx, userID, ladderID)
 
-	return args.Get(0).([]*user.PortfolioItem), args.Error(1)
+	return args.Get(0).([]*portfolio.PortfolioItem), args.Error(1)
 }
 
 // GetPortfolioItem retrieves a portfolio item.
 func (m *MockPortfolioRepository) GetPortfolioItem(
 	ctx context.Context,
 	userID int64,
+	ladderID int64,
 	symbol string,
-) (*user.PortfolioItem, error) {
-	args := m.Called(ctx, userID, symbol)
+) (*portfolio.PortfolioItem, error) {
+	args := m.Called(ctx, userID, ladderID, symbol)
 
-	return args.Get(0).(*user.PortfolioItem), args.Error(1)
+	return args.Get(0).(*portfolio.PortfolioItem), args.Error(1)
 }
 
 // GetPortfolioItemForUpdate retrieves a portfolio item with a lock.
 func (m *MockPortfolioRepository) GetPortfolioItemForUpdate(
 	ctx context.Context,
 	userID int64,
+	ladderID int64,
 	symbol string,
-) (*user.PortfolioItem, error) {
-	args := m.Called(ctx, userID, symbol)
+) (*portfolio.PortfolioItem, error) {
+	args := m.Called(ctx, userID, ladderID, symbol)
 
-	return args.Get(0).(*user.PortfolioItem), args.Error(1)
+	return args.Get(0).(*portfolio.PortfolioItem), args.Error(1)
 }
 
 // SetPortfolioItem updates or inserts a portfolio item.
 func (m *MockPortfolioRepository) SetPortfolioItem(
 	ctx context.Context,
 	userID int64,
+	ladderID int64,
 	symbol string,
 	quantity float64,
 	averagePrice float64,
 ) error {
-	args := m.Called(ctx, userID, symbol, quantity, averagePrice)
+	args := m.Called(ctx, userID, ladderID, symbol, quantity, averagePrice)
 
 	return args.Error(0)
 }
@@ -181,9 +201,10 @@ func (m *MockPortfolioRepository) SetPortfolioItem(
 func (m *MockPortfolioRepository) DeletePortfolioItem(
 	ctx context.Context,
 	userID int64,
+	ladderID int64,
 	symbol string,
 ) error {
-	args := m.Called(ctx, userID, symbol)
+	args := m.Called(ctx, userID, ladderID, symbol)
 
 	return args.Error(0)
 }
@@ -222,4 +243,57 @@ func (m *MockMarketRepository) SubscribeToQuotes(ctx context.Context, symbol str
 	args := m.Called(ctx, symbol)
 
 	return args.Get(0).(*redis.PubSub)
+}
+
+// MockLadderRepository is a mock implementation of LadderRepository.
+type MockLadderRepository struct {
+	mock.Mock
+}
+
+// GetActiveLadder retrieves the currently active ladder ID.
+func (m *MockLadderRepository) GetActiveLadder(ctx context.Context) (int64, error) {
+	args := m.Called(ctx)
+
+	return args.Get(0).(int64), args.Error(1)
+}
+
+// GetLadder retrieves a ladder by ID.
+func (m *MockLadderRepository) GetLadder(ctx context.Context, id int64) (*ladder.Ladder, error) {
+	args := m.Called(ctx, id)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ladder.Ladder), args.Error(1)
+}
+
+// GetAllowedTickers retrieves the allowed stock symbols for a given ladder.
+func (m *MockLadderRepository) GetAllowedTickers(ctx context.Context, ladderID int64) ([]*ladder.TickerInfo, error) {
+	args := m.Called(ctx, ladderID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).([]*ladder.TickerInfo), args.Error(1)
+}
+
+// JoinLadder mock implementation.
+func (m *MockLadderRepository) JoinLadder(ctx context.Context, ladderID int64, userID int64) error {
+	args := m.Called(ctx, ladderID, userID)
+
+	return args.Error(0)
+}
+
+// IsUserInLadder mock.
+func (m *MockLadderRepository) IsUserInLadder(ctx context.Context, ladderID int64, userID int64) (bool, error) {
+	args := m.Called(ctx, ladderID, userID)
+
+	return args.Bool(0), args.Error(1)
+}
+
+// WithTx returns a new repository with a transaction.
+func (m *MockLadderRepository) WithTx(tx service.Transaction) service.LadderRepository {
+	args := m.Called(tx)
+
+	return args.Get(0).(service.LadderRepository)
 }

@@ -6,7 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { User } from "../../user/v1/user";
+import { LadderParticipant } from "../../ladder/v1/ladder";
 
 export const protobufPackage = "exchange.v1";
 
@@ -45,7 +45,7 @@ export interface BuyStockRequest {
 export interface BuyStockResponse {
   success: boolean;
   message: string;
-  user: User | undefined;
+  participant: LadderParticipant | undefined;
 }
 
 export interface SellStockRequest {
@@ -56,7 +56,7 @@ export interface SellStockRequest {
 export interface SellStockResponse {
   success: boolean;
   message: string;
-  user: User | undefined;
+  participant: LadderParticipant | undefined;
 }
 
 function createBaseQuote(): Quote {
@@ -552,7 +552,7 @@ export const BuyStockRequest: MessageFns<BuyStockRequest> = {
 };
 
 function createBaseBuyStockResponse(): BuyStockResponse {
-  return { success: false, message: "", user: undefined };
+  return { success: false, message: "", participant: undefined };
 }
 
 export const BuyStockResponse: MessageFns<BuyStockResponse> = {
@@ -563,8 +563,8 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
     if (message.message !== "") {
       writer.uint32(18).string(message.message);
     }
-    if (message.user !== undefined) {
-      User.encode(message.user, writer.uint32(26).fork()).join();
+    if (message.participant !== undefined) {
+      LadderParticipant.encode(message.participant, writer.uint32(26).fork()).join();
     }
     return writer;
   },
@@ -597,7 +597,7 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
             break;
           }
 
-          message.user = User.decode(reader, reader.uint32());
+          message.participant = LadderParticipant.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -613,7 +613,7 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
     return {
       success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
       message: isSet(object.message) ? globalThis.String(object.message) : "",
-      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
+      participant: isSet(object.participant) ? LadderParticipant.fromJSON(object.participant) : undefined,
     };
   },
 
@@ -625,8 +625,8 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
     if (message.message !== "") {
       obj.message = message.message;
     }
-    if (message.user !== undefined) {
-      obj.user = User.toJSON(message.user);
+    if (message.participant !== undefined) {
+      obj.participant = LadderParticipant.toJSON(message.participant);
     }
     return obj;
   },
@@ -638,7 +638,9 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
     const message = createBaseBuyStockResponse();
     message.success = object.success ?? false;
     message.message = object.message ?? "";
-    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.participant = (object.participant !== undefined && object.participant !== null)
+      ? LadderParticipant.fromPartial(object.participant)
+      : undefined;
     return message;
   },
 };
@@ -720,7 +722,7 @@ export const SellStockRequest: MessageFns<SellStockRequest> = {
 };
 
 function createBaseSellStockResponse(): SellStockResponse {
-  return { success: false, message: "", user: undefined };
+  return { success: false, message: "", participant: undefined };
 }
 
 export const SellStockResponse: MessageFns<SellStockResponse> = {
@@ -731,8 +733,8 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
     if (message.message !== "") {
       writer.uint32(18).string(message.message);
     }
-    if (message.user !== undefined) {
-      User.encode(message.user, writer.uint32(26).fork()).join();
+    if (message.participant !== undefined) {
+      LadderParticipant.encode(message.participant, writer.uint32(26).fork()).join();
     }
     return writer;
   },
@@ -765,7 +767,7 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
             break;
           }
 
-          message.user = User.decode(reader, reader.uint32());
+          message.participant = LadderParticipant.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -781,7 +783,7 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
     return {
       success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
       message: isSet(object.message) ? globalThis.String(object.message) : "",
-      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
+      participant: isSet(object.participant) ? LadderParticipant.fromJSON(object.participant) : undefined,
     };
   },
 
@@ -793,8 +795,8 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
     if (message.message !== "") {
       obj.message = message.message;
     }
-    if (message.user !== undefined) {
-      obj.user = User.toJSON(message.user);
+    if (message.participant !== undefined) {
+      obj.participant = LadderParticipant.toJSON(message.participant);
     }
     return obj;
   },
@@ -806,7 +808,9 @@ export const SellStockResponse: MessageFns<SellStockResponse> = {
     const message = createBaseSellStockResponse();
     message.success = object.success ?? false;
     message.message = object.message ?? "";
-    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.participant = (object.participant !== undefined && object.participant !== null)
+      ? LadderParticipant.fromPartial(object.participant)
+      : undefined;
     return message;
   },
 };

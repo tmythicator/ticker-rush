@@ -6,6 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { TickerInfo } from "../../ladder/v1/ladder";
 
 export const protobufPackage = "config.v1";
 
@@ -13,7 +14,7 @@ export interface GetConfigRequest {
 }
 
 export interface GetConfigResponse {
-  tickers: string[];
+  tickers: TickerInfo[];
 }
 
 function createBaseGetConfigRequest(): GetConfigRequest {
@@ -66,7 +67,7 @@ function createBaseGetConfigResponse(): GetConfigResponse {
 export const GetConfigResponse: MessageFns<GetConfigResponse> = {
   encode(message: GetConfigResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.tickers) {
-      writer.uint32(10).string(v!);
+      TickerInfo.encode(v!, writer.uint32(10).fork()).join();
     }
     return writer;
   },
@@ -83,7 +84,7 @@ export const GetConfigResponse: MessageFns<GetConfigResponse> = {
             break;
           }
 
-          message.tickers.push(reader.string());
+          message.tickers.push(TickerInfo.decode(reader, reader.uint32()));
           continue;
         }
       }
@@ -97,14 +98,14 @@ export const GetConfigResponse: MessageFns<GetConfigResponse> = {
 
   fromJSON(object: any): GetConfigResponse {
     return {
-      tickers: globalThis.Array.isArray(object?.tickers) ? object.tickers.map((e: any) => globalThis.String(e)) : [],
+      tickers: globalThis.Array.isArray(object?.tickers) ? object.tickers.map((e: any) => TickerInfo.fromJSON(e)) : [],
     };
   },
 
   toJSON(message: GetConfigResponse): unknown {
     const obj: any = {};
     if (message.tickers?.length) {
-      obj.tickers = message.tickers;
+      obj.tickers = message.tickers.map((e) => TickerInfo.toJSON(e));
     }
     return obj;
   },
@@ -114,7 +115,7 @@ export const GetConfigResponse: MessageFns<GetConfigResponse> = {
   },
   fromPartial<I extends Exact<DeepPartial<GetConfigResponse>, I>>(object: I): GetConfigResponse {
     const message = createBaseGetConfigResponse();
-    message.tickers = object.tickers?.map((e) => e) || [];
+    message.tickers = object.tickers?.map((e) => TickerInfo.fromPartial(e)) || [];
     return message;
   },
 };

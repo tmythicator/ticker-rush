@@ -13,6 +13,7 @@ import (
 
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	app_redis "github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
@@ -42,6 +43,7 @@ func TestTradeService_BuyStock_Success(t *testing.T) {
 	// 2. Setup Mocks
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockPortRepo := new(mocks.MockPortfolioRepository)
+	mockLadderRepo := new(mocks.MockLadderRepository)
 	mockTransactor := new(mocks.MockTransactor)
 	mockTx := new(mocks.MockTransaction)
 
@@ -51,18 +53,21 @@ func TestTradeService_BuyStock_Success(t *testing.T) {
 	mockTransactor.On("Begin", mock.Anything).Return(mockTx, nil)
 	mockUserRepo.On("WithTx", mockTx).Return(mockUserRepo)
 	mockPortRepo.On("WithTx", mockTx).Return(mockPortRepo)
+	mockLadderRepo.On("GetActiveLadder", mock.Anything).Return(int64(1), nil)
+	mockLadderRepo.On("IsUserInLadder", mock.Anything, int64(1), userID).Return(true, nil)
 
 	initialUser := &user.User{Id: userID, Balance: startBalance}
 	mockUserRepo.On("GetUserForUpdate", mock.Anything, userID).Return(initialUser, nil)
-	mockPortRepo.On("GetPortfolioItemForUpdate", mock.Anything, userID, symbol).
-		Return(&user.PortfolioItem{}, assert.AnError)
-	mockUserRepo.On("UpdateUserBalance", mock.Anything, userID, expectedBalance).Return(nil)
-	mockPortRepo.On("SetPortfolioItem", mock.Anything, userID, symbol, quantity, price).Return(nil)
+	mockUserRepo.On("GetUserBalance", mock.Anything, userID, int64(1)).Return(startBalance, nil)
+	mockPortRepo.On("GetPortfolioItemForUpdate", mock.Anything, userID, int64(1), symbol).
+		Return(&portfolio.PortfolioItem{StockSymbol: symbol, Quantity: 0}, nil)
+	mockUserRepo.On("UpdateUserBalance", mock.Anything, userID, int64(1), expectedBalance).Return(nil)
+	mockPortRepo.On("SetPortfolioItem", mock.Anything, userID, int64(1), symbol, quantity, price).Return(nil)
 	mockTx.On("Commit", mock.Anything).Return(nil)
 	mockTx.On("Rollback", mock.Anything).Return(nil)
 
 	// 4. Execute
-	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockTransactor)
+	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
 	user, err := tradeService.BuyStock(ctx, userID, symbol, quantity)
 
 	// 5. Verify
@@ -96,6 +101,7 @@ func TestTradeService_BuyStock_InsufficientFunds(t *testing.T) {
 
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockPortRepo := new(mocks.MockPortfolioRepository)
+	mockLadderRepo := new(mocks.MockLadderRepository)
 	mockTransactor := new(mocks.MockTransactor)
 	mockTx := new(mocks.MockTransaction)
 
@@ -105,11 +111,14 @@ func TestTradeService_BuyStock_InsufficientFunds(t *testing.T) {
 	mockTx.On("Rollback", mock.Anything).Return(nil)
 	mockUserRepo.On("WithTx", mockTx).Return(mockUserRepo)
 	mockPortRepo.On("WithTx", mockTx).Return(mockPortRepo)
+	mockLadderRepo.On("GetActiveLadder", mock.Anything).Return(int64(1), nil)
+	mockLadderRepo.On("IsUserInLadder", mock.Anything, int64(1), userID).Return(true, nil)
 
 	initialUser := &user.User{Id: userID, Balance: startBalance}
 	mockUserRepo.On("GetUserForUpdate", mock.Anything, userID).Return(initialUser, nil)
+	mockUserRepo.On("GetUserBalance", mock.Anything, userID, int64(1)).Return(startBalance, nil)
 
-	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockTransactor)
+	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
 	_, err := tradeService.BuyStock(ctx, userID, symbol, quantity)
 
 	assert.Error(t, err)
@@ -143,13 +152,13 @@ func TestTradeService_BuyStock_MarketClosed(t *testing.T) {
 	// 2. Setup Mocks (Simulating repositories)
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockPortRepo := new(mocks.MockPortfolioRepository)
+	mockLadderRepo := new(mocks.MockLadderRepository)
 	mockTransactor := new(mocks.MockTransactor)
-	// Note: Transactor might not even be called if we fail early, but if it is, we expect no transaction start
 
 	ctx := context.Background()
 
 	// 3. Execute
-	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockTransactor)
+	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
 	_, err := tradeService.BuyStock(ctx, userID, symbol, quantity)
 
 	// 4. Verify
@@ -158,4 +167,83 @@ func TestTradeService_BuyStock_MarketClosed(t *testing.T) {
 
 	// verify that transaction was NOT started
 	mockTransactor.AssertNotCalled(t, "Begin", mock.Anything)
+}
+
+func TestTradeService_BuyStock_NotJoined(t *testing.T) {
+	const (
+		userID   int64   = 4
+		symbol   string  = "AAPL"
+		price    float64 = 150.0
+		quantity float64 = 1.0
+	)
+
+	mr, _ := miniredis.Run()
+	defer mr.Close()
+
+	rClient := redis.NewClient(&redis.Options{Addr: mr.Addr()})
+	marketRepo := app_redis.NewMarketRepository(rClient)
+	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
+	bytes, _ := json.Marshal(quote)
+	rClient.Set(context.Background(), "market:"+symbol, bytes, 0)
+
+	mockUserRepo := new(mocks.MockUserRepository)
+	mockPortRepo := new(mocks.MockPortfolioRepository)
+	mockLadderRepo := new(mocks.MockLadderRepository)
+	mockTransactor := new(mocks.MockTransactor)
+	mockTx := new(mocks.MockTransaction)
+
+	ctx := context.Background()
+
+	mockTransactor.On("Begin", mock.Anything).Return(mockTx, nil)
+	mockTx.On("Rollback", mock.Anything).Return(nil)
+	mockUserRepo.On("WithTx", mockTx).Return(mockUserRepo)
+	mockPortRepo.On("WithTx", mockTx).Return(mockPortRepo)
+	mockUserRepo.On("GetUserForUpdate", mock.Anything, userID).Return(&user.User{Id: userID, Balance: 1000}, nil)
+	mockLadderRepo.On("GetActiveLadder", mock.Anything).Return(int64(1), nil)
+	mockLadderRepo.On("IsUserInLadder", mock.Anything, int64(1), userID).Return(false, nil)
+
+	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
+	_, err := tradeService.BuyStock(ctx, userID, symbol, quantity)
+
+	assert.Error(t, err)
+	assert.Equal(t, apperrors.ErrNotJoinedLadder, err)
+}
+
+func TestTradeService_SellStock_NotJoined(t *testing.T) {
+	const (
+		userID   int64   = 4
+		symbol   string  = "AAPL"
+		price    float64 = 150.0
+		quantity float64 = 1.0
+	)
+
+	mr, _ := miniredis.Run()
+	defer mr.Close()
+
+	rClient := redis.NewClient(&redis.Options{Addr: mr.Addr()})
+	marketRepo := app_redis.NewMarketRepository(rClient)
+	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
+	bytes, _ := json.Marshal(quote)
+	rClient.Set(context.Background(), "market:"+symbol, bytes, 0)
+
+	mockUserRepo := new(mocks.MockUserRepository)
+	mockPortRepo := new(mocks.MockPortfolioRepository)
+	mockLadderRepo := new(mocks.MockLadderRepository)
+	mockTransactor := new(mocks.MockTransactor)
+	mockTx := new(mocks.MockTransaction)
+
+	ctx := context.Background()
+
+	mockTransactor.On("Begin", mock.Anything).Return(mockTx, nil)
+	mockTx.On("Rollback", mock.Anything).Return(nil)
+	mockUserRepo.On("WithTx", mockTx).Return(mockUserRepo)
+	mockPortRepo.On("WithTx", mockTx).Return(mockPortRepo)
+	mockLadderRepo.On("GetActiveLadder", mock.Anything).Return(int64(1), nil)
+	mockLadderRepo.On("IsUserInLadder", mock.Anything, int64(1), userID).Return(false, nil)
+
+	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
+	_, err := tradeService.SellStock(ctx, userID, symbol, quantity)
+
+	assert.Error(t, err)
+	assert.Equal(t, apperrors.ErrNotJoinedLadder, err)
 }

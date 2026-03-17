@@ -51,7 +51,7 @@ export const HomePage = () => {
 
         <div className="w-full mt-12 relative z-10 max-w-6xl mx-auto px-4 opacity-80 hover:opacity-100 transition-opacity duration-700">
           <div className="rounded-xl overflow-hidden border border-border shadow-2xl shadow-primary/10 bg-card/30 backdrop-blur-sm">
-            <HomeChart symbol="CG:bitcoin" />
+            <HomeChart symbol="bitcoin" />
           </div>
         </div>
       </section>

@@ -7,7 +7,8 @@
 package exchange
 
 import (
-	v1 "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	v1 "github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
+	_ "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -354,7 +355,7 @@ type BuyStockResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	User          *v1.User               `protobuf:"bytes,3,opt,name=user,proto3" json:"user,omitempty"`
+	Participant   *v1.LadderParticipant  `protobuf:"bytes,3,opt,name=participant,proto3" json:"participant,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -403,9 +404,9 @@ func (x *BuyStockResponse) GetMessage() string {
 	return ""
 }
 
-func (x *BuyStockResponse) GetUser() *v1.User {
+func (x *BuyStockResponse) GetParticipant() *v1.LadderParticipant {
 	if x != nil {
-		return x.User
+		return x.Participant
 	}
 	return nil
 }
@@ -466,7 +467,7 @@ type SellStockResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	User          *v1.User               `protobuf:"bytes,3,opt,name=user,proto3" json:"user,omitempty"`
+	Participant   *v1.LadderParticipant  `protobuf:"bytes,3,opt,name=participant,proto3" json:"participant,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -515,9 +516,9 @@ func (x *SellStockResponse) GetMessage() string {
 	return ""
 }
 
-func (x *SellStockResponse) GetUser() *v1.User {
+func (x *SellStockResponse) GetParticipant() *v1.LadderParticipant {
 	if x != nil {
-		return x.User
+		return x.Participant
 	}
 	return nil
 }
@@ -526,7 +527,7 @@ var File_exchange_v1_exchange_proto protoreflect.FileDescriptor
 
 const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\n" +
-	"\x1aexchange/v1/exchange.proto\x12\vexchange.v1\x1a\x12user/v1/user.proto\"\xc7\x01\n" +
+	"\x1aexchange/v1/exchange.proto\x12\vexchange.v1\x1a\x12user/v1/user.proto\x1a\x16ladder/v1/ladder.proto\"\xc7\x01\n" +
 	"\x05Quote\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x14\n" +
 	"\x05price\x18\x02 \x01(\x01R\x05price\x12\x16\n" +
@@ -546,18 +547,18 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\ahistory\x18\x01 \x03(\v2\x12.exchange.v1.QuoteR\ahistory\"E\n" +
 	"\x0fBuyStockRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x01R\bquantity\"i\n" +
+	"\bquantity\x18\x02 \x01(\x01R\bquantity\"\x86\x01\n" +
 	"\x10BuyStockResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12!\n" +
-	"\x04user\x18\x03 \x01(\v2\r.user.v1.UserR\x04user\"F\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12>\n" +
+	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant\"F\n" +
 	"\x10SellStockRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x01R\bquantity\"j\n" +
+	"\bquantity\x18\x02 \x01(\x01R\bquantity\"\x87\x01\n" +
 	"\x11SellStockResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12!\n" +
-	"\x04user\x18\x03 \x01(\v2\r.user.v1.UserR\x04user2\xbe\x02\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12>\n" +
+	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant2\xbe\x02\n" +
 	"\x0fExchangeService\x12G\n" +
 	"\bGetQuote\x12\x1c.exchange.v1.GetQuoteRequest\x1a\x1d.exchange.v1.GetQuoteResponse\x12G\n" +
 	"\bBuyStock\x12\x1c.exchange.v1.BuyStockRequest\x1a\x1d.exchange.v1.BuyStockResponse\x12J\n" +
@@ -579,22 +580,22 @@ func file_exchange_v1_exchange_proto_rawDescGZIP() []byte {
 
 var file_exchange_v1_exchange_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_exchange_v1_exchange_proto_goTypes = []any{
-	(*Quote)(nil),              // 0: exchange.v1.Quote
-	(*GetQuoteRequest)(nil),    // 1: exchange.v1.GetQuoteRequest
-	(*GetQuoteResponse)(nil),   // 2: exchange.v1.GetQuoteResponse
-	(*GetHistoryRequest)(nil),  // 3: exchange.v1.GetHistoryRequest
-	(*GetHistoryResponse)(nil), // 4: exchange.v1.GetHistoryResponse
-	(*BuyStockRequest)(nil),    // 5: exchange.v1.BuyStockRequest
-	(*BuyStockResponse)(nil),   // 6: exchange.v1.BuyStockResponse
-	(*SellStockRequest)(nil),   // 7: exchange.v1.SellStockRequest
-	(*SellStockResponse)(nil),  // 8: exchange.v1.SellStockResponse
-	(*v1.User)(nil),            // 9: user.v1.User
+	(*Quote)(nil),                // 0: exchange.v1.Quote
+	(*GetQuoteRequest)(nil),      // 1: exchange.v1.GetQuoteRequest
+	(*GetQuoteResponse)(nil),     // 2: exchange.v1.GetQuoteResponse
+	(*GetHistoryRequest)(nil),    // 3: exchange.v1.GetHistoryRequest
+	(*GetHistoryResponse)(nil),   // 4: exchange.v1.GetHistoryResponse
+	(*BuyStockRequest)(nil),      // 5: exchange.v1.BuyStockRequest
+	(*BuyStockResponse)(nil),     // 6: exchange.v1.BuyStockResponse
+	(*SellStockRequest)(nil),     // 7: exchange.v1.SellStockRequest
+	(*SellStockResponse)(nil),    // 8: exchange.v1.SellStockResponse
+	(*v1.LadderParticipant)(nil), // 9: ladder.v1.LadderParticipant
 }
 var file_exchange_v1_exchange_proto_depIdxs = []int32{
 	0, // 0: exchange.v1.GetQuoteResponse.quote:type_name -> exchange.v1.Quote
 	0, // 1: exchange.v1.GetHistoryResponse.history:type_name -> exchange.v1.Quote
-	9, // 2: exchange.v1.BuyStockResponse.user:type_name -> user.v1.User
-	9, // 3: exchange.v1.SellStockResponse.user:type_name -> user.v1.User
+	9, // 2: exchange.v1.BuyStockResponse.participant:type_name -> ladder.v1.LadderParticipant
+	9, // 3: exchange.v1.SellStockResponse.participant:type_name -> ladder.v1.LadderParticipant
 	1, // 4: exchange.v1.ExchangeService.GetQuote:input_type -> exchange.v1.GetQuoteRequest
 	5, // 5: exchange.v1.ExchangeService.BuyStock:input_type -> exchange.v1.BuyStockRequest
 	7, // 6: exchange.v1.ExchangeService.SellStock:input_type -> exchange.v1.SellStockRequest

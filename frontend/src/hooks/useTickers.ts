@@ -1,11 +1,21 @@
+import { getActiveLadder } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
-import { getConfig } from '@/lib/api';
 
 export const useTickers = () => {
-  return useQuery({
-    queryKey: ['tickers'],
-    queryFn: getConfig,
-    staleTime: Infinity, // Config rarely changes
+  const {
+    data: ladder,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['ladder', 'active'],
+    queryFn: getActiveLadder,
+    staleTime: Infinity,
     refetchOnWindowFocus: false,
   });
+
+  return {
+    data: ladder?.allowed_tickers,
+    isLoading,
+    error,
+  };
 };

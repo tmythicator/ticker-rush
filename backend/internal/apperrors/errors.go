@@ -30,4 +30,8 @@ var (
 	ErrUsernameNotAllowed = errors.New("username is not allowed")
 	// ErrAGBNotAccepted is returned when the user has not accepted the terms and conditions.
 	ErrAGBNotAccepted = errors.New("you must accept the terms and conditions")
+	// ErrNotJoinedLadder is returned when a user tries to trade without joining the ladder.
+	ErrNotJoinedLadder = errors.New("user has not joined the active ladder")
+	// ErrAlreadyJoinedLadder is returned when a user tries to join a ladder they are already in.
+	ErrAlreadyJoinedLadder = errors.New("user has already joined the ladder")
 )

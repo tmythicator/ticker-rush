@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package portfolio.v1;
+
+option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1;portfolio";
+
+message PortfolioItem {
+  string stock_symbol = 1;
+  double quantity = 2;
+  double average_price = 3;
+}

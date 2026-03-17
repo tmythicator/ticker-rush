@@ -7,6 +7,7 @@
 package leaderboard
 
 import (
+	v1 "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -23,13 +24,9 @@ const (
 
 type LeaderboardEntry struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	User          *v1.User               `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	Rank          int32                  `protobuf:"varint,2,opt,name=rank,proto3" json:"rank,omitempty"`
-	TotalNetWorth float64                `protobuf:"fixed64,3,opt,name=total_net_worth,json=totalNetWorth,proto3" json:"total_net_worth,omitempty"`
-	FirstName     string                 `protobuf:"bytes,4,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	LastName      string                 `protobuf:"bytes,5,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	Username      string                 `protobuf:"bytes,6,opt,name=username,proto3" json:"username,omitempty"`
-	IsPublic      bool                   `protobuf:"varint,7,opt,name=is_public,json=isPublic,proto3" json:"is_public,omitempty"`
+	Score         float64                `protobuf:"fixed64,3,opt,name=score,proto3" json:"score,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -64,11 +61,11 @@ func (*LeaderboardEntry) Descriptor() ([]byte, []int) {
 	return file_leaderboard_v1_leaderboard_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *LeaderboardEntry) GetUserId() int64 {
+func (x *LeaderboardEntry) GetUser() *v1.User {
 	if x != nil {
-		return x.UserId
+		return x.User
 	}
-	return 0
+	return nil
 }
 
 func (x *LeaderboardEntry) GetRank() int32 {
@@ -78,39 +75,11 @@ func (x *LeaderboardEntry) GetRank() int32 {
 	return 0
 }
 
-func (x *LeaderboardEntry) GetTotalNetWorth() float64 {
+func (x *LeaderboardEntry) GetScore() float64 {
 	if x != nil {
-		return x.TotalNetWorth
+		return x.Score
 	}
 	return 0
-}
-
-func (x *LeaderboardEntry) GetFirstName() string {
-	if x != nil {
-		return x.FirstName
-	}
-	return ""
-}
-
-func (x *LeaderboardEntry) GetLastName() string {
-	if x != nil {
-		return x.LastName
-	}
-	return ""
-}
-
-func (x *LeaderboardEntry) GetUsername() string {
-	if x != nil {
-		return x.Username
-	}
-	return ""
-}
-
-func (x *LeaderboardEntry) GetIsPublic() bool {
-	if x != nil {
-		return x.IsPublic
-	}
-	return false
 }
 
 type GetLeaderboardRequest struct {
@@ -229,16 +198,11 @@ var File_leaderboard_v1_leaderboard_proto protoreflect.FileDescriptor
 
 const file_leaderboard_v1_leaderboard_proto_rawDesc = "" +
 	"\n" +
-	" leaderboard/v1/leaderboard.proto\x12\x0eleaderboard.v1\"\xdc\x01\n" +
-	"\x10LeaderboardEntry\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x12\n" +
-	"\x04rank\x18\x02 \x01(\x05R\x04rank\x12&\n" +
-	"\x0ftotal_net_worth\x18\x03 \x01(\x01R\rtotalNetWorth\x12\x1d\n" +
-	"\n" +
-	"first_name\x18\x04 \x01(\tR\tfirstName\x12\x1b\n" +
-	"\tlast_name\x18\x05 \x01(\tR\blastName\x12\x1a\n" +
-	"\busername\x18\x06 \x01(\tR\busername\x12\x1b\n" +
-	"\tis_public\x18\a \x01(\bR\bisPublic\"E\n" +
+	" leaderboard/v1/leaderboard.proto\x12\x0eleaderboard.v1\x1a\x12user/v1/user.proto\"_\n" +
+	"\x10LeaderboardEntry\x12!\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\x12\x12\n" +
+	"\x04rank\x18\x02 \x01(\x05R\x04rank\x12\x14\n" +
+	"\x05score\x18\x03 \x01(\x01R\x05score\"E\n" +
 	"\x15GetLeaderboardRequest\x12\x14\n" +
 	"\x05limit\x18\x01 \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\x02 \x01(\x05R\x06offset\"\x96\x01\n" +
@@ -268,16 +232,18 @@ var file_leaderboard_v1_leaderboard_proto_goTypes = []any{
 	(*LeaderboardEntry)(nil),       // 0: leaderboard.v1.LeaderboardEntry
 	(*GetLeaderboardRequest)(nil),  // 1: leaderboard.v1.GetLeaderboardRequest
 	(*GetLeaderboardResponse)(nil), // 2: leaderboard.v1.GetLeaderboardResponse
+	(*v1.User)(nil),                // 3: user.v1.User
 }
 var file_leaderboard_v1_leaderboard_proto_depIdxs = []int32{
-	0, // 0: leaderboard.v1.GetLeaderboardResponse.entries:type_name -> leaderboard.v1.LeaderboardEntry
-	1, // 1: leaderboard.v1.LeaderBoardService.GetLeaderboard:input_type -> leaderboard.v1.GetLeaderboardRequest
-	2, // 2: leaderboard.v1.LeaderBoardService.GetLeaderboard:output_type -> leaderboard.v1.GetLeaderboardResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	3, // 0: leaderboard.v1.LeaderboardEntry.user:type_name -> user.v1.User
+	0, // 1: leaderboard.v1.GetLeaderboardResponse.entries:type_name -> leaderboard.v1.LeaderboardEntry
+	1, // 2: leaderboard.v1.LeaderBoardService.GetLeaderboard:input_type -> leaderboard.v1.GetLeaderboardRequest
+	2, // 3: leaderboard.v1.LeaderBoardService.GetLeaderboard:output_type -> leaderboard.v1.GetLeaderboardResponse
+	3, // [3:4] is the sub-list for method output_type
+	2, // [2:3] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_leaderboard_v1_leaderboard_proto_init() }

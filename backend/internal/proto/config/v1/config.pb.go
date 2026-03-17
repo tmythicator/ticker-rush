@@ -7,6 +7,7 @@
 package config
 
 import (
+	v1 "github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -59,7 +60,7 @@ func (*GetConfigRequest) Descriptor() ([]byte, []int) {
 
 type GetConfigResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Tickers       []string               `protobuf:"bytes,1,rep,name=tickers,proto3" json:"tickers,omitempty"`
+	Tickers       []*v1.TickerInfo       `protobuf:"bytes,1,rep,name=tickers,proto3" json:"tickers,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -94,7 +95,7 @@ func (*GetConfigResponse) Descriptor() ([]byte, []int) {
 	return file_config_v1_config_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *GetConfigResponse) GetTickers() []string {
+func (x *GetConfigResponse) GetTickers() []*v1.TickerInfo {
 	if x != nil {
 		return x.Tickers
 	}
@@ -105,10 +106,10 @@ var File_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"\x16config/v1/config.proto\x12\tconfig.v1\"\x12\n" +
-	"\x10GetConfigRequest\"-\n" +
-	"\x11GetConfigResponse\x12\x18\n" +
-	"\atickers\x18\x01 \x03(\tR\atickers2W\n" +
+	"\x16config/v1/config.proto\x12\tconfig.v1\x1a\x16ladder/v1/ladder.proto\"\x12\n" +
+	"\x10GetConfigRequest\"D\n" +
+	"\x11GetConfigResponse\x12/\n" +
+	"\atickers\x18\x01 \x03(\v2\x15.ladder.v1.TickerInfoR\atickers2W\n" +
 	"\rConfigService\x12F\n" +
 	"\tGetConfig\x12\x1b.config.v1.GetConfigRequest\x1a\x1c.config.v1.GetConfigResponseBLZJgithub.com/tmythicator/ticker-rush/backend/internal/proto/config/v1;configb\x06proto3"
 
@@ -128,15 +129,17 @@ var file_config_v1_config_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_config_v1_config_proto_goTypes = []any{
 	(*GetConfigRequest)(nil),  // 0: config.v1.GetConfigRequest
 	(*GetConfigResponse)(nil), // 1: config.v1.GetConfigResponse
+	(*v1.TickerInfo)(nil),     // 2: ladder.v1.TickerInfo
 }
 var file_config_v1_config_proto_depIdxs = []int32{
-	0, // 0: config.v1.ConfigService.GetConfig:input_type -> config.v1.GetConfigRequest
-	1, // 1: config.v1.ConfigService.GetConfig:output_type -> config.v1.GetConfigResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	2, // 0: config.v1.GetConfigResponse.tickers:type_name -> ladder.v1.TickerInfo
+	0, // 1: config.v1.ConfigService.GetConfig:input_type -> config.v1.GetConfigRequest
+	1, // 2: config.v1.ConfigService.GetConfig:output_type -> config.v1.GetConfigResponse
+	2, // [2:3] is the sub-list for method output_type
+	1, // [1:2] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_config_v1_config_proto_init() }

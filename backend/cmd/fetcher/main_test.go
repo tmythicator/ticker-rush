@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"sync"
 	"testing"
 	"time"
 
@@ -13,7 +12,9 @@ import (
 
 	"github.com/tmythicator/ticker-rush/backend/internal/clients/finnhub"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
+	"github.com/tmythicator/ticker-rush/backend/internal/service"
 	"github.com/tmythicator/ticker-rush/backend/internal/worker"
 )
 
@@ -41,6 +42,36 @@ func (m *MockHistoryRepository) GetHistory(ctx context.Context, symbol string, l
 	return nil, nil
 }
 
+// MockLadderRepository mocks the ladder management.
+type MockLadderRepository struct {
+	ActiveLadderID int64
+	Tickers        []*ladder.TickerInfo
+}
+
+func (m *MockLadderRepository) GetActiveLadder(ctx context.Context) (int64, error) {
+	return m.ActiveLadderID, nil
+}
+
+func (m *MockLadderRepository) GetLadder(ctx context.Context, id int64) (*ladder.Ladder, error) {
+	return &ladder.Ladder{Id: id, IsActive: true}, nil
+}
+
+func (m *MockLadderRepository) GetAllowedTickers(ctx context.Context, ladderID int64) ([]*ladder.TickerInfo, error) {
+	return m.Tickers, nil
+}
+
+func (m *MockLadderRepository) JoinLadder(ctx context.Context, ladderID int64, userID int64) error {
+	return nil
+}
+
+func (m *MockLadderRepository) IsUserInLadder(ctx context.Context, ladderID int64, userID int64) (bool, error) {
+	return true, nil
+}
+
+func (m *MockLadderRepository) WithTx(tx service.Transaction) service.LadderRepository {
+	return m
+}
+
 func TestMarketFetcher(t *testing.T) {
 	// 1. Setup Miniredis
 	mr, err := miniredis.Run()
@@ -63,13 +94,23 @@ func TestMarketFetcher(t *testing.T) {
 	// 3. Setup Worker
 	marketRepo := redis.NewMarketRepository(rdb)
 	historyRepo := &MockHistoryRepository{}
-	marketWorker := worker.NewMarketFetcher(mockClient, marketRepo, historyRepo)
+	ladderRepo := &MockLadderRepository{
+		ActiveLadderID: 1,
+		Tickers: []*ladder.TickerInfo{
+			{Symbol: "AAPL", Source: "Finnhub"},
+		},
+	}
+	marketWorker := worker.NewMarketFetcher("Finnhub", mockClient, marketRepo, historyRepo, ladderRepo, 100*time.Millisecond, 1*time.Minute, 5*time.Second)
 
 	// 4. Run Worker logic (simulate one tick)
 	ctx := t.Context()
 
-	// Start in a goroutine
-	go marketWorker.RunLoop(ctx, []string{"AAPL"}, 100*time.Millisecond, &sync.WaitGroup{})
+	// Start worker
+	go func() {
+		if errWork := marketWorker.Start(ctx); errWork != nil && errWork != context.Canceled {
+			t.Errorf("Worker failed: %v", errWork)
+		}
+	}()
 
 	// Wait for Redis update
 	time.Sleep(200 * time.Millisecond)

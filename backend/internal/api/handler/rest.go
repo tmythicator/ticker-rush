@@ -14,8 +14,8 @@ import (
 
 	"github.com/tmythicator/ticker-rush/backend/internal/api/middleware"
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/config/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
@@ -27,7 +27,7 @@ type RestHandler struct {
 	tradeService  *service.TradeService
 	marketService *service.MarketService
 	leadService   *service.LeaderBoardService
-	configService *service.ConfigService
+	ladderService *service.LadderService
 	jwtSecret     string
 }
 
@@ -37,7 +37,7 @@ func NewRestHandler(
 	tradeService *service.TradeService,
 	marketService *service.MarketService,
 	leadService *service.LeaderBoardService,
-	configService *service.ConfigService,
+	ladderService *service.LadderService,
 	jwtSecret string,
 ) *RestHandler {
 	return &RestHandler{
@@ -45,7 +45,7 @@ func NewRestHandler(
 		tradeService:  tradeService,
 		marketService: marketService,
 		leadService:   leadService,
-		configService: configService,
+		ladderService: ladderService,
 		jwtSecret:     jwtSecret,
 	}
 }
@@ -65,7 +65,6 @@ func (h *RestHandler) CreateUser(c *gin.Context) {
 		req.Password,
 		req.FirstName,
 		req.LastName,
-		req.Website,
 		req.AgbAccepted,
 	)
 	if err != nil {
@@ -79,7 +78,14 @@ func (h *RestHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &user.CreateUserResponse{User: createdUser})
+	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), createdUser.GetId())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user profile after creation"})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, &user.CreateUserResponse{User: fullUser})
 }
 
 // Login handles user authentication.
@@ -269,6 +275,12 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 			return
 		}
 
+		if errors.Is(err, apperrors.ErrNotJoinedLadder) {
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+
+			return
+		}
+
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
 
 		return
@@ -284,7 +296,9 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 	c.JSON(http.StatusOK, &exchange.BuyStockResponse{
 		Success: true,
 		Message: "Bought successfully",
-		User:    fullUser,
+		Participant: &ladder.LadderParticipant{
+			User: fullUser,
+		},
 	})
 }
 
@@ -339,7 +353,9 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 	c.JSON(http.StatusOK, &exchange.SellStockResponse{
 		Success: true,
 		Message: "Sold successfully",
-		User:    fullUser,
+		Participant: &ladder.LadderParticipant{
+			User: fullUser,
+		},
 	})
 }
 
@@ -357,13 +373,17 @@ func (h *RestHandler) GetLeaderboard(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-// GetConfig returns the public configuration.
-func (h *RestHandler) GetConfig(c *gin.Context) {
-	configData := h.configService.GetPublicConfig(c.Request.Context())
-	tickers := configData["tickers"].([]string)
+// GetActiveLadder returns full metadata for the currently active ladder.
+func (h *RestHandler) GetActiveLadder(c *gin.Context) {
+	l, err := h.ladderService.GetActiveLadder(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch active ladder"})
 
-	c.JSON(http.StatusOK, &config.GetConfigResponse{
-		Tickers: tickers,
+		return
+	}
+
+	c.JSON(http.StatusOK, &ladder.GetActiveLadderResponse{
+		Ladder: l,
 	})
 }
 
@@ -461,4 +481,28 @@ func (h *RestHandler) GetHistory(c *gin.Context) {
 	c.JSON(http.StatusOK, &exchange.GetHistoryResponse{
 		History: history,
 	})
+}
+
+// JoinLadder allows a user to join the active ladder.
+func (h *RestHandler) JoinLadder(c *gin.Context) {
+	userID, exists := c.Get(middleware.UserIDKey)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+
+		return
+	}
+
+	err := h.ladderService.JoinLadder(c.Request.Context(), userID.(int64))
+	if err != nil {
+		if errors.Is(err, apperrors.ErrAlreadyJoinedLadder) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to join ladder"})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Joined ladder successfully"})
 }

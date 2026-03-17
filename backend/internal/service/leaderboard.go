@@ -16,16 +16,18 @@ type LeaderBoardService struct {
 	portfolioRepo PortfolioRepository
 	marketRepo    MarketRepository
 	redisClient   *redis.Client
+	ladderRepo    LadderRepository
 }
 
-const leaderboardKey = "leaderboard"
-const lastUpdateKey = "leaderboard:last_update"
+const leaderboardKeyPrefix = "leaderboard:"
+const lastUpdateKeyPrefix = "leaderboard:last_update:"
 
 // NewLeaderBoardService creates a new instance of LeaderBoardService with required dependencies.
 func NewLeaderBoardService(
 	userRepo UserRepository,
 	portfolioRepo PortfolioRepository,
 	marketRepo MarketRepository,
+	ladderRepo LadderRepository,
 	redisClient *redis.Client,
 ) *LeaderBoardService {
 	return &LeaderBoardService{
@@ -33,13 +35,18 @@ func NewLeaderBoardService(
 		portfolioRepo: portfolioRepo,
 		marketRepo:    marketRepo,
 		redisClient:   redisClient,
+		ladderRepo:    ladderRepo,
 	}
 }
 
-// UpdateLeaderboard recalculates the net worth of all users and updates the Redis Sorted Set.
+// UpdateLeaderboard recalculates the net worth of all users and updates the Redis Sorted Set for the active ladder.
 // It iterates through all users, calculates their portfolio value using real-time market quotes,
 // and saves the final score to Redis.
 func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
+	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
+	if err != nil {
+		return err
+	}
 	users, err := s.userRepo.GetUsers(ctx)
 	if err != nil {
 		return err
@@ -47,9 +54,14 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 
 	for _, u := range users {
 
-		totalWorth := u.Balance
+		balance, errBalance := s.userRepo.GetUserBalance(ctx, u.Id, ladderID)
+		if errBalance != nil {
+			continue
+		}
 
-		portfolio, errPortfolio := s.portfolioRepo.GetPortfolio(ctx, u.Id)
+		totalWorth := balance
+
+		portfolio, errPortfolio := s.portfolioRepo.GetPortfolio(ctx, u.Id, ladderID)
 		if errPortfolio != nil {
 			continue
 		}
@@ -63,13 +75,15 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 			totalWorth += quote.Price * item.Quantity
 		}
 
-		err = s.redisClient.ZAdd(ctx, leaderboardKey, redis.Z{Score: totalWorth, Member: u.Id}).Err()
+		lKey := leaderboardKeyPrefix + strconv.FormatInt(ladderID, 10)
+		err = s.redisClient.ZAdd(ctx, lKey, redis.Z{Score: totalWorth, Member: u.Id}).Err()
 		if err != nil {
 			continue
 		}
 	}
 
-	err = s.redisClient.Set(ctx, lastUpdateKey, time.Now().Unix(), 0).Err()
+	uKey := lastUpdateKeyPrefix + strconv.FormatInt(ladderID, 10)
+	err = s.redisClient.Set(ctx, uKey, time.Now().Unix(), 0).Err()
 	if err != nil {
 		return err
 	}
@@ -77,18 +91,24 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 	return nil
 }
 
-// GetLeaderboard retrieves a paginated list of top performing users from Redis/Valkey.
+// GetLeaderboard retrieves a paginated list of top performing users from Redis/Valkey for the active ladder.
 // It fetches the user details from the database for each entry and handles stale cache cleanup
 // if a user is no longer present in the system.
 func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboard.GetLeaderboardRequest) (*leaderboard.GetLeaderboardResponse, error) {
+	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
+	if err != nil {
+		return nil, err
+	}
 
-	totalCount, err := s.redisClient.ZCard(ctx, leaderboardKey).Result()
+	lKey := leaderboardKeyPrefix + strconv.FormatInt(ladderID, 10)
+	totalCount, err := s.redisClient.ZCard(ctx, lKey).Result()
 	if err != nil {
 		return nil, err
 	}
 
 	var lastUpdate int64
-	lastUpdateStr, errTime := s.redisClient.Get(ctx, lastUpdateKey).Result()
+	uKey := lastUpdateKeyPrefix + strconv.FormatInt(ladderID, 10)
+	lastUpdateStr, errTime := s.redisClient.Get(ctx, uKey).Result()
 	if errTime == nil {
 		lastUpdate, _ = strconv.ParseInt(lastUpdateStr, 10, 64)
 	}
@@ -104,7 +124,7 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 	start := int64(req.GetOffset())
 	stop := start + int64(req.GetLimit()) - 1
 
-	res, err := s.redisClient.ZRevRangeWithScores(ctx, leaderboardKey, start, stop).Result()
+	res, err := s.redisClient.ZRevRangeWithScores(ctx, lKey, start, stop).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -113,22 +133,18 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 
 	for i, item := range res {
 		userID, _ := strconv.ParseInt(item.Member.(string), 10, 64)
-		user, err := s.userRepo.GetUser(ctx, userID)
+		fetchedUser, err := s.userRepo.GetUser(ctx, userID)
 		if err != nil {
-			s.redisClient.ZRem(ctx, leaderboardKey, item.Member)
+			s.redisClient.ZRem(ctx, lKey, item.Member)
 			totalCount--
 
 			continue
 
 		}
 		leadEntry := &leaderboard.LeaderboardEntry{
-			UserId:        user.Id,
-			Rank:          int32(i) + int32(start) + 1,
-			TotalNetWorth: item.Score,
-			FirstName:     user.FirstName,
-			LastName:      user.LastName,
-			Username:      user.Username,
-			IsPublic:      user.IsPublic,
+			User:  fetchedUser,
+			Rank:  int32(i) + int32(start) + 1,
+			Score: item.Score,
 		}
 
 		entries = append(entries, leadEntry)
