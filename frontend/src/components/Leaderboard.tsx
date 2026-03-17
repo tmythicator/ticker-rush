@@ -1,7 +1,6 @@
 import { IconLock, IconMedal, IconRefresh, IconTrophy } from '@/components/icons/CustomIcons';
 import { getLeaderboard } from '@/lib/api';
 import { QUERY_KEY_LEADERBOARD } from '@/lib/queryKeys';
-import { formatLocalTime } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 
@@ -25,51 +24,51 @@ export function Leaderboard() {
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-4 sm:p-6 space-y-6">
+    <div className="w-full mx-auto p-4 sm:p-8 space-y-6">
       <div className="flex items-center space-x-3 mb-6">
         <IconTrophy className="h-8 w-8 text-yellow-500" />
         <h2 className="text-2xl font-bold tracking-tight">Top Traders</h2>
       </div>
 
-      <div className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-border bg-card/50 shadow-sm overflow-hidden">
         <table className="w-full text-sm text-left">
-          <thead className="bg-muted/50 text-muted-foreground uppercase text-xs font-semibold">
+          <thead className="bg-muted text-muted-foreground uppercase text-[10px] font-black tracking-widest border-b border-border">
             <tr>
-              <th className="px-6 py-3 w-16 text-center">#</th>
-              <th className="px-6 py-3">Trader</th>
-              <th className="px-6 py-3 text-right">Net Worth</th>
+              <th className="px-8 py-4 w-24 text-center">Rank</th>
+              <th className="px-6 py-4">Trader</th>
+              <th className="px-8 py-4 text-right">Net Worth (USD)</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {data?.entries?.map((entry) => (
-              <tr key={entry.user_id} className="hover:bg-muted/50 transition-colors">
-                <td className="px-6 py-4 text-center font-medium flex justify-center items-center">
-                  {entry.rank === 1 && <IconMedal className="h-5 w-5 text-yellow-500" />}
-                  {entry.rank === 2 && <IconMedal className="h-5 w-5 text-gray-400" />}
-                  {entry.rank === 3 && <IconMedal className="h-5 w-5 text-amber-700" />}
-                  {entry.rank > 3 && entry.rank}
+              <tr key={entry.user?.id} className="hover:bg-muted/50 transition-colors">
+                <td className="px-6 py-4 text-center font-bold">
+                  <div className="flex justify-center items-center">
+                    {entry.rank === 1 && <IconMedal className="h-5 w-5 text-yellow-500" />}
+                    {entry.rank === 2 && <IconMedal className="h-5 w-5 text-slate-400" />}
+                    {entry.rank === 3 && <IconMedal className="h-5 w-5 text-amber-700" />}
+                    {entry.rank > 3 && entry.rank}
+                  </div>
                 </td>
-                <td className="px-6 py-4 font-medium">
-                  {entry.is_public ? (
+                <td className="px-6 py-4 font-bold">
+                  {entry.user?.is_public ? (
                     <Link
-                      to={`/users/${entry.username}`}
-                      className="hover:text-primary hover:underline transition-colors flex items-center gap-2"
+                      to={`/users/${entry.user?.username}`}
+                      className="hover:text-primary transition-colors flex items-center gap-2"
                     >
-                      {entry.first_name} {entry.last_name}
+                      {entry.user?.username}
                     </Link>
                   ) : (
-                    <div className="flex items-center gap-2 text-muted-foreground cursor-not-allowed">
-                      <span>
-                        {entry.first_name} {entry.last_name}
-                      </span>
-                      <IconLock className="w-4 h-4" />
+                    <div className="flex items-center gap-2 text-muted-foreground/60 italic">
+                      <span>Classified</span>
+                      <IconLock className="w-3 h-3" />
                     </div>
                   )}
                 </td>
 
-                <td className="px-6 py-4 text-right font-mono text-emerald-500 font-bold">
+                <td className="px-6 py-4 text-right font-bold tabular-nums text-emerald-500">
                   $
-                  {entry.total_net_worth?.toLocaleString(undefined, {
+                  {entry.score?.toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
@@ -79,7 +78,7 @@ export function Leaderboard() {
             {(!data?.entries || data.entries.length === 0) && (
               <tr>
                 <td colSpan={3} className="px-6 py-8 text-center text-muted-foreground">
-                  No traders ranked yet. Be the first!
+                  The arena is empty. Be the first!
                 </td>
               </tr>
             )}
@@ -87,9 +86,8 @@ export function Leaderboard() {
         </table>
       </div>
 
-      <p className="text-xs text-center text-muted-foreground mt-4">
-        Leaderboard updates every 10 minutes. Status refreshes automatically. Last update:{' '}
-        {data ? formatLocalTime(data.last_update) : 'Never'}
+      <p className="text-xs text-center text-muted-foreground mt-4 opacity-50">
+        Leaderboard updates every 10 minutes. Status refreshes automatically.
       </p>
     </div>
   );
