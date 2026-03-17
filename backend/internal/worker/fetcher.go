@@ -5,7 +5,6 @@ import (
 	"context"
 	"log"
 	"math"
-	"sync"
 	"time"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
@@ -20,11 +19,14 @@ type QuoteProvider interface {
 
 // MarketFetcher is a worker that fetches market data.
 type MarketFetcher struct {
-	client      QuoteProvider
-	currentRepo *redis.MarketRepository
-	historyRepo service.HistoryRepository
-	ladderRepo  service.LadderRepository
-	source      string // "Finnhub" or "CoinGecko"
+	client          QuoteProvider
+	currentRepo     *redis.MarketRepository
+	historyRepo     service.HistoryRepository
+	ladderRepo      service.LadderRepository
+	source          string // "Finnhub" or "CoinGecko"
+	fetchInterval   time.Duration
+	refreshInterval time.Duration
+	requestTimeout  time.Duration
 }
 
 // NewMarketFetcher creates a new instance of MarketFetcher.
@@ -34,89 +36,85 @@ func NewMarketFetcher(
 	currentRepo *redis.MarketRepository,
 	historyRepo service.HistoryRepository,
 	ladderRepo service.LadderRepository,
+	fetchInterval time.Duration,
+	refreshInterval time.Duration,
+	requestTimeout time.Duration,
 ) *MarketFetcher {
 	return &MarketFetcher{
-		source:      source,
-		client:      client,
-		currentRepo: currentRepo,
-		historyRepo: historyRepo,
-		ladderRepo:  ladderRepo,
+		source:          source,
+		client:          client,
+		currentRepo:     currentRepo,
+		historyRepo:     historyRepo,
+		ladderRepo:      ladderRepo,
+		fetchInterval:   fetchInterval,
+		refreshInterval: refreshInterval,
+		requestTimeout:  requestTimeout,
 	}
 }
 
-// RunLoop begins the fetching loop for tickers associated with the active ladder.
-// It periodically refreshes the list of tickers from the database.
-func (w *MarketFetcher) RunLoop(
-	ctx context.Context,
-	fetchInterval time.Duration,
-	refreshInterval time.Duration,
-	wg *sync.WaitGroup,
-) {
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+// Start begins the fetching loop for tickers associated with the active ladder.
+func (w *MarketFetcher) Start(ctx context.Context) error {
+	refreshTicker := time.NewTicker(w.refreshInterval)
+	defer refreshTicker.Stop()
 
-		// Local cache for deduplication
-		lastQuotes := make(map[string]*exchange.Quote)
+	fetchTimer := time.NewTimer(0)
+	defer fetchTimer.Stop()
 
-		// Create tickers for the intervals
-		delay := time.NewTicker(fetchInterval)
-		defer delay.Stop()
+	lastQuotes := make(map[string]*exchange.Quote)
 
-		refreshTimer := time.NewTicker(refreshInterval)
-		defer refreshTimer.Stop()
+	for {
+		symbols := w.refreshTickers(ctx)
+		if len(symbols) == 0 {
+			select {
+			case <-ctx.Done():
+				log.Printf("[Fetcher:%s] Stopping...", w.source)
 
-		var symbols []string
-
-		// Initial fetch
-		symbols = w.refreshTickers(ctx)
-
-		for {
-			if len(symbols) == 0 {
-				select {
-				case <-ctx.Done():
-					return
-				case <-refreshTimer.C:
-					symbols = w.refreshTickers(ctx)
-				case <-time.After(5 * time.Second):
-				}
+				return ctx.Err()
+			case <-refreshTicker.C:
 				continue
 			}
+		}
 
-			for i := 0; i < len(symbols); i++ {
-				symbol := symbols[i]
+		for i := 0; i < len(symbols); i++ {
+			symbol := symbols[i]
 
-				select {
-				case <-ctx.Done():
-					log.Printf("[Fetcher:%s] Stopped", w.source)
-					return
-				case <-refreshTimer.C:
-					symbols = w.refreshTickers(ctx)
-					i = -1
-					continue
-				case <-delay.C:
-					q, err := w.processTicker(ctx, symbol, lastQuotes[symbol])
-					if err != nil {
-						log.Printf("[%s] Fetch failed: %v", symbol, err)
-					} else if q != nil {
-						lastQuotes[symbol] = q
-					}
+			select {
+			case <-ctx.Done():
+				log.Printf("[Fetcher:%s] Stopping...", w.source)
+
+				return ctx.Err()
+
+			case <-refreshTicker.C:
+				symbols = w.refreshTickers(ctx)
+				i = -1
+
+				continue
+
+			case <-fetchTimer.C:
+				q, err := w.processTicker(ctx, symbol, lastQuotes[symbol])
+				if err != nil {
+					log.Printf("[%s] Fetch failed: %v", symbol, err)
+				} else if q != nil {
+					lastQuotes[symbol] = q
 				}
+				fetchTimer.Reset(w.fetchInterval)
 			}
 		}
-	}()
+	}
 }
 
 func (w *MarketFetcher) refreshTickers(ctx context.Context) []string {
 	activeLadderID, err := w.ladderRepo.GetActiveLadder(ctx)
 	if err != nil {
 		log.Printf("[Fetcher:%s] Failed to get active ladder: %v", w.source, err)
+
 		return nil
 	}
 
 	tickers, err := w.ladderRepo.GetAllowedTickers(ctx, activeLadderID)
 	if err != nil {
 		log.Printf("[Fetcher:%s] Failed to get ladder tickers: %v", w.source, err)
+
 		return nil
 	}
 
@@ -139,7 +137,10 @@ func (w *MarketFetcher) processTicker(
 	symbol string,
 	lastQuote *exchange.Quote,
 ) (*exchange.Quote, error) {
-	quote, err := w.client.GetQuote(ctx, symbol)
+	fetchCtx, cancel := context.WithTimeout(ctx, w.requestTimeout)
+	defer cancel()
+
+	quote, err := w.client.GetQuote(fetchCtx, symbol)
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +158,6 @@ func (w *MarketFetcher) processTicker(
 		return nil, err
 	}
 
-	// Async save to history (don't block the loop)
 	go func(q *exchange.Quote) {
 		saveCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()

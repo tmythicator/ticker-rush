@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"sync"
 	"testing"
 	"time"
 
@@ -101,13 +100,17 @@ func TestMarketFetcher(t *testing.T) {
 			{Symbol: "AAPL", Source: "Finnhub"},
 		},
 	}
-	marketWorker := worker.NewMarketFetcher("Finnhub", mockClient, marketRepo, historyRepo, ladderRepo)
+	marketWorker := worker.NewMarketFetcher("Finnhub", mockClient, marketRepo, historyRepo, ladderRepo, 100*time.Millisecond, 1*time.Minute, 5*time.Second)
 
 	// 4. Run Worker logic (simulate one tick)
 	ctx := t.Context()
 
-	// Start in a goroutine
-	go marketWorker.RunLoop(ctx, 100*time.Millisecond, 1*time.Minute, &sync.WaitGroup{})
+	// Start worker
+	go func() {
+		if errWork := marketWorker.Start(ctx); errWork != nil && errWork != context.Canceled {
+			t.Errorf("Worker failed: %v", errWork)
+		}
+	}()
 
 	// Wait for Redis update
 	time.Sleep(200 * time.Millisecond)

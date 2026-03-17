@@ -19,7 +19,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -79,24 +78,34 @@ func main() {
 	coingeckoClient := coingecko.NewClient(cfg.CoingeckoKey, cfg.CoingeckoTimeout)
 
 	// Initialize Workers
-	finnhubWorker := worker.NewMarketFetcher("Finnhub", finnhubClient, marketRepo, historyRepo, ladderRepo)
-	coingeckoWorker := worker.NewMarketFetcher("CoinGecko", coingeckoClient, marketRepo, historyRepo, ladderRepo)
-
-	fmt.Printf("Worker service started. Tracking active ladder tickers...\n")
+	refreshInterval := 1 * time.Minute
+	finnhubWorker := worker.NewMarketFetcher("Finnhub", finnhubClient, marketRepo, historyRepo, ladderRepo, cfg.FinnhubFetchInterval, refreshInterval, cfg.FinnhubTimeout)
+	coingeckoWorker := worker.NewMarketFetcher("CoinGecko", coingeckoClient, marketRepo, historyRepo, ladderRepo, cfg.CoingeckoFetchInterval, refreshInterval, cfg.CoingeckoTimeout)
 
 	var wg sync.WaitGroup
 
-	// Start Workers
-	refreshInterval := 1 * time.Minute
-	finnhubWorker.RunLoop(ctx, cfg.FinnhubFetchInterval, refreshInterval, &wg)
-	coingeckoWorker.RunLoop(ctx, cfg.CoingeckoFetchInterval, refreshInterval, &wg)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		if err := finnhubWorker.Start(ctx); err != nil && err != context.Canceled {
+			log.Printf("Finnhub worker failed: %v", err)
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		if err := coingeckoWorker.Start(ctx); err != nil && err != context.Canceled {
+			log.Printf("CoinGecko worker failed: %v", err)
+		}
+	}()
 
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
 
-	log.Println("Fetcher shutting down...")
+	log.Println("Fetcher service shutting down...")
 	cancel()
 
 	log.Println("Waiting for workers to finish...")
