@@ -74,7 +74,7 @@ func (c *Client) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, 
 	}
 
 	return &exchange.Quote{
-		Symbol:        symbol,
+		Symbol:        apiSymbol,
 		Price:         fq.CurrentPrice,
 		Change:        fq.Change,
 		ChangePercent: fq.PercentChange,

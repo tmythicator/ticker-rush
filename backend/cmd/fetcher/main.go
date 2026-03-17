@@ -26,6 +26,7 @@ import (
 	"strconv"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	go_redis "github.com/redis/go-redis/v9"
@@ -69,6 +70,7 @@ func main() {
 	defer pgPool.Close()
 
 	historyRepo := postgres.NewHistoryRepository(pgPool)
+	ladderRepo := postgres.NewLadderRepository(pgPool)
 
 	// Initialize Finnhub Client
 	finnhubClient := finnhub.NewClient(cfg.FinnhubKey, cfg.FinnhubTimeout)
@@ -77,35 +79,17 @@ func main() {
 	coingeckoClient := coingecko.NewClient(cfg.CoingeckoKey, cfg.CoingeckoTimeout)
 
 	// Initialize Workers
-	finnhubWorker := worker.NewMarketFetcher(finnhubClient, marketRepo, historyRepo)
-	coingeckoWorker := worker.NewMarketFetcher(coingeckoClient, marketRepo, historyRepo)
+	finnhubWorker := worker.NewMarketFetcher("Finnhub", finnhubClient, marketRepo, historyRepo, ladderRepo)
+	coingeckoWorker := worker.NewMarketFetcher("CoinGecko", coingeckoClient, marketRepo, historyRepo, ladderRepo)
 
-	fmt.Printf("Worker service started. Tracking %d tickers...\n", len(cfg.Tickers))
+	fmt.Printf("Worker service started. Tracking active ladder tickers...\n")
 
 	var wg sync.WaitGroup
 
-	// Separate tickers by provider
-	var coingeckoTickers []string
-	var finnhubTickers []string
-
-	for _, symbol := range cfg.Tickers {
-		if len(symbol) > 3 && symbol[:3] == "CG:" {
-			coingeckoTickers = append(coingeckoTickers, symbol)
-		} else {
-			finnhubTickers = append(finnhubTickers, symbol)
-		}
-	}
-
 	// Start Workers
-	if len(coingeckoTickers) > 0 {
-		fmt.Printf("Starting CoinGecko worker for %d tickers (Interval: %s)\n", len(coingeckoTickers), cfg.CoingeckoFetchInterval)
-		coingeckoWorker.RunLoop(ctx, coingeckoTickers, cfg.CoingeckoFetchInterval, &wg)
-	}
-
-	if len(finnhubTickers) > 0 {
-		fmt.Printf("Starting Finnhub worker for %d tickers (Interval: %s)\n", len(finnhubTickers), cfg.FinnhubFetchInterval)
-		finnhubWorker.RunLoop(ctx, finnhubTickers, cfg.FinnhubFetchInterval, &wg)
-	}
+	refreshInterval := 1 * time.Minute
+	finnhubWorker.RunLoop(ctx, cfg.FinnhubFetchInterval, refreshInterval, &wg)
+	coingeckoWorker.RunLoop(ctx, cfg.CoingeckoFetchInterval, refreshInterval, &wg)
 
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)
