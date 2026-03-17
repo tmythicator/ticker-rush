@@ -15,8 +15,8 @@ export const LadderHeader = ({ name, type }: LadderHeaderProps) => {
       <div className="space-y-2">
         <h1 className="text-4xl font-black tracking-tight">{name}</h1>
         <p className="text-muted-foreground max-w-xl leading-relaxed">
-          Compete in this {type.toLowerCase()} ladder. The most profitable traders
-          gain reputation and exclusive rewards!
+          Compete in this {type.toLowerCase()} ladder. The most profitable traders gain reputation
+          and exclusive rewards!
         </p>
       </div>
     </div>
