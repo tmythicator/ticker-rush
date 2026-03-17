@@ -303,7 +303,6 @@ type BuyStockRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
 	Quantity      float64                `protobuf:"fixed64,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	LadderId      int64                  `protobuf:"varint,3,opt,name=ladder_id,json=ladderId,proto3" json:"ladder_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -348,13 +347,6 @@ func (x *BuyStockRequest) GetSymbol() string {
 func (x *BuyStockRequest) GetQuantity() float64 {
 	if x != nil {
 		return x.Quantity
-	}
-	return 0
-}
-
-func (x *BuyStockRequest) GetLadderId() int64 {
-	if x != nil {
-		return x.LadderId
 	}
 	return 0
 }
@@ -423,7 +415,6 @@ type SellStockRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
 	Quantity      float64                `protobuf:"fixed64,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	LadderId      int64                  `protobuf:"varint,3,opt,name=ladder_id,json=ladderId,proto3" json:"ladder_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -468,13 +459,6 @@ func (x *SellStockRequest) GetSymbol() string {
 func (x *SellStockRequest) GetQuantity() float64 {
 	if x != nil {
 		return x.Quantity
-	}
-	return 0
-}
-
-func (x *SellStockRequest) GetLadderId() int64 {
-	if x != nil {
-		return x.LadderId
 	}
 	return 0
 }
@@ -560,19 +544,17 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\"B\n" +
 	"\x12GetHistoryResponse\x12,\n" +
-	"\ahistory\x18\x01 \x03(\v2\x12.exchange.v1.QuoteR\ahistory\"b\n" +
+	"\ahistory\x18\x01 \x03(\v2\x12.exchange.v1.QuoteR\ahistory\"E\n" +
 	"\x0fBuyStockRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x01R\bquantity\x12\x1b\n" +
-	"\tladder_id\x18\x03 \x01(\x03R\bladderId\"\x86\x01\n" +
+	"\bquantity\x18\x02 \x01(\x01R\bquantity\"\x86\x01\n" +
 	"\x10BuyStockResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12>\n" +
-	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant\"c\n" +
+	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant\"F\n" +
 	"\x10SellStockRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x01R\bquantity\x12\x1b\n" +
-	"\tladder_id\x18\x03 \x01(\x03R\bladderId\"\x87\x01\n" +
+	"\bquantity\x18\x02 \x01(\x01R\bquantity\"\x87\x01\n" +
 	"\x11SellStockResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12>\n" +

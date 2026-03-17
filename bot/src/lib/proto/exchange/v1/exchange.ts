@@ -40,7 +40,6 @@ export interface GetHistoryResponse {
 export interface BuyStockRequest {
   symbol: string;
   quantity: number;
-  ladder_id: string;
 }
 
 export interface BuyStockResponse {
@@ -52,7 +51,6 @@ export interface BuyStockResponse {
 export interface SellStockRequest {
   symbol: string;
   quantity: number;
-  ladder_id: string;
 }
 
 export interface SellStockResponse {
@@ -478,7 +476,7 @@ export const GetHistoryResponse: MessageFns<GetHistoryResponse> = {
 };
 
 function createBaseBuyStockRequest(): BuyStockRequest {
-  return { symbol: "", quantity: 0, ladder_id: "0" };
+  return { symbol: "", quantity: 0 };
 }
 
 export const BuyStockRequest: MessageFns<BuyStockRequest> = {
@@ -488,9 +486,6 @@ export const BuyStockRequest: MessageFns<BuyStockRequest> = {
     }
     if (message.quantity !== 0) {
       writer.uint32(17).double(message.quantity);
-    }
-    if (message.ladder_id !== "0") {
-      writer.uint32(24).int64(message.ladder_id);
     }
     return writer;
   },
@@ -518,14 +513,6 @@ export const BuyStockRequest: MessageFns<BuyStockRequest> = {
           message.quantity = reader.double();
           continue;
         }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.ladder_id = reader.int64().toString();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -539,11 +526,6 @@ export const BuyStockRequest: MessageFns<BuyStockRequest> = {
     return {
       symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : "",
       quantity: isSet(object.quantity) ? globalThis.Number(object.quantity) : 0,
-      ladder_id: isSet(object.ladderId)
-        ? globalThis.String(object.ladderId)
-        : isSet(object.ladder_id)
-        ? globalThis.String(object.ladder_id)
-        : "0",
     };
   },
 
@@ -555,9 +537,6 @@ export const BuyStockRequest: MessageFns<BuyStockRequest> = {
     if (message.quantity !== 0) {
       obj.quantity = message.quantity;
     }
-    if (message.ladder_id !== "0") {
-      obj.ladderId = message.ladder_id;
-    }
     return obj;
   },
 
@@ -568,7 +547,6 @@ export const BuyStockRequest: MessageFns<BuyStockRequest> = {
     const message = createBaseBuyStockRequest();
     message.symbol = object.symbol ?? "";
     message.quantity = object.quantity ?? 0;
-    message.ladder_id = object.ladder_id ?? "0";
     return message;
   },
 };
@@ -668,7 +646,7 @@ export const BuyStockResponse: MessageFns<BuyStockResponse> = {
 };
 
 function createBaseSellStockRequest(): SellStockRequest {
-  return { symbol: "", quantity: 0, ladder_id: "0" };
+  return { symbol: "", quantity: 0 };
 }
 
 export const SellStockRequest: MessageFns<SellStockRequest> = {
@@ -678,9 +656,6 @@ export const SellStockRequest: MessageFns<SellStockRequest> = {
     }
     if (message.quantity !== 0) {
       writer.uint32(17).double(message.quantity);
-    }
-    if (message.ladder_id !== "0") {
-      writer.uint32(24).int64(message.ladder_id);
     }
     return writer;
   },
@@ -708,14 +683,6 @@ export const SellStockRequest: MessageFns<SellStockRequest> = {
           message.quantity = reader.double();
           continue;
         }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.ladder_id = reader.int64().toString();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -729,11 +696,6 @@ export const SellStockRequest: MessageFns<SellStockRequest> = {
     return {
       symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : "",
       quantity: isSet(object.quantity) ? globalThis.Number(object.quantity) : 0,
-      ladder_id: isSet(object.ladderId)
-        ? globalThis.String(object.ladderId)
-        : isSet(object.ladder_id)
-        ? globalThis.String(object.ladder_id)
-        : "0",
     };
   },
 
@@ -745,9 +707,6 @@ export const SellStockRequest: MessageFns<SellStockRequest> = {
     if (message.quantity !== 0) {
       obj.quantity = message.quantity;
     }
-    if (message.ladder_id !== "0") {
-      obj.ladderId = message.ladder_id;
-    }
     return obj;
   },
 
@@ -758,7 +717,6 @@ export const SellStockRequest: MessageFns<SellStockRequest> = {
     const message = createBaseSellStockRequest();
     message.symbol = object.symbol ?? "";
     message.quantity = object.quantity ?? 0;
-    message.ladder_id = object.ladder_id ?? "0";
     return message;
   },
 };
