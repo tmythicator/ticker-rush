@@ -60,16 +60,49 @@ func (r *LadderRepository) GetAllowedTickers(ctx context.Context, ladderID int64
 	if err != nil {
 		return nil, err
 	}
-
 	tickerInfos := make([]*ladder.TickerInfo, len(tickers))
-	for i, ticker := range tickers {
+	for i, t := range tickers {
 		tickerInfos[i] = &ladder.TickerInfo{
-			Symbol: ticker.StockSymbol,
-			Source: ticker.Source,
+			Symbol: t.StockSymbol,
+			Source: t.Source,
 		}
 	}
-
 	return tickerInfos, nil
+}
+
+// JoinLadder adds a user to a ladder and initializes their balance.
+func (r *LadderRepository) JoinLadder(ctx context.Context, ladderID int64, userID int64) error {
+	err := r.queries.JoinLadderParticipant(ctx, sqlc.JoinLadderParticipantParams{
+		LadderID: ladderID,
+		UserID:   userID,
+	})
+	if err != nil {
+		return err
+	}
+
+	l, err := r.queries.GetLadder(ctx, ladderID)
+	if err != nil {
+		return err
+	}
+
+	err = r.queries.InsertLadderBalance(ctx, sqlc.InsertLadderBalanceParams{
+		LadderID: ladderID,
+		UserID:   userID,
+		Balance:  l.InitialBalance,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// IsUserInLadder checks if a user is enrolled in a ladder.
+func (r *LadderRepository) IsUserInLadder(ctx context.Context, ladderID int64, userID int64) (bool, error) {
+	return r.queries.IsUserInLadder(ctx, sqlc.IsUserInLadderParams{
+		LadderID: ladderID,
+		UserID:   userID,
+	})
 }
 
 // WithTx returns a new LadderRepository that uses the given transaction.

@@ -41,6 +41,7 @@ func (r *UserRepository) GetUser(ctx context.Context, id int64) (*user.User, err
 		LastName:  u.LastName,
 		Website:   u.Website,
 		IsPublic:  u.IsPublic,
+		IsAdmin:   u.IsAdmin,
 	}, nil
 }
 
@@ -61,6 +62,7 @@ func (r *UserRepository) GetUsers(ctx context.Context) ([]*user.User, error) {
 			CreatedAt: timestamppb.New(u.CreatedAt.Time),
 			Website:   u.Website,
 			IsPublic:  u.IsPublic,
+			IsAdmin:   u.IsAdmin,
 		}
 	}
 
@@ -89,6 +91,7 @@ func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*user.
 		LastName:  u.LastName,
 		Website:   u.Website,
 		IsPublic:  u.IsPublic,
+		IsAdmin:   u.IsAdmin,
 	}, nil
 }
 
@@ -134,8 +137,6 @@ func (r *UserRepository) CreateUser(
 	hashedPassword string,
 	firstName string,
 	lastName string,
-	ladderID int64,
-	balance float64,
 	website string,
 	isPublic bool,
 	agbAcceptedAt time.Time,
@@ -154,15 +155,6 @@ func (r *UserRepository) CreateUser(
 		return nil, err
 	}
 
-	err = r.queries.InsertLadderBalance(ctx, sqlc.InsertLadderBalanceParams{
-		LadderID: ladderID,
-		UserID:   u.ID,
-		Balance:  balance,
-	})
-	if err != nil {
-		return nil, err
-	}
-
 	return &user.User{
 		Id:        u.ID,
 		Username:  u.Username,
@@ -171,6 +163,7 @@ func (r *UserRepository) CreateUser(
 		LastName:  u.LastName,
 		Website:   u.Website,
 		IsPublic:  u.IsPublic,
+		IsAdmin:   u.IsAdmin,
 	}, nil
 
 }
@@ -193,5 +186,11 @@ func (r *UserRepository) GetUserByUsername(
 		LastName:  u.LastName,
 		Website:   u.Website,
 		IsPublic:  u.IsPublic,
+		IsAdmin:   u.IsAdmin,
 	}, u.PasswordHash, nil
+}
+
+// GetUserWithPortfolioForActiveLadder retrieves a user and their portfolio for the active ladder.
+func (r *UserRepository) GetUserWithPortfolioForActiveLadder(ctx context.Context, userID int64) ([]sqlc.GetUserWithPortfolioForActiveLadderRow, error) {
+	return r.queries.GetUserWithPortfolioForActiveLadder(ctx, userID)
 }

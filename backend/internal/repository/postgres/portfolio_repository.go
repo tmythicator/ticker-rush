@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
@@ -31,12 +31,12 @@ func (r *PortfolioRepository) WithTx(tx service.Transaction) service.PortfolioRe
 	}
 }
 
-// GetPortfolio retrieves the portfolio for a user in a specific ladder.
+// GetPortfolio retrieves the portfolio for a user for the given ladder.
 func (r *PortfolioRepository) GetPortfolio(
 	ctx context.Context,
-	ladderID int64,
 	userID int64,
-) ([]*ladder.PortfolioItem, error) {
+	ladderID int64,
+) ([]*portfolio.PortfolioItem, error) {
 	items, err := r.queries.GetPortfolio(ctx, sqlc.GetPortfolioParams{
 		LadderID: ladderID,
 		UserID:   userID,
@@ -45,9 +45,9 @@ func (r *PortfolioRepository) GetPortfolio(
 		return nil, err
 	}
 
-	result := make([]*ladder.PortfolioItem, len(items))
+	result := make([]*portfolio.PortfolioItem, len(items))
 	for i, item := range items {
-		result[i] = &ladder.PortfolioItem{
+		result[i] = &portfolio.PortfolioItem{
 			StockSymbol:  item.StockSymbol,
 			Quantity:     item.Quantity,
 			AveragePrice: item.AveragePrice,
@@ -57,13 +57,13 @@ func (r *PortfolioRepository) GetPortfolio(
 	return result, nil
 }
 
-// GetPortfolioItem retrieves a specific portfolio item.
+// GetPortfolioItem retrieves a specific portfolio item for the given ladder.
 func (r *PortfolioRepository) GetPortfolioItem(
 	ctx context.Context,
-	ladderID int64,
 	userID int64,
+	ladderID int64,
 	symbol string,
-) (*ladder.PortfolioItem, error) {
+) (*portfolio.PortfolioItem, error) {
 	item, err := r.queries.GetPortfolioItem(ctx, sqlc.GetPortfolioItemParams{
 		LadderID:    ladderID,
 		UserID:      userID,
@@ -73,20 +73,20 @@ func (r *PortfolioRepository) GetPortfolioItem(
 		return nil, err
 	}
 
-	return &ladder.PortfolioItem{
+	return &portfolio.PortfolioItem{
 		StockSymbol:  item.StockSymbol,
 		Quantity:     item.Quantity,
 		AveragePrice: item.AveragePrice,
 	}, nil
 }
 
-// GetPortfolioItemForUpdate retrieves a portfolio item with a lock for update.
+// GetPortfolioItemForUpdate retrieves a portfolio item with a lock for update for the given ladder.
 func (r *PortfolioRepository) GetPortfolioItemForUpdate(
 	ctx context.Context,
-	ladderID int64,
 	userID int64,
+	ladderID int64,
 	symbol string,
-) (*ladder.PortfolioItem, error) {
+) (*portfolio.PortfolioItem, error) {
 	item, err := r.queries.GetPortfolioItemForUpdate(ctx, sqlc.GetPortfolioItemForUpdateParams{
 		LadderID:    ladderID,
 		UserID:      userID,
@@ -96,18 +96,18 @@ func (r *PortfolioRepository) GetPortfolioItemForUpdate(
 		return nil, err
 	}
 
-	return &ladder.PortfolioItem{
+	return &portfolio.PortfolioItem{
 		StockSymbol:  item.StockSymbol,
 		Quantity:     item.Quantity,
 		AveragePrice: item.AveragePrice,
 	}, nil
 }
 
-// SetPortfolioItem updates or inserts a portfolio item.
+// SetPortfolioItem updates or inserts a portfolio item for the given ladder.
 func (r *PortfolioRepository) SetPortfolioItem(
 	ctx context.Context,
-	ladderID int64,
 	userID int64,
+	ladderID int64,
 	symbol string,
 	quantity float64,
 	averagePrice float64,
@@ -121,11 +121,11 @@ func (r *PortfolioRepository) SetPortfolioItem(
 	})
 }
 
-// DeletePortfolioItem removes a portfolio item.
+// DeletePortfolioItem removes a portfolio item for the given ladder.
 func (r *PortfolioRepository) DeletePortfolioItem(
 	ctx context.Context,
-	ladderID int64,
 	userID int64,
+	ladderID int64,
 	symbol string,
 ) error {
 	return r.queries.DeletePortfolioItem(ctx, sqlc.DeletePortfolioItemParams{
