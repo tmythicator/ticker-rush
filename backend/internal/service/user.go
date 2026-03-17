@@ -11,8 +11,10 @@ import (
 	goaway "github.com/TwiN/go-away"
 	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 )
 
@@ -43,7 +45,6 @@ func (s *UserService) CreateUser(
 	password string,
 	firstName string,
 	lastName string,
-	website string,
 	agbAccepted bool,
 ) (*user.User, error) {
 	// Require AGB Acceptance
@@ -82,59 +83,48 @@ func (s *UserService) CreateUser(
 		return nil, err
 	}
 
-	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.userRepo.CreateUser(ctx, username, string(hashedPassword), firstName, lastName, ladderID, 10000, website, false, time.Now())
+	return s.userRepo.CreateUser(ctx, username, string(hashedPassword), firstName, lastName, "", false, time.Now())
 }
 
-// GetUser retrieves a user by ID and populates balance for active ladder.
+// GetUser retrieves a user by ID.
 func (s *UserService) GetUser(ctx context.Context, id int64) (*user.User, error) {
-	u, err := s.userRepo.GetUser(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
-	if err == nil {
-		balance, _ := s.userRepo.GetUserBalance(ctx, id, ladderID)
-		u.Balance = balance
-	}
-
-	return u, nil
+	return s.userRepo.GetUser(ctx, id)
 }
 
 // GetUserWithPortfolio retrieves a user and their portfolio for the active ladder.
 func (s *UserService) GetUserWithPortfolio(ctx context.Context, id int64) (*user.User, error) {
-	fetchedUser, err := s.userRepo.GetUser(ctx, id)
+	rows, err := s.userRepo.GetUserWithPortfolioForActiveLadder(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
-	if err != nil {
-		return nil, err
+	if len(rows) == 0 {
+		return nil, apperrors.ErrUserNotFound
+	}
+	firstRow := rows[0]
+
+	fetchedUser := &user.User{
+		Id:              firstRow.UserID,
+		Username:        firstRow.Username,
+		FirstName:       firstRow.FirstName,
+		LastName:        firstRow.LastName,
+		Website:         firstRow.Website,
+		IsPublic:        firstRow.IsPublic,
+		IsAdmin:         firstRow.IsAdmin,
+		IsBanned:        firstRow.IsBanned,
+		CreatedAt:       timestamppb.New(firstRow.CreatedAt.Time),
+		Balance:         firstRow.Balance,
+		Portfolio:       make(map[string]*portfolio.PortfolioItem),
+		IsParticipating: firstRow.IsParticipating,
 	}
 
-	portfolio, err := s.portfolioRepo.GetPortfolio(ctx, id, ladderID)
-	if err != nil {
-		return nil, err
-	}
-
-	balance, _ := s.userRepo.GetUserBalance(ctx, id, ladderID)
-	fetchedUser.Balance = balance
-
-	if fetchedUser.Portfolio == nil {
-		fetchedUser.Portfolio = make(map[string]*user.PortfolioItem)
-	}
-
-	for _, item := range portfolio {
-		fetchedUser.Portfolio[item.GetStockSymbol()] = &user.PortfolioItem{
-			StockSymbol:  item.GetStockSymbol(),
-			Quantity:     item.GetQuantity(),
-			AveragePrice: item.GetAveragePrice(),
+	for _, row := range rows {
+		if row.StockSymbol.Valid && row.LadderID > 0 {
+			fetchedUser.Portfolio[row.StockSymbol.String] = &portfolio.PortfolioItem{
+				StockSymbol:  row.StockSymbol.String,
+				Quantity:     row.Quantity,
+				AveragePrice: row.AveragePrice,
+			}
 		}
 	}
 
@@ -213,30 +203,5 @@ func (s *UserService) GetPublicProfile(ctx context.Context, username string) (*u
 		return nil, apperrors.ErrUserNotFound
 	}
 
-	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	portfolio, err := s.portfolioRepo.GetPortfolio(ctx, targetUser.Id, ladderID)
-	if err != nil {
-		return nil, err
-	}
-
-	balance, _ := s.userRepo.GetUserBalance(ctx, targetUser.Id, ladderID)
-	targetUser.Balance = balance
-
-	if targetUser.Portfolio == nil {
-		targetUser.Portfolio = make(map[string]*user.PortfolioItem)
-	}
-
-	for _, item := range portfolio {
-		targetUser.Portfolio[item.GetStockSymbol()] = &user.PortfolioItem{
-			StockSymbol:  item.GetStockSymbol(),
-			Quantity:     item.GetQuantity(),
-			AveragePrice: item.GetAveragePrice(),
-		}
-	}
-
-	return targetUser, nil
+	return s.GetUserWithPortfolio(ctx, targetUser.Id)
 }

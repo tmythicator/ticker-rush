@@ -6,8 +6,10 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
+	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 )
 
@@ -49,8 +51,6 @@ type UserRepository interface {
 		hashedPassword string,
 		firstName string,
 		lastName string,
-		ladderID int64,
-		balance float64,
 		website string,
 		isPublic bool,
 		agbAcceptedAt time.Time,
@@ -60,6 +60,7 @@ type UserRepository interface {
 	UpdateUserProfile(ctx context.Context, user *user.User) error
 	UpdateUserBalance(ctx context.Context, userID int64, ladderID int64, balance float64) error
 	GetUserBalance(ctx context.Context, userID int64, ladderID int64) (float64, error)
+	GetUserWithPortfolioForActiveLadder(ctx context.Context, id int64) ([]sqlc.GetUserWithPortfolioForActiveLadderRow, error)
 	WithTx(tx Transaction) UserRepository
 }
 
@@ -68,28 +69,30 @@ type LadderRepository interface {
 	GetActiveLadder(ctx context.Context) (int64, error)
 	GetLadder(ctx context.Context, id int64) (*ladder.Ladder, error)
 	GetAllowedTickers(ctx context.Context, ladderID int64) ([]*ladder.TickerInfo, error)
+	JoinLadder(ctx context.Context, ladderID int64, userID int64) error
+	IsUserInLadder(ctx context.Context, ladderID int64, userID int64) (bool, error)
 	WithTx(tx Transaction) LadderRepository
 }
 
 // PortfolioRepository defines the interface for portfolio persistence.
 type PortfolioRepository interface {
-	GetPortfolio(ctx context.Context, ladderID int64, userID int64) ([]*ladder.PortfolioItem, error)
-	GetPortfolioItem(ctx context.Context, ladderID int64, userID int64, symbol string) (*ladder.PortfolioItem, error)
+	GetPortfolio(ctx context.Context, userID int64, ladderID int64) ([]*portfolio.PortfolioItem, error)
+	GetPortfolioItem(ctx context.Context, userID int64, ladderID int64, symbol string) (*portfolio.PortfolioItem, error)
 
 	GetPortfolioItemForUpdate(
 		ctx context.Context,
-		ladderID int64,
 		userID int64,
+		ladderID int64,
 		symbol string,
-	) (*ladder.PortfolioItem, error)
+	) (*portfolio.PortfolioItem, error)
 	SetPortfolioItem(
 		ctx context.Context,
-		ladderID int64,
 		userID int64,
+		ladderID int64,
 		symbol string,
 		quantity float64,
 		averagePrice float64,
 	) error
-	DeletePortfolioItem(ctx context.Context, ladderID int64, userID int64, symbol string) error
+	DeletePortfolioItem(ctx context.Context, userID int64, ladderID int64, symbol string) error
 	WithTx(tx Transaction) PortfolioRepository
 }

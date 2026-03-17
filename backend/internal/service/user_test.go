@@ -3,13 +3,16 @@ package service_test
 import (
 	"context"
 	"testing"
+	"time"
 
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
-	pb "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 	"github.com/tmythicator/ticker-rush/backend/internal/service/mocks"
 )
@@ -18,27 +21,24 @@ var ctx = context.Background()
 
 func TestUserService_CreateUser(t *testing.T) {
 	const (
-		password     = "test134567"
-		username     = "newUsername"
-		startBalance = 10000.0
+		password = "test134567"
+		username = "newUsername"
 	)
 
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
 	mockLadderRepo := new(mocks.MockLadderRepository)
 
-	expectedUser := &pb.User{
+	expectedUser := &user.User{
 		Id:        1,
 		Username:  username,
 		FirstName: "John",
 		LastName:  "Doe",
 	}
 
-	mockLadderRepo.On("GetActiveLadder", mock.Anything).Return(int64(1), nil)
-
 	mockUserRepo.On("CreateUser", ctx, username, mock.MatchedBy(func(hashedPassword string) bool {
 		return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)) == nil
-	}), expectedUser.GetFirstName(), expectedUser.GetLastName(), int64(1), startBalance, "", false, mock.AnythingOfType("time.Time")).Return(expectedUser, nil)
+	}), expectedUser.GetFirstName(), expectedUser.GetLastName(), "", false, mock.AnythingOfType("time.Time")).Return(expectedUser, nil)
 
 	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
 	user, err := userService.CreateUser(
@@ -47,7 +47,6 @@ func TestUserService_CreateUser(t *testing.T) {
 		password,
 		expectedUser.GetFirstName(),
 		expectedUser.GetLastName(),
-		"",
 		true,
 	)
 
@@ -69,7 +68,6 @@ func TestUserService_CreateUser_AgbNotAccepted(t *testing.T) {
 		"password",
 		"First",
 		"Last",
-		"",
 		false,
 	)
 
@@ -81,33 +79,54 @@ func TestUserService_CreateUser_AgbNotAccepted(t *testing.T) {
 }
 
 func TestUserService_GetUserWithPortfolio(t *testing.T) {
+	usernameTest := "userTest1"
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
 	mockLadderRepo := new(mocks.MockLadderRepository)
 	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
-	mockLadderRepo.On("GetActiveLadder", ctx).Return(int64(1), nil)
-
 	userID := int64(1)
-	expectedUser := &pb.User{Id: userID, Username: "userTest1"}
+	now := time.Now()
 
-	expectedPortfolioItems := []*pb.PortfolioItem{
-		{StockSymbol: "AAPL", Quantity: 10, AveragePrice: 150.0},
-		{StockSymbol: "GOOG", Quantity: 5, AveragePrice: 2000.0},
+	rows := []sqlc.GetUserWithPortfolioForActiveLadderRow{
+		{
+			UserID:          userID,
+			Username:        usernameTest,
+			FirstName:       "Test",
+			LastName:        "User",
+			CreatedAt:       pgtype.Timestamptz{Time: now, Valid: true},
+			Balance:         100.0,
+			LadderID:        1,
+			StockSymbol:     pgtype.Text{String: "AAPL", Valid: true},
+			Quantity:        10,
+			AveragePrice:    150.0,
+			IsParticipating: true,
+		},
+		{
+			UserID:          userID,
+			Username:        usernameTest,
+			FirstName:       "Test",
+			LastName:        "User",
+			CreatedAt:       pgtype.Timestamptz{Time: now, Valid: true},
+			Balance:         100.0,
+			LadderID:        1,
+			StockSymbol:     pgtype.Text{String: "GOOG", Valid: true},
+			Quantity:        5,
+			AveragePrice:    2000.0,
+			IsParticipating: true,
+		},
 	}
 
-	mockUserRepo.On("GetUser", ctx, userID).Return(expectedUser, nil)
-	mockUserRepo.On("GetUserBalance", ctx, userID, int64(1)).Return(100.0, nil)
-	mockPortfolioRepo.On("GetPortfolio", ctx, userID, int64(1)).Return(expectedPortfolioItems, nil)
+	mockUserRepo.On("GetUserWithPortfolioForActiveLadder", ctx, userID).Return(rows, nil)
 
 	res, err := userService.GetUserWithPortfolio(ctx, userID)
 
 	assert.NoError(t, err)
-	assert.Equal(t, expectedUser.GetId(), res.GetId())
-	assert.Equal(t, expectedUser.GetUsername(), res.GetUsername())
-	assert.Len(t, res.GetPortfolio(), len(expectedPortfolioItems))
+	assert.Equal(t, userID, res.GetId())
+	assert.Equal(t, usernameTest, res.GetUsername())
+	assert.Len(t, res.GetPortfolio(), 2)
 
-	assert.Equal(t, expectedPortfolioItems[0], res.GetPortfolio()["AAPL"])
-	assert.Equal(t, expectedPortfolioItems[1], res.GetPortfolio()["GOOG"])
+	assert.Equal(t, float64(10), res.GetPortfolio()["AAPL"].Quantity)
+	assert.Equal(t, float64(5), res.GetPortfolio()["GOOG"].Quantity)
 }
 
 func TestUserService_Authenticate(t *testing.T) {
@@ -123,7 +142,7 @@ func TestUserService_Authenticate(t *testing.T) {
 
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(truePassword), bcrypt.DefaultCost)
 
-	expectedUser := &pb.User{
+	expectedUser := &user.User{
 		Id:        1,
 		Username:  username,
 		FirstName: "John",
@@ -148,20 +167,30 @@ func TestUserService_GetPublicProfile(t *testing.T) {
 
 	t.Run("Public User", func(t *testing.T) {
 		username := "publicUser"
-		expectedUser := &pb.User{
+		expectedUser := &user.User{
 			Id:        1,
 			Username:  username,
 			FirstName: "Public",
 			LastName:  "User",
 			IsPublic:  true,
 		}
-		expectedPortfolio := []*pb.PortfolioItem{
-			{StockSymbol: "AAPL", Quantity: 10, AveragePrice: 150.0},
-		}
-		mockLadderRepo.On("GetActiveLadder", ctx).Return(int64(1), nil)
 		mockUserRepo.On("GetUserByUsername", ctx, username).Return(expectedUser, "", nil).Once()
-		mockUserRepo.On("GetUserBalance", ctx, expectedUser.Id, int64(1)).Return(200.0, nil).Once()
-		mockPortfolioRepo.On("GetPortfolio", ctx, expectedUser.Id, int64(1)).Return(expectedPortfolio, nil).Once()
+		mockUserRepo.On("GetUserWithPortfolioForActiveLadder", ctx, expectedUser.Id).Return([]sqlc.GetUserWithPortfolioForActiveLadderRow{
+			{
+				UserID:          expectedUser.Id,
+				Username:        username,
+				FirstName:       "Public",
+				LastName:        "User",
+				CreatedAt:       pgtype.Timestamptz{Time: time.Now(), Valid: true},
+				IsPublic:        true,
+				Balance:         200.0,
+				LadderID:        1,
+				StockSymbol:     pgtype.Text{String: "AAPL", Valid: true},
+				Quantity:        10,
+				AveragePrice:    150.0,
+				IsParticipating: true,
+			},
+		}, nil).Once()
 
 		res, err := userService.GetPublicProfile(ctx, username)
 
@@ -173,7 +202,7 @@ func TestUserService_GetPublicProfile(t *testing.T) {
 
 	t.Run("Private User", func(t *testing.T) {
 		username := "privateUser"
-		expectedUser := &pb.User{
+		expectedUser := &user.User{
 			Id:       2,
 			Username: username,
 			IsPublic: false,
