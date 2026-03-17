@@ -32,6 +32,7 @@ func (s *LadderService) GetAllowedTickers(ctx context.Context) ([]*ladder.Ticker
 	if err != nil {
 		return nil, err
 	}
+
 	return s.ladderRepo.GetAllowedTickers(ctx, ladderID)
 }
 
@@ -41,6 +42,7 @@ func (s *LadderService) GetActiveLadder(ctx context.Context) (*ladder.Ladder, er
 	if err != nil {
 		return nil, err
 	}
+
 	return s.ladderRepo.GetLadder(ctx, ladderID)
 }
 

@@ -253,6 +253,7 @@ type MockLadderRepository struct {
 // GetActiveLadder retrieves the currently active ladder ID.
 func (m *MockLadderRepository) GetActiveLadder(ctx context.Context) (int64, error) {
 	args := m.Called(ctx)
+
 	return args.Get(0).(int64), args.Error(1)
 }
 
@@ -262,6 +263,7 @@ func (m *MockLadderRepository) GetLadder(ctx context.Context, id int64) (*ladder
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
+
 	return args.Get(0).(*ladder.Ladder), args.Error(1)
 }
 
@@ -271,23 +273,27 @@ func (m *MockLadderRepository) GetAllowedTickers(ctx context.Context, ladderID i
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
+
 	return args.Get(0).([]*ladder.TickerInfo), args.Error(1)
 }
 
 // JoinLadder mock implementation.
 func (m *MockLadderRepository) JoinLadder(ctx context.Context, ladderID int64, userID int64) error {
 	args := m.Called(ctx, ladderID, userID)
+
 	return args.Error(0)
 }
 
 // IsUserInLadder mock.
 func (m *MockLadderRepository) IsUserInLadder(ctx context.Context, ladderID int64, userID int64) (bool, error) {
 	args := m.Called(ctx, ladderID, userID)
+
 	return args.Bool(0), args.Error(1)
 }
 
 // WithTx returns a new repository with a transaction.
 func (m *MockLadderRepository) WithTx(tx service.Transaction) service.LadderRepository {
 	args := m.Called(tx)
+
 	return args.Get(0).(service.LadderRepository)
 }

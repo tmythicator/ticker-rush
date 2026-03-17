@@ -246,7 +246,7 @@ func TestBuyStock(t *testing.T) {
 	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
 
 	// Setup User & Join
-	user, token, activeLadderID := setupJoinedUser(t, router, ctx, testUsername, balance)
+	user, token, activeLadderID := setupJoinedUser(ctx, t, router, balance)
 
 	// Perform Buy
 	reqBody := fmt.Sprintf(`{"symbol": "%s", "quantity": %f}`, symbol, quantity)
@@ -289,7 +289,7 @@ func TestSellStock(t *testing.T) {
 	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
 
 	// Setup User & Join with specific balance
-	user, token, activeLadderID := setupJoinedUser(t, router, ctx, testUsername, mockStartBalance)
+	user, token, activeLadderID := setupJoinedUser(ctx, t, router, mockStartBalance)
 
 	// Setup Portfolio via Repo
 	err := portfolioRepo.SetPortfolioItem(
@@ -337,7 +337,7 @@ func TestInsufficientFunds(t *testing.T) {
 	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
 
 	// Setup User & Join with specific balance
-	_, token, _ := setupJoinedUser(t, router, ctx, testUsername, mockStartBalance)
+	_, token, _ := setupJoinedUser(ctx, t, router, mockStartBalance)
 
 	// balance < cost
 	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "quantity": %d}`, mockBuyQuantity)
@@ -370,7 +370,7 @@ func TestSellAllStock(t *testing.T) {
 	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
 
 	// Setup User & Join with specific balance
-	user, token, activeLadderID := setupJoinedUser(t, router, ctx, testUsername, mockStartBalance)
+	user, token, activeLadderID := setupJoinedUser(ctx, t, router, mockStartBalance)
 
 	// Setup Portfolio
 	err := portfolioRepo.SetPortfolioItem(ctx, user.GetId(), activeLadderID, symbol, mockQuantity, mockPrice)
@@ -482,8 +482,8 @@ func TestUpdateUser_Privacy(t *testing.T) {
 }
 
 // Helper to setup a user and join them to a ladder with a specific balance
-func setupJoinedUser(t *testing.T, r *api.Router, ctx context.Context, username string, balance float64) (*user.User, string, int64) {
-	createdUser, err := userRepo.CreateUser(ctx, username, "password123", "Test", "User", "", false, time.Now())
+func setupJoinedUser(ctx context.Context, t *testing.T, r *api.Router, balance float64) (*user.User, string, int64) {
+	createdUser, err := userRepo.CreateUser(ctx, testUsername, "password123", "Test", "User", "", false, time.Now())
 	if err != nil {
 		t.Fatalf("Failed to create user: %v", err)
 	}

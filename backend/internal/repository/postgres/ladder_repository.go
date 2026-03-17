@@ -5,10 +5,11 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // LadderRepository handles ladder data persistence.
@@ -29,6 +30,7 @@ func (r *LadderRepository) GetActiveLadder(ctx context.Context) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+
 	return ladder.ID, nil
 }
 
@@ -67,6 +69,7 @@ func (r *LadderRepository) GetAllowedTickers(ctx context.Context, ladderID int64
 			Source: t.Source,
 		}
 	}
+
 	return tickerInfos, nil
 }
 
