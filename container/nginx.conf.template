@@ -1,5 +1,5 @@
 server {
-    listen ${CLIENT_PORT};
+    listen 80;
 
     # Global Proxy Configuration
     proxy_http_version 1.1;
