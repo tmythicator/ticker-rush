@@ -9,8 +9,11 @@ RUN corepack enable pnpm && pnpm install --frozen-lockfile
 COPY frontend/ .
 RUN --mount=type=secret,id=dotenv \
     if [ -f /run/secrets/dotenv ]; then \
-    cat /run/secrets/dotenv > .env && \
-    cat /run/secrets/dotenv > ../.env; \
+        echo "FOUND SECRET" && \
+        cat /run/secrets/dotenv > .env && \
+        cat /run/secrets/dotenv > ../.env; \
+    else \
+        echo "SECRET MISSING"; \
     fi && \
     pnpm run build
 

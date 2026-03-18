@@ -60,6 +60,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           secrets: |
-            dotenv=${{ secrets.BUILD_ENV }}
+            "dotenv=${{ secrets.BUILD_ENV }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
