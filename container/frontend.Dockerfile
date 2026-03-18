@@ -7,7 +7,7 @@ COPY frontend/package.json frontend/pnpm-lock.yaml ./
 RUN corepack enable pnpm && pnpm install --frozen-lockfile
 
 COPY frontend/ .
-RUN pnpm run build
+RUN ls -la && pnpm run build
 
 # Runtime stage
 FROM nginx:alpine AS frontend-image
