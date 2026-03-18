@@ -1,5 +1,24 @@
 server {
     listen 80;
+    server_name ${SITE_DOMAIN} www.${SITE_DOMAIN} localhost;
+
+    # Redirect to SSL
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name ${SITE_DOMAIN} www.${SITE_DOMAIN} localhost;
+
+    ssl_certificate /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem;
+
+    # SSL optimization
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers HIGH:!aNULL:!MD5;
 
     # Global Proxy Configuration
     proxy_http_version 1.1;
