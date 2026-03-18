@@ -65,6 +65,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           secrets: |
-            id=dotenv,src=${{ matrix.service == 'frontend' && '.env.build' || '/dev/null' }}
+            id=dotenv,src=${{ github.workspace }}/.env.build
           cache-from: type=gha
           cache-to: type=gha,mode=max
