@@ -52,16 +52,13 @@ jobs:
             type=sha,format=long
 
       - name: Create temp env file
+        if: matrix.service == 'frontend'
         run: |
-          if [ "${{ matrix.service }}" == "frontend" ]; then
-          cat <<'EOF' > ${{ github.workspace }}/.env.build
+          cat <<'EOF' > frontend/.env
           ${{ secrets.BUILD_ENV }}
           EOF
-          echo "--- DEBUG: .env.build created (first 2 lines) ---"
-          head -n 2 ${{ github.workspace }}/.env.build || echo "File is empty!"
-          else
-          touch ${{ github.workspace }}/.env.build
-          fi
+          echo "frontend/.env created"
+          head -n 2 frontend/.env || echo "File is empty!"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
@@ -72,7 +69,5 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          secrets: |
-            "dotenv=${{ github.workspace }}/.env.build"
           cache-from: type=gha
           cache-to: type=gha,mode=max
