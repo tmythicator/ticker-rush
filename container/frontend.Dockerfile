@@ -14,7 +14,7 @@ RUN --mount=type=secret,id=dotenv \
     pnpm run build
 
 # Runtime stage
-FROM nginx:alpine
+FROM nginx:alpine AS frontend-image
 
 # Force fast shutdown, don't wait for SSE connections to close
 STOPSIGNAL SIGTERM
