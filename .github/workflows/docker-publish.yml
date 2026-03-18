@@ -52,9 +52,14 @@ jobs:
             type=sha,format=long
 
       - name: Create temp env file
-        if: matrix.service == 'frontend'
         run: |
-          echo "${{ secrets.BUILD_ENV }}" > .env.build
+          if [ "${{ matrix.service }}" == "frontend" ]; then
+            cat <<'EOF' > ${{ github.workspace }}/.env.build
+            ${{ secrets.BUILD_ENV }}
+            EOF
+          else
+            touch ${{ github.workspace }}/.env.build
+          fi
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
