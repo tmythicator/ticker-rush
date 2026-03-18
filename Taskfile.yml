@@ -34,14 +34,19 @@ tasks:
       - docker compose up --build
 
   prod:run:
-    desc: Start the production environment (detached)
+    desc: Start the production environment (detached, prefers pre-built images)
     cmds:
-      - docker compose up -d --build
+      - docker compose up -d
 
   prod:down:
     desc: Stop and remove the production containers
     cmds:
       - docker compose down
+
+  prod:pull:
+    desc: Pull the latest images from GHCR
+    cmds:
+      - docker compose pull
 
   prod:build:
     desc: Clean-build the production images
