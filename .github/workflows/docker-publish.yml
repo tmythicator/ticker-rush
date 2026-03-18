@@ -50,6 +50,11 @@ jobs:
             type=semver,pattern={{version}}
             type=sha,format=long
 
+      - name: Create temp env file
+        if: matrix.service == 'frontend'
+        run: |
+          echo "${{ secrets.BUILD_ENV }}" > .env.build
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:
@@ -60,6 +65,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           secrets: |
-            "dotenv=${{ secrets.BUILD_ENV }}"
+            id=dotenv,src=${{ matrix.service == 'frontend' && '.env.build' || '/dev/null' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
