@@ -7,8 +7,11 @@ COPY frontend/package.json frontend/pnpm-lock.yaml ./
 RUN corepack enable pnpm && pnpm install --frozen-lockfile
 
 COPY frontend/ .
-COPY .env /.env
-RUN pnpm run build
+RUN --mount=type=secret,id=dotenv \
+    if [ -f /run/secrets/dotenv ]; then \
+        cp /run/secrets/dotenv .env; \
+    fi && \
+    pnpm run build
 
 # Runtime stage
 FROM nginx:alpine

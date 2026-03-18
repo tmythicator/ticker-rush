@@ -47,6 +47,7 @@ services:
           memory: 512M
 
   migrate:
+    image: ${DOCKER_REGISTRY:-ghcr.io/tmythicator/ticker-rush}/migrate:${DOCKER_TAG:-latest}
     build:
       context: .
       dockerfile: container/backend.Dockerfile
@@ -68,6 +69,7 @@ services:
           memory: 128M
 
   exchange:
+    image: ${DOCKER_REGISTRY:-ghcr.io/tmythicator/ticker-rush}/exchange:${DOCKER_TAG:-latest}
     build:
       context: .
       dockerfile: container/backend.Dockerfile
@@ -96,6 +98,7 @@ services:
           memory: 256M
 
   fetcher:
+    image: ${DOCKER_REGISTRY:-ghcr.io/tmythicator/ticker-rush}/fetcher:${DOCKER_TAG:-latest}
     build:
       context: .
       dockerfile: container/backend.Dockerfile
@@ -122,9 +125,12 @@ services:
           memory: 128M
 
   frontend:
+    image: ${DOCKER_REGISTRY:-ghcr.io/tmythicator/ticker-rush}/frontend:${DOCKER_TAG:-latest}
     build:
       context: .
       dockerfile: container/frontend.Dockerfile
+      secrets:
+        - dotenv
     container_name: ticker_rush_frontend
     stop_signal: SIGTERM
     env_file:
@@ -149,3 +155,7 @@ networks:
 volumes:
   valkey_data:
   postgres_data:
+
+secrets:
+  dotenv:
+    file: .env
