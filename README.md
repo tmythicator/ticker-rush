@@ -3,10 +3,11 @@
 [![Backend Status](https://github.com/tmythicator/ticker-rush/actions/workflows/backend-test.yml/badge.svg)](https://github.com/tmythicator/ticker-rush/actions/workflows/backend-test.yml)
 [![Frontend Status](https://github.com/tmythicator/ticker-rush/actions/workflows/frontend-test.yml/badge.svg)](https://github.com/tmythicator/ticker-rush/actions/workflows/frontend-test.yml)
 [![Built With Nix](https://img.shields.io/badge/Built_With-Nix-5277C3.svg?logo=nixos&logoColor=white)](https://nixos.org)
+[![Live Site](https://img.shields.io/badge/Live-tickerrush.com-brightgreen)](https://tickerrush.com)
 
 ## Overview
 
-Ticker Rush is a high-performance, real-time stock trading simulator. The project's core mission is to make the experience of trading stocks enjoyable and risk-free. It provides a platform where users can have fun while learning market dynamics without financial exposure.
+Ticker Rush is a high-performance, real-time stock trading simulator. The project's core mission is to make the experience of trading stocks enjoyable and risk-free. Access the live platform at **[tickerrush.com](https://tickerrush.com)**.
 
 Participants start with equal virtual budgets and trade stocks and ETFs. The primary objective is to maximize portfolio value and compete for the top of the leaderboard.
 
@@ -18,19 +19,22 @@ https://github.com/user-attachments/assets/885a2f57-3f72-44d2-a813-447d222ca7f7
 
 Ticker Rush is evolving from a core simulator to a fully featured trading ecosystem.
 
-### Phase 1: Core Simulator (MVP)
+### Phase 1: Core Simulator (MVP) [COMPLETE]
 
 - [x] High-performance trade execution engine (Go).
 - [x] Real-time market data streaming via SSE.
 - [x] Secure authentication (HttpOnly Cookie + JWT).
 - [x] Versioned Protobuf API contracts (v1).
 - [x] Basic Interactive Dashboard (React).
+- [x] Automated Database Migrations & Secure Admin Seeding.
 
-### Phase 2: Advanced Trading & Social [Current]
+### Phase 2: Advanced Trading & Social [LIVE]
 
-- [ ] Global Leaderboards & Social Profiles.
-- [ ] Multi-asset support (Options, Crypto).
-- [ ] Portfolio Performance Analytics.
+- [x] Production-ready Docker Orchestration.
+- [x] Independent Frontend Environment (Vite + GHCR).
+- [x] Global Leaderboards & Social Profiles.
+- [x] Multi-asset support (Options, Crypto).
+- [x] Portfolio Performance Analytics.
 
 ### Phase 3: AI-Driven Ecosystem
 
