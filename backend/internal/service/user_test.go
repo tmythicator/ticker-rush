@@ -85,7 +85,7 @@ func TestUserService_CreateUser_PasswordTooLong(t *testing.T) {
 	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
 
 	// 73 chars
-	longPassword := "a" + "0123456789012345678901234567890123456789012345678901234567890123456789"
+	longPassword := "0123456789012345678901234567890123456789012345678901234567890123456789012"
 	user, err := userService.CreateUser(
 		ctx,
 		"username",
@@ -187,7 +187,8 @@ func TestUserService_Authenticate_PasswordTooLong(t *testing.T) {
 	mockUserRepo := new(mocks.MockUserRepository)
 	userService := service.NewUserService(mockUserRepo, nil, nil)
 
-	longPassword := "a" + "0123456789012345678901234567890123456789012345678901234567890123456789" // 73 chars
+	// 73 chars
+	longPassword := "0123456789012345678901234567890123456789012345678901234567890123456789012"
 
 	_, err := userService.Authenticate(ctx, "username", longPassword)
 	assert.Error(t, err)
