@@ -1,18 +1,14 @@
 # Build stage
 FROM node:20-alpine AS builder
 
-WORKDIR /app
+WORKDIR /app/client
 
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
 RUN corepack enable pnpm && pnpm install --frozen-lockfile
 
 COPY frontend/ .
-RUN --mount=type=secret,id=dotenv \
-    if [ -f /run/secrets/dotenv ]; then \
-    cat /run/secrets/dotenv > .env && \
-    cat /run/secrets/dotenv > ../.env; \
-    fi && \
-    pnpm run build
+COPY .env /app/
+RUN ls -la /app && pnpm run build
 
 # Runtime stage
 FROM nginx:alpine AS frontend-image
@@ -20,7 +16,7 @@ FROM nginx:alpine AS frontend-image
 # Force fast shutdown, don't wait for SSE connections to close
 STOPSIGNAL SIGTERM
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/client/dist /usr/share/nginx/html
 COPY container/nginx.conf.template /etc/nginx/templates/default.conf.template
 
 CMD ["nginx", "-g", "daemon off;"]
