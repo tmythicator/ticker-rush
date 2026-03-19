@@ -61,6 +61,9 @@ func (s *UserService) CreateUser(
 	if len(password) < 8 {
 		return nil, apperrors.ErrPasswordTooShort
 	}
+	if len(password) > 72 {
+		return nil, apperrors.ErrPasswordTooLong
+	}
 
 	// Validate Names
 	if len(firstName) == 0 || len(lastName) == 0 {
@@ -137,6 +140,9 @@ func (s *UserService) Authenticate(
 	username string,
 	password string,
 ) (*user.User, error) {
+	if len(password) > 72 {
+		return nil, apperrors.ErrPasswordTooLong
+	}
 	user, passwordHash, err := s.userRepo.GetUserByUsername(ctx, username)
 	if err != nil {
 		return nil, err

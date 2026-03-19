@@ -20,6 +20,8 @@ var (
 	ErrInvalidUsernameFormat = errors.New("invalid username: must be 3-20 alphanumeric characters or underscores")
 	// ErrPasswordTooShort is returned when the password is shorter than the required length.
 	ErrPasswordTooShort = errors.New("password must be at least 8 characters long")
+	// ErrPasswordTooLong is returned when the password is longer than the bcrypt limit (72 bytes).
+	ErrPasswordTooLong = errors.New("password must be at most 72 characters long")
 	// ErrNameRequired is returned when the first or last name is empty.
 	ErrNameRequired = errors.New("first name and last name are required")
 	// ErrProfanityDetected is returned when profanity is found in user input.
