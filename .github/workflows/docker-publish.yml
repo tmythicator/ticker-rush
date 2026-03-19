@@ -54,10 +54,10 @@ jobs:
       - name: Create temp env file
         if: matrix.service == 'frontend'
         run: |
-          cat <<'EOF' > .env
+          cat <<'EOF' > frontend/.env
           ${{ secrets.BUILD_ENV }}
           EOF
-          echo ".env created"
+          echo "frontend/.env created"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v7

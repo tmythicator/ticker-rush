@@ -8,12 +8,12 @@ import { generateSitemapAndRobots } from './config/seo';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, '../', '');
-  const exchangePort = parseInt(env.SERVER_PORT) || 8081;
-  const clientPort = parseInt(env.CLIENT_PORT) || 5173;
+  const rootEnv = loadEnv(mode, path.resolve(__dirname, '../'), '');
+  const appEnv = loadEnv(mode, process.cwd(), '');
+  const exchangePort = parseInt(rootEnv.SERVER_PORT) || 8081;
+  const clientPort = parseInt(rootEnv.CLIENT_PORT) || 5173;
 
   return {
-    envDir: '../',
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
@@ -73,7 +73,7 @@ export default defineConfig(({ mode }) => {
         buildStart: async () => {
           const publicDir = path.resolve(__dirname, 'public');
           await fs.mkdir(publicDir, { recursive: true });
-          const siteUrl = env.VITE_SITE_URL || 'https://example.com';
+          const siteUrl = appEnv.VITE_SITE_URL || 'https://example.com';
           await generateSitemapAndRobots(publicDir, siteUrl);
         },
       },
