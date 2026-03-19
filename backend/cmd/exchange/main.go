@@ -89,7 +89,7 @@ func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	// Connect to Postgres
 	postgreConnStr := cfg.DatabaseURL()
 
-	if err = db.Migrate(postgreConnStr); err != nil {
+	if err = db.Migrate(postgreConnStr, cfg.AdminUsername, cfg.AdminPasswordHash); err != nil {
 		return nil, fmt.Errorf("migration failed: %w", err)
 	}
 

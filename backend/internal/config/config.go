@@ -29,10 +29,13 @@ type Config struct {
 	PostgresPort           int           `env:"POSTGRES_PORT" envDefault:"5432"`
 	PostgresHost           string        `env:"POSTGRES_HOST"`
 	JWTSecret              string        `env:"JWT_SECRET" envDefault:"secret"`
+	AdminUsername          string        `env:"ADMIN_USERNAME"`
+	AdminPasswordHash      string        `env:"ADMIN_PASSWORD_HASH"`
 }
 
 // LoadConfig loads the configuration from environment variables.
 func LoadConfig() (*Config, error) {
+	_ = godotenv.Load()
 	_ = godotenv.Load("../.env")
 
 	cfg := &Config{}
@@ -58,6 +61,8 @@ func LoadConfig() (*Config, error) {
 	log.Printf("  POSTGRES_PORT: %d", cfg.PostgresPort)
 	log.Printf("  POSTGRES_HOST: %s", cfg.PostgresHost)
 	log.Printf("  JWT_SECRET: %s", maskString(cfg.JWTSecret))
+	log.Printf("  ADMIN_USERNAME: %s", cfg.AdminUsername)
+	log.Printf("  ADMIN_PASSWORD_HASH: %s", maskString(cfg.AdminPasswordHash))
 
 	return cfg, nil
 }

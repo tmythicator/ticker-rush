@@ -17,7 +17,7 @@ func main() {
 	connStr := cfg.DatabaseURL()
 
 	log.Printf("Connecting to database...")
-	if err := db.Migrate(connStr); err != nil {
+	if err := db.Migrate(connStr, cfg.AdminUsername, cfg.AdminPasswordHash); err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 	log.Println("Database migration completed successfully.")

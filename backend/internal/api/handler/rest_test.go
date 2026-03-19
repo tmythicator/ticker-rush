@@ -82,7 +82,7 @@ func setupTestPostgres(t *testing.T) string {
 	}
 
 	// Run Migrations (Embedded)
-	if err := db.Migrate(connStr); err != nil {
+	if err := db.Migrate(connStr, "", ""); err != nil {
 		t.Fatalf("failed to run migrations: %s", err)
 	}
 
