@@ -43,6 +43,6 @@ func TestMigrate(t *testing.T) {
 	require.NoError(t, err)
 
 	// Run migrations
-	err = Migrate(connStr)
+	err = Migrate(connStr, "", "")
 	require.NoError(t, err)
 }
