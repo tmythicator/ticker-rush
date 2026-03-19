@@ -45,6 +45,7 @@ func Migrate(connStr string, adminUsername, adminPasswordHash string) error {
 func SeedAdmin(db *sql.DB, username, passwordHash string) error {
 	if username == "" || passwordHash == "" {
 		log.Println("Skipping admin seeding (ADMIN_USERNAME or ADMIN_PASSWORD_HASH not set)")
+
 		return nil
 	}
 
@@ -56,6 +57,7 @@ func SeedAdmin(db *sql.DB, username, passwordHash string) error {
 
 	if exists {
 		log.Printf("Admin user '%s' already exists, skipping seeding.", username)
+
 		return nil
 	}
 
@@ -70,5 +72,6 @@ func SeedAdmin(db *sql.DB, username, passwordHash string) error {
 	}
 
 	log.Printf("Successfully seeded admin user: %s", username)
+
 	return nil
 }
