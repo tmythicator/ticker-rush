@@ -78,6 +78,30 @@ func TestUserService_CreateUser_AgbNotAccepted(t *testing.T) {
 	mockUserRepo.AssertNotCalled(t, "CreateUser")
 }
 
+func TestUserService_CreateUser_PasswordTooLong(t *testing.T) {
+	mockUserRepo := new(mocks.MockUserRepository)
+	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
+	mockLadderRepo := new(mocks.MockLadderRepository)
+	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
+
+	// 73 chars
+	longPassword := "a" + "0123456789012345678901234567890123456789012345678901234567890123456789"
+	user, err := userService.CreateUser(
+		ctx,
+		"username",
+		longPassword,
+		"First",
+		"Last",
+		true,
+	)
+
+	assert.Error(t, err)
+	assert.Nil(t, user)
+	assert.Equal(t, apperrors.ErrPasswordTooLong, err)
+
+	mockUserRepo.AssertNotCalled(t, "CreateUser")
+}
+
 func TestUserService_GetUserWithPortfolio(t *testing.T) {
 	usernameTest := "userTest1"
 	mockUserRepo := new(mocks.MockUserRepository)
@@ -157,6 +181,19 @@ func TestUserService_Authenticate(t *testing.T) {
 
 	_, err = userService.Authenticate(ctx, username, wrongPassword)
 	assert.Error(t, err)
+}
+
+func TestUserService_Authenticate_PasswordTooLong(t *testing.T) {
+	mockUserRepo := new(mocks.MockUserRepository)
+	userService := service.NewUserService(mockUserRepo, nil, nil)
+
+	longPassword := "a" + "0123456789012345678901234567890123456789012345678901234567890123456789" // 73 chars
+
+	_, err := userService.Authenticate(ctx, "username", longPassword)
+	assert.Error(t, err)
+	assert.Equal(t, apperrors.ErrPasswordTooLong, err)
+
+	mockUserRepo.AssertNotCalled(t, "GetUserByUsername")
 }
 
 func TestUserService_GetPublicProfile(t *testing.T) {
