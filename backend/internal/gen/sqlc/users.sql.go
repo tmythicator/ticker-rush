@@ -225,7 +225,7 @@ type GetUserWithPortfolioForActiveLadderRow struct {
 	IsAdmin         bool
 	IsBanned        bool
 	LadderID        int64
-	Balance         float64
+	Balance         float64 // надо бы бигинт или либу поискать для специально для такого вроде обсуждали =)
 	StockSymbol     pgtype.Text
 	Quantity        float64
 	AveragePrice    float64

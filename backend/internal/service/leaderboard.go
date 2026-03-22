@@ -16,8 +16,9 @@ type LeaderBoardService struct {
 	userRepo      UserRepository
 	portfolioRepo PortfolioRepository
 	marketRepo    MarketRepository
-	redisClient   *redis.Client
-	ladderRepo    LadderRepository
+	// это тоже репозиторий должен быть по факту и спрятан за интерфейсом
+	redisClient *redis.Client
+	ladderRepo  LadderRepository
 }
 
 const leaderboardKeyPrefix = "leaderboard:"
@@ -62,6 +63,8 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 
 		totalWorth := balance
 
+		// почему портфоли и балансы не получить одним запросом и почему котировки берем из редиса
+		// и в итоге все это сохраняем редис а не базу короче довольно странная смесь получается
 		portfolio, errPortfolio := s.portfolioRepo.GetPortfolio(ctx, u.Id, ladderID)
 		if errPortfolio != nil {
 			continue
@@ -95,6 +98,7 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 // GetLeaderboard retrieves a paginated list of top performing users from Redis/Valkey for the active ladder.
 // It fetches the user details from the database for each entry and handles stale cache cleanup
 // if a user is no longer present in the system.
+// надо декомпозировать
 func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboard.GetLeaderboardRequest) (*leaderboard.GetLeaderboardResponse, error) {
 	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
 	if err != nil {
@@ -107,6 +111,7 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 		return nil, err
 	}
 
+	// слишком сложно и не понятно сходу что это за таймстемп
 	var lastUpdate int64
 	uKey := lastUpdateKeyPrefix + strconv.FormatInt(ladderID, 10)
 	lastUpdateStr, errTime := s.redisClient.Get(ctx, uKey).Result()
@@ -134,6 +139,7 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 
 	for i, item := range res {
 		userID, _ := strconv.ParseInt(item.Member.(string), 10, 64)
+		// почему сразу не собрать список айдишников и сразу достать всех юзеров плюс что за удаление ниже ?
 		fetchedUser, err := s.userRepo.GetUser(ctx, userID)
 		if err != nil {
 			s.redisClient.ZRem(ctx, lKey, item.Member)
@@ -144,7 +150,7 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 		}
 		leadEntry := &leaderboard.LeaderboardEntry{
 			User:  s.anonymizeUser(fetchedUser),
-			Rank:  int32(i) + int32(start) + 1,
+			Rank:  int32(i) + int32(start) + 1, // это просто номер в таблице чтоли?
 			Score: item.Score,
 		}
 

@@ -74,10 +74,12 @@ func (s *MarketService) GetHistory(ctx context.Context, symbol string, limit int
 }
 
 func (s *MarketService) isSymbolAllowed(ctx context.Context, symbol string) (bool, error) {
+	// может закешировать этот эктивладдер а то вызывается из кучи мест и не уверен что часто меняется
 	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
 	if err != nil {
 		return false, err
 	}
+	// либо вообще этот список закешировать
 	allowedTickers, err := s.ladderRepo.GetAllowedTickers(ctx, ladderID)
 	if err != nil {
 		return false, err

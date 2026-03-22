@@ -12,6 +12,7 @@ import (
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
+// необязательно суффикс Repository и так понятно что это репозиторий
 // PortfolioRepository handles portfolio data persistence in PostgreSQL.
 type PortfolioRepository struct {
 	queries *sqlc.Queries

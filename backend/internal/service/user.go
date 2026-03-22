@@ -3,10 +3,9 @@ package service
 import (
 	"context"
 	"errors"
+	"regexp"
 	"slices"
 	"time"
-
-	"regexp"
 
 	goaway "github.com/TwiN/go-away"
 	"github.com/jackc/pgx/v5"
@@ -52,6 +51,8 @@ func (s *UserService) CreateUser(
 		return nil, apperrors.ErrAGBNotAccepted
 	}
 
+	// всю эту ботву в некий метод Validate(). либо: перемапь реквест в некую структуру в которой валидацию можно
+	// задать тегами (validate как то так и называется либа).
 	// 1. Validate Username Format
 	if !usernameRegex.MatchString(username) {
 		return nil, apperrors.ErrInvalidUsernameFormat

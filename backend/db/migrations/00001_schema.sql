@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS ladder_participants (
     PRIMARY KEY (ladder_id, user_id)
 );
 
+-- не очень понятно зачем нужна эта таблица ведь баланс можно и в партисипантах хранить
 CREATE TABLE IF NOT EXISTS ladder_balances (
     ladder_id BIGINT NOT NULL REFERENCES ladders(id) ON DELETE CASCADE,
     user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,

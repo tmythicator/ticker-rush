@@ -72,6 +72,7 @@ func (s *ExchangeServer) SellStock(
 	ctx context.Context,
 	req *exchange.SellStockRequest,
 ) (*exchange.SellStockResponse, error) {
+	// в интерсептор
 	userID, ok := ctx.Value(middleware.UserIDContextKey).(int64)
 	if !ok {
 		return nil, status.Errorf(codes.Unauthenticated, "user ID not found in context")

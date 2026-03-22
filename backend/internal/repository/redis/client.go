@@ -7,6 +7,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+// а зачем инициализация клиента в репозитории?
+// плюс этот метод вызывается из exchange а в fetcher напрямую redis.NewClient
 // NewClient creates a new Redis client.
 func NewClient(addr string) (*redis.Client, error) {
 	rdb := redis.NewClient(&redis.Options{

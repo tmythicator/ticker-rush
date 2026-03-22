@@ -125,6 +125,7 @@ func (s *TradeService) SellStock(
 	if err != nil {
 		return nil, err
 	}
+	// ради линтера?) лучше просто defer tx.Rollback(ctx) //nolint ну там посмотреть точно синтаксис
 	defer func() { _ = tx.Rollback(ctx) }()
 
 	txUserRepo := s.userRepo.WithTx(tx)

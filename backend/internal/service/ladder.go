@@ -53,6 +53,7 @@ func (s *LadderService) JoinLadder(ctx context.Context, userID int64) error {
 		return err
 	}
 
+	// да зачем это - можно ж просто ON CONFLICT DO NOTHING
 	joined, err := s.ladderRepo.IsUserInLadder(ctx, ladderID, userID)
 	if err != nil {
 		return err
@@ -61,6 +62,7 @@ func (s *LadderService) JoinLadder(ctx context.Context, userID int64) error {
 		return apperrors.ErrAlreadyJoinedLadder
 	}
 
+	// а зачем тут транзакция
 	tx, err := s.transactor.Begin(ctx)
 	if err != nil {
 		return err
