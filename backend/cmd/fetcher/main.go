@@ -52,6 +52,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	// NewClient дважды инициализируется чтоли в проекте?
 	// Initialize Redis Client
 	rdb := go_redis.NewClient(&go_redis.Options{
 		Addr: cfg.RedisHost + ":" + strconv.Itoa(cfg.RedisPort),
@@ -78,7 +79,8 @@ func main() {
 	coingeckoClient := coingecko.NewClient(cfg.CoingeckoKey, cfg.CoingeckoTimeout)
 
 	// Initialize Workers
-	refreshInterval := 1 * time.Minute
+	refreshInterval := 1 * time.Minute // да тоже бы вынес =)
+
 	finnhubWorker := worker.NewMarketFetcher("Finnhub", finnhubClient, marketRepo, historyRepo, ladderRepo, cfg.FinnhubFetchInterval, refreshInterval, cfg.FinnhubTimeout)
 	coingeckoWorker := worker.NewMarketFetcher("CoinGecko", coingeckoClient, marketRepo, historyRepo, ladderRepo, cfg.CoingeckoFetchInterval, refreshInterval, cfg.CoingeckoTimeout)
 

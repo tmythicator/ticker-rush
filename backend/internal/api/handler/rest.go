@@ -212,6 +212,7 @@ func (h *RestHandler) GetMe(c *gin.Context) {
 
 // GetQuote returns a stock quote for a given symbol.
 func (h *RestHandler) GetQuote(c *gin.Context) {
+	// ну не знаю у тебя этот эпл с первой версии везде мелькает, по идее это 400 если не передано
 	symbol := c.DefaultQuery("symbol", "AAPL")
 
 	quote, err := h.marketService.GetQuote(c.Request.Context(), symbol)
@@ -241,6 +242,7 @@ func (h *RestHandler) GetQuote(c *gin.Context) {
 
 // BuyStock handles stock purchase requests.
 func (h *RestHandler) BuyStock(c *gin.Context) {
+	// это надо в мидлварю
 	userID, exists := c.Get(middleware.UserIDKey)
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})

@@ -171,6 +171,7 @@ func (a *App) Run(ctx context.Context) error {
 	exchangeServer := grpcapi.NewExchangeServer(a.tradeService, a.marketService)
 	exchange.RegisterExchangeServiceServer(grpcServer, exchangeServer)
 
+	// здесь errgroup а в exchange просто waitgroup
 	g.Go(func() error {
 		log.Printf("Exchange gRPC running on :%d\n", 50051)
 		if gErr := grpcServer.Serve(grpcListener); gErr != nil {
@@ -202,6 +203,7 @@ func (a *App) Run(ctx context.Context) error {
 }
 
 func (a *App) Close() {
+	// а они могут быть нил?
 	if a.valkeyClient != nil {
 		_ = a.valkeyClient.Close()
 	}

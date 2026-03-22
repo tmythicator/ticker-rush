@@ -30,6 +30,7 @@ WHERE id = $1 LIMIT 1;
 -- name: GetUserForUpdate :one
 SELECT id, username, first_name, last_name, website, created_at, is_public, is_admin
 FROM users
+-- а зачем лимит 1 везде
 WHERE id = $1 LIMIT 1 FOR UPDATE;
 
 

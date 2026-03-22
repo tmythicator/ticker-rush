@@ -47,6 +47,7 @@ func (r *MarketRepository) SaveQuote(ctx context.Context, quote *exchange.Quote)
 		return err
 	}
 
+	// всякие редисовые префиксы обычно в константы выносят или в метод по генерации ключа по чему либ
 	key := "market:" + quote.GetSymbol()
 
 	// Publish to specific channel for the symbol

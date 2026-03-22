@@ -45,6 +45,8 @@ type UserRepository interface {
 		ctx context.Context,
 		username string,
 	) (*user.User, string, error) // Returns user, hash, error
+	// да прими сразу *user.User. а если еще 5 поле добавится?
+	// посмотри пример как sqlc создал структуру CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error)
 	CreateUser(
 		ctx context.Context,
 		username string,

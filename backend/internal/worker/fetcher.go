@@ -20,7 +20,7 @@ type QuoteProvider interface {
 // MarketFetcher is a worker that fetches market data.
 type MarketFetcher struct {
 	client          QuoteProvider
-	currentRepo     *redis.MarketRepository
+	currentRepo     *redis.MarketRepository // а чего не интерфейс?
 	historyRepo     service.HistoryRepository
 	ladderRepo      service.LadderRepository
 	source          string // "Finnhub" or "CoinGecko"
@@ -36,6 +36,7 @@ func NewMarketFetcher(
 	currentRepo *redis.MarketRepository,
 	historyRepo service.HistoryRepository,
 	ladderRepo service.LadderRepository,
+	// передай просто конфиг нафиг тут эта куча таймеров
 	fetchInterval time.Duration,
 	refreshInterval time.Duration,
 	requestTimeout time.Duration,
@@ -62,6 +63,8 @@ func (w *MarketFetcher) Start(ctx context.Context) error {
 
 	lastQuotes := make(map[string]*exchange.Quote)
 
+	// это нужно декомпозировать и по возможности упростить - почему тут два таймера, почему fetchTimer нулем инициализирован
+	// я понимаю что ответы понятно дело есть я к тому что сложно читать
 	for {
 		symbols := w.refreshTickers(ctx)
 		if len(symbols) == 0 {
@@ -85,6 +88,8 @@ func (w *MarketFetcher) Start(ctx context.Context) error {
 				return ctx.Err()
 
 			case <-refreshTicker.C:
+				// ну такие финты обычно означают что что-то здесь недопроектировано =)
+				// нужно посидеть подумать
 				symbols = w.refreshTickers(ctx)
 				i = -1
 
@@ -120,6 +125,7 @@ func (w *MarketFetcher) refreshTickers(ctx context.Context) []string {
 
 	var filtered []string
 	for _, t := range tickers {
+		// а почему этот w.source не передать в запрос на получение тикеров
 		if t.Source == w.source {
 			filtered = append(filtered, t.Symbol)
 		}
@@ -162,6 +168,9 @@ func (w *MarketFetcher) processTicker(
 		saveCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		if err := w.historyRepo.SaveQuote(saveCtx, q); err != nil {
+			// тут наверно лог из другого метода и зачем эта горутина кстати?
+			// если супер частая вставка можно агрегировать перед вставкой - плюс если это исторические котировки
+			// сильно сомневаюсь что тебе нужно хранить что то чаще минуты
 			log.Printf("[%s] History Clean Error: %v", q.Symbol, err)
 		}
 	}(quote)
