@@ -81,19 +81,24 @@ func main() {
 	}
 }
 
-func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
+func NewApp(ctx context.Context, cfg *config.Config) (app *App, err error) {
 	// Connect to Valkey
 	valkeyClient := redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort),
 	})
-	if err := valkeyClient.Ping(ctx).Err(); err != nil {
+	if err = valkeyClient.Ping(ctx).Err(); err != nil {
 		return nil, fmt.Errorf("valkey connection failed: %w", err)
 	}
+	defer func() {
+		if err != nil {
+			_ = valkeyClient.Close()
+		}
+	}()
 
 	// Connect to Postgres
 	postgreConnStr := cfg.DatabaseURL()
 
-	if err := db.Migrate(postgreConnStr, cfg.AdminUsername, cfg.AdminPasswordHash); err != nil {
+	if err = db.Migrate(postgreConnStr, cfg.AdminUsername, cfg.AdminPasswordHash); err != nil {
 		return nil, fmt.Errorf("migration failed: %w", err)
 	}
 
@@ -101,6 +106,11 @@ func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create database pool: %w", err)
 	}
+	defer func() {
+		if err != nil {
+			postgreClient.Close()
+		}
+	}()
 
 	// Initialize repositories
 	ladderRepo := postgres.NewLadderRepository(postgreClient)
@@ -115,7 +125,7 @@ func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	userService := service.NewUserService(userRepo, portfolioRepo, ladderRepo)
 	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
 	marketService := service.NewMarketService(marketRepo, historyRepo, ladderRepo)
-	ladderService := service.NewLadderService(ladderRepo, transactor)
+	ladderService := service.NewLadderService(ladderRepo)
 	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
 
 	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, ladderService, cfg.JWTSecret)
@@ -182,7 +192,6 @@ func (a *App) Run(ctx context.Context) error {
 	exchangeServer := grpcapi.NewExchangeServer(a.tradeService, a.marketService)
 	exchange.RegisterExchangeServiceServer(grpcServer, exchangeServer)
 
-	// здесь errgroup а в exchange просто waitgroup
 	g.Go(func() error {
 		log.Printf("Exchange gRPC running on :%d\n", 50051)
 		if gErr := grpcServer.Serve(grpcListener); gErr != nil {
@@ -222,11 +231,6 @@ func (a *App) Run(ctx context.Context) error {
 }
 
 func (a *App) Close() {
-	// а они могут быть нил?
-	if a.valkeyClient != nil {
-		_ = a.valkeyClient.Close()
-	}
-	if a.postgreClient != nil {
-		a.postgreClient.Close()
-	}
+	_ = a.valkeyClient.Close()
+	a.postgreClient.Close()
 }

@@ -23,6 +23,7 @@ type Config struct {
 	CoingeckoKey           string        `env:"COINGECKO_API_KEY"`
 	CoingeckoTimeout       time.Duration `env:"COINGECKO_TIMEOUT" envDefault:"10s"`
 	CoingeckoFetchInterval time.Duration `env:"COINGECKO_FETCH_INTERVAL" envDefault:"10s"`
+	MarketFetcherRefreshInterval time.Duration `env:"MARKET_FETCHER_REFRESH_INTERVAL" envDefault:"1m"`
 	PostgresUser           string        `env:"POSTGRES_USER" envDefault:"postgres"`
 	PostgresPass           string        `env:"POSTGRES_PASSWORD" envDefault:"postgres"`
 	PostgresDB             string        `env:"POSTGRES_DB" envDefault:"ticker_rush"`
@@ -55,6 +56,7 @@ func LoadConfig() (*Config, error) {
 	log.Printf("  COINGECKO_API_KEY: %s", maskString(cfg.CoingeckoKey))
 	log.Printf("  COINGECKO_TIMEOUT: %s", cfg.CoingeckoTimeout)
 	log.Printf("  COINGECKO_FETCH_INTERVAL: %s", cfg.CoingeckoFetchInterval)
+	log.Printf("  MARKET_FETCHER_REFRESH_INTERVAL: %s", cfg.MarketFetcherRefreshInterval)
 	log.Printf("  POSTGRES_USER: %s", cfg.PostgresUser)
 	log.Printf("  POSTGRES_PASSWORD: %s", maskString(cfg.PostgresPass))
 	log.Printf("  POSTGRES_DB: %s", cfg.PostgresDB)
