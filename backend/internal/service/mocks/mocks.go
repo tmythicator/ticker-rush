@@ -343,13 +343,6 @@ func (m *MockLadderRepository) DeleteLadderPortfolioItemsByLadder(ctx context.Co
 	return args.Error(0)
 }
 
-// WithTx returns a new repository with a transaction.
-func (m *MockLadderRepository) WithTx(tx service.Transaction) service.LadderRepository {
-	args := m.Called(tx)
-
-	return args.Get(0).(service.LadderRepository)
-}
-
 // MockLeaderboardRepository is a mock implementation of LeaderboardRepository.
 type MockLeaderboardRepository struct {
 	mock.Mock

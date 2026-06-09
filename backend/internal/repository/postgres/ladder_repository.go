@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -14,8 +13,9 @@ import (
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
-	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
+
+const pgUniqueViolation = "23505"
 
 // LadderRepository handles ladder data persistence.
 type LadderRepository struct {
@@ -94,7 +94,7 @@ func (r *LadderRepository) JoinLadder(ctx context.Context, ladderID int64, userI
 	})
 	if err != nil {
 		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniqueViolation {
 			return apperrors.ErrAlreadyJoinedLadder
 		}
 		return err
@@ -207,11 +207,4 @@ func (r *LadderRepository) PruneLadderParticipants(ctx context.Context, ladderID
 // DeleteLadderPortfolioItemsByLadder deletes all stock holdings associated with a ladder.
 func (r *LadderRepository) DeleteLadderPortfolioItemsByLadder(ctx context.Context, ladderID int64) error {
 	return r.queries.DeleteLadderPortfolioItemsByLadder(ctx, ladderID)
-}
-
-// WithTx returns a new LadderRepository that uses the given transaction.
-func (r *LadderRepository) WithTx(tx service.Transaction) service.LadderRepository {
-	return &LadderRepository{
-		queries: r.queries.WithTx(tx.(pgx.Tx)),
-	}
 }

@@ -52,7 +52,7 @@ type GetHistoryForSymbolParams struct {
 
 type GetHistoryForSymbolRow struct {
 	Symbol    string
-	Price     pgtype.Numeric
+	Price     decimal.Decimal
 	Source    string
 	CreatedAt pgtype.Timestamptz
 }

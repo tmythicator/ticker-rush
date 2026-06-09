@@ -69,8 +69,7 @@ ON CONFLICT (ladder_id, user_id) DO UPDATE SET
 
 -- name: JoinLadderParticipant :exec
 INSERT INTO ladder_participants (ladder_id, user_id, balance)
-SELECT $1, $2, initial_balance FROM ladders WHERE id = $1
-ON CONFLICT (ladder_id, user_id) DO NOTHING;
+SELECT $1, $2, initial_balance FROM ladders WHERE id = $1;
 
 -- name: IsUserInLadder :one
 SELECT EXISTS(

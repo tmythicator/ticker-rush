@@ -550,7 +550,6 @@ func (q *Queries) IsUserInLadder(ctx context.Context, arg IsUserInLadderParams) 
 const joinLadderParticipant = `-- name: JoinLadderParticipant :exec
 INSERT INTO ladder_participants (ladder_id, user_id, balance)
 SELECT $1, $2, initial_balance FROM ladders WHERE id = $1
-ON CONFLICT (ladder_id, user_id) DO NOTHING
 `
 
 type JoinLadderParticipantParams struct {

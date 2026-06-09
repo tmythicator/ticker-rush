@@ -77,7 +77,6 @@ type LadderRepository interface {
 	InsertLadderParticipant(ctx context.Context, ladderID int64, userID int64, finalBalance decimal.Decimal, finalRank int32) error
 	PruneLadderParticipants(ctx context.Context, ladderID int64, rankThreshold int32) error
 	DeleteLadderPortfolioItemsByLadder(ctx context.Context, ladderID int64) error
-	WithTx(tx Transaction) LadderRepository
 }
 
 // PortfolioRepository defines the interface for portfolio persistence.
