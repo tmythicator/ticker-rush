@@ -80,11 +80,13 @@ func TestLadderLifecycleWorker_RunOnce_ExpiredLadders(t *testing.T) {
 	// We expect updates to database
 	mockLadderRepo.On("InsertLadderParticipant", mock.Anything, int64(10), int64(102), mock.MatchedBy(func(d decimal.Decimal) bool {
 		val, _ := d.Float64()
+
 		return val == 2750.0
 	}), int32(1)).Return(nil)
 
 	mockLadderRepo.On("InsertLadderParticipant", mock.Anything, int64(10), int64(101), mock.MatchedBy(func(d decimal.Decimal) bool {
 		val, _ := d.Float64()
+
 		return val == 2500.0
 	}), int32(2)).Return(nil)
 

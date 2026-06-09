@@ -83,15 +83,17 @@ func main() {
 
 func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	// Connect to Valkey
-	valkeyClient, err := valkey.NewClient(fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort))
-	if err != nil {
-		return nil, fmt.Errorf("valkey creation failed: %w", err)
+	valkeyClient := redis.NewClient(&redis.Options{
+		Addr: fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort),
+	})
+	if err := valkeyClient.Ping(ctx).Err(); err != nil {
+		return nil, fmt.Errorf("valkey connection failed: %w", err)
 	}
 
 	// Connect to Postgres
 	postgreConnStr := cfg.DatabaseURL()
 
-	if err = db.Migrate(postgreConnStr, cfg.AdminUsername, cfg.AdminPasswordHash); err != nil {
+	if err := db.Migrate(postgreConnStr, cfg.AdminUsername, cfg.AdminPasswordHash); err != nil {
 		return nil, fmt.Errorf("migration failed: %w", err)
 	}
 

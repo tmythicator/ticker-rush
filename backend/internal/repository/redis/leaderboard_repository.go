@@ -1,3 +1,4 @@
+// Package redis provides Valkey/Redis repositories.
 package redis
 
 import (
@@ -6,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/redis/go-redis/v9"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
@@ -32,15 +34,18 @@ func NewLeaderboardRepository(valkey *redis.Client) *LeaderboardRepository {
 	return &LeaderboardRepository{valkey: valkey}
 }
 
+// UpdateRank updates the user's score/rank in the leaderboard.
 func (r *LeaderboardRepository) UpdateRank(ctx context.Context, ladderID int64, userID int64, score float64) error {
 	key := leaderboardKey(ladderID)
 	member := strconv.FormatInt(userID, 10)
+
 	return r.valkey.ZAdd(ctx, key, redis.Z{
 		Score:  score,
 		Member: member,
 	}).Err()
 }
 
+// GetLeaderboard retrieves a range of users and their scores from the leaderboard.
 func (r *LeaderboardRepository) GetLeaderboard(ctx context.Context, ladderID int64, offset, limit int) ([]service.LeaderboardScore, error) {
 	key := leaderboardKey(ladderID)
 	start := int64(offset)
@@ -63,6 +68,7 @@ func (r *LeaderboardRepository) GetLeaderboard(ctx context.Context, ladderID int
 	return scores, nil
 }
 
+// GetLastUpdate retrieves the Unix timestamp of the last leaderboard update.
 func (r *LeaderboardRepository) GetLastUpdate(ctx context.Context, ladderID int64) (int64, error) {
 	key := leaderboardLastUpdateKey(ladderID)
 	val, err := r.valkey.Get(ctx, key).Result()
@@ -70,6 +76,7 @@ func (r *LeaderboardRepository) GetLastUpdate(ctx context.Context, ladderID int6
 		if err == redis.Nil {
 			return 0, nil
 		}
+
 		return 0, err
 	}
 
@@ -81,18 +88,24 @@ func (r *LeaderboardRepository) GetLastUpdate(ctx context.Context, ladderID int6
 	return timestamp, nil
 }
 
+// SetLastUpdate updates the Unix timestamp of the last leaderboard update.
 func (r *LeaderboardRepository) SetLastUpdate(ctx context.Context, ladderID int64, timestamp int64) error {
 	key := leaderboardLastUpdateKey(ladderID)
+
 	return r.valkey.Set(ctx, key, strconv.FormatInt(timestamp, 10), 0).Err()
 }
 
+// GetTotalCount returns the total number of participants in the leaderboard.
 func (r *LeaderboardRepository) GetTotalCount(ctx context.Context, ladderID int64) (int64, error) {
 	key := leaderboardKey(ladderID)
+
 	return r.valkey.ZCard(ctx, key).Result()
 }
 
+// RemoveFromLeaderboard removes a user from the leaderboard.
 func (r *LeaderboardRepository) RemoveFromLeaderboard(ctx context.Context, ladderID int64, userID int64) error {
 	key := leaderboardKey(ladderID)
 	member := strconv.FormatInt(userID, 10)
+
 	return r.valkey.ZRem(ctx, key, member).Err()
 }

@@ -124,7 +124,7 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 	for i, item := range scores {
 		fetchedUser, err := s.userRepo.GetUser(ctx, item.UserID)
 		if err != nil {
-			s.leaderboardRepo.RemoveFromLeaderboard(ctx, ladderID, item.UserID)
+			_ = s.leaderboardRepo.RemoveFromLeaderboard(ctx, ladderID, item.UserID)
 			totalCount--
 
 			continue

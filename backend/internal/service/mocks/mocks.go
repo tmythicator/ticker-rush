@@ -292,6 +292,7 @@ func (m *MockLadderRepository) GetExpiredActiveLadders(ctx context.Context, now 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
+
 	return args.Get(0).([]*ladder.Ladder), args.Error(1)
 }
 
@@ -301,12 +302,14 @@ func (m *MockLadderRepository) GetPendingLaddersToActivate(ctx context.Context, 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
+
 	return args.Get(0).([]*ladder.Ladder), args.Error(1)
 }
 
 // UpdateLadderStatus mock.
 func (m *MockLadderRepository) UpdateLadderStatus(ctx context.Context, id int64, isActive bool) error {
 	args := m.Called(ctx, id, isActive)
+
 	return args.Error(0)
 }
 
@@ -316,24 +319,28 @@ func (m *MockLadderRepository) GetLadderParticipants(ctx context.Context, ladder
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
+
 	return args.Get(0).([]sqlc.LadderParticipant), args.Error(1)
 }
 
 // InsertLadderParticipant mock.
 func (m *MockLadderRepository) InsertLadderParticipant(ctx context.Context, ladderID int64, userID int64, finalBalance decimal.Decimal, finalRank int32) error {
 	args := m.Called(ctx, ladderID, userID, finalBalance, finalRank)
+
 	return args.Error(0)
 }
 
 // PruneLadderParticipants mock.
 func (m *MockLadderRepository) PruneLadderParticipants(ctx context.Context, ladderID int64, rankThreshold int32) error {
 	args := m.Called(ctx, ladderID, rankThreshold)
+
 	return args.Error(0)
 }
 
 // DeleteLadderPortfolioItemsByLadder mock.
 func (m *MockLadderRepository) DeleteLadderPortfolioItemsByLadder(ctx context.Context, ladderID int64) error {
 	args := m.Called(ctx, ladderID)
+
 	return args.Error(0)
 }
 
@@ -349,35 +356,47 @@ type MockLeaderboardRepository struct {
 	mock.Mock
 }
 
+// UpdateRank mock.
 func (m *MockLeaderboardRepository) UpdateRank(ctx context.Context, ladderID int64, userID int64, score float64) error {
 	args := m.Called(ctx, ladderID, userID, score)
+
 	return args.Error(0)
 }
 
+// GetLeaderboard mock.
 func (m *MockLeaderboardRepository) GetLeaderboard(ctx context.Context, ladderID int64, offset int, limit int) ([]service.LeaderboardScore, error) {
 	args := m.Called(ctx, ladderID, offset, limit)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
+
 	return args.Get(0).([]service.LeaderboardScore), args.Error(1)
 }
 
-func (m *MockLeaderboardRepository) GetTotalCount(ctx context.Context, ladderID int64) (int, error) {
+// GetTotalCount mock.
+func (m *MockLeaderboardRepository) GetTotalCount(ctx context.Context, ladderID int64) (int64, error) {
 	args := m.Called(ctx, ladderID)
-	return args.Int(0), args.Error(1)
+
+	return int64(args.Int(0)), args.Error(1)
 }
 
+// GetLastUpdate mock.
 func (m *MockLeaderboardRepository) GetLastUpdate(ctx context.Context, ladderID int64) (int64, error) {
 	args := m.Called(ctx, ladderID)
+
 	return args.Get(0).(int64), args.Error(1)
 }
 
+// SetLastUpdate mock.
 func (m *MockLeaderboardRepository) SetLastUpdate(ctx context.Context, ladderID int64, timestamp int64) error {
 	args := m.Called(ctx, ladderID, timestamp)
+
 	return args.Error(0)
 }
 
+// RemoveFromLeaderboard mock.
 func (m *MockLeaderboardRepository) RemoveFromLeaderboard(ctx context.Context, ladderID int64, userID int64) error {
 	args := m.Called(ctx, ladderID, userID)
+
 	return args.Error(0)
 }

@@ -40,13 +40,13 @@ type HistoryRepository interface {
 
 // CreateUserParams represents parameters for creating a new user.
 type CreateUserParams struct {
-	Username       string
-	PasswordHash   string
-	FirstName      string
-	LastName       string
-	Website        string
-	IsPublic       bool
-	AgbAcceptedAt  time.Time
+	Username      string
+	PasswordHash  string
+	FirstName     string
+	LastName      string
+	Website       string
+	IsPublic      bool
+	AgbAcceptedAt time.Time
 }
 
 // UserRepository defines the interface for user persistence.

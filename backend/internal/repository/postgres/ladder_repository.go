@@ -111,6 +111,7 @@ func (r *LadderRepository) GetExpiredActiveLadders(ctx context.Context, now time
 			CreatedAt:      &timestamppb.Timestamp{Seconds: row.CreatedAt.Time.Unix()},
 		}
 	}
+
 	return res, nil
 }
 
@@ -133,6 +134,7 @@ func (r *LadderRepository) GetPendingLaddersToActivate(ctx context.Context, now 
 			CreatedAt:      &timestamppb.Timestamp{Seconds: row.CreatedAt.Time.Unix()},
 		}
 	}
+
 	return res, nil
 }
 

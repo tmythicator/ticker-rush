@@ -24,7 +24,7 @@ func TestMarketRepository(t *testing.T) {
 	rClient := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
 	})
-	defer rClient.Close()
+	defer func() { _ = rClient.Close() }()
 
 	repo := redisRepo.NewMarketRepository(rClient)
 	ctx := context.Background()
@@ -70,7 +70,7 @@ func TestMarketRepository(t *testing.T) {
 
 	t.Run("Subscribe to Quotes", func(t *testing.T) {
 		pubSub := repo.SubscribeToQuotes(ctx, symbol)
-		defer pubSub.Close()
+		defer func() { _ = pubSub.Close() }()
 
 		// Wait briefly for subscription to register in miniredis
 		time.Sleep(10 * time.Millisecond)

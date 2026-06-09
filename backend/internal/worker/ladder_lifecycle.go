@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/shopspring/decimal"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
@@ -47,6 +48,7 @@ func (w *LadderLifecycleWorker) Start(ctx context.Context) error {
 			w.RunOnce(ctx)
 		case <-ctx.Done():
 			log.Println("[LadderLifecycleWorker] Stopping worker...")
+
 			return ctx.Err()
 		}
 	}
@@ -77,6 +79,7 @@ func (w *LadderLifecycleWorker) DeactivateExpiredLadders(ctx context.Context, no
 		participants, err := w.ladderRepo.GetLadderParticipants(ctx, l.Id)
 		if err != nil {
 			log.Printf("[LadderLifecycleWorker] Failed to get participants for ladder %d: %v", l.Id, err)
+
 			continue
 		}
 
@@ -94,6 +97,7 @@ func (w *LadderLifecycleWorker) DeactivateExpiredLadders(ctx context.Context, no
 			items, err := w.portfolioRepo.GetPortfolio(ctx, p.UserID, l.Id)
 			if err != nil {
 				log.Printf("[LadderLifecycleWorker] Failed to get portfolio for user %d in ladder %d: %v", p.UserID, l.Id, err)
+
 				continue
 			}
 

@@ -22,7 +22,7 @@ func TestLeaderboardRepository(t *testing.T) {
 	rClient := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
 	})
-	defer rClient.Close()
+	defer func() { _ = rClient.Close() }()
 
 	repo := redisRepo.NewLeaderboardRepository(rClient)
 	ctx := context.Background()
