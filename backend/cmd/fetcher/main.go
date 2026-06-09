@@ -19,16 +19,17 @@ package main
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"strconv"
-	"sync"
 	"syscall"
-	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	go_redis "github.com/redis/go-redis/v9"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/clients/coingecko"
 	"github.com/tmythicator/ticker-rush/backend/internal/clients/finnhub"
@@ -39,7 +40,6 @@ import (
 )
 
 func main() {
-
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
@@ -49,14 +49,17 @@ func main() {
 		log.Fatalf("Fetcher failed to start: %v", err)
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
-	// NewClient дважды инициализируется чтоли в проекте?
 	// Initialize Redis Client
 	rdb := go_redis.NewClient(&go_redis.Options{
 		Addr: cfg.RedisHost + ":" + strconv.Itoa(cfg.RedisPort),
 	})
+	defer func() {
+		log.Println("Closing Redis client...")
+		_ = rdb.Close()
+	}()
 
 	// Initialize Market Repository
 	marketRepo := redis.NewMarketRepository(rdb)
@@ -67,7 +70,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
-	defer pgPool.Close()
+	defer func() {
+		log.Println("Closing Postgres pool...")
+		pgPool.Close()
+	}()
 
 	historyRepo := postgres.NewHistoryRepository(pgPool)
 	ladderRepo := postgres.NewLadderRepository(pgPool)
@@ -79,38 +85,38 @@ func main() {
 	coingeckoClient := coingecko.NewClient(cfg.CoingeckoKey, cfg.CoingeckoTimeout)
 
 	// Initialize Workers
-	refreshInterval := 1 * time.Minute // да тоже бы вынес =)
+	finnhubWorker := worker.NewMarketFetcher("Finnhub", finnhubClient, marketRepo, historyRepo, ladderRepo, &worker.FetcherConfig{
+		FetchInterval:   cfg.FinnhubFetchInterval,
+		RefreshInterval: cfg.MarketFetcherRefreshInterval,
+		RequestTimeout:  cfg.FinnhubTimeout,
+	})
+	coingeckoWorker := worker.NewMarketFetcher("CoinGecko", coingeckoClient, marketRepo, historyRepo, ladderRepo, &worker.FetcherConfig{
+		FetchInterval:   cfg.CoingeckoFetchInterval,
+		RefreshInterval: cfg.MarketFetcherRefreshInterval,
+		RequestTimeout:  cfg.CoingeckoTimeout,
+	})
 
-	finnhubWorker := worker.NewMarketFetcher("Finnhub", finnhubClient, marketRepo, historyRepo, ladderRepo, cfg.FinnhubFetchInterval, refreshInterval, cfg.FinnhubTimeout)
-	coingeckoWorker := worker.NewMarketFetcher("CoinGecko", coingeckoClient, marketRepo, historyRepo, ladderRepo, cfg.CoingeckoFetchInterval, refreshInterval, cfg.CoingeckoTimeout)
+	g, ctx := errgroup.WithContext(ctx)
 
-	var wg sync.WaitGroup
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		if err := finnhubWorker.Start(ctx); err != nil && err != context.Canceled {
-			log.Printf("Finnhub worker failed: %v", err)
+	g.Go(func() error {
+		if err := finnhubWorker.Start(ctx); err != nil && !errors.Is(err, context.Canceled) {
+			return fmt.Errorf("Finnhub worker error: %w", err)
 		}
-	}()
+		return nil
+	})
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		if err := coingeckoWorker.Start(ctx); err != nil && err != context.Canceled {
-			log.Printf("CoinGecko worker failed: %v", err)
+	g.Go(func() error {
+		if err := coingeckoWorker.Start(ctx); err != nil && !errors.Is(err, context.Canceled) {
+			return fmt.Errorf("CoinGecko worker error: %w", err)
 		}
-	}()
+		return nil
+	})
 
-	// Graceful shutdown
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
-	<-quit
+	log.Println("Fetcher service running...")
 
-	log.Println("Fetcher service shutting down...")
-	cancel()
-
-	log.Println("Waiting for workers to finish...")
-	wg.Wait()
-	log.Println("All workers stopped. Exiting.")
+	if err := g.Wait(); err != nil {
+		log.Printf("Fetcher service stopped with error: %v\n", err)
+	} else {
+		log.Println("Fetcher service stopped cleanly")
+	}
 }

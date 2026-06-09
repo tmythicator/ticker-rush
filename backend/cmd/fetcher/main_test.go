@@ -12,11 +12,9 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/clients/finnhub"
-	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
+	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
-	"github.com/tmythicator/ticker-rush/backend/internal/service"
 	"github.com/tmythicator/ticker-rush/backend/internal/worker"
 )
 
@@ -36,29 +34,29 @@ func (m *MockFinnhubClient) GetQuote(ctx context.Context, symbol string) (*excha
 // MockHistoryRepository mocks the history storage.
 type MockHistoryRepository struct{}
 
-func (m *MockHistoryRepository) SaveQuote(ctx context.Context, quote *exchange.Quote) error {
+func (m *MockHistoryRepository) SaveQuote(ctx context.Context, quote *domain.Quote) error {
 	return nil
 }
 
-func (m *MockHistoryRepository) GetHistory(ctx context.Context, symbol string, limit int) ([]*exchange.Quote, error) {
+func (m *MockHistoryRepository) GetHistory(ctx context.Context, symbol string, limit int) ([]*domain.Quote, error) {
 	return nil, nil
 }
 
 // MockLadderRepository mocks the ladder management.
 type MockLadderRepository struct {
 	ActiveLadderID int64
-	Tickers        []*ladder.TickerInfo
+	Tickers        []*domain.TickerInfo
 }
 
 func (m *MockLadderRepository) GetActiveLadder(ctx context.Context) (int64, error) {
 	return m.ActiveLadderID, nil
 }
 
-func (m *MockLadderRepository) GetLadder(ctx context.Context, id int64) (*ladder.Ladder, error) {
-	return &ladder.Ladder{Id: id, IsActive: true}, nil
+func (m *MockLadderRepository) GetLadder(ctx context.Context, id int64) (*domain.Ladder, error) {
+	return &domain.Ladder{ID: id, IsActive: true}, nil
 }
 
-func (m *MockLadderRepository) GetAllowedTickers(ctx context.Context, ladderID int64) ([]*ladder.TickerInfo, error) {
+func (m *MockLadderRepository) GetAllowedTickers(ctx context.Context, ladderID int64) ([]*domain.TickerInfo, error) {
 	return m.Tickers, nil
 }
 
@@ -70,11 +68,11 @@ func (m *MockLadderRepository) IsUserInLadder(ctx context.Context, ladderID int6
 	return true, nil
 }
 
-func (m *MockLadderRepository) GetExpiredActiveLadders(ctx context.Context, now time.Time) ([]*ladder.Ladder, error) {
+func (m *MockLadderRepository) GetExpiredActiveLadders(ctx context.Context, now time.Time) ([]*domain.Ladder, error) {
 	return nil, nil
 }
 
-func (m *MockLadderRepository) GetPendingLaddersToActivate(ctx context.Context, now time.Time) ([]*ladder.Ladder, error) {
+func (m *MockLadderRepository) GetPendingLaddersToActivate(ctx context.Context, now time.Time) ([]*domain.Ladder, error) {
 	return nil, nil
 }
 
@@ -82,7 +80,7 @@ func (m *MockLadderRepository) UpdateLadderStatus(ctx context.Context, id int64,
 	return nil
 }
 
-func (m *MockLadderRepository) GetLadderParticipants(ctx context.Context, ladderID int64) ([]sqlc.LadderParticipant, error) {
+func (m *MockLadderRepository) GetLadderParticipants(ctx context.Context, ladderID int64) ([]domain.LadderParticipant, error) {
 	return nil, nil
 }
 
@@ -96,10 +94,6 @@ func (m *MockLadderRepository) PruneLadderParticipants(ctx context.Context, ladd
 
 func (m *MockLadderRepository) DeleteLadderPortfolioItemsByLadder(ctx context.Context, ladderID int64) error {
 	return nil
-}
-
-func (m *MockLadderRepository) WithTx(tx service.Transaction) service.LadderRepository {
-	return m
 }
 
 func TestMarketFetcher(t *testing.T) {
@@ -126,11 +120,15 @@ func TestMarketFetcher(t *testing.T) {
 	historyRepo := &MockHistoryRepository{}
 	ladderRepo := &MockLadderRepository{
 		ActiveLadderID: 1,
-		Tickers: []*ladder.TickerInfo{
+		Tickers: []*domain.TickerInfo{
 			{Symbol: "AAPL", Source: "Finnhub"},
 		},
 	}
-	marketWorker := worker.NewMarketFetcher("Finnhub", mockClient, marketRepo, historyRepo, ladderRepo, 100*time.Millisecond, 1*time.Minute, 5*time.Second)
+	marketWorker := worker.NewMarketFetcher("Finnhub", mockClient, marketRepo, historyRepo, ladderRepo, &worker.FetcherConfig{
+		FetchInterval:   100 * time.Millisecond,
+		RefreshInterval: 1 * time.Minute,
+		RequestTimeout:  5 * time.Second,
+	})
 
 	// 4. Run Worker logic (simulate one tick)
 	ctx := t.Context()
