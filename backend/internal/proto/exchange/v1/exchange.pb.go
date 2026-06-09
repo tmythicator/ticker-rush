@@ -557,13 +557,11 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x11SellStockResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12>\n" +
-	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant2\xbe\x02\n" +
+	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant2\xef\x01\n" +
 	"\x0fExchangeService\x12G\n" +
 	"\bGetQuote\x12\x1c.exchange.v1.GetQuoteRequest\x1a\x1d.exchange.v1.GetQuoteResponse\x12G\n" +
 	"\bBuyStock\x12\x1c.exchange.v1.BuyStockRequest\x1a\x1d.exchange.v1.BuyStockResponse\x12J\n" +
-	"\tSellStock\x12\x1d.exchange.v1.SellStockRequest\x1a\x1e.exchange.v1.SellStockResponse\x12M\n" +
-	"\n" +
-	"GetHistory\x12\x1e.exchange.v1.GetHistoryRequest\x1a\x1f.exchange.v1.GetHistoryResponseBPZNgithub.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1;exchangeb\x06proto3"
+	"\tSellStock\x12\x1d.exchange.v1.SellStockRequest\x1a\x1e.exchange.v1.SellStockResponseBPZNgithub.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1;exchangeb\x06proto3"
 
 var (
 	file_exchange_v1_exchange_proto_rawDescOnce sync.Once
@@ -598,13 +596,11 @@ var file_exchange_v1_exchange_proto_depIdxs = []int32{
 	1, // 4: exchange.v1.ExchangeService.GetQuote:input_type -> exchange.v1.GetQuoteRequest
 	5, // 5: exchange.v1.ExchangeService.BuyStock:input_type -> exchange.v1.BuyStockRequest
 	7, // 6: exchange.v1.ExchangeService.SellStock:input_type -> exchange.v1.SellStockRequest
-	3, // 7: exchange.v1.ExchangeService.GetHistory:input_type -> exchange.v1.GetHistoryRequest
-	2, // 8: exchange.v1.ExchangeService.GetQuote:output_type -> exchange.v1.GetQuoteResponse
-	6, // 9: exchange.v1.ExchangeService.BuyStock:output_type -> exchange.v1.BuyStockResponse
-	8, // 10: exchange.v1.ExchangeService.SellStock:output_type -> exchange.v1.SellStockResponse
-	4, // 11: exchange.v1.ExchangeService.GetHistory:output_type -> exchange.v1.GetHistoryResponse
-	8, // [8:12] is the sub-list for method output_type
-	4, // [4:8] is the sub-list for method input_type
+	2, // 7: exchange.v1.ExchangeService.GetQuote:output_type -> exchange.v1.GetQuoteResponse
+	6, // 8: exchange.v1.ExchangeService.BuyStock:output_type -> exchange.v1.BuyStockResponse
+	8, // 9: exchange.v1.ExchangeService.SellStock:output_type -> exchange.v1.SellStockResponse
+	7, // [7:10] is the sub-list for method output_type
+	4, // [4:7] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
 	4, // [4:4] is the sub-list for extension extendee
 	0, // [0:4] is the sub-list for field type_name

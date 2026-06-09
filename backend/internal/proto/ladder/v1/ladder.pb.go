@@ -253,166 +253,6 @@ func (x *LadderParticipant) GetJoinedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-type LadderLeaderboardEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Participant   *LadderParticipant     `protobuf:"bytes,1,opt,name=participant,proto3" json:"participant,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LadderLeaderboardEntry) Reset() {
-	*x = LadderLeaderboardEntry{}
-	mi := &file_ladder_v1_ladder_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LadderLeaderboardEntry) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LadderLeaderboardEntry) ProtoMessage() {}
-
-func (x *LadderLeaderboardEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_ladder_v1_ladder_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LadderLeaderboardEntry.ProtoReflect.Descriptor instead.
-func (*LadderLeaderboardEntry) Descriptor() ([]byte, []int) {
-	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *LadderLeaderboardEntry) GetParticipant() *LadderParticipant {
-	if x != nil {
-		return x.Participant
-	}
-	return nil
-}
-
-type ListLaddersRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListLaddersRequest) Reset() {
-	*x = ListLaddersRequest{}
-	mi := &file_ladder_v1_ladder_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListLaddersRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListLaddersRequest) ProtoMessage() {}
-
-func (x *ListLaddersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ladder_v1_ladder_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListLaddersRequest.ProtoReflect.Descriptor instead.
-func (*ListLaddersRequest) Descriptor() ([]byte, []int) {
-	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{4}
-}
-
-type ListLaddersResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Ladders       []*Ladder              `protobuf:"bytes,1,rep,name=ladders,proto3" json:"ladders,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListLaddersResponse) Reset() {
-	*x = ListLaddersResponse{}
-	mi := &file_ladder_v1_ladder_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListLaddersResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListLaddersResponse) ProtoMessage() {}
-
-func (x *ListLaddersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ladder_v1_ladder_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListLaddersResponse.ProtoReflect.Descriptor instead.
-func (*ListLaddersResponse) Descriptor() ([]byte, []int) {
-	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *ListLaddersResponse) GetLadders() []*Ladder {
-	if x != nil {
-		return x.Ladders
-	}
-	return nil
-}
-
-type GetActiveLadderRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetActiveLadderRequest) Reset() {
-	*x = GetActiveLadderRequest{}
-	mi := &file_ladder_v1_ladder_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetActiveLadderRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetActiveLadderRequest) ProtoMessage() {}
-
-func (x *GetActiveLadderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ladder_v1_ladder_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetActiveLadderRequest.ProtoReflect.Descriptor instead.
-func (*GetActiveLadderRequest) Descriptor() ([]byte, []int) {
-	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{6}
-}
-
 type GetActiveLadderResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Ladder        *Ladder                `protobuf:"bytes,1,opt,name=ladder,proto3" json:"ladder,omitempty"`
@@ -422,7 +262,7 @@ type GetActiveLadderResponse struct {
 
 func (x *GetActiveLadderResponse) Reset() {
 	*x = GetActiveLadderResponse{}
-	mi := &file_ladder_v1_ladder_proto_msgTypes[7]
+	mi := &file_ladder_v1_ladder_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -434,7 +274,7 @@ func (x *GetActiveLadderResponse) String() string {
 func (*GetActiveLadderResponse) ProtoMessage() {}
 
 func (x *GetActiveLadderResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ladder_v1_ladder_proto_msgTypes[7]
+	mi := &file_ladder_v1_ladder_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -447,196 +287,12 @@ func (x *GetActiveLadderResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetActiveLadderResponse.ProtoReflect.Descriptor instead.
 func (*GetActiveLadderResponse) Descriptor() ([]byte, []int) {
-	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{7}
+	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetActiveLadderResponse) GetLadder() *Ladder {
 	if x != nil {
 		return x.Ladder
-	}
-	return nil
-}
-
-type GetLadderLeaderboardRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	LadderId      int64                  `protobuf:"varint,1,opt,name=ladder_id,json=ladderId,proto3" json:"ladder_id,omitempty"`
-	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetLadderLeaderboardRequest) Reset() {
-	*x = GetLadderLeaderboardRequest{}
-	mi := &file_ladder_v1_ladder_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetLadderLeaderboardRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetLadderLeaderboardRequest) ProtoMessage() {}
-
-func (x *GetLadderLeaderboardRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ladder_v1_ladder_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetLadderLeaderboardRequest.ProtoReflect.Descriptor instead.
-func (*GetLadderLeaderboardRequest) Descriptor() ([]byte, []int) {
-	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *GetLadderLeaderboardRequest) GetLadderId() int64 {
-	if x != nil {
-		return x.LadderId
-	}
-	return 0
-}
-
-func (x *GetLadderLeaderboardRequest) GetLimit() int32 {
-	if x != nil {
-		return x.Limit
-	}
-	return 0
-}
-
-type GetLadderLeaderboardResponse struct {
-	state         protoimpl.MessageState    `protogen:"open.v1"`
-	Entries       []*LadderLeaderboardEntry `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetLadderLeaderboardResponse) Reset() {
-	*x = GetLadderLeaderboardResponse{}
-	mi := &file_ladder_v1_ladder_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetLadderLeaderboardResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetLadderLeaderboardResponse) ProtoMessage() {}
-
-func (x *GetLadderLeaderboardResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ladder_v1_ladder_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetLadderLeaderboardResponse.ProtoReflect.Descriptor instead.
-func (*GetLadderLeaderboardResponse) Descriptor() ([]byte, []int) {
-	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *GetLadderLeaderboardResponse) GetEntries() []*LadderLeaderboardEntry {
-	if x != nil {
-		return x.Entries
-	}
-	return nil
-}
-
-type GetMyLadderStatsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	LadderId      int64                  `protobuf:"varint,1,opt,name=ladder_id,json=ladderId,proto3" json:"ladder_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetMyLadderStatsRequest) Reset() {
-	*x = GetMyLadderStatsRequest{}
-	mi := &file_ladder_v1_ladder_proto_msgTypes[10]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetMyLadderStatsRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetMyLadderStatsRequest) ProtoMessage() {}
-
-func (x *GetMyLadderStatsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_ladder_v1_ladder_proto_msgTypes[10]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetMyLadderStatsRequest.ProtoReflect.Descriptor instead.
-func (*GetMyLadderStatsRequest) Descriptor() ([]byte, []int) {
-	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *GetMyLadderStatsRequest) GetLadderId() int64 {
-	if x != nil {
-		return x.LadderId
-	}
-	return 0
-}
-
-type GetMyLadderStatsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Participant   *LadderParticipant     `protobuf:"bytes,1,opt,name=participant,proto3" json:"participant,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetMyLadderStatsResponse) Reset() {
-	*x = GetMyLadderStatsResponse{}
-	mi := &file_ladder_v1_ladder_proto_msgTypes[11]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetMyLadderStatsResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetMyLadderStatsResponse) ProtoMessage() {}
-
-func (x *GetMyLadderStatsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ladder_v1_ladder_proto_msgTypes[11]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetMyLadderStatsResponse.ProtoReflect.Descriptor instead.
-func (*GetMyLadderStatsResponse) Descriptor() ([]byte, []int) {
-	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *GetMyLadderStatsResponse) GetParticipant() *LadderParticipant {
-	if x != nil {
-		return x.Participant
 	}
 	return nil
 }
@@ -667,24 +323,9 @@ const file_ladder_v1_ladder_proto_rawDesc = "" +
 	"\x04user\x18\x02 \x01(\v2\r.user.v1.UserR\x04user\x12\x1d\n" +
 	"\n" +
 	"final_rank\x18\x03 \x01(\x05R\tfinalRank\x127\n" +
-	"\tjoined_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\bjoinedAt\"X\n" +
-	"\x16LadderLeaderboardEntry\x12>\n" +
-	"\vparticipant\x18\x01 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant\"\x14\n" +
-	"\x12ListLaddersRequest\"B\n" +
-	"\x13ListLaddersResponse\x12+\n" +
-	"\aladders\x18\x01 \x03(\v2\x11.ladder.v1.LadderR\aladders\"\x18\n" +
-	"\x16GetActiveLadderRequest\"D\n" +
+	"\tjoined_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\bjoinedAt\"D\n" +
 	"\x17GetActiveLadderResponse\x12)\n" +
-	"\x06ladder\x18\x01 \x01(\v2\x11.ladder.v1.LadderR\x06ladder\"P\n" +
-	"\x1bGetLadderLeaderboardRequest\x12\x1b\n" +
-	"\tladder_id\x18\x01 \x01(\x03R\bladderId\x12\x14\n" +
-	"\x05limit\x18\x02 \x01(\x05R\x05limit\"[\n" +
-	"\x1cGetLadderLeaderboardResponse\x12;\n" +
-	"\aentries\x18\x01 \x03(\v2!.ladder.v1.LadderLeaderboardEntryR\aentries\"6\n" +
-	"\x17GetMyLadderStatsRequest\x12\x1b\n" +
-	"\tladder_id\x18\x01 \x01(\x03R\bladderId\"Z\n" +
-	"\x18GetMyLadderStatsResponse\x12>\n" +
-	"\vparticipant\x18\x01 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipantBLZJgithub.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1;ladderb\x06proto3"
+	"\x06ladder\x18\x01 \x01(\v2\x11.ladder.v1.LadderR\x06ladderBLZJgithub.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1;ladderb\x06proto3"
 
 var (
 	file_ladder_v1_ladder_proto_rawDescOnce sync.Once
@@ -698,40 +339,28 @@ func file_ladder_v1_ladder_proto_rawDescGZIP() []byte {
 	return file_ladder_v1_ladder_proto_rawDescData
 }
 
-var file_ladder_v1_ladder_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_ladder_v1_ladder_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_ladder_v1_ladder_proto_goTypes = []any{
-	(*Ladder)(nil),                       // 0: ladder.v1.Ladder
-	(*TickerInfo)(nil),                   // 1: ladder.v1.TickerInfo
-	(*LadderParticipant)(nil),            // 2: ladder.v1.LadderParticipant
-	(*LadderLeaderboardEntry)(nil),       // 3: ladder.v1.LadderLeaderboardEntry
-	(*ListLaddersRequest)(nil),           // 4: ladder.v1.ListLaddersRequest
-	(*ListLaddersResponse)(nil),          // 5: ladder.v1.ListLaddersResponse
-	(*GetActiveLadderRequest)(nil),       // 6: ladder.v1.GetActiveLadderRequest
-	(*GetActiveLadderResponse)(nil),      // 7: ladder.v1.GetActiveLadderResponse
-	(*GetLadderLeaderboardRequest)(nil),  // 8: ladder.v1.GetLadderLeaderboardRequest
-	(*GetLadderLeaderboardResponse)(nil), // 9: ladder.v1.GetLadderLeaderboardResponse
-	(*GetMyLadderStatsRequest)(nil),      // 10: ladder.v1.GetMyLadderStatsRequest
-	(*GetMyLadderStatsResponse)(nil),     // 11: ladder.v1.GetMyLadderStatsResponse
-	(*timestamppb.Timestamp)(nil),        // 12: google.protobuf.Timestamp
-	(*v1.User)(nil),                      // 13: user.v1.User
+	(*Ladder)(nil),                  // 0: ladder.v1.Ladder
+	(*TickerInfo)(nil),              // 1: ladder.v1.TickerInfo
+	(*LadderParticipant)(nil),       // 2: ladder.v1.LadderParticipant
+	(*GetActiveLadderResponse)(nil), // 3: ladder.v1.GetActiveLadderResponse
+	(*timestamppb.Timestamp)(nil),   // 4: google.protobuf.Timestamp
+	(*v1.User)(nil),                 // 5: user.v1.User
 }
 var file_ladder_v1_ladder_proto_depIdxs = []int32{
-	12, // 0: ladder.v1.Ladder.start_time:type_name -> google.protobuf.Timestamp
-	12, // 1: ladder.v1.Ladder.end_time:type_name -> google.protobuf.Timestamp
-	12, // 2: ladder.v1.Ladder.created_at:type_name -> google.protobuf.Timestamp
-	1,  // 3: ladder.v1.Ladder.allowed_tickers:type_name -> ladder.v1.TickerInfo
-	13, // 4: ladder.v1.LadderParticipant.user:type_name -> user.v1.User
-	12, // 5: ladder.v1.LadderParticipant.joined_at:type_name -> google.protobuf.Timestamp
-	2,  // 6: ladder.v1.LadderLeaderboardEntry.participant:type_name -> ladder.v1.LadderParticipant
-	0,  // 7: ladder.v1.ListLaddersResponse.ladders:type_name -> ladder.v1.Ladder
-	0,  // 8: ladder.v1.GetActiveLadderResponse.ladder:type_name -> ladder.v1.Ladder
-	3,  // 9: ladder.v1.GetLadderLeaderboardResponse.entries:type_name -> ladder.v1.LadderLeaderboardEntry
-	2,  // 10: ladder.v1.GetMyLadderStatsResponse.participant:type_name -> ladder.v1.LadderParticipant
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	4, // 0: ladder.v1.Ladder.start_time:type_name -> google.protobuf.Timestamp
+	4, // 1: ladder.v1.Ladder.end_time:type_name -> google.protobuf.Timestamp
+	4, // 2: ladder.v1.Ladder.created_at:type_name -> google.protobuf.Timestamp
+	1, // 3: ladder.v1.Ladder.allowed_tickers:type_name -> ladder.v1.TickerInfo
+	5, // 4: ladder.v1.LadderParticipant.user:type_name -> user.v1.User
+	4, // 5: ladder.v1.LadderParticipant.joined_at:type_name -> google.protobuf.Timestamp
+	0, // 6: ladder.v1.GetActiveLadderResponse.ladder:type_name -> ladder.v1.Ladder
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_ladder_v1_ladder_proto_init() }
@@ -745,7 +374,7 @@ func file_ladder_v1_ladder_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ladder_v1_ladder_proto_rawDesc), len(file_ladder_v1_ladder_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
