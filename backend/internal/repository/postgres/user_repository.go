@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/shopspring/decimal"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
@@ -109,8 +110,8 @@ func (r *UserRepository) UpdateUserProfile(ctx context.Context, u *user.User) er
 }
 
 // UpdateUserBalance updates the user's balance for the given ladder.
-func (r *UserRepository) UpdateUserBalance(ctx context.Context, userID int64, ladderID int64, balance float64) error {
-	return r.queries.UpdateLadderBalance(ctx, sqlc.UpdateLadderBalanceParams{
+func (r *UserRepository) UpdateUserBalance(ctx context.Context, userID int64, ladderID int64, balance decimal.Decimal) error {
+	return r.queries.UpdateLadderParticipantBalance(ctx, sqlc.UpdateLadderParticipantBalanceParams{
 		LadderID: ladderID,
 		UserID:   userID,
 		Balance:  balance,
@@ -118,13 +119,13 @@ func (r *UserRepository) UpdateUserBalance(ctx context.Context, userID int64, la
 }
 
 // GetUserBalance retrieves the user's balance for the given ladder.
-func (r *UserRepository) GetUserBalance(ctx context.Context, userID int64, ladderID int64) (float64, error) {
-	balance, err := r.queries.GetLadderBalance(ctx, sqlc.GetLadderBalanceParams{
+func (r *UserRepository) GetUserBalance(ctx context.Context, userID int64, ladderID int64) (decimal.Decimal, error) {
+	balance, err := r.queries.GetLadderParticipantBalance(ctx, sqlc.GetLadderParticipantBalanceParams{
 		LadderID: ladderID,
 		UserID:   userID,
 	})
 	if err != nil {
-		return 0, err
+		return decimal.Zero, err
 	}
 
 	return balance, nil
@@ -133,23 +134,17 @@ func (r *UserRepository) GetUserBalance(ctx context.Context, userID int64, ladde
 // CreateUser creates a new user in the database.
 func (r *UserRepository) CreateUser(
 	ctx context.Context,
-	username string,
-	hashedPassword string,
-	firstName string,
-	lastName string,
-	website string,
-	isPublic bool,
-	agbAcceptedAt time.Time,
+	params service.CreateUserParams,
 ) (*user.User, error) {
 	u, err := r.queries.CreateUser(ctx, sqlc.CreateUserParams{
-		Username:      username,
-		PasswordHash:  hashedPassword,
-		FirstName:     firstName,
-		LastName:      lastName,
-		Website:       website,
+		Username:      params.Username,
+		PasswordHash:  params.PasswordHash,
+		FirstName:     params.FirstName,
+		LastName:      params.LastName,
+		Website:       params.Website,
 		CreatedAt:     pgtype.Timestamptz{Time: time.Now(), Valid: true},
-		IsPublic:      isPublic,
-		AgbAcceptedAt: pgtype.Timestamptz{Time: agbAcceptedAt, Valid: true},
+		IsPublic:      params.IsPublic,
+		AgbAcceptedAt: pgtype.Timestamptz{Time: params.AgbAcceptedAt, Valid: true},
 	})
 	if err != nil {
 		return nil, err

@@ -6,6 +6,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/shopspring/decimal"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1"
@@ -50,8 +51,8 @@ func (r *PortfolioRepository) GetPortfolio(
 	for i, item := range items {
 		result[i] = &portfolio.PortfolioItem{
 			StockSymbol:  item.StockSymbol,
-			Quantity:     item.Quantity,
-			AveragePrice: item.AveragePrice,
+			Quantity:     item.Quantity.InexactFloat64(),
+			AveragePrice: item.AveragePrice.InexactFloat64(),
 		}
 	}
 
@@ -76,8 +77,8 @@ func (r *PortfolioRepository) GetPortfolioItem(
 
 	return &portfolio.PortfolioItem{
 		StockSymbol:  item.StockSymbol,
-		Quantity:     item.Quantity,
-		AveragePrice: item.AveragePrice,
+		Quantity:     item.Quantity.InexactFloat64(),
+		AveragePrice: item.AveragePrice.InexactFloat64(),
 	}, nil
 }
 
@@ -99,8 +100,8 @@ func (r *PortfolioRepository) GetPortfolioItemForUpdate(
 
 	return &portfolio.PortfolioItem{
 		StockSymbol:  item.StockSymbol,
-		Quantity:     item.Quantity,
-		AveragePrice: item.AveragePrice,
+		Quantity:     item.Quantity.InexactFloat64(),
+		AveragePrice: item.AveragePrice.InexactFloat64(),
 	}, nil
 }
 
@@ -110,8 +111,8 @@ func (r *PortfolioRepository) SetPortfolioItem(
 	userID int64,
 	ladderID int64,
 	symbol string,
-	quantity float64,
-	averagePrice float64,
+	quantity decimal.Decimal,
+	averagePrice decimal.Decimal,
 ) error {
 	return r.queries.SetPortfolioItem(ctx, sqlc.SetPortfolioItemParams{
 		LadderID:     ladderID,

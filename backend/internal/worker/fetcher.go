@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
-	"github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
@@ -20,7 +19,7 @@ type QuoteProvider interface {
 // MarketFetcher is a worker that fetches market data.
 type MarketFetcher struct {
 	client          QuoteProvider
-	currentRepo     *redis.MarketRepository // а чего не интерфейс?
+	currentRepo     service.MarketRepository
 	historyRepo     service.HistoryRepository
 	ladderRepo      service.LadderRepository
 	source          string // "Finnhub" or "CoinGecko"
@@ -33,7 +32,7 @@ type MarketFetcher struct {
 func NewMarketFetcher(
 	source string,
 	client QuoteProvider,
-	currentRepo *redis.MarketRepository,
+	currentRepo service.MarketRepository,
 	historyRepo service.HistoryRepository,
 	ladderRepo service.LadderRepository,
 	// передай просто конфиг нафиг тут эта куча таймеров

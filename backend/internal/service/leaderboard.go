@@ -2,10 +2,9 @@ package service
 
 import (
 	"context"
-	"strconv"
 	"time"
 
-	"github.com/redis/go-redis/v9"
+	"github.com/shopspring/decimal"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
@@ -13,16 +12,12 @@ import (
 
 // LeaderBoardService handles the calculation and retrieval of user rankings.
 type LeaderBoardService struct {
-	userRepo      UserRepository
-	portfolioRepo PortfolioRepository
-	marketRepo    MarketRepository
-	// это тоже репозиторий должен быть по факту и спрятан за интерфейсом
-	redisClient *redis.Client
-	ladderRepo  LadderRepository
+	userRepo        UserRepository
+	portfolioRepo   PortfolioRepository
+	marketRepo      MarketRepository
+	leaderboardRepo LeaderboardRepository
+	ladderRepo      LadderRepository
 }
-
-const leaderboardKeyPrefix = "leaderboard:"
-const lastUpdateKeyPrefix = "leaderboard:last_update:"
 
 // NewLeaderBoardService creates a new instance of LeaderBoardService with required dependencies.
 func NewLeaderBoardService(
@@ -30,14 +25,14 @@ func NewLeaderBoardService(
 	portfolioRepo PortfolioRepository,
 	marketRepo MarketRepository,
 	ladderRepo LadderRepository,
-	redisClient *redis.Client,
+	leaderboardRepo LeaderboardRepository,
 ) *LeaderBoardService {
 	return &LeaderBoardService{
-		userRepo:      userRepo,
-		portfolioRepo: portfolioRepo,
-		marketRepo:    marketRepo,
-		redisClient:   redisClient,
-		ladderRepo:    ladderRepo,
+		userRepo:        userRepo,
+		portfolioRepo:   portfolioRepo,
+		marketRepo:      marketRepo,
+		leaderboardRepo: leaderboardRepo,
+		ladderRepo:      ladderRepo,
 	}
 }
 
@@ -55,7 +50,6 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 	}
 
 	for _, u := range users {
-
 		balance, errBalance := s.userRepo.GetUserBalance(ctx, u.Id, ladderID)
 		if errBalance != nil {
 			continue
@@ -63,8 +57,6 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 
 		totalWorth := balance
 
-		// почему портфоли и балансы не получить одним запросом и почему котировки берем из редиса
-		// и в итоге все это сохраняем редис а не базу короче довольно странная смесь получается
 		portfolio, errPortfolio := s.portfolioRepo.GetPortfolio(ctx, u.Id, ladderID)
 		if errPortfolio != nil {
 			continue
@@ -76,18 +68,18 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 				continue
 			}
 
-			totalWorth += quote.Price * item.Quantity
+			itemValue := decimal.NewFromFloat(quote.Price).Mul(decimal.NewFromFloat(item.Quantity))
+			totalWorth = totalWorth.Add(itemValue)
 		}
 
-		lKey := leaderboardKeyPrefix + strconv.FormatInt(ladderID, 10)
-		err = s.redisClient.ZAdd(ctx, lKey, redis.Z{Score: totalWorth, Member: u.Id}).Err()
+		scoreVal, _ := totalWorth.Float64()
+		err = s.leaderboardRepo.UpdateRank(ctx, ladderID, u.Id, scoreVal)
 		if err != nil {
 			continue
 		}
 	}
 
-	uKey := lastUpdateKeyPrefix + strconv.FormatInt(ladderID, 10)
-	err = s.redisClient.Set(ctx, uKey, time.Now().Unix(), 0).Err()
+	err = s.leaderboardRepo.SetLastUpdate(ctx, ladderID, time.Now().Unix())
 	if err != nil {
 		return err
 	}
@@ -98,25 +90,20 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 // GetLeaderboard retrieves a paginated list of top performing users from Redis/Valkey for the active ladder.
 // It fetches the user details from the database for each entry and handles stale cache cleanup
 // if a user is no longer present in the system.
-// надо декомпозировать
 func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboard.GetLeaderboardRequest) (*leaderboard.GetLeaderboardResponse, error) {
 	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	lKey := leaderboardKeyPrefix + strconv.FormatInt(ladderID, 10)
-	totalCount, err := s.redisClient.ZCard(ctx, lKey).Result()
+	totalCount, err := s.leaderboardRepo.GetTotalCount(ctx, ladderID)
 	if err != nil {
 		return nil, err
 	}
 
-	// слишком сложно и не понятно сходу что это за таймстемп
-	var lastUpdate int64
-	uKey := lastUpdateKeyPrefix + strconv.FormatInt(ladderID, 10)
-	lastUpdateStr, errTime := s.redisClient.Get(ctx, uKey).Result()
-	if errTime == nil {
-		lastUpdate, _ = strconv.ParseInt(lastUpdateStr, 10, 64)
+	lastUpdate, err := s.leaderboardRepo.GetLastUpdate(ctx, ladderID)
+	if err != nil {
+		lastUpdate = 0
 	}
 
 	if totalCount == 0 {
@@ -127,30 +114,24 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 		}, nil
 	}
 
-	start := int64(req.GetOffset())
-	stop := start + int64(req.GetLimit()) - 1
-
-	res, err := s.redisClient.ZRevRangeWithScores(ctx, lKey, start, stop).Result()
+	scores, err := s.leaderboardRepo.GetLeaderboard(ctx, ladderID, int(req.GetOffset()), int(req.GetLimit()))
 	if err != nil {
 		return nil, err
 	}
 
-	entries := make([]*leaderboard.LeaderboardEntry, 0, len(res))
+	entries := make([]*leaderboard.LeaderboardEntry, 0, len(scores))
 
-	for i, item := range res {
-		userID, _ := strconv.ParseInt(item.Member.(string), 10, 64)
-		// почему сразу не собрать список айдишников и сразу достать всех юзеров плюс что за удаление ниже ?
-		fetchedUser, err := s.userRepo.GetUser(ctx, userID)
+	for i, item := range scores {
+		fetchedUser, err := s.userRepo.GetUser(ctx, item.UserID)
 		if err != nil {
-			s.redisClient.ZRem(ctx, lKey, item.Member)
+			s.leaderboardRepo.RemoveFromLeaderboard(ctx, ladderID, item.UserID)
 			totalCount--
 
 			continue
-
 		}
 		leadEntry := &leaderboard.LeaderboardEntry{
 			User:  s.anonymizeUser(fetchedUser),
-			Rank:  int32(i) + int32(start) + 1, // это просто номер в таблице чтоли?
+			Rank:  int32(i) + req.GetOffset() + 1,
 			Score: item.Score,
 		}
 

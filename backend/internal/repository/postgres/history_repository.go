@@ -2,11 +2,11 @@ package postgres
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/shopspring/decimal"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
@@ -26,17 +26,9 @@ func NewHistoryRepository(pool *pgxpool.Pool) *HistoryRepository {
 
 // SaveQuote saves a quote to the history table.
 func (r *HistoryRepository) SaveQuote(ctx context.Context, quote *exchange.Quote) error {
-	// Convert float price to numeric
-	priceStr := fmt.Sprintf("%f", quote.GetPrice())
-	var price pgtype.Numeric
-	err := price.Scan(priceStr)
-	if err != nil {
-		return fmt.Errorf("failed to convert price to numeric: %w", err)
-	}
-
 	return r.queries.CreateQuote(ctx, sqlc.CreateQuoteParams{
 		Symbol:    quote.GetSymbol(),
-		Price:     price,
+		Price:     decimal.NewFromFloat(quote.GetPrice()),
 		Source:    quote.GetSource(),
 		CreatedAt: pgtype.Timestamptz{Time: time.Unix(quote.GetTimestamp(), 0).UTC(), Valid: true},
 	})

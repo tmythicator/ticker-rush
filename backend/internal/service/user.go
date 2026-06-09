@@ -87,7 +87,15 @@ func (s *UserService) CreateUser(
 		return nil, err
 	}
 
-	return s.userRepo.CreateUser(ctx, username, string(hashedPassword), firstName, lastName, "", false, time.Now())
+	return s.userRepo.CreateUser(ctx, CreateUserParams{
+		Username:      username,
+		PasswordHash:  string(hashedPassword),
+		FirstName:     firstName,
+		LastName:      lastName,
+		Website:       "",
+		IsPublic:      false,
+		AgbAcceptedAt: time.Now(),
+	})
 }
 
 // GetUser retrieves a user by ID.
@@ -117,7 +125,7 @@ func (s *UserService) GetUserWithPortfolio(ctx context.Context, id int64) (*user
 		IsAdmin:         firstRow.IsAdmin,
 		IsBanned:        firstRow.IsBanned,
 		CreatedAt:       timestamppb.New(firstRow.CreatedAt.Time),
-		Balance:         firstRow.Balance,
+		Balance:         firstRow.Balance.InexactFloat64(),
 		Portfolio:       make(map[string]*portfolio.PortfolioItem),
 		IsParticipating: firstRow.IsParticipating,
 	}

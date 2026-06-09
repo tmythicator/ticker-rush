@@ -3,12 +3,26 @@ package redis
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/redis/go-redis/v9"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 )
+
+const (
+	marketQuotePrefix   = "market"
+	marketChannelPrefix = "market:quote"
+)
+
+func marketQuoteKey(symbol string) string {
+	return fmt.Sprintf("%s:%s", marketQuotePrefix, symbol)
+}
+
+func marketQuoteChannel(symbol string) string {
+	return fmt.Sprintf("%s:%s", marketChannelPrefix, symbol)
+}
 
 // MarketRepository handles market data storage in Redis.
 type MarketRepository struct {
@@ -22,7 +36,8 @@ func NewMarketRepository(valkey *redis.Client) *MarketRepository {
 
 // GetQuote retrieves the latest quote for a symbol from Redis.
 func (r *MarketRepository) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error) {
-	val, err := r.valkey.Get(ctx, "market:"+symbol).Result()
+	key := marketQuoteKey(symbol)
+	val, err := r.valkey.Get(ctx, key).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -47,11 +62,8 @@ func (r *MarketRepository) SaveQuote(ctx context.Context, quote *exchange.Quote)
 		return err
 	}
 
-	// всякие редисовые префиксы обычно в константы выносят или в метод по генерации ключа по чему либ
-	key := "market:" + quote.GetSymbol()
-
-	// Publish to specific channel for the symbol
-	channel := "market:quote:" + quote.GetSymbol()
+	key := marketQuoteKey(quote.GetSymbol())
+	channel := marketQuoteChannel(quote.GetSymbol())
 
 	pipe := r.valkey.Pipeline()
 	pipe.Set(ctx, key, data, 0)
@@ -63,7 +75,7 @@ func (r *MarketRepository) SaveQuote(ctx context.Context, quote *exchange.Quote)
 
 // SubscribeToQuotes subscribes to real-time quote updates for a symbol.
 func (r *MarketRepository) SubscribeToQuotes(ctx context.Context, symbol string) *redis.PubSub {
-	channel := "market:quote:" + symbol
+	channel := marketQuoteChannel(symbol)
 
 	return r.valkey.Subscribe(ctx, channel)
 }
