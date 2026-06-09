@@ -8,7 +8,6 @@ package exchange
 
 import (
 	v1 "github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
-	_ "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -527,7 +526,7 @@ var File_exchange_v1_exchange_proto protoreflect.FileDescriptor
 
 const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\n" +
-	"\x1aexchange/v1/exchange.proto\x12\vexchange.v1\x1a\x12user/v1/user.proto\x1a\x16ladder/v1/ladder.proto\"\xc7\x01\n" +
+	"\x1aexchange/v1/exchange.proto\x12\vexchange.v1\x1a\x16ladder/v1/ladder.proto\"\xc7\x01\n" +
 	"\x05Quote\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x14\n" +
 	"\x05price\x18\x02 \x01(\x01R\x05price\x12\x16\n" +
