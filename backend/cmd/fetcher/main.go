@@ -100,15 +100,17 @@ func main() {
 
 	g.Go(func() error {
 		if err := finnhubWorker.Start(ctx); err != nil && !errors.Is(err, context.Canceled) {
-			return fmt.Errorf("Finnhub worker error: %w", err)
+			return fmt.Errorf("finnhub worker error: %w", err)
 		}
+
 		return nil
 	})
 
 	g.Go(func() error {
 		if err := coingeckoWorker.Start(ctx); err != nil && !errors.Is(err, context.Canceled) {
-			return fmt.Errorf("CoinGecko worker error: %w", err)
+			return fmt.Errorf("coingecko worker error: %w", err)
 		}
+
 		return nil
 	})
 

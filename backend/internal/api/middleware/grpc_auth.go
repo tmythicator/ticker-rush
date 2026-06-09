@@ -56,5 +56,6 @@ func GetRequiredUserID(ctx context.Context) (int64, error) {
 	if !ok {
 		return 0, status.Errorf(codes.Unauthenticated, "user ID not found in context")
 	}
+
 	return userID, nil
 }

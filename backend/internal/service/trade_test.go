@@ -73,13 +73,16 @@ func TestTradeService_BuyStock_Success(t *testing.T) {
 		Return(&domain.PortfolioItem{StockSymbol: symbol, Quantity: decimal.Zero}, nil)
 	mockUserRepo.On("UpdateUserBalance", mock.Anything, userID, int64(1), mock.MatchedBy(func(d decimal.Decimal) bool {
 		v, _ := d.Float64()
+
 		return v == expectedBalance
 	})).Return(nil)
 	mockPortRepo.On("SetPortfolioItem", mock.Anything, userID, int64(1), symbol, mock.MatchedBy(func(q decimal.Decimal) bool {
 		v, _ := q.Float64()
+
 		return v == quantity
 	}), mock.MatchedBy(func(p decimal.Decimal) bool {
 		v, _ := p.Float64()
+
 		return v == price
 	})).Return(nil)
 	mockTx.On("Commit", mock.Anything).Return(nil)

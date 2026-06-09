@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/shopspring/decimal"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
@@ -157,6 +158,7 @@ func (w *MarketFetcher) processTicker(
 
 	if err := w.currentRepo.SaveQuote(ctx, domainQuote); err != nil {
 		log.Printf("[%s] Current Save Error: %v", quote.Symbol, err)
+
 		return nil, err
 	}
 

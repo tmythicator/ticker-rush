@@ -12,26 +12,26 @@ import (
 
 // Config holds the application configuration.
 type Config struct {
-	Tickers                []string      `env:"TICKERS" envDefault:"AAPL,BINANCE:BTCUSDT" envSeparator:","`
-	ServerPort             int           `env:"SERVER_PORT" envDefault:"8081"`
-	RedisHost              string        `env:"REDIS_HOST" envDefault:"localhost"`
-	RedisPort              int           `env:"REDIS_PORT" envDefault:"6379"`
-	ClientPort             int           `env:"CLIENT_PORT" envDefault:"5173"`
-	FinnhubFetchInterval   time.Duration `env:"FINNHUB_FETCH_INTERVAL" envDefault:"10s"`
-	FinnhubKey             string        `env:"FINNHUB_API_KEY"`
-	FinnhubTimeout         time.Duration `env:"FINNHUB_TIMEOUT" envDefault:"10s"`
-	CoingeckoKey           string        `env:"COINGECKO_API_KEY"`
-	CoingeckoTimeout       time.Duration `env:"COINGECKO_TIMEOUT" envDefault:"10s"`
-	CoingeckoFetchInterval time.Duration `env:"COINGECKO_FETCH_INTERVAL" envDefault:"10s"`
+	Tickers                      []string      `env:"TICKERS" envDefault:"AAPL,BINANCE:BTCUSDT" envSeparator:","`
+	ServerPort                   int           `env:"SERVER_PORT" envDefault:"8081"`
+	RedisHost                    string        `env:"REDIS_HOST" envDefault:"localhost"`
+	RedisPort                    int           `env:"REDIS_PORT" envDefault:"6379"`
+	ClientPort                   int           `env:"CLIENT_PORT" envDefault:"5173"`
+	FinnhubFetchInterval         time.Duration `env:"FINNHUB_FETCH_INTERVAL" envDefault:"10s"`
+	FinnhubKey                   string        `env:"FINNHUB_API_KEY"`
+	FinnhubTimeout               time.Duration `env:"FINNHUB_TIMEOUT" envDefault:"10s"`
+	CoingeckoKey                 string        `env:"COINGECKO_API_KEY"`
+	CoingeckoTimeout             time.Duration `env:"COINGECKO_TIMEOUT" envDefault:"10s"`
+	CoingeckoFetchInterval       time.Duration `env:"COINGECKO_FETCH_INTERVAL" envDefault:"10s"`
 	MarketFetcherRefreshInterval time.Duration `env:"MARKET_FETCHER_REFRESH_INTERVAL" envDefault:"1m"`
-	PostgresUser           string        `env:"POSTGRES_USER" envDefault:"postgres"`
-	PostgresPass           string        `env:"POSTGRES_PASSWORD" envDefault:"postgres"`
-	PostgresDB             string        `env:"POSTGRES_DB" envDefault:"ticker_rush"`
-	PostgresPort           int           `env:"POSTGRES_PORT" envDefault:"5432"`
-	PostgresHost           string        `env:"POSTGRES_HOST"`
-	JWTSecret              string        `env:"JWT_SECRET" envDefault:"secret"`
-	AdminUsername          string        `env:"ADMIN_USERNAME"`
-	AdminPasswordHash      string        `env:"ADMIN_PASSWORD_HASH"`
+	PostgresUser                 string        `env:"POSTGRES_USER" envDefault:"postgres"`
+	PostgresPass                 string        `env:"POSTGRES_PASSWORD" envDefault:"postgres"`
+	PostgresDB                   string        `env:"POSTGRES_DB" envDefault:"ticker_rush"`
+	PostgresPort                 int           `env:"POSTGRES_PORT" envDefault:"5432"`
+	PostgresHost                 string        `env:"POSTGRES_HOST"`
+	JWTSecret                    string        `env:"JWT_SECRET" envDefault:"secret"`
+	AdminUsername                string        `env:"ADMIN_USERNAME"`
+	AdminPasswordHash            string        `env:"ADMIN_PASSWORD_HASH"`
 }
 
 // LoadConfig loads the configuration from environment variables.

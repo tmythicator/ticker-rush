@@ -48,5 +48,6 @@ func GetUserID(c *gin.Context) (int64, bool) {
 		return 0, false
 	}
 	id, ok := val.(int64)
+
 	return id, ok
 }

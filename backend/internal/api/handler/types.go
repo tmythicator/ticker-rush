@@ -112,6 +112,7 @@ func ToExternalLeaderboardResponse(lr *domain.LeaderboardResponse) *leaderboard.
 	for i, e := range lr.Entries {
 		entries[i] = ToExternalLeaderboardEntry(e)
 	}
+
 	return &leaderboard.GetLeaderboardResponse{
 		Entries:    entries,
 		TotalCount: lr.TotalCount,

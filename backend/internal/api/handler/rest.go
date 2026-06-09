@@ -511,7 +511,9 @@ func (h *RestHandler) getUserID(c *gin.Context) (int64, bool) {
 	userID, ok := middleware.GetUserID(c)
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal authentication configuration error"})
+
 		return 0, false
 	}
+
 	return userID, true
 }

@@ -1,3 +1,4 @@
+// Package domain contains domain models and business types.
 package domain
 
 import (
@@ -82,4 +83,3 @@ type LeaderboardResponse struct {
 	TotalCount int32
 	LastUpdate int64
 }
-

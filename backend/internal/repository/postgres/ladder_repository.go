@@ -97,8 +97,10 @@ func (r *LadderRepository) JoinLadder(ctx context.Context, ladderID int64, userI
 		if errors.As(err, &pgErr) && pgErr.Code == pgUniqueViolation {
 			return apperrors.ErrAlreadyJoinedLadder
 		}
+
 		return err
 	}
+
 	return nil
 }
 
@@ -183,6 +185,7 @@ func (r *LadderRepository) GetLadderParticipants(ctx context.Context, ladderID i
 			JoinedAt:     row.JoinedAt.Time,
 		}
 	}
+
 	return participants, nil
 }
 
