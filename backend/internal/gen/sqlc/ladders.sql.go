@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/shopspring/decimal"
 )
 
 const addLadderTicker = `-- name: AddLadderTicker :exec
@@ -39,7 +40,7 @@ type CreateLadderParams struct {
 	Type           string
 	StartTime      pgtype.Timestamptz
 	EndTime        pgtype.Timestamptz
-	InitialBalance float64
+	InitialBalance decimal.Decimal
 	IsActive       bool
 }
 
@@ -49,7 +50,7 @@ type CreateLadderRow struct {
 	Type           string
 	StartTime      pgtype.Timestamptz
 	EndTime        pgtype.Timestamptz
-	InitialBalance float64
+	InitialBalance decimal.Decimal
 	IsActive       bool
 	CreatedAt      pgtype.Timestamptz
 }
@@ -75,16 +76,6 @@ func (q *Queries) CreateLadder(ctx context.Context, arg CreateLadderParams) (Cre
 		&i.CreatedAt,
 	)
 	return i, err
-}
-
-const deleteLadderBalancesByLadder = `-- name: DeleteLadderBalancesByLadder :exec
-DELETE FROM ladder_balances
-WHERE ladder_id = $1
-`
-
-func (q *Queries) DeleteLadderBalancesByLadder(ctx context.Context, ladderID int64) error {
-	_, err := q.db.Exec(ctx, deleteLadderBalancesByLadder, ladderID)
-	return err
 }
 
 const deleteLadderPortfolioItem = `-- name: DeleteLadderPortfolioItem :exec
@@ -127,7 +118,7 @@ type GetActiveLadderRow struct {
 	Type           string
 	StartTime      pgtype.Timestamptz
 	EndTime        pgtype.Timestamptz
-	InitialBalance float64
+	InitialBalance decimal.Decimal
 	IsActive       bool
 	CreatedAt      pgtype.Timestamptz
 }
@@ -148,6 +139,52 @@ func (q *Queries) GetActiveLadder(ctx context.Context) (GetActiveLadderRow, erro
 	return i, err
 }
 
+const getExpiredActiveLadders = `-- name: GetExpiredActiveLadders :many
+SELECT id, name, type, start_time, end_time, initial_balance, is_active, created_at
+FROM ladders
+WHERE is_active = TRUE AND end_time <= $1
+`
+
+type GetExpiredActiveLaddersRow struct {
+	ID             int64
+	Name           string
+	Type           string
+	StartTime      pgtype.Timestamptz
+	EndTime        pgtype.Timestamptz
+	InitialBalance decimal.Decimal
+	IsActive       bool
+	CreatedAt      pgtype.Timestamptz
+}
+
+func (q *Queries) GetExpiredActiveLadders(ctx context.Context, endTime pgtype.Timestamptz) ([]GetExpiredActiveLaddersRow, error) {
+	rows, err := q.db.Query(ctx, getExpiredActiveLadders, endTime)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetExpiredActiveLaddersRow
+	for rows.Next() {
+		var i GetExpiredActiveLaddersRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Type,
+			&i.StartTime,
+			&i.EndTime,
+			&i.InitialBalance,
+			&i.IsActive,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getLadder = `-- name: GetLadder :one
 SELECT id, name, type, start_time, end_time, initial_balance, is_active, created_at
 FROM ladders
@@ -160,7 +197,7 @@ type GetLadderRow struct {
 	Type           string
 	StartTime      pgtype.Timestamptz
 	EndTime        pgtype.Timestamptz
-	InitialBalance float64
+	InitialBalance decimal.Decimal
 	IsActive       bool
 	CreatedAt      pgtype.Timestamptz
 }
@@ -181,43 +218,6 @@ func (q *Queries) GetLadder(ctx context.Context, id int64) (GetLadderRow, error)
 	return i, err
 }
 
-const getLadderBalance = `-- name: GetLadderBalance :one
-SELECT balance
-FROM ladder_balances
-WHERE ladder_id = $1 AND user_id = $2 LIMIT 1
-`
-
-type GetLadderBalanceParams struct {
-	LadderID int64
-	UserID   int64
-}
-
-func (q *Queries) GetLadderBalance(ctx context.Context, arg GetLadderBalanceParams) (float64, error) {
-	row := q.db.QueryRow(ctx, getLadderBalance, arg.LadderID, arg.UserID)
-	var balance float64
-	err := row.Scan(&balance)
-	return balance, err
-}
-
-const getLadderBalanceForUpdate = `-- name: GetLadderBalanceForUpdate :one
-SELECT balance
-FROM ladder_balances
-WHERE ladder_id = $1 AND user_id = $2 LIMIT 1
-FOR UPDATE
-`
-
-type GetLadderBalanceForUpdateParams struct {
-	LadderID int64
-	UserID   int64
-}
-
-func (q *Queries) GetLadderBalanceForUpdate(ctx context.Context, arg GetLadderBalanceForUpdateParams) (float64, error) {
-	row := q.db.QueryRow(ctx, getLadderBalanceForUpdate, arg.LadderID, arg.UserID)
-	var balance float64
-	err := row.Scan(&balance)
-	return balance, err
-}
-
 const getLadderLeaderboard = `-- name: GetLadderLeaderboard :many
 SELECT lp.ladder_id, lp.user_id, lp.final_balance, lp.final_rank, lp.joined_at, u.username
 FROM ladder_participants lp
@@ -235,7 +235,7 @@ type GetLadderLeaderboardParams struct {
 type GetLadderLeaderboardRow struct {
 	LadderID     int64
 	UserID       int64
-	FinalBalance float64
+	FinalBalance decimal.Decimal
 	FinalRank    pgtype.Int4
 	JoinedAt     pgtype.Timestamptz
 	Username     string
@@ -268,8 +268,45 @@ func (q *Queries) GetLadderLeaderboard(ctx context.Context, arg GetLadderLeaderb
 	return items, nil
 }
 
+const getLadderParticipantBalance = `-- name: GetLadderParticipantBalance :one
+SELECT balance
+FROM ladder_participants
+WHERE ladder_id = $1 AND user_id = $2
+`
+
+type GetLadderParticipantBalanceParams struct {
+	LadderID int64
+	UserID   int64
+}
+
+func (q *Queries) GetLadderParticipantBalance(ctx context.Context, arg GetLadderParticipantBalanceParams) (decimal.Decimal, error) {
+	row := q.db.QueryRow(ctx, getLadderParticipantBalance, arg.LadderID, arg.UserID)
+	var balance decimal.Decimal
+	err := row.Scan(&balance)
+	return balance, err
+}
+
+const getLadderParticipantBalanceForUpdate = `-- name: GetLadderParticipantBalanceForUpdate :one
+SELECT balance
+FROM ladder_participants
+WHERE ladder_id = $1 AND user_id = $2
+FOR UPDATE
+`
+
+type GetLadderParticipantBalanceForUpdateParams struct {
+	LadderID int64
+	UserID   int64
+}
+
+func (q *Queries) GetLadderParticipantBalanceForUpdate(ctx context.Context, arg GetLadderParticipantBalanceForUpdateParams) (decimal.Decimal, error) {
+	row := q.db.QueryRow(ctx, getLadderParticipantBalanceForUpdate, arg.LadderID, arg.UserID)
+	var balance decimal.Decimal
+	err := row.Scan(&balance)
+	return balance, err
+}
+
 const getLadderParticipants = `-- name: GetLadderParticipants :many
-SELECT ladder_id, user_id, final_balance, final_rank, joined_at
+SELECT ladder_id, user_id, balance, final_balance, final_rank, joined_at
 FROM ladder_participants
 WHERE ladder_id = $1
 `
@@ -286,6 +323,7 @@ func (q *Queries) GetLadderParticipants(ctx context.Context, ladderID int64) ([]
 		if err := rows.Scan(
 			&i.LadderID,
 			&i.UserID,
+			&i.Balance,
 			&i.FinalBalance,
 			&i.FinalRank,
 			&i.JoinedAt,
@@ -419,21 +457,50 @@ func (q *Queries) GetLadderTickers(ctx context.Context, ladderID int64) ([]GetLa
 	return items, nil
 }
 
-const insertLadderBalance = `-- name: InsertLadderBalance :exec
-INSERT INTO ladder_balances (ladder_id, user_id, balance)
-VALUES ($1, $2, $3)
-ON CONFLICT (ladder_id, user_id) DO NOTHING
+const getPendingLaddersToActivate = `-- name: GetPendingLaddersToActivate :many
+SELECT id, name, type, start_time, end_time, initial_balance, is_active, created_at
+FROM ladders
+WHERE is_active = FALSE AND start_time <= $1 AND end_time > $1
 `
 
-type InsertLadderBalanceParams struct {
-	LadderID int64
-	UserID   int64
-	Balance  float64
+type GetPendingLaddersToActivateRow struct {
+	ID             int64
+	Name           string
+	Type           string
+	StartTime      pgtype.Timestamptz
+	EndTime        pgtype.Timestamptz
+	InitialBalance decimal.Decimal
+	IsActive       bool
+	CreatedAt      pgtype.Timestamptz
 }
 
-func (q *Queries) InsertLadderBalance(ctx context.Context, arg InsertLadderBalanceParams) error {
-	_, err := q.db.Exec(ctx, insertLadderBalance, arg.LadderID, arg.UserID, arg.Balance)
-	return err
+func (q *Queries) GetPendingLaddersToActivate(ctx context.Context, startTime pgtype.Timestamptz) ([]GetPendingLaddersToActivateRow, error) {
+	rows, err := q.db.Query(ctx, getPendingLaddersToActivate, startTime)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPendingLaddersToActivateRow
+	for rows.Next() {
+		var i GetPendingLaddersToActivateRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Type,
+			&i.StartTime,
+			&i.EndTime,
+			&i.InitialBalance,
+			&i.IsActive,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const insertLadderParticipant = `-- name: InsertLadderParticipant :exec
@@ -447,7 +514,7 @@ ON CONFLICT (ladder_id, user_id) DO UPDATE SET
 type InsertLadderParticipantParams struct {
 	LadderID     int64
 	UserID       int64
-	FinalBalance float64
+	FinalBalance decimal.Decimal
 	FinalRank    pgtype.Int4
 }
 
@@ -481,8 +548,8 @@ func (q *Queries) IsUserInLadder(ctx context.Context, arg IsUserInLadderParams) 
 }
 
 const joinLadderParticipant = `-- name: JoinLadderParticipant :exec
-INSERT INTO ladder_participants (ladder_id, user_id)
-VALUES ($1, $2)
+INSERT INTO ladder_participants (ladder_id, user_id, balance)
+SELECT $1, $2, initial_balance FROM ladders WHERE id = $1
 ON CONFLICT (ladder_id, user_id) DO NOTHING
 `
 
@@ -508,7 +575,7 @@ type ListLaddersRow struct {
 	Type           string
 	StartTime      pgtype.Timestamptz
 	EndTime        pgtype.Timestamptz
-	InitialBalance float64
+	InitialBalance decimal.Decimal
 	IsActive       bool
 	CreatedAt      pgtype.Timestamptz
 }
@@ -542,6 +609,21 @@ func (q *Queries) ListLadders(ctx context.Context) ([]ListLaddersRow, error) {
 	return items, nil
 }
 
+const pruneLadderParticipants = `-- name: PruneLadderParticipants :exec
+DELETE FROM ladder_participants
+WHERE ladder_id = $1 AND final_rank > $2
+`
+
+type PruneLadderParticipantsParams struct {
+	LadderID  int64
+	FinalRank pgtype.Int4
+}
+
+func (q *Queries) PruneLadderParticipants(ctx context.Context, arg PruneLadderParticipantsParams) error {
+	_, err := q.db.Exec(ctx, pruneLadderParticipants, arg.LadderID, arg.FinalRank)
+	return err
+}
+
 const setLadderPortfolioItem = `-- name: SetLadderPortfolioItem :exec
 INSERT INTO ladder_portfolio_items (ladder_id, user_id, stock_symbol, quantity, average_price)
 VALUES ($1, $2, $3, $4, $5)
@@ -554,8 +636,8 @@ type SetLadderPortfolioItemParams struct {
 	LadderID     int64
 	UserID       int64
 	StockSymbol  string
-	Quantity     float64
-	AveragePrice float64
+	Quantity     decimal.Decimal
+	AveragePrice decimal.Decimal
 }
 
 func (q *Queries) SetLadderPortfolioItem(ctx context.Context, arg SetLadderPortfolioItemParams) error {
@@ -569,20 +651,20 @@ func (q *Queries) SetLadderPortfolioItem(ctx context.Context, arg SetLadderPortf
 	return err
 }
 
-const updateLadderBalance = `-- name: UpdateLadderBalance :exec
-UPDATE ladder_balances
+const updateLadderParticipantBalance = `-- name: UpdateLadderParticipantBalance :exec
+UPDATE ladder_participants
 SET balance = $3
 WHERE ladder_id = $1 AND user_id = $2
 `
 
-type UpdateLadderBalanceParams struct {
+type UpdateLadderParticipantBalanceParams struct {
 	LadderID int64
 	UserID   int64
-	Balance  float64
+	Balance  decimal.Decimal
 }
 
-func (q *Queries) UpdateLadderBalance(ctx context.Context, arg UpdateLadderBalanceParams) error {
-	_, err := q.db.Exec(ctx, updateLadderBalance, arg.LadderID, arg.UserID, arg.Balance)
+func (q *Queries) UpdateLadderParticipantBalance(ctx context.Context, arg UpdateLadderParticipantBalanceParams) error {
+	_, err := q.db.Exec(ctx, updateLadderParticipantBalance, arg.LadderID, arg.UserID, arg.Balance)
 	return err
 }
 

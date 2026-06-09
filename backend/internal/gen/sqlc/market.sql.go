@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/shopspring/decimal"
 )
 
 const createQuote = `-- name: CreateQuote :exec
@@ -18,7 +19,7 @@ VALUES ($1, $2, $3, $4)
 
 type CreateQuoteParams struct {
 	Symbol    string
-	Price     pgtype.Numeric
+	Price     decimal.Decimal
 	Source    string
 	CreatedAt pgtype.Timestamptz
 }

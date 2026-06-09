@@ -10,6 +10,17 @@ WHERE is_active = TRUE
 ORDER BY start_time DESC
 LIMIT 1;
 
+-- name: GetExpiredActiveLadders :many
+SELECT id, name, type, start_time, end_time, initial_balance, is_active, created_at
+FROM ladders
+WHERE is_active = TRUE AND end_time <= $1;
+
+-- name: GetPendingLaddersToActivate :many
+SELECT id, name, type, start_time, end_time, initial_balance, is_active, created_at
+FROM ladders
+WHERE is_active = FALSE AND start_time <= $1 AND end_time > $1;
+
+
 -- name: GetLadder :one
 SELECT id, name, type, start_time, end_time, initial_balance, is_active, created_at
 FROM ladders
@@ -44,9 +55,10 @@ ORDER BY lp.final_rank ASC
 LIMIT $2;
 
 -- name: GetLadderParticipants :many
-SELECT ladder_id, user_id, final_balance, final_rank, joined_at
+SELECT ladder_id, user_id, balance, final_balance, final_rank, joined_at
 FROM ladder_participants
 WHERE ladder_id = $1;
+
 
 -- name: InsertLadderParticipant :exec
 INSERT INTO ladder_participants (ladder_id, user_id, final_balance, final_rank)
@@ -56,8 +68,8 @@ ON CONFLICT (ladder_id, user_id) DO UPDATE SET
     final_rank = EXCLUDED.final_rank;
 
 -- name: JoinLadderParticipant :exec
-INSERT INTO ladder_participants (ladder_id, user_id)
-VALUES ($1, $2)
+INSERT INTO ladder_participants (ladder_id, user_id, balance)
+SELECT $1, $2, initial_balance FROM ladders WHERE id = $1
 ON CONFLICT (ladder_id, user_id) DO NOTHING;
 
 -- name: IsUserInLadder :one
@@ -66,24 +78,19 @@ SELECT EXISTS(
     WHERE ladder_id = $1 AND user_id = $2
 );
 
--- name: GetLadderBalance :one
+-- name: GetLadderParticipantBalance :one
 SELECT balance
-FROM ladder_balances
-WHERE ladder_id = $1 AND user_id = $2 LIMIT 1;
+FROM ladder_participants
+WHERE ladder_id = $1 AND user_id = $2;
 
--- name: GetLadderBalanceForUpdate :one
+-- name: GetLadderParticipantBalanceForUpdate :one
 SELECT balance
-FROM ladder_balances
-WHERE ladder_id = $1 AND user_id = $2 LIMIT 1
+FROM ladder_participants
+WHERE ladder_id = $1 AND user_id = $2
 FOR UPDATE;
 
--- name: InsertLadderBalance :exec
-INSERT INTO ladder_balances (ladder_id, user_id, balance)
-VALUES ($1, $2, $3)
-ON CONFLICT (ladder_id, user_id) DO NOTHING;
-
--- name: UpdateLadderBalance :exec
-UPDATE ladder_balances
+-- name: UpdateLadderParticipantBalance :exec
+UPDATE ladder_participants
 SET balance = $3
 WHERE ladder_id = $1 AND user_id = $2;
 
@@ -118,6 +125,8 @@ WHERE ladder_id = $1 AND user_id = $2 AND stock_symbol = $3;
 DELETE FROM ladder_portfolio_items
 WHERE ladder_id = $1;
 
--- name: DeleteLadderBalancesByLadder :exec
-DELETE FROM ladder_balances
-WHERE ladder_id = $1;
+-- name: PruneLadderParticipants :exec
+DELETE FROM ladder_participants
+WHERE ladder_id = $1 AND final_rank > $2;
+
+
