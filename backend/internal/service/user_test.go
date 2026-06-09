@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/crypto/bcrypt"
@@ -36,9 +37,14 @@ func TestUserService_CreateUser(t *testing.T) {
 		LastName:  "Doe",
 	}
 
-	mockUserRepo.On("CreateUser", ctx, username, mock.MatchedBy(func(hashedPassword string) bool {
-		return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)) == nil
-	}), expectedUser.GetFirstName(), expectedUser.GetLastName(), "", false, mock.AnythingOfType("time.Time")).Return(expectedUser, nil)
+	mockUserRepo.On("CreateUser", ctx, mock.MatchedBy(func(params service.CreateUserParams) bool {
+		return params.Username == username &&
+			bcrypt.CompareHashAndPassword([]byte(params.PasswordHash), []byte(password)) == nil &&
+			params.FirstName == expectedUser.GetFirstName() &&
+			params.LastName == expectedUser.GetLastName() &&
+			params.Website == "" &&
+			!params.IsPublic
+	})).Return(expectedUser, nil)
 
 	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
 	user, err := userService.CreateUser(
@@ -118,7 +124,7 @@ func TestUserService_GetUserWithPortfolio(t *testing.T) {
 			FirstName:       "Test",
 			LastName:        "User",
 			CreatedAt:       pgtype.Timestamptz{Time: now, Valid: true},
-			Balance:         100.0,
+			Balance:         decimal.NewFromFloat(100.0),
 			LadderID:        1,
 			StockSymbol:     pgtype.Text{String: "AAPL", Valid: true},
 			Quantity:        10,
@@ -131,7 +137,7 @@ func TestUserService_GetUserWithPortfolio(t *testing.T) {
 			FirstName:       "Test",
 			LastName:        "User",
 			CreatedAt:       pgtype.Timestamptz{Time: now, Valid: true},
-			Balance:         100.0,
+			Balance:         decimal.NewFromFloat(100.0),
 			LadderID:        1,
 			StockSymbol:     pgtype.Text{String: "GOOG", Valid: true},
 			Quantity:        5,
@@ -221,7 +227,7 @@ func TestUserService_GetPublicProfile(t *testing.T) {
 				LastName:        "User",
 				CreatedAt:       pgtype.Timestamptz{Time: time.Now(), Valid: true},
 				IsPublic:        true,
-				Balance:         200.0,
+				Balance:         decimal.NewFromFloat(200.0),
 				LadderID:        1,
 				StockSymbol:     pgtype.Text{String: "AAPL", Valid: true},
 				Quantity:        10,

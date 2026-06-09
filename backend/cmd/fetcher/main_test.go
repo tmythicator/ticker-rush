@@ -8,9 +8,11 @@ import (
 
 	"github.com/alicebob/miniredis/v2"
 	go_redis "github.com/redis/go-redis/v9"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/clients/finnhub"
+	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
@@ -66,6 +68,34 @@ func (m *MockLadderRepository) JoinLadder(ctx context.Context, ladderID int64, u
 
 func (m *MockLadderRepository) IsUserInLadder(ctx context.Context, ladderID int64, userID int64) (bool, error) {
 	return true, nil
+}
+
+func (m *MockLadderRepository) GetExpiredActiveLadders(ctx context.Context, now time.Time) ([]*ladder.Ladder, error) {
+	return nil, nil
+}
+
+func (m *MockLadderRepository) GetPendingLaddersToActivate(ctx context.Context, now time.Time) ([]*ladder.Ladder, error) {
+	return nil, nil
+}
+
+func (m *MockLadderRepository) UpdateLadderStatus(ctx context.Context, id int64, isActive bool) error {
+	return nil
+}
+
+func (m *MockLadderRepository) GetLadderParticipants(ctx context.Context, ladderID int64) ([]sqlc.LadderParticipant, error) {
+	return nil, nil
+}
+
+func (m *MockLadderRepository) InsertLadderParticipant(ctx context.Context, ladderID int64, userID int64, finalBalance decimal.Decimal, finalRank int32) error {
+	return nil
+}
+
+func (m *MockLadderRepository) PruneLadderParticipants(ctx context.Context, ladderID int64, rankThreshold int32) error {
+	return nil
+}
+
+func (m *MockLadderRepository) DeleteLadderPortfolioItemsByLadder(ctx context.Context, ladderID int64) error {
+	return nil
 }
 
 func (m *MockLadderRepository) WithTx(tx service.Transaction) service.LadderRepository {

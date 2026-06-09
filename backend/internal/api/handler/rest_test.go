@@ -13,6 +13,7 @@ import (
 	"github.com/alicebob/miniredis/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
@@ -63,7 +64,7 @@ func setupTestPostgres(t *testing.T) string {
 		testcontainers.WithWaitStrategy(
 			wait.ForLog("database system is ready to accept connections").
 				WithOccurrence(2).
-				WithStartupTimeout(5*time.Second)),
+				WithStartupTimeout(30*time.Second)),
 	)
 	if err != nil {
 		t.Fatalf("failed to start postgres container: %s", err)
@@ -120,13 +121,14 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 	userRepo = postgreRepo.NewUserRepository(dbPool)
 	portfolioRepo = postgreRepo.NewPortfolioRepository(dbPool)
 	marketRepo = redisRepo.NewMarketRepository(valkeyClient)
+	leaderboardRepo := redisRepo.NewLeaderboardRepository(valkeyClient)
 	transactor := postgreRepo.NewPgxTransactor(dbPool)
 	historyRepo := &MockHistoryRepository{}
 
 	userService = service.NewUserService(userRepo, portfolioRepo, ladderRepo)
 	tradeService = service.NewTradeService(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
 	ladderService := service.NewLadderService(ladderRepo, transactor)
-	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, ladderRepo, valkeyClient)
+	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
 
 	marketService = service.NewMarketService(marketRepo, historyRepo, ladderRepo)
 
@@ -192,7 +194,15 @@ func TestLogin(t *testing.T) {
 
 	// Create User first
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
-	_, err := userRepo.CreateUser(ctx, testUsername, string(hashedPassword), "Test", "User", "", false, time.Now())
+	_, err := userRepo.CreateUser(ctx, service.CreateUserParams{
+		Username:      testUsername,
+		PasswordHash:  string(hashedPassword),
+		FirstName:     "Test",
+		LastName:      "User",
+		Website:       "",
+		IsPublic:      false,
+		AgbAcceptedAt: time.Now(),
+	})
 	assert.NoError(t, err)
 
 	// Perform Login
@@ -261,7 +271,7 @@ func TestBuyStock(t *testing.T) {
 	updatedUser, _ := userRepo.GetUser(ctx, user.GetId())
 	assert.Equal(t, testUsername, updatedUser.GetUsername())
 	balanceVal, _ := userRepo.GetUserBalance(ctx, user.GetId(), activeLadderID)
-	assert.Equal(t, expectedBalance, balanceVal)
+	assert.Equal(t, expectedBalance, balanceVal.InexactFloat64())
 
 	// Verify Portfolio State from Repo
 	item, err := portfolioRepo.GetPortfolioItem(ctx, user.GetId(), activeLadderID, symbol)
@@ -297,8 +307,8 @@ func TestSellStock(t *testing.T) {
 		user.GetId(),
 		activeLadderID,
 		"AAPL",
-		mockPortfolioQuantity,
-		mockPrice,
+		decimal.NewFromFloat(mockPortfolioQuantity),
+		decimal.NewFromFloat(mockPrice),
 	)
 	assert.NoError(t, err)
 
@@ -313,7 +323,7 @@ func TestSellStock(t *testing.T) {
 
 	// Verify User State
 	balanceVal, _ := userRepo.GetUserBalance(ctx, user.GetId(), activeLadderID)
-	assert.Equal(t, expectedBalance, balanceVal)
+	assert.Equal(t, expectedBalance, balanceVal.InexactFloat64())
 
 	// Verify Portfolio
 	item, err := portfolioRepo.GetPortfolioItem(ctx, user.GetId(), activeLadderID, "AAPL")
@@ -373,7 +383,7 @@ func TestSellAllStock(t *testing.T) {
 	user, token, activeLadderID := setupJoinedUser(ctx, t, router, mockStartBalance)
 
 	// Setup Portfolio
-	err := portfolioRepo.SetPortfolioItem(ctx, user.GetId(), activeLadderID, symbol, mockQuantity, mockPrice)
+	err := portfolioRepo.SetPortfolioItem(ctx, user.GetId(), activeLadderID, symbol, decimal.NewFromFloat(mockQuantity), decimal.NewFromFloat(mockPrice))
 	assert.NoError(t, err)
 
 	// Perform Sell All
@@ -387,7 +397,7 @@ func TestSellAllStock(t *testing.T) {
 
 	// Verify User State
 	balanceVal, _ := userRepo.GetUserBalance(ctx, user.GetId(), activeLadderID)
-	assert.Equal(t, mockExpectedBalance, balanceVal)
+	assert.Equal(t, mockExpectedBalance, balanceVal.InexactFloat64())
 
 	// Should be deleted
 	_, err = portfolioRepo.GetPortfolioItem(ctx, user.GetId(), activeLadderID, symbol)
@@ -401,12 +411,28 @@ func TestGetPublicProfile(t *testing.T) {
 
 	// 1. Create Public User
 	publicUsername := "public_user"
-	_, err := userRepo.CreateUser(ctx, publicUsername, "pass", "Public", "User", "", true, time.Now())
+	_, err := userRepo.CreateUser(ctx, service.CreateUserParams{
+		Username:      publicUsername,
+		PasswordHash:  "pass",
+		FirstName:     "Public",
+		LastName:      "User",
+		Website:       "",
+		IsPublic:      true,
+		AgbAcceptedAt: time.Now(),
+	})
 	assert.NoError(t, err)
 
 	// 2. Create Private User
 	privateUsername := "private_user"
-	_, err = userRepo.CreateUser(ctx, privateUsername, "pass", "Private", "User", "", false, time.Now())
+	_, err = userRepo.CreateUser(ctx, service.CreateUserParams{
+		Username:      privateUsername,
+		PasswordHash:  "pass",
+		FirstName:     "Private",
+		LastName:      "User",
+		Website:       "",
+		IsPublic:      false,
+		AgbAcceptedAt: time.Now(),
+	})
 	assert.NoError(t, err)
 
 	t.Run("Get Public Profile - Success", func(t *testing.T) {
@@ -446,7 +472,15 @@ func TestUpdateUser_Privacy(t *testing.T) {
 
 	// 1. Create Initial Private User
 	username := "privacy_tester"
-	createdUser, err := userRepo.CreateUser(ctx, username, "pass", "Privacy", "Tester", "", false, time.Now())
+	createdUser, err := userRepo.CreateUser(ctx, service.CreateUserParams{
+		Username:      username,
+		PasswordHash:  "pass",
+		FirstName:     "Privacy",
+		LastName:      "Tester",
+		Website:       "",
+		IsPublic:      false,
+		AgbAcceptedAt: time.Now(),
+	})
 	assert.NoError(t, err)
 
 	// 2. Generate Token
@@ -483,7 +517,15 @@ func TestUpdateUser_Privacy(t *testing.T) {
 
 // Helper to setup a user and join them to a ladder with a specific balance
 func setupJoinedUser(ctx context.Context, t *testing.T, r *api.Router, balance float64) (*user.User, string, int64) {
-	createdUser, err := userRepo.CreateUser(ctx, testUsername, "password123", "Test", "User", "", false, time.Now())
+	createdUser, err := userRepo.CreateUser(ctx, service.CreateUserParams{
+		Username:      testUsername,
+		PasswordHash:  "password123",
+		FirstName:     "Test",
+		LastName:      "User",
+		Website:       "",
+		IsPublic:      false,
+		AgbAcceptedAt: time.Now(),
+	})
 	if err != nil {
 		t.Fatalf("Failed to create user: %v", err)
 	}
@@ -507,7 +549,7 @@ func setupJoinedUser(ctx context.Context, t *testing.T, r *api.Router, balance f
 
 	// Override balance if needed
 	if balance != 10000.0 {
-		err = userRepo.UpdateUserBalance(ctx, u.GetId(), activeLadderID, balance)
+		err = userRepo.UpdateUserBalance(ctx, u.GetId(), activeLadderID, decimal.NewFromFloat(balance))
 		if err != nil {
 			t.Fatalf("Failed to override balance: %v", err)
 		}

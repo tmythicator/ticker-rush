@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/mock"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
@@ -88,15 +89,9 @@ func (m *MockUserRepository) GetUserByUsername(
 // CreateUser creates a new user.
 func (m *MockUserRepository) CreateUser(
 	ctx context.Context,
-	username string,
-	hashedPassword string,
-	firstName string,
-	lastName string,
-	website string,
-	isPublic bool,
-	agbAcceptedAt time.Time,
+	params service.CreateUserParams,
 ) (*user.User, error) {
-	args := m.Called(ctx, username, hashedPassword, firstName, lastName, website, isPublic, agbAcceptedAt)
+	args := m.Called(ctx, params)
 
 	return args.Get(0).(*user.User), args.Error(1)
 }
@@ -116,17 +111,17 @@ func (m *MockUserRepository) UpdateUserProfile(ctx context.Context, user *user.U
 }
 
 // UpdateUserBalance updates the user's balance.
-func (m *MockUserRepository) UpdateUserBalance(ctx context.Context, id int64, ladderID int64, balance float64) error {
+func (m *MockUserRepository) UpdateUserBalance(ctx context.Context, id int64, ladderID int64, balance decimal.Decimal) error {
 	args := m.Called(ctx, id, ladderID, balance)
 
 	return args.Error(0)
 }
 
 // GetUserBalance retrieves the user's balance.
-func (m *MockUserRepository) GetUserBalance(ctx context.Context, userID int64, ladderID int64) (float64, error) {
+func (m *MockUserRepository) GetUserBalance(ctx context.Context, userID int64, ladderID int64) (decimal.Decimal, error) {
 	args := m.Called(ctx, userID, ladderID)
 
-	return args.Get(0).(float64), args.Error(1)
+	return args.Get(0).(decimal.Decimal), args.Error(1)
 }
 
 // GetUserWithPortfolioForActiveLadder retrieves a user with their portfolio items.
@@ -189,8 +184,8 @@ func (m *MockPortfolioRepository) SetPortfolioItem(
 	userID int64,
 	ladderID int64,
 	symbol string,
-	quantity float64,
-	averagePrice float64,
+	quantity decimal.Decimal,
+	averagePrice decimal.Decimal,
 ) error {
 	args := m.Called(ctx, userID, ladderID, symbol, quantity, averagePrice)
 
@@ -291,9 +286,98 @@ func (m *MockLadderRepository) IsUserInLadder(ctx context.Context, ladderID int6
 	return args.Bool(0), args.Error(1)
 }
 
+// GetExpiredActiveLadders mock.
+func (m *MockLadderRepository) GetExpiredActiveLadders(ctx context.Context, now time.Time) ([]*ladder.Ladder, error) {
+	args := m.Called(ctx, now)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*ladder.Ladder), args.Error(1)
+}
+
+// GetPendingLaddersToActivate mock.
+func (m *MockLadderRepository) GetPendingLaddersToActivate(ctx context.Context, now time.Time) ([]*ladder.Ladder, error) {
+	args := m.Called(ctx, now)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*ladder.Ladder), args.Error(1)
+}
+
+// UpdateLadderStatus mock.
+func (m *MockLadderRepository) UpdateLadderStatus(ctx context.Context, id int64, isActive bool) error {
+	args := m.Called(ctx, id, isActive)
+	return args.Error(0)
+}
+
+// GetLadderParticipants mock.
+func (m *MockLadderRepository) GetLadderParticipants(ctx context.Context, ladderID int64) ([]sqlc.LadderParticipant, error) {
+	args := m.Called(ctx, ladderID)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]sqlc.LadderParticipant), args.Error(1)
+}
+
+// InsertLadderParticipant mock.
+func (m *MockLadderRepository) InsertLadderParticipant(ctx context.Context, ladderID int64, userID int64, finalBalance decimal.Decimal, finalRank int32) error {
+	args := m.Called(ctx, ladderID, userID, finalBalance, finalRank)
+	return args.Error(0)
+}
+
+// PruneLadderParticipants mock.
+func (m *MockLadderRepository) PruneLadderParticipants(ctx context.Context, ladderID int64, rankThreshold int32) error {
+	args := m.Called(ctx, ladderID, rankThreshold)
+	return args.Error(0)
+}
+
+// DeleteLadderPortfolioItemsByLadder mock.
+func (m *MockLadderRepository) DeleteLadderPortfolioItemsByLadder(ctx context.Context, ladderID int64) error {
+	args := m.Called(ctx, ladderID)
+	return args.Error(0)
+}
+
 // WithTx returns a new repository with a transaction.
 func (m *MockLadderRepository) WithTx(tx service.Transaction) service.LadderRepository {
 	args := m.Called(tx)
 
 	return args.Get(0).(service.LadderRepository)
+}
+
+// MockLeaderboardRepository is a mock implementation of LeaderboardRepository.
+type MockLeaderboardRepository struct {
+	mock.Mock
+}
+
+func (m *MockLeaderboardRepository) UpdateRank(ctx context.Context, ladderID int64, userID int64, score float64) error {
+	args := m.Called(ctx, ladderID, userID, score)
+	return args.Error(0)
+}
+
+func (m *MockLeaderboardRepository) GetLeaderboard(ctx context.Context, ladderID int64, offset int, limit int) ([]service.LeaderboardScore, error) {
+	args := m.Called(ctx, ladderID, offset, limit)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]service.LeaderboardScore), args.Error(1)
+}
+
+func (m *MockLeaderboardRepository) GetTotalCount(ctx context.Context, ladderID int64) (int, error) {
+	args := m.Called(ctx, ladderID)
+	return args.Int(0), args.Error(1)
+}
+
+func (m *MockLeaderboardRepository) GetLastUpdate(ctx context.Context, ladderID int64) (int64, error) {
+	args := m.Called(ctx, ladderID)
+	return args.Get(0).(int64), args.Error(1)
+}
+
+func (m *MockLeaderboardRepository) SetLastUpdate(ctx context.Context, ladderID int64, timestamp int64) error {
+	args := m.Called(ctx, ladderID, timestamp)
+	return args.Error(0)
+}
+
+func (m *MockLeaderboardRepository) RemoveFromLeaderboard(ctx context.Context, ladderID int64, userID int64) error {
+	args := m.Called(ctx, ladderID, userID)
+	return args.Error(0)
 }

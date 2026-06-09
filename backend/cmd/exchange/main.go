@@ -53,6 +53,8 @@ type App struct {
 	tradeService       *service.TradeService
 	marketService      *service.MarketService
 	leaderboardService *service.LeaderBoardService
+	lifecycleWorker    *worker.LadderLifecycleWorker
+	leaderboardWorker  *worker.LeaderboardWorker
 	restHandler        *handler.RestHandler
 	valkeyClient       *redis.Client
 	postgreClient      *pgxpool.Pool
@@ -103,6 +105,7 @@ func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	userRepo := postgres.NewUserRepository(postgreClient)
 	portfolioRepo := postgres.NewPortfolioRepository(postgreClient)
 	marketRepo := valkey.NewMarketRepository(valkeyClient)
+	leaderboardRepo := valkey.NewLeaderboardRepository(valkeyClient)
 	historyRepo := postgres.NewHistoryRepository(postgreClient)
 	transactor := postgres.NewPgxTransactor(postgreClient)
 
@@ -111,9 +114,13 @@ func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
 	marketService := service.NewMarketService(marketRepo, historyRepo, ladderRepo)
 	ladderService := service.NewLadderService(ladderRepo, transactor)
-	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, ladderRepo, valkeyClient)
+	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
 
 	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, ladderService, cfg.JWTSecret)
+
+	// Initialize workers
+	leaderboardWorker := worker.NewLeaderboardWorker(leaderboardService, 1*time.Minute)
+	lifecycleWorker := worker.NewLadderLifecycleWorker(ladderRepo, portfolioRepo, marketRepo, 1*time.Minute)
 
 	return &App{
 		cfg:                cfg,
@@ -121,6 +128,8 @@ func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 		tradeService:       tradeService,
 		marketService:      marketService,
 		leaderboardService: leaderboardService,
+		lifecycleWorker:    lifecycleWorker,
+		leaderboardWorker:  leaderboardWorker,
 		restHandler:        restHandler,
 		valkeyClient:       valkeyClient,
 		postgreClient:      postgreClient,
@@ -190,10 +199,18 @@ func (a *App) Run(ctx context.Context) error {
 	})
 
 	// Leaderboard Worker
-	lbWorker := worker.NewLeaderboardWorker(a.leaderboardService, 10*time.Minute)
 	g.Go(func() error {
-		if lbErr := lbWorker.Start(ctx); lbErr != nil && !errors.Is(lbErr, context.Canceled) {
+		if lbErr := a.leaderboardWorker.Start(ctx); lbErr != nil && !errors.Is(lbErr, context.Canceled) {
 			return fmt.Errorf("leaderboard worker error: %w", lbErr)
+		}
+
+		return nil
+	})
+
+	// Ladder Lifecycle Worker
+	g.Go(func() error {
+		if llErr := a.lifecycleWorker.Start(ctx); llErr != nil && !errors.Is(llErr, context.Canceled) {
+			return fmt.Errorf("ladder lifecycle worker error: %w", llErr)
 		}
 
 		return nil

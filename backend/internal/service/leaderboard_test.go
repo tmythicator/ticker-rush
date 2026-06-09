@@ -6,12 +6,14 @@ import (
 
 	"github.com/alicebob/miniredis/v2"
 	"github.com/redis/go-redis/v9"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	redisRepo "github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 	"github.com/tmythicator/ticker-rush/backend/internal/service/mocks"
 )
@@ -31,8 +33,9 @@ func TestLeaderBoardService_UpdateLeaderboard(t *testing.T) {
 	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
 	mockMarketRepo := new(mocks.MockMarketRepository)
 	mockLadderRepo := new(mocks.MockLadderRepository)
+	leaderboardRepo := redisRepo.NewLeaderboardRepository(redisClient)
 
-	lbService := service.NewLeaderBoardService(mockUserRepo, mockPortfolioRepo, mockMarketRepo, mockLadderRepo, redisClient)
+	lbService := service.NewLeaderBoardService(mockUserRepo, mockPortfolioRepo, mockMarketRepo, mockLadderRepo, leaderboardRepo)
 
 	ctx := context.Background()
 
@@ -54,8 +57,8 @@ func TestLeaderBoardService_UpdateLeaderboard(t *testing.T) {
 	mockLadderRepo.On("GetActiveLadder", ctx).Return(int64(1), nil)
 	mockUserRepo.On("GetUsers", ctx).Return(users, nil)
 
-	mockUserRepo.On("GetUserBalance", ctx, int64(1), int64(1)).Return(1000.0, nil)
-	mockUserRepo.On("GetUserBalance", ctx, int64(2), int64(1)).Return(2000.0, nil)
+	mockUserRepo.On("GetUserBalance", ctx, int64(1), int64(1)).Return(decimal.NewFromFloat(1000.0), nil)
+	mockUserRepo.On("GetUserBalance", ctx, int64(2), int64(1)).Return(decimal.NewFromFloat(2000.0), nil)
 
 	mockPortfolioRepo.On("GetPortfolio", ctx, int64(1), int64(1)).Return(portfolio1, nil)
 	mockPortfolioRepo.On("GetPortfolio", ctx, int64(2), int64(1)).Return(portfolio2, nil)
@@ -91,7 +94,8 @@ func TestLeaderBoardService_GetLeaderboard(t *testing.T) {
 
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockLadderRepo := new(mocks.MockLadderRepository)
-	lbService := service.NewLeaderBoardService(mockUserRepo, nil, nil, mockLadderRepo, redisClient)
+	leaderboardRepo := redisRepo.NewLeaderboardRepository(redisClient)
+	lbService := service.NewLeaderBoardService(mockUserRepo, nil, nil, mockLadderRepo, leaderboardRepo)
 
 	ctx := context.Background()
 
