@@ -8,8 +8,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/shopspring/decimal"
 
+	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
@@ -37,7 +37,7 @@ func (r *PortfolioRepository) GetPortfolio(
 	ctx context.Context,
 	userID int64,
 	ladderID int64,
-) ([]*portfolio.PortfolioItem, error) {
+) ([]*domain.PortfolioItem, error) {
 	items, err := r.queries.GetPortfolio(ctx, sqlc.GetPortfolioParams{
 		LadderID: ladderID,
 		UserID:   userID,
@@ -46,12 +46,12 @@ func (r *PortfolioRepository) GetPortfolio(
 		return nil, err
 	}
 
-	result := make([]*portfolio.PortfolioItem, len(items))
+	result := make([]*domain.PortfolioItem, len(items))
 	for i, item := range items {
-		result[i] = &portfolio.PortfolioItem{
+		result[i] = &domain.PortfolioItem{
 			StockSymbol:  item.StockSymbol,
-			Quantity:     item.Quantity.InexactFloat64(),
-			AveragePrice: item.AveragePrice.InexactFloat64(),
+			Quantity:     item.Quantity,
+			AveragePrice: item.AveragePrice,
 		}
 	}
 
@@ -64,7 +64,7 @@ func (r *PortfolioRepository) GetPortfolioItem(
 	userID int64,
 	ladderID int64,
 	symbol string,
-) (*portfolio.PortfolioItem, error) {
+) (*domain.PortfolioItem, error) {
 	item, err := r.queries.GetPortfolioItem(ctx, sqlc.GetPortfolioItemParams{
 		LadderID:    ladderID,
 		UserID:      userID,
@@ -74,10 +74,10 @@ func (r *PortfolioRepository) GetPortfolioItem(
 		return nil, err
 	}
 
-	return &portfolio.PortfolioItem{
+	return &domain.PortfolioItem{
 		StockSymbol:  item.StockSymbol,
-		Quantity:     item.Quantity.InexactFloat64(),
-		AveragePrice: item.AveragePrice.InexactFloat64(),
+		Quantity:     item.Quantity,
+		AveragePrice: item.AveragePrice,
 	}, nil
 }
 
@@ -87,7 +87,7 @@ func (r *PortfolioRepository) GetPortfolioItemForUpdate(
 	userID int64,
 	ladderID int64,
 	symbol string,
-) (*portfolio.PortfolioItem, error) {
+) (*domain.PortfolioItem, error) {
 	item, err := r.queries.GetPortfolioItemForUpdate(ctx, sqlc.GetPortfolioItemForUpdateParams{
 		LadderID:    ladderID,
 		UserID:      userID,
@@ -97,10 +97,10 @@ func (r *PortfolioRepository) GetPortfolioItemForUpdate(
 		return nil, err
 	}
 
-	return &portfolio.PortfolioItem{
+	return &domain.PortfolioItem{
 		StockSymbol:  item.StockSymbol,
-		Quantity:     item.Quantity.InexactFloat64(),
-		AveragePrice: item.AveragePrice.InexactFloat64(),
+		Quantity:     item.Quantity,
+		AveragePrice: item.AveragePrice,
 	}, nil
 }
 

@@ -21,3 +21,5 @@ sql:
             go_type: "github.com/shopspring/decimal.Decimal"
           - column: "market_quotes.price"
             go_type: "github.com/shopspring/decimal.Decimal"
+          - column: "latest_quotes.price"
+            go_type: "github.com/shopspring/decimal.Decimal"

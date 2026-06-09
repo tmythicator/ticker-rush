@@ -2,16 +2,18 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/shopspring/decimal"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
+	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
@@ -29,16 +31,16 @@ func NewLadderRepository(pool *pgxpool.Pool) *LadderRepository {
 
 // GetActiveLadder retrieves the ID of the currently active ladder.
 func (r *LadderRepository) GetActiveLadder(ctx context.Context) (int64, error) {
-	ladder, err := r.queries.GetActiveLadder(ctx)
+	l, err := r.queries.GetActiveLadder(ctx)
 	if err != nil {
 		return 0, err
 	}
 
-	return ladder.ID, nil
+	return l.ID, nil
 }
 
 // GetLadder retrieves a ladder by ID.
-func (r *LadderRepository) GetLadder(ctx context.Context, id int64) (*ladder.Ladder, error) {
+func (r *LadderRepository) GetLadder(ctx context.Context, id int64) (*domain.Ladder, error) {
 	row, err := r.queries.GetLadder(ctx, id)
 	if err != nil {
 		return nil, err
@@ -46,28 +48,36 @@ func (r *LadderRepository) GetLadder(ctx context.Context, id int64) (*ladder.Lad
 
 	tickers, _ := r.GetAllowedTickers(ctx, id)
 
-	return &ladder.Ladder{
-		Id:             row.ID,
+	allowed := make([]domain.TickerInfo, len(tickers))
+	for i, t := range tickers {
+		allowed[i] = domain.TickerInfo{
+			Symbol: t.Symbol,
+			Source: t.Source,
+		}
+	}
+
+	return &domain.Ladder{
+		ID:             row.ID,
 		Name:           row.Name,
 		Type:           row.Type,
-		StartTime:      &timestamppb.Timestamp{Seconds: row.StartTime.Time.Unix()},
-		EndTime:        &timestamppb.Timestamp{Seconds: row.EndTime.Time.Unix()},
+		StartTime:      row.StartTime.Time,
+		EndTime:        row.EndTime.Time,
 		IsActive:       row.IsActive,
-		InitialBalance: row.InitialBalance.InexactFloat64(),
-		AllowedTickers: tickers,
-		CreatedAt:      &timestamppb.Timestamp{Seconds: row.CreatedAt.Time.Unix()},
+		InitialBalance: row.InitialBalance,
+		AllowedTickers: allowed,
+		CreatedAt:      row.CreatedAt.Time,
 	}, nil
 }
 
 // GetAllowedTickers retrieves the allowed stock symbols for a given ladder.
-func (r *LadderRepository) GetAllowedTickers(ctx context.Context, ladderID int64) ([]*ladder.TickerInfo, error) {
+func (r *LadderRepository) GetAllowedTickers(ctx context.Context, ladderID int64) ([]*domain.TickerInfo, error) {
 	tickers, err := r.queries.GetLadderTickers(ctx, ladderID)
 	if err != nil {
 		return nil, err
 	}
-	tickerInfos := make([]*ladder.TickerInfo, len(tickers))
+	tickerInfos := make([]*domain.TickerInfo, len(tickers))
 	for i, t := range tickers {
-		tickerInfos[i] = &ladder.TickerInfo{
+		tickerInfos[i] = &domain.TickerInfo{
 			Symbol: t.StockSymbol,
 			Source: t.Source,
 		}
@@ -78,10 +88,18 @@ func (r *LadderRepository) GetAllowedTickers(ctx context.Context, ladderID int64
 
 // JoinLadder adds a user to a ladder and initializes their balance.
 func (r *LadderRepository) JoinLadder(ctx context.Context, ladderID int64, userID int64) error {
-	return r.queries.JoinLadderParticipant(ctx, sqlc.JoinLadderParticipantParams{
+	err := r.queries.JoinLadderParticipant(ctx, sqlc.JoinLadderParticipantParams{
 		LadderID: ladderID,
 		UserID:   userID,
 	})
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return apperrors.ErrAlreadyJoinedLadder
+		}
+		return err
+	}
+	return nil
 }
 
 // IsUserInLadder checks if a user is enrolled in a ladder.
@@ -93,22 +111,22 @@ func (r *LadderRepository) IsUserInLadder(ctx context.Context, ladderID int64, u
 }
 
 // GetExpiredActiveLadders retrieves active ladders whose end time is in the past.
-func (r *LadderRepository) GetExpiredActiveLadders(ctx context.Context, now time.Time) ([]*ladder.Ladder, error) {
+func (r *LadderRepository) GetExpiredActiveLadders(ctx context.Context, now time.Time) ([]*domain.Ladder, error) {
 	rows, err := r.queries.GetExpiredActiveLadders(ctx, pgtype.Timestamptz{Time: now, Valid: true})
 	if err != nil {
 		return nil, err
 	}
-	res := make([]*ladder.Ladder, len(rows))
+	res := make([]*domain.Ladder, len(rows))
 	for i, row := range rows {
-		res[i] = &ladder.Ladder{
-			Id:             row.ID,
+		res[i] = &domain.Ladder{
+			ID:             row.ID,
 			Name:           row.Name,
 			Type:           row.Type,
-			StartTime:      &timestamppb.Timestamp{Seconds: row.StartTime.Time.Unix()},
-			EndTime:        &timestamppb.Timestamp{Seconds: row.EndTime.Time.Unix()},
+			StartTime:      row.StartTime.Time,
+			EndTime:        row.EndTime.Time,
 			IsActive:       row.IsActive,
-			InitialBalance: row.InitialBalance.InexactFloat64(),
-			CreatedAt:      &timestamppb.Timestamp{Seconds: row.CreatedAt.Time.Unix()},
+			InitialBalance: row.InitialBalance,
+			CreatedAt:      row.CreatedAt.Time,
 		}
 	}
 
@@ -116,22 +134,22 @@ func (r *LadderRepository) GetExpiredActiveLadders(ctx context.Context, now time
 }
 
 // GetPendingLaddersToActivate retrieves inactive ladders whose start time has arrived.
-func (r *LadderRepository) GetPendingLaddersToActivate(ctx context.Context, now time.Time) ([]*ladder.Ladder, error) {
+func (r *LadderRepository) GetPendingLaddersToActivate(ctx context.Context, now time.Time) ([]*domain.Ladder, error) {
 	rows, err := r.queries.GetPendingLaddersToActivate(ctx, pgtype.Timestamptz{Time: now, Valid: true})
 	if err != nil {
 		return nil, err
 	}
-	res := make([]*ladder.Ladder, len(rows))
+	res := make([]*domain.Ladder, len(rows))
 	for i, row := range rows {
-		res[i] = &ladder.Ladder{
-			Id:             row.ID,
+		res[i] = &domain.Ladder{
+			ID:             row.ID,
 			Name:           row.Name,
 			Type:           row.Type,
-			StartTime:      &timestamppb.Timestamp{Seconds: row.StartTime.Time.Unix()},
-			EndTime:        &timestamppb.Timestamp{Seconds: row.EndTime.Time.Unix()},
+			StartTime:      row.StartTime.Time,
+			EndTime:        row.EndTime.Time,
 			IsActive:       row.IsActive,
-			InitialBalance: row.InitialBalance.InexactFloat64(),
-			CreatedAt:      &timestamppb.Timestamp{Seconds: row.CreatedAt.Time.Unix()},
+			InitialBalance: row.InitialBalance,
+			CreatedAt:      row.CreatedAt.Time,
 		}
 	}
 
@@ -147,8 +165,25 @@ func (r *LadderRepository) UpdateLadderStatus(ctx context.Context, id int64, isA
 }
 
 // GetLadderParticipants retrieves the participants of a ladder.
-func (r *LadderRepository) GetLadderParticipants(ctx context.Context, ladderID int64) ([]sqlc.LadderParticipant, error) {
-	return r.queries.GetLadderParticipants(ctx, ladderID)
+func (r *LadderRepository) GetLadderParticipants(ctx context.Context, ladderID int64) ([]domain.LadderParticipant, error) {
+	rows, err := r.queries.GetLadderParticipants(ctx, ladderID)
+	if err != nil {
+		return nil, err
+	}
+	participants := make([]domain.LadderParticipant, len(rows))
+	for i, row := range rows {
+		participants[i] = domain.LadderParticipant{
+			LadderID: row.LadderID,
+			User: domain.User{
+				ID: row.UserID,
+			},
+			Balance:      row.Balance,
+			FinalRank:    row.FinalRank.Int32,
+			FinalBalance: row.FinalBalance,
+			JoinedAt:     row.JoinedAt.Time,
+		}
+	}
+	return participants, nil
 }
 
 // InsertLadderParticipant updates or inserts a participant's final stats.

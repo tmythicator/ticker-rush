@@ -5,15 +5,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
-	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 	"github.com/tmythicator/ticker-rush/backend/internal/service/mocks"
 )
@@ -30,8 +28,8 @@ func TestUserService_CreateUser(t *testing.T) {
 	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
 	mockLadderRepo := new(mocks.MockLadderRepository)
 
-	expectedUser := &user.User{
-		Id:        1,
+	expectedUser := &domain.User{
+		ID:        1,
 		Username:  username,
 		FirstName: "John",
 		LastName:  "Doe",
@@ -40,8 +38,8 @@ func TestUserService_CreateUser(t *testing.T) {
 	mockUserRepo.On("CreateUser", ctx, mock.MatchedBy(func(params service.CreateUserParams) bool {
 		return params.Username == username &&
 			bcrypt.CompareHashAndPassword([]byte(params.PasswordHash), []byte(password)) == nil &&
-			params.FirstName == expectedUser.GetFirstName() &&
-			params.LastName == expectedUser.GetLastName() &&
+			params.FirstName == expectedUser.FirstName &&
+			params.LastName == expectedUser.LastName &&
 			params.Website == "" &&
 			!params.IsPublic
 	})).Return(expectedUser, nil)
@@ -51,8 +49,8 @@ func TestUserService_CreateUser(t *testing.T) {
 		ctx,
 		username,
 		password,
-		expectedUser.GetFirstName(),
-		expectedUser.GetLastName(),
+		expectedUser.FirstName,
+		expectedUser.LastName,
 		true,
 	)
 
@@ -117,46 +115,38 @@ func TestUserService_GetUserWithPortfolio(t *testing.T) {
 	userID := int64(1)
 	now := time.Now()
 
-	rows := []sqlc.GetUserWithPortfolioForActiveLadderRow{
-		{
-			UserID:          userID,
-			Username:        usernameTest,
-			FirstName:       "Test",
-			LastName:        "User",
-			CreatedAt:       pgtype.Timestamptz{Time: now, Valid: true},
-			Balance:         decimal.NewFromFloat(100.0),
-			LadderID:        1,
-			StockSymbol:     pgtype.Text{String: "AAPL", Valid: true},
-			Quantity:        10,
-			AveragePrice:    150.0,
-			IsParticipating: true,
-		},
-		{
-			UserID:          userID,
-			Username:        usernameTest,
-			FirstName:       "Test",
-			LastName:        "User",
-			CreatedAt:       pgtype.Timestamptz{Time: now, Valid: true},
-			Balance:         decimal.NewFromFloat(100.0),
-			LadderID:        1,
-			StockSymbol:     pgtype.Text{String: "GOOG", Valid: true},
-			Quantity:        5,
-			AveragePrice:    2000.0,
-			IsParticipating: true,
+	expectedUser := &domain.User{
+		ID:        userID,
+		Username:  usernameTest,
+		FirstName: "Test",
+		LastName:  "User",
+		CreatedAt: now,
+		Balance:   decimal.NewFromFloat(100.0),
+		Portfolio: map[string]domain.PortfolioItem{
+			"AAPL": {
+				StockSymbol:  "AAPL",
+				Quantity:     decimal.NewFromFloat(10.0),
+				AveragePrice: decimal.NewFromFloat(150.0),
+			},
+			"GOOG": {
+				StockSymbol:  "GOOG",
+				Quantity:     decimal.NewFromFloat(5.0),
+				AveragePrice: decimal.NewFromFloat(2000.0),
+			},
 		},
 	}
 
-	mockUserRepo.On("GetUserWithPortfolioForActiveLadder", ctx, userID).Return(rows, nil)
+	mockUserRepo.On("GetUserWithPortfolioForActiveLadder", ctx, userID).Return(expectedUser, nil)
 
 	res, err := userService.GetUserWithPortfolio(ctx, userID)
 
 	assert.NoError(t, err)
-	assert.Equal(t, userID, res.GetId())
-	assert.Equal(t, usernameTest, res.GetUsername())
-	assert.Len(t, res.GetPortfolio(), 2)
+	assert.Equal(t, userID, res.ID)
+	assert.Equal(t, usernameTest, res.Username)
+	assert.Len(t, res.Portfolio, 2)
 
-	assert.Equal(t, float64(10), res.GetPortfolio()["AAPL"].Quantity)
-	assert.Equal(t, float64(5), res.GetPortfolio()["GOOG"].Quantity)
+	assert.Equal(t, float64(10), res.Portfolio["AAPL"].Quantity.InexactFloat64())
+	assert.Equal(t, float64(5), res.Portfolio["GOOG"].Quantity.InexactFloat64())
 }
 
 func TestUserService_Authenticate(t *testing.T) {
@@ -172,8 +162,8 @@ func TestUserService_Authenticate(t *testing.T) {
 
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(truePassword), bcrypt.DefaultCost)
 
-	expectedUser := &user.User{
-		Id:        1,
+	expectedUser := &domain.User{
+		ID:        1,
 		Username:  username,
 		FirstName: "John",
 		LastName:  "Doe",
@@ -211,43 +201,47 @@ func TestUserService_GetPublicProfile(t *testing.T) {
 
 	t.Run("Public User", func(t *testing.T) {
 		username := "publicUser"
-		expectedUser := &user.User{
-			Id:        1,
+		expectedUser := &domain.User{
+			ID:        1,
 			Username:  username,
 			FirstName: "Public",
 			LastName:  "User",
 			IsPublic:  true,
 		}
 		mockUserRepo.On("GetUserByUsername", ctx, username).Return(expectedUser, "", nil).Once()
-		mockUserRepo.On("GetUserWithPortfolioForActiveLadder", ctx, expectedUser.Id).Return([]sqlc.GetUserWithPortfolioForActiveLadderRow{
-			{
-				UserID:          expectedUser.Id,
-				Username:        username,
-				FirstName:       "Public",
-				LastName:        "User",
-				CreatedAt:       pgtype.Timestamptz{Time: time.Now(), Valid: true},
-				IsPublic:        true,
-				Balance:         decimal.NewFromFloat(200.0),
-				LadderID:        1,
-				StockSymbol:     pgtype.Text{String: "AAPL", Valid: true},
-				Quantity:        10,
-				AveragePrice:    150.0,
-				IsParticipating: true,
+
+		expectedUserWithPortfolio := &domain.User{
+			ID:              expectedUser.ID,
+			Username:        username,
+			FirstName:       "Public",
+			LastName:        "User",
+			CreatedAt:       time.Now(),
+			IsPublic:        true,
+			Balance:         decimal.NewFromFloat(200.0),
+			IsParticipating: true,
+			Portfolio: map[string]domain.PortfolioItem{
+				"AAPL": {
+					StockSymbol:  "AAPL",
+					Quantity:     decimal.NewFromFloat(10.0),
+					AveragePrice: decimal.NewFromFloat(150.0),
+				},
 			},
-		}, nil).Once()
+		}
+
+		mockUserRepo.On("GetUserWithPortfolioForActiveLadder", ctx, expectedUser.ID).Return(expectedUserWithPortfolio, nil).Once()
 
 		res, err := userService.GetPublicProfile(ctx, username)
 
 		assert.NoError(t, err)
-		assert.Equal(t, expectedUser.Id, res.Id)
+		assert.Equal(t, expectedUser.ID, res.ID)
 		assert.Len(t, res.Portfolio, 1)
 		assert.Equal(t, "AAPL", res.Portfolio["AAPL"].StockSymbol)
 	})
 
 	t.Run("Private User", func(t *testing.T) {
 		username := "privateUser"
-		expectedUser := &user.User{
-			Id:       2,
+		expectedUser := &domain.User{
+			ID:       2,
 			Username: username,
 			IsPublic: false,
 		}

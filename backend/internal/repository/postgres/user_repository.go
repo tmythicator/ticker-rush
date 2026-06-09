@@ -8,10 +8,9 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/shopspring/decimal"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
@@ -28,16 +27,16 @@ func NewUserRepository(pool *pgxpool.Pool) *UserRepository {
 }
 
 // GetUser retrieves a user by ID.
-func (r *UserRepository) GetUser(ctx context.Context, id int64) (*user.User, error) {
+func (r *UserRepository) GetUser(ctx context.Context, id int64) (*domain.User, error) {
 	u, err := r.queries.GetUser(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return &user.User{
-		Id:        u.ID,
+	return &domain.User{
+		ID:        u.ID,
 		Username:  u.Username,
-		CreatedAt: timestamppb.New(u.CreatedAt.Time),
+		CreatedAt: u.CreatedAt.Time,
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 		Website:   u.Website,
@@ -47,20 +46,20 @@ func (r *UserRepository) GetUser(ctx context.Context, id int64) (*user.User, err
 }
 
 // GetUsers retrieves all users.
-func (r *UserRepository) GetUsers(ctx context.Context) ([]*user.User, error) {
+func (r *UserRepository) GetUsers(ctx context.Context) ([]*domain.User, error) {
 	res, err := r.queries.GetUsers(ctx)
 	if err != nil {
 		return nil, err
 	}
-	users := make([]*user.User, len(res))
+	users := make([]*domain.User, len(res))
 
 	for i, u := range res {
-		users[i] = &user.User{
-			Id:        u.ID,
+		users[i] = &domain.User{
+			ID:        u.ID,
 			Username:  u.Username,
 			FirstName: u.FirstName,
 			LastName:  u.LastName,
-			CreatedAt: timestamppb.New(u.CreatedAt.Time),
+			CreatedAt: u.CreatedAt.Time,
 			Website:   u.Website,
 			IsPublic:  u.IsPublic,
 			IsAdmin:   u.IsAdmin,
@@ -78,16 +77,16 @@ func (r *UserRepository) WithTx(tx service.Transaction) service.UserRepository {
 }
 
 // GetUserForUpdate retrieves a user by ID with a lock for update.
-func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*user.User, error) {
+func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*domain.User, error) {
 	u, err := r.queries.GetUserForUpdate(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return &user.User{
-		Id:        u.ID,
+	return &domain.User{
+		ID:        u.ID,
 		Username:  u.Username,
-		CreatedAt: timestamppb.New(u.CreatedAt.Time),
+		CreatedAt: u.CreatedAt.Time,
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 		Website:   u.Website,
@@ -97,13 +96,13 @@ func (r *UserRepository) GetUserForUpdate(ctx context.Context, id int64) (*user.
 }
 
 // UpdateUserProfile updates an existing user's profile.
-func (r *UserRepository) UpdateUserProfile(ctx context.Context, u *user.User) error {
+func (r *UserRepository) UpdateUserProfile(ctx context.Context, u *domain.User) error {
 	err := r.queries.UpdateUserProfile(ctx, sqlc.UpdateUserProfileParams{
-		ID:        u.GetId(),
-		FirstName: u.GetFirstName(),
-		LastName:  u.GetLastName(),
-		Website:   u.GetWebsite(),
-		IsPublic:  u.GetIsPublic(),
+		ID:        u.ID,
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		Website:   u.Website,
+		IsPublic:  u.IsPublic,
 	})
 
 	return err
@@ -135,7 +134,7 @@ func (r *UserRepository) GetUserBalance(ctx context.Context, userID int64, ladde
 func (r *UserRepository) CreateUser(
 	ctx context.Context,
 	params service.CreateUserParams,
-) (*user.User, error) {
+) (*domain.User, error) {
 	u, err := r.queries.CreateUser(ctx, sqlc.CreateUserParams{
 		Username:      params.Username,
 		PasswordHash:  params.PasswordHash,
@@ -150,33 +149,32 @@ func (r *UserRepository) CreateUser(
 		return nil, err
 	}
 
-	return &user.User{
-		Id:        u.ID,
+	return &domain.User{
+		ID:        u.ID,
 		Username:  u.Username,
-		CreatedAt: timestamppb.New(u.CreatedAt.Time),
+		CreatedAt: u.CreatedAt.Time,
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 		Website:   u.Website,
 		IsPublic:  u.IsPublic,
 		IsAdmin:   u.IsAdmin,
 	}, nil
-
 }
 
 // GetUserByUsername retrieves a user by username, returning the user and password hash.
 func (r *UserRepository) GetUserByUsername(
 	ctx context.Context,
 	username string,
-) (*user.User, string, error) {
+) (*domain.User, string, error) {
 	u, err := r.queries.GetUserByUsername(ctx, username)
 	if err != nil {
 		return nil, "", err
 	}
 
-	return &user.User{
-		Id:        u.ID,
+	return &domain.User{
+		ID:        u.ID,
 		Username:  u.Username,
-		CreatedAt: timestamppb.New(u.CreatedAt.Time),
+		CreatedAt: u.CreatedAt.Time,
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 		Website:   u.Website,
@@ -186,6 +184,40 @@ func (r *UserRepository) GetUserByUsername(
 }
 
 // GetUserWithPortfolioForActiveLadder retrieves a user and their portfolio for the active ladder.
-func (r *UserRepository) GetUserWithPortfolioForActiveLadder(ctx context.Context, userID int64) ([]sqlc.GetUserWithPortfolioForActiveLadderRow, error) {
-	return r.queries.GetUserWithPortfolioForActiveLadder(ctx, userID)
+func (r *UserRepository) GetUserWithPortfolioForActiveLadder(ctx context.Context, userID int64) (*domain.User, error) {
+	rows, err := r.queries.GetUserWithPortfolioForActiveLadder(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	if len(rows) == 0 {
+		return nil, pgx.ErrNoRows
+	}
+	firstRow := rows[0]
+
+	fetchedUser := &domain.User{
+		ID:              firstRow.UserID,
+		Username:        firstRow.Username,
+		FirstName:       firstRow.FirstName,
+		LastName:        firstRow.LastName,
+		Website:         firstRow.Website,
+		IsPublic:        firstRow.IsPublic,
+		IsAdmin:         firstRow.IsAdmin,
+		IsBanned:        firstRow.IsBanned,
+		CreatedAt:       firstRow.CreatedAt.Time,
+		Balance:         firstRow.Balance,
+		Portfolio:       make(map[string]domain.PortfolioItem),
+		IsParticipating: firstRow.IsParticipating,
+	}
+
+	for _, row := range rows {
+		if row.StockSymbol.Valid && row.LadderID > 0 {
+			fetchedUser.Portfolio[row.StockSymbol.String] = domain.PortfolioItem{
+				StockSymbol:  row.StockSymbol.String,
+				Quantity:     decimal.NewFromFloat(row.Quantity),
+				AveragePrice: decimal.NewFromFloat(row.AveragePrice),
+			}
+		}
+	}
+
+	return fetchedUser, nil
 }

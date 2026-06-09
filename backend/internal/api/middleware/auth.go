@@ -40,3 +40,13 @@ func AuthMiddleware(jwtSecret string) gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+// GetUserID retrieves the authenticated user's ID from the context.
+func GetUserID(c *gin.Context) (int64, bool) {
+	val, exists := c.Get(UserIDKey)
+	if !exists {
+		return 0, false
+	}
+	id, ok := val.(int64)
+	return id, ok
+}

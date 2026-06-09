@@ -11,13 +11,9 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 	app_redis "github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 	"github.com/tmythicator/ticker-rush/backend/internal/service/mocks"
@@ -39,7 +35,11 @@ func TestTradeService_BuyStock_Success(t *testing.T) {
 
 	valkeyClient := redis.NewClient(&redis.Options{Addr: mr.Addr()})
 	marketRepo := app_redis.NewMarketRepository(valkeyClient)
-	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
+	quote := map[string]any{
+		"symbol":    symbol,
+		"price":     price,
+		"timestamp": time.Now().Unix(),
+	}
 	bytes, _ := json.Marshal(quote)
 	valkeyClient.Set(context.Background(), "market:"+symbol, bytes, 0)
 
@@ -57,32 +57,29 @@ func TestTradeService_BuyStock_Success(t *testing.T) {
 	mockUserRepo.On("WithTx", mockTx).Return(mockUserRepo)
 	mockPortRepo.On("WithTx", mockTx).Return(mockPortRepo)
 	mockLadderRepo.On("GetActiveLadder", mock.Anything).Return(int64(1), nil)
-	mockLadderRepo.On("GetLadder", mock.Anything, int64(1)).Return(&ladder.Ladder{
-		Id:             1,
+	mockLadderRepo.On("GetLadder", mock.Anything, int64(1)).Return(&domain.Ladder{
+		ID:             1,
 		IsActive:       true,
-		StartTime:      timestamppb.New(time.Now().Add(-1 * time.Hour)),
-		EndTime:        timestamppb.New(time.Now().Add(1 * time.Hour)),
-		InitialBalance: startBalance,
+		StartTime:      time.Now().Add(-1 * time.Hour),
+		EndTime:        time.Now().Add(1 * time.Hour),
+		InitialBalance: decimal.NewFromFloat(startBalance),
 	}, nil)
 	mockLadderRepo.On("IsUserInLadder", mock.Anything, int64(1), userID).Return(true, nil)
 
-	initialUser := &user.User{Id: userID, Balance: startBalance}
+	initialUser := &domain.User{ID: userID, Balance: decimal.NewFromFloat(startBalance)}
 	mockUserRepo.On("GetUserForUpdate", mock.Anything, userID).Return(initialUser, nil)
 	mockUserRepo.On("GetUserBalance", mock.Anything, userID, int64(1)).Return(decimal.NewFromFloat(startBalance), nil)
 	mockPortRepo.On("GetPortfolioItemForUpdate", mock.Anything, userID, int64(1), symbol).
-		Return(&portfolio.PortfolioItem{StockSymbol: symbol, Quantity: 0}, nil)
+		Return(&domain.PortfolioItem{StockSymbol: symbol, Quantity: decimal.Zero}, nil)
 	mockUserRepo.On("UpdateUserBalance", mock.Anything, userID, int64(1), mock.MatchedBy(func(d decimal.Decimal) bool {
 		v, _ := d.Float64()
-
 		return v == expectedBalance
 	})).Return(nil)
 	mockPortRepo.On("SetPortfolioItem", mock.Anything, userID, int64(1), symbol, mock.MatchedBy(func(q decimal.Decimal) bool {
 		v, _ := q.Float64()
-
 		return v == quantity
 	}), mock.MatchedBy(func(p decimal.Decimal) bool {
 		v, _ := p.Float64()
-
 		return v == price
 	})).Return(nil)
 	mockTx.On("Commit", mock.Anything).Return(nil)
@@ -95,7 +92,7 @@ func TestTradeService_BuyStock_Success(t *testing.T) {
 	// 5. Verify
 	assert.NoError(t, err)
 	assert.NotNil(t, user)
-	assert.Equal(t, expectedBalance, user.GetBalance())
+	assert.True(t, decimal.NewFromFloat(expectedBalance).Equal(user.Balance))
 
 	mockUserRepo.AssertExpectations(t)
 	mockPortRepo.AssertExpectations(t)
@@ -117,7 +114,11 @@ func TestTradeService_BuyStock_InsufficientFunds(t *testing.T) {
 
 	rClient := redis.NewClient(&redis.Options{Addr: mr.Addr()})
 	marketRepo := app_redis.NewMarketRepository(rClient)
-	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
+	quote := map[string]any{
+		"symbol":    symbol,
+		"price":     price,
+		"timestamp": time.Now().Unix(),
+	}
 	bytes, _ := json.Marshal(quote)
 	rClient.Set(context.Background(), "market:"+symbol, bytes, 0)
 
@@ -134,16 +135,16 @@ func TestTradeService_BuyStock_InsufficientFunds(t *testing.T) {
 	mockUserRepo.On("WithTx", mockTx).Return(mockUserRepo)
 	mockPortRepo.On("WithTx", mockTx).Return(mockPortRepo)
 	mockLadderRepo.On("GetActiveLadder", mock.Anything).Return(int64(1), nil)
-	mockLadderRepo.On("GetLadder", mock.Anything, int64(1)).Return(&ladder.Ladder{
-		Id:             1,
+	mockLadderRepo.On("GetLadder", mock.Anything, int64(1)).Return(&domain.Ladder{
+		ID:             1,
 		IsActive:       true,
-		StartTime:      timestamppb.New(time.Now().Add(-1 * time.Hour)),
-		EndTime:        timestamppb.New(time.Now().Add(1 * time.Hour)),
-		InitialBalance: startBalance,
+		StartTime:      time.Now().Add(-1 * time.Hour),
+		EndTime:        time.Now().Add(1 * time.Hour),
+		InitialBalance: decimal.NewFromFloat(startBalance),
 	}, nil)
 	mockLadderRepo.On("IsUserInLadder", mock.Anything, int64(1), userID).Return(true, nil)
 
-	initialUser := &user.User{Id: userID, Balance: startBalance}
+	initialUser := &domain.User{ID: userID, Balance: decimal.NewFromFloat(startBalance)}
 	mockUserRepo.On("GetUserForUpdate", mock.Anything, userID).Return(initialUser, nil)
 	mockUserRepo.On("GetUserBalance", mock.Anything, userID, int64(1)).Return(decimal.NewFromFloat(startBalance), nil)
 
@@ -174,7 +175,11 @@ func TestTradeService_BuyStock_MarketClosed(t *testing.T) {
 
 	// Stale timestamp (1 hour ago)
 	staleTime := time.Now().Add(-1 * time.Hour).Unix()
-	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: staleTime}
+	quote := map[string]any{
+		"symbol":    symbol,
+		"price":     price,
+		"timestamp": staleTime,
+	}
 	bytes, _ := json.Marshal(quote)
 	rClient.Set(context.Background(), "market:"+symbol, bytes, 0)
 
@@ -211,7 +216,11 @@ func TestTradeService_BuyStock_NotJoined(t *testing.T) {
 
 	rClient := redis.NewClient(&redis.Options{Addr: mr.Addr()})
 	marketRepo := app_redis.NewMarketRepository(rClient)
-	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
+	quote := map[string]any{
+		"symbol":    symbol,
+		"price":     price,
+		"timestamp": time.Now().Unix(),
+	}
 	bytes, _ := json.Marshal(quote)
 	rClient.Set(context.Background(), "market:"+symbol, bytes, 0)
 
@@ -227,14 +236,14 @@ func TestTradeService_BuyStock_NotJoined(t *testing.T) {
 	mockTx.On("Rollback", mock.Anything).Return(nil)
 	mockUserRepo.On("WithTx", mockTx).Return(mockUserRepo)
 	mockPortRepo.On("WithTx", mockTx).Return(mockPortRepo)
-	mockUserRepo.On("GetUserForUpdate", mock.Anything, userID).Return(&user.User{Id: userID, Balance: 1000}, nil)
+	mockUserRepo.On("GetUserForUpdate", mock.Anything, userID).Return(&domain.User{ID: userID, Balance: decimal.NewFromFloat(1000)}, nil)
 	mockLadderRepo.On("GetActiveLadder", mock.Anything).Return(int64(1), nil)
-	mockLadderRepo.On("GetLadder", mock.Anything, int64(1)).Return(&ladder.Ladder{
-		Id:             1,
+	mockLadderRepo.On("GetLadder", mock.Anything, int64(1)).Return(&domain.Ladder{
+		ID:             1,
 		IsActive:       true,
-		StartTime:      timestamppb.New(time.Now().Add(-1 * time.Hour)),
-		EndTime:        timestamppb.New(time.Now().Add(1 * time.Hour)),
-		InitialBalance: 1000,
+		StartTime:      time.Now().Add(-1 * time.Hour),
+		EndTime:        time.Now().Add(1 * time.Hour),
+		InitialBalance: decimal.NewFromFloat(1000),
 	}, nil)
 	mockLadderRepo.On("IsUserInLadder", mock.Anything, int64(1), userID).Return(false, nil)
 
@@ -258,7 +267,11 @@ func TestTradeService_SellStock_NotJoined(t *testing.T) {
 
 	rClient := redis.NewClient(&redis.Options{Addr: mr.Addr()})
 	marketRepo := app_redis.NewMarketRepository(rClient)
-	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
+	quote := map[string]any{
+		"symbol":    symbol,
+		"price":     price,
+		"timestamp": time.Now().Unix(),
+	}
 	bytes, _ := json.Marshal(quote)
 	rClient.Set(context.Background(), "market:"+symbol, bytes, 0)
 
@@ -275,12 +288,12 @@ func TestTradeService_SellStock_NotJoined(t *testing.T) {
 	mockUserRepo.On("WithTx", mockTx).Return(mockUserRepo)
 	mockPortRepo.On("WithTx", mockTx).Return(mockPortRepo)
 	mockLadderRepo.On("GetActiveLadder", mock.Anything).Return(int64(1), nil)
-	mockLadderRepo.On("GetLadder", mock.Anything, int64(1)).Return(&ladder.Ladder{
-		Id:             1,
+	mockLadderRepo.On("GetLadder", mock.Anything, int64(1)).Return(&domain.Ladder{
+		ID:             1,
 		IsActive:       true,
-		StartTime:      timestamppb.New(time.Now().Add(-1 * time.Hour)),
-		EndTime:        timestamppb.New(time.Now().Add(1 * time.Hour)),
-		InitialBalance: 1000,
+		StartTime:      time.Now().Add(-1 * time.Hour),
+		EndTime:        time.Now().Add(1 * time.Hour),
+		InitialBalance: decimal.NewFromFloat(1000),
 	}, nil)
 	mockLadderRepo.On("IsUserInLadder", mock.Anything, int64(1), userID).Return(false, nil)
 
@@ -304,7 +317,11 @@ func TestTradeService_BuyStock_LadderNotActive(t *testing.T) {
 
 	rClient := redis.NewClient(&redis.Options{Addr: mr.Addr()})
 	marketRepo := app_redis.NewMarketRepository(rClient)
-	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
+	quote := map[string]any{
+		"symbol":    symbol,
+		"price":     price,
+		"timestamp": time.Now().Unix(),
+	}
 	bytes, _ := json.Marshal(quote)
 	rClient.Set(context.Background(), "market:"+symbol, bytes, 0)
 
@@ -317,12 +334,12 @@ func TestTradeService_BuyStock_LadderNotActive(t *testing.T) {
 
 	mockLadderRepo.On("GetActiveLadder", mock.Anything).Return(int64(1), nil)
 	// Mock an inactive ladder (ends in the past)
-	mockLadderRepo.On("GetLadder", mock.Anything, int64(1)).Return(&ladder.Ladder{
-		Id:             1,
+	mockLadderRepo.On("GetLadder", mock.Anything, int64(1)).Return(&domain.Ladder{
+		ID:             1,
 		IsActive:       true,
-		StartTime:      timestamppb.New(time.Now().Add(-2 * time.Hour)),
-		EndTime:        timestamppb.New(time.Now().Add(-1 * time.Hour)),
-		InitialBalance: 1000,
+		StartTime:      time.Now().Add(-2 * time.Hour),
+		EndTime:        time.Now().Add(-1 * time.Hour),
+		InitialBalance: decimal.NewFromFloat(1000),
 	}, nil)
 
 	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)

@@ -3,21 +3,18 @@ package service
 import (
 	"context"
 
-	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 )
 
 // LadderService handles ladder-related business logic.
 type LadderService struct {
 	ladderRepo LadderRepository
-	transactor Transactor
 }
 
 // NewLadderService creates a new instance of LadderService.
-func NewLadderService(ladderRepo LadderRepository, transactor Transactor) *LadderService {
+func NewLadderService(ladderRepo LadderRepository) *LadderService {
 	return &LadderService{
 		ladderRepo: ladderRepo,
-		transactor: transactor,
 	}
 }
 
@@ -27,7 +24,7 @@ func (s *LadderService) GetActiveLadderID(ctx context.Context) (int64, error) {
 }
 
 // GetAllowedTickers retrieves the allowed stock symbols for the active ladder.
-func (s *LadderService) GetAllowedTickers(ctx context.Context) ([]*ladder.TickerInfo, error) {
+func (s *LadderService) GetAllowedTickers(ctx context.Context) ([]*domain.TickerInfo, error) {
 	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
 	if err != nil {
 		return nil, err
@@ -37,7 +34,7 @@ func (s *LadderService) GetAllowedTickers(ctx context.Context) ([]*ladder.Ticker
 }
 
 // GetActiveLadder retrieves full metadata for the currently active ladder.
-func (s *LadderService) GetActiveLadder(ctx context.Context) (*ladder.Ladder, error) {
+func (s *LadderService) GetActiveLadder(ctx context.Context) (*domain.Ladder, error) {
 	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
 	if err != nil {
 		return nil, err
@@ -53,27 +50,5 @@ func (s *LadderService) JoinLadder(ctx context.Context, userID int64) error {
 		return err
 	}
 
-	// да зачем это - можно ж просто ON CONFLICT DO NOTHING
-	joined, err := s.ladderRepo.IsUserInLadder(ctx, ladderID, userID)
-	if err != nil {
-		return err
-	}
-	if joined {
-		return apperrors.ErrAlreadyJoinedLadder
-	}
-
-	// а зачем тут транзакция
-	tx, err := s.transactor.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer func() { _ = tx.Rollback(ctx) }()
-
-	txLadderRepo := s.ladderRepo.WithTx(tx)
-
-	if err := txLadderRepo.JoinLadder(ctx, ladderID, userID); err != nil {
-		return err
-	}
-
-	return tx.Commit(ctx)
+	return s.ladderRepo.JoinLadder(ctx, ladderID, userID)
 }

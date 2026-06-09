@@ -7,12 +7,8 @@ import (
 
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/mock"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/tmythicator/ticker-rush/backend/internal/gen/sqlc"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 	"github.com/tmythicator/ticker-rush/backend/internal/service/mocks"
 	"github.com/tmythicator/ticker-rush/backend/internal/worker"
 )
@@ -26,51 +22,51 @@ func TestLadderLifecycleWorker_RunOnce_ExpiredLadders(t *testing.T) {
 	now := time.Now()
 
 	// 1. Setup expired ladder
-	expiredLadder := &ladder.Ladder{
-		Id:             10,
+	expiredLadder := &domain.Ladder{
+		ID:             10,
 		Name:           "Expired Season 1",
 		IsActive:       true,
-		StartTime:      timestamppb.New(now.Add(-2 * time.Hour)),
-		EndTime:        timestamppb.New(now.Add(-1 * time.Hour)),
-		InitialBalance: 10000.0,
+		StartTime:      now.Add(-2 * time.Hour),
+		EndTime:        now.Add(-1 * time.Hour),
+		InitialBalance: decimal.NewFromFloat(10000.0),
 	}
 
-	mockLadderRepo.On("GetExpiredActiveLadders", mock.Anything, mock.Anything).Return([]*ladder.Ladder{expiredLadder}, nil)
+	mockLadderRepo.On("GetExpiredActiveLadders", mock.Anything, mock.Anything).Return([]*domain.Ladder{expiredLadder}, nil)
 
 	// 2. Setup participants: User 101 and User 102
-	participants := []sqlc.LadderParticipant{
+	participants := []domain.LadderParticipant{
 		{
 			LadderID: 10,
-			UserID:   101,
+			User:     domain.User{ID: 101},
 			Balance:  decimal.NewFromFloat(1000.0), // Liquid cash
 		},
 		{
 			LadderID: 10,
-			UserID:   102,
+			User:     domain.User{ID: 102},
 			Balance:  decimal.NewFromFloat(2000.0), // Liquid cash
 		},
 	}
 	mockLadderRepo.On("GetLadderParticipants", mock.Anything, int64(10)).Return(participants, nil)
 
 	// User 101 has 10 AAPL. User 102 has 5 AAPL.
-	mockPortRepo.On("GetPortfolio", mock.Anything, int64(101), int64(10)).Return([]*portfolio.PortfolioItem{
+	mockPortRepo.On("GetPortfolio", mock.Anything, int64(101), int64(10)).Return([]*domain.PortfolioItem{
 		{
 			StockSymbol: "AAPL",
-			Quantity:    10.0,
+			Quantity:    decimal.NewFromFloat(10.0),
 		},
 	}, nil)
 
-	mockPortRepo.On("GetPortfolio", mock.Anything, int64(102), int64(10)).Return([]*portfolio.PortfolioItem{
+	mockPortRepo.On("GetPortfolio", mock.Anything, int64(102), int64(10)).Return([]*domain.PortfolioItem{
 		{
 			StockSymbol: "AAPL",
-			Quantity:    5.0,
+			Quantity:    decimal.NewFromFloat(5.0),
 		},
 	}, nil)
 
 	// AAPL price is $150
-	mockMarketRepo.On("GetQuote", mock.Anything, "AAPL").Return(&exchange.Quote{
+	mockMarketRepo.On("GetQuote", mock.Anything, "AAPL").Return(&domain.Quote{
 		Symbol: "AAPL",
-		Price:  150.0,
+		Price:  decimal.NewFromFloat(150.0),
 	}, nil)
 
 	// Calculations:
@@ -95,7 +91,7 @@ func TestLadderLifecycleWorker_RunOnce_ExpiredLadders(t *testing.T) {
 	mockLadderRepo.On("UpdateLadderStatus", mock.Anything, int64(10), false).Return(nil)
 
 	// Setup no pending ladders
-	mockLadderRepo.On("GetPendingLaddersToActivate", mock.Anything, mock.Anything).Return([]*ladder.Ladder{}, nil)
+	mockLadderRepo.On("GetPendingLaddersToActivate", mock.Anything, mock.Anything).Return([]*domain.Ladder{}, nil)
 
 	// Create and run worker
 	w := worker.NewLadderLifecycleWorker(mockLadderRepo, mockPortRepo, mockMarketRepo, 10*time.Millisecond)
@@ -115,18 +111,18 @@ func TestLadderLifecycleWorker_RunOnce_ActivatePendingLadders(t *testing.T) {
 	now := time.Now()
 
 	// No expired ladders
-	mockLadderRepo.On("GetExpiredActiveLadders", mock.Anything, mock.Anything).Return([]*ladder.Ladder{}, nil)
+	mockLadderRepo.On("GetExpiredActiveLadders", mock.Anything, mock.Anything).Return([]*domain.Ladder{}, nil)
 
 	// Setup pending ladder
-	pendingLadder := &ladder.Ladder{
-		Id:             20,
+	pendingLadder := &domain.Ladder{
+		ID:             20,
 		Name:           "Pending Season 2",
 		IsActive:       false,
-		StartTime:      timestamppb.New(now.Add(-10 * time.Minute)),
-		EndTime:        timestamppb.New(now.Add(1 * time.Hour)),
-		InitialBalance: 5000.0,
+		StartTime:      now.Add(-10 * time.Minute),
+		EndTime:        now.Add(1 * time.Hour),
+		InitialBalance: decimal.NewFromFloat(5000.0),
 	}
-	mockLadderRepo.On("GetPendingLaddersToActivate", mock.Anything, mock.Anything).Return([]*ladder.Ladder{pendingLadder}, nil)
+	mockLadderRepo.On("GetPendingLaddersToActivate", mock.Anything, mock.Anything).Return([]*domain.Ladder{pendingLadder}, nil)
 	mockLadderRepo.On("UpdateLadderStatus", mock.Anything, int64(20), true).Return(nil)
 
 	// Create and run worker

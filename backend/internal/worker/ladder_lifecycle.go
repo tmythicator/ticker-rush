@@ -73,12 +73,12 @@ func (w *LadderLifecycleWorker) DeactivateExpiredLadders(ctx context.Context, no
 	}
 
 	for _, l := range expired {
-		log.Printf("[LadderLifecycleWorker] Processing expiration of ladder %d (%s)...", l.Id, l.Name)
+		log.Printf("[LadderLifecycleWorker] Processing expiration of ladder %d (%s)...", l.ID, l.Name)
 
 		// 1. Fetch participants
-		participants, err := w.ladderRepo.GetLadderParticipants(ctx, l.Id)
+		participants, err := w.ladderRepo.GetLadderParticipants(ctx, l.ID)
 		if err != nil {
-			log.Printf("[LadderLifecycleWorker] Failed to get participants for ladder %d: %v", l.Id, err)
+			log.Printf("[LadderLifecycleWorker] Failed to get participants for ladder %d: %v", l.ID, err)
 
 			continue
 		}
@@ -94,16 +94,16 @@ func (w *LadderLifecycleWorker) DeactivateExpiredLadders(ctx context.Context, no
 			netWorth := p.Balance // Starts with liquid cash balance
 
 			// Fetch portfolio items
-			items, err := w.portfolioRepo.GetPortfolio(ctx, p.UserID, l.Id)
+			items, err := w.portfolioRepo.GetPortfolio(ctx, p.User.ID, l.ID)
 			if err != nil {
-				log.Printf("[LadderLifecycleWorker] Failed to get portfolio for user %d in ladder %d: %v", p.UserID, l.Id, err)
+				log.Printf("[LadderLifecycleWorker] Failed to get portfolio for user %d in ladder %d: %v", p.User.ID, l.ID, err)
 
 				continue
 			}
 
 			for _, item := range items {
-				symbol := item.GetStockSymbol()
-				qty := decimal.NewFromFloat(item.GetQuantity())
+				symbol := item.StockSymbol
+				qty := item.Quantity
 				if qty.IsZero() {
 					continue
 				}
@@ -115,7 +115,7 @@ func (w *LadderLifecycleWorker) DeactivateExpiredLadders(ctx context.Context, no
 						log.Printf("[LadderLifecycleWorker] Failed to get quote for %s: %v", symbol, err)
 						price = decimal.Zero
 					} else {
-						price = decimal.NewFromFloat(quote.GetPrice())
+						price = quote.Price
 					}
 					quoteCache[symbol] = price
 				}
@@ -124,7 +124,7 @@ func (w *LadderLifecycleWorker) DeactivateExpiredLadders(ctx context.Context, no
 			}
 
 			scores = append(scores, participantScore{
-				userID:   p.UserID,
+				userID:   p.User.ID,
 				netWorth: netWorth,
 			})
 		}
@@ -137,28 +137,28 @@ func (w *LadderLifecycleWorker) DeactivateExpiredLadders(ctx context.Context, no
 		// 3. Save final scores and ranks
 		for rankIdx, score := range scores {
 			rank := int32(rankIdx + 1)
-			err := w.ladderRepo.InsertLadderParticipant(ctx, l.Id, score.userID, score.netWorth, rank)
+			err := w.ladderRepo.InsertLadderParticipant(ctx, l.ID, score.userID, score.netWorth, rank)
 			if err != nil {
-				log.Printf("[LadderLifecycleWorker] Failed to insert final rank for user %d in ladder %d: %v", score.userID, l.Id, err)
+				log.Printf("[LadderLifecycleWorker] Failed to insert final rank for user %d in ladder %d: %v", score.userID, l.ID, err)
 			}
 		}
 
 		// 4. Prune portfolio items for this ladder (space saving)
-		if err := w.ladderRepo.DeleteLadderPortfolioItemsByLadder(ctx, l.Id); err != nil {
-			log.Printf("[LadderLifecycleWorker] Failed to prune portfolio items for ladder %d: %v", l.Id, err)
+		if err := w.ladderRepo.DeleteLadderPortfolioItemsByLadder(ctx, l.ID); err != nil {
+			log.Printf("[LadderLifecycleWorker] Failed to prune portfolio items for ladder %d: %v", l.ID, err)
 		}
 
 		// 5. Prune participants outside the top 20
-		if err := w.ladderRepo.PruneLadderParticipants(ctx, l.Id, 20); err != nil {
-			log.Printf("[LadderLifecycleWorker] Failed to prune participants for ladder %d: %v", l.Id, err)
+		if err := w.ladderRepo.PruneLadderParticipants(ctx, l.ID, 20); err != nil {
+			log.Printf("[LadderLifecycleWorker] Failed to prune participants for ladder %d: %v", l.ID, err)
 		}
 
 		// 6. Deactivate ladder
-		if err := w.ladderRepo.UpdateLadderStatus(ctx, l.Id, false); err != nil {
-			log.Printf("[LadderLifecycleWorker] Failed to deactivate ladder %d: %v", l.Id, err)
+		if err := w.ladderRepo.UpdateLadderStatus(ctx, l.ID, false); err != nil {
+			log.Printf("[LadderLifecycleWorker] Failed to deactivate ladder %d: %v", l.ID, err)
 		}
 
-		log.Printf("[LadderLifecycleWorker] Ladder %d has been successfully deactivated and pruned.", l.Id)
+		log.Printf("[LadderLifecycleWorker] Ladder %d has been successfully deactivated and pruned.", l.ID)
 	}
 
 	return nil
@@ -172,11 +172,11 @@ func (w *LadderLifecycleWorker) ActivatePendingLadders(ctx context.Context, now 
 	}
 
 	for _, l := range pending {
-		log.Printf("[LadderLifecycleWorker] Activating pending ladder %d (%s)...", l.Id, l.Name)
-		if err := w.ladderRepo.UpdateLadderStatus(ctx, l.Id, true); err != nil {
-			log.Printf("[LadderLifecycleWorker] Failed to activate ladder %d: %v", l.Id, err)
+		log.Printf("[LadderLifecycleWorker] Activating pending ladder %d (%s)...", l.ID, l.Name)
+		if err := w.ladderRepo.UpdateLadderStatus(ctx, l.ID, true); err != nil {
+			log.Printf("[LadderLifecycleWorker] Failed to activate ladder %d: %v", l.ID, err)
 		} else {
-			log.Printf("[LadderLifecycleWorker] Ladder %d is now active.", l.Id)
+			log.Printf("[LadderLifecycleWorker] Ladder %d is now active.", l.ID)
 		}
 	}
 

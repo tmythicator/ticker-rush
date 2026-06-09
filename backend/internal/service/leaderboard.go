@@ -4,10 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/shopspring/decimal"
-
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 )
 
 // LeaderBoardService handles the calculation and retrieval of user rankings.
@@ -37,8 +34,6 @@ func NewLeaderBoardService(
 }
 
 // UpdateLeaderboard recalculates the net worth of all users and updates the Redis Sorted Set for the active ladder.
-// It iterates through all users, calculates their portfolio value using real-time market quotes,
-// and saves the final score to Redis.
 func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
 	if err != nil {
@@ -50,14 +45,14 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 	}
 
 	for _, u := range users {
-		balance, errBalance := s.userRepo.GetUserBalance(ctx, u.Id, ladderID)
+		balance, errBalance := s.userRepo.GetUserBalance(ctx, u.ID, ladderID)
 		if errBalance != nil {
 			continue
 		}
 
 		totalWorth := balance
 
-		portfolio, errPortfolio := s.portfolioRepo.GetPortfolio(ctx, u.Id, ladderID)
+		portfolio, errPortfolio := s.portfolioRepo.GetPortfolio(ctx, u.ID, ladderID)
 		if errPortfolio != nil {
 			continue
 		}
@@ -68,12 +63,12 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 				continue
 			}
 
-			itemValue := decimal.NewFromFloat(quote.Price).Mul(decimal.NewFromFloat(item.Quantity))
+			itemValue := quote.Price.Mul(item.Quantity)
 			totalWorth = totalWorth.Add(itemValue)
 		}
 
 		scoreVal, _ := totalWorth.Float64()
-		err = s.leaderboardRepo.UpdateRank(ctx, ladderID, u.Id, scoreVal)
+		err = s.leaderboardRepo.UpdateRank(ctx, ladderID, u.ID, scoreVal)
 		if err != nil {
 			continue
 		}
@@ -88,9 +83,7 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 }
 
 // GetLeaderboard retrieves a paginated list of top performing users from Redis/Valkey for the active ladder.
-// It fetches the user details from the database for each entry and handles stale cache cleanup
-// if a user is no longer present in the system.
-func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboard.GetLeaderboardRequest) (*leaderboard.GetLeaderboardResponse, error) {
+func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, offset, limit int) (*domain.LeaderboardResponse, error) {
 	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
 	if err != nil {
 		return nil, err
@@ -107,19 +100,19 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 	}
 
 	if totalCount == 0 {
-		return &leaderboard.GetLeaderboardResponse{
-			Entries:    []*leaderboard.LeaderboardEntry{},
+		return &domain.LeaderboardResponse{
+			Entries:    []domain.LeaderboardEntry{},
 			TotalCount: 0,
 			LastUpdate: lastUpdate,
 		}, nil
 	}
 
-	scores, err := s.leaderboardRepo.GetLeaderboard(ctx, ladderID, int(req.GetOffset()), int(req.GetLimit()))
+	scores, err := s.leaderboardRepo.GetLeaderboard(ctx, ladderID, offset, limit)
 	if err != nil {
 		return nil, err
 	}
 
-	entries := make([]*leaderboard.LeaderboardEntry, 0, len(scores))
+	entries := make([]domain.LeaderboardEntry, 0, len(scores))
 
 	for i, item := range scores {
 		fetchedUser, err := s.userRepo.GetUser(ctx, item.UserID)
@@ -129,16 +122,16 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 
 			continue
 		}
-		leadEntry := &leaderboard.LeaderboardEntry{
+		leadEntry := domain.LeaderboardEntry{
 			User:  s.anonymizeUser(fetchedUser),
-			Rank:  int32(i) + req.GetOffset() + 1,
+			Rank:  int32(i) + int32(offset) + 1,
 			Score: item.Score,
 		}
 
 		entries = append(entries, leadEntry)
 	}
 
-	return &leaderboard.GetLeaderboardResponse{
+	return &domain.LeaderboardResponse{
 		Entries:    entries,
 		TotalCount: int32(totalCount),
 		LastUpdate: lastUpdate,
@@ -146,13 +139,13 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, req *leaderboar
 }
 
 // anonymizeUser masks user fields if the user is not public.
-func (s *LeaderBoardService) anonymizeUser(u *user.User) *user.User {
+func (s *LeaderBoardService) anonymizeUser(u *domain.User) domain.User {
 	if u.IsPublic {
-		return u
+		return *u
 	}
 
-	return &user.User{
-		Id:              u.Id,
+	return domain.User{
+		ID:              u.ID,
 		Username:        "Classified",
 		FirstName:       "",
 		LastName:        "",
@@ -161,7 +154,7 @@ func (s *LeaderBoardService) anonymizeUser(u *user.User) *user.User {
 		IsAdmin:         false,
 		IsBanned:        u.IsBanned,
 		CreatedAt:       u.CreatedAt,
-		Balance:         0,
+		Balance:         u.Balance,
 		Portfolio:       nil,
 		IsParticipating: u.IsParticipating,
 	}

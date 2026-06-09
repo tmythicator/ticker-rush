@@ -8,7 +8,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
-	pb "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 )
 
 // Claims represents the JWT claims.
@@ -19,15 +19,16 @@ type Claims struct {
 }
 
 // GenerateToken generates a new JWT token for the user.
-func GenerateToken(user *pb.User, secret string) (string, error) {
+func GenerateToken(user *domain.User, secret string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
-		UserID:   user.GetId(),
-		Username: user.GetUsername(),
+		UserID:   user.ID,
+		Username: user.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			Issuer:    "ticker-rush",
+			Subject:   "",
 		},
 	}
 

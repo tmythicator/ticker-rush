@@ -7,7 +7,7 @@ import (
 	"github.com/shopspring/decimal"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 )
 
 // TradeService handles stock trading operations.
@@ -42,7 +42,7 @@ func (s *TradeService) BuyStock(
 	userID int64,
 	symbol string,
 	quantity float64,
-) (*user.User, error) {
+) (*domain.User, error) {
 	price, ladderID, err := s.validateMarketAndParticipation(ctx, userID, symbol)
 	if err != nil {
 		return nil, err
@@ -84,8 +84,8 @@ func (s *TradeService) BuyStock(
 
 	item, err := txPortfolioRepo.GetPortfolioItemForUpdate(ctx, userID, ladderID, symbol)
 	if err == nil {
-		currentQty = decimal.NewFromFloat(item.GetQuantity())
-		currentAvg = decimal.NewFromFloat(item.GetAveragePrice())
+		currentQty = item.Quantity
+		currentAvg = item.AveragePrice
 	}
 
 	// 3. Execute Trade Logic
@@ -97,8 +97,7 @@ func (s *TradeService) BuyStock(
 	if err := txUserRepo.UpdateUserBalance(ctx, userID, ladderID, newBalance); err != nil {
 		return nil, err
 	}
-	balanceVal, _ := newBalance.Float64()
-	user.Balance = balanceVal
+	user.Balance = newBalance
 
 	if err := s.updatePortfolioPersistence(ctx, txPortfolioRepo, userID, ladderID, symbol, newTotalQuantity, newAvgPrice); err != nil {
 		return nil, err
@@ -117,7 +116,7 @@ func (s *TradeService) SellStock(
 	userID int64,
 	symbol string,
 	quantity float64,
-) (*user.User, error) {
+) (*domain.User, error) {
 	price, ladderID, err := s.validateMarketAndParticipation(ctx, userID, symbol)
 	if err != nil {
 		return nil, err
@@ -142,8 +141,7 @@ func (s *TradeService) SellStock(
 		return nil, err
 	}
 
-	itemQtyDec := decimal.NewFromFloat(item.GetQuantity())
-	if itemQtyDec.LessThan(quantityDec) {
+	if item.Quantity.LessThan(quantityDec) {
 		return nil, apperrors.ErrInsufficientQuantity
 	}
 
@@ -160,17 +158,15 @@ func (s *TradeService) SellStock(
 
 	// 3. Execute Trade Logic
 	newBalance := balance.Add(totalSaleValue)
-	newQty := itemQtyDec.Sub(quantityDec)
+	newQty := item.Quantity.Sub(quantityDec)
 
 	// 4. Persistence
 	if err := txUserRepo.UpdateUserBalance(ctx, userID, ladderID, newBalance); err != nil {
 		return nil, err
 	}
-	balanceVal, _ := newBalance.Float64()
-	user.Balance = balanceVal
+	user.Balance = newBalance
 
-	itemAvgPriceDec := decimal.NewFromFloat(item.GetAveragePrice())
-	if err := s.updatePortfolioPersistence(ctx, txPortfolioRepo, userID, ladderID, symbol, newQty, itemAvgPriceDec); err != nil {
+	if err := s.updatePortfolioPersistence(ctx, txPortfolioRepo, userID, ladderID, symbol, newQty, item.AveragePrice); err != nil {
 		return nil, err
 	}
 
@@ -187,7 +183,7 @@ func (s *TradeService) validateMarketAndParticipation(ctx context.Context, userI
 		return decimal.Zero, 0, err
 	}
 
-	if quote.GetIsClosed() {
+	if quote.IsClosed {
 		return decimal.Zero, 0, apperrors.ErrMarketClosed
 	}
 
@@ -201,8 +197,8 @@ func (s *TradeService) validateMarketAndParticipation(ctx context.Context, userI
 		return decimal.Zero, 0, err
 	}
 
-	now := time.Now().Unix()
-	if now < l.GetStartTime().GetSeconds() || now >= l.GetEndTime().GetSeconds() || !l.GetIsActive() {
+	now := time.Now()
+	if now.Before(l.StartTime) || now.After(l.EndTime) || !l.IsActive {
 		return decimal.Zero, 0, apperrors.ErrLadderNotActive
 	}
 
@@ -214,7 +210,7 @@ func (s *TradeService) validateMarketAndParticipation(ctx context.Context, userI
 		return decimal.Zero, 0, apperrors.ErrNotJoinedLadder
 	}
 
-	return decimal.NewFromFloat(quote.GetPrice()), ladderID, nil
+	return quote.Price, ladderID, nil
 }
 
 func (s *TradeService) updatePortfolioPersistence(
