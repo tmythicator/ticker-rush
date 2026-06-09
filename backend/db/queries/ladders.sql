@@ -24,7 +24,7 @@ WHERE is_active = FALSE AND start_time <= $1 AND end_time > $1;
 -- name: GetLadder :one
 SELECT id, name, type, start_time, end_time, initial_balance, is_active, created_at
 FROM ladders
-WHERE id = $1 LIMIT 1;
+WHERE id = $1;
 
 -- name: ListLadders :many
 SELECT id, name, type, start_time, end_time, initial_balance, is_active, created_at
@@ -102,12 +102,12 @@ WHERE ladder_id = $1 AND user_id = $2;
 -- name: GetLadderPortfolioItem :one
 SELECT ladder_id, user_id, stock_symbol, quantity, average_price
 FROM ladder_portfolio_items
-WHERE ladder_id = $1 AND user_id = $2 AND stock_symbol = $3 LIMIT 1;
+WHERE ladder_id = $1 AND user_id = $2 AND stock_symbol = $3;
 
 -- name: GetLadderPortfolioItemForUpdate :one
 SELECT ladder_id, user_id, stock_symbol, quantity, average_price
 FROM ladder_portfolio_items
-WHERE ladder_id = $1 AND user_id = $2 AND stock_symbol = $3 LIMIT 1
+WHERE ladder_id = $1 AND user_id = $2 AND stock_symbol = $3
 FOR UPDATE;
 
 -- name: SetLadderPortfolioItem :exec

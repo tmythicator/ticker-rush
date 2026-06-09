@@ -44,9 +44,6 @@ SELECT id, username, first_name, last_name, website, created_at, is_public, is_a
 FROM users;
 
 -- name: GetUserWithPortfolioForActiveLadder :many
-WITH active_ladder AS (
-    SELECT id, initial_balance FROM ladders WHERE is_active = true LIMIT 1
-)
 SELECT u.id AS user_id,
        u.username,
        u.first_name,
@@ -63,7 +60,7 @@ SELECT u.id AS user_id,
        COALESCE(lpi.average_price, 0.0)::float8 AS average_price,
        (lp.user_id IS NOT NULL)::boolean AS is_participating
 FROM users u
-LEFT JOIN active_ladder al ON TRUE
+LEFT JOIN ladders al ON al.is_active = true
 LEFT JOIN ladder_participants lp ON u.id = lp.user_id AND lp.ladder_id = al.id
 LEFT JOIN ladder_portfolio_items lpi ON u.id = lpi.user_id AND lpi.ladder_id = al.id
 WHERE u.id = $1;
