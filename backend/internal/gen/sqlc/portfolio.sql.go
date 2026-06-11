@@ -7,6 +7,8 @@ package sqlc
 
 import (
 	"context"
+
+	"github.com/shopspring/decimal"
 )
 
 const deletePortfolioItem = `-- name: DeletePortfolioItem :exec
@@ -139,8 +141,8 @@ type SetPortfolioItemParams struct {
 	LadderID     int64
 	UserID       int64
 	StockSymbol  string
-	Quantity     float64
-	AveragePrice float64
+	Quantity     decimal.Decimal
+	AveragePrice decimal.Decimal
 }
 
 func (q *Queries) SetPortfolioItem(ctx context.Context, arg SetPortfolioItemParams) error {

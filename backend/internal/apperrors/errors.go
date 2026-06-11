@@ -36,4 +36,6 @@ var (
 	ErrNotJoinedLadder = errors.New("user has not joined the active ladder")
 	// ErrAlreadyJoinedLadder is returned when a user tries to join a ladder they are already in.
 	ErrAlreadyJoinedLadder = errors.New("user has already joined the ladder")
+	// ErrLadderNotActive is returned when trading occurs outside the ladder timeframe.
+	ErrLadderNotActive = errors.New("ladder is not currently active")
 )

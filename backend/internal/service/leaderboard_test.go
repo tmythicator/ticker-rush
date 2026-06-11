@@ -6,12 +6,11 @@ import (
 
 	"github.com/alicebob/miniredis/v2"
 	"github.com/redis/go-redis/v9"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/domain"
+	redisRepo "github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 	"github.com/tmythicator/ticker-rush/backend/internal/service/mocks"
 )
@@ -31,31 +30,32 @@ func TestLeaderBoardService_UpdateLeaderboard(t *testing.T) {
 	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
 	mockMarketRepo := new(mocks.MockMarketRepository)
 	mockLadderRepo := new(mocks.MockLadderRepository)
+	leaderboardRepo := redisRepo.NewLeaderboardRepository(redisClient)
 
-	lbService := service.NewLeaderBoardService(mockUserRepo, mockPortfolioRepo, mockMarketRepo, mockLadderRepo, redisClient)
+	lbService := service.NewLeaderBoardService(mockUserRepo, mockPortfolioRepo, mockMarketRepo, mockLadderRepo, leaderboardRepo)
 
 	ctx := context.Background()
 
-	users := []*user.User{
-		{Id: 1, Balance: 1000, FirstName: "Alice"},
-		{Id: 2, Balance: 2000, FirstName: "Bob"},
+	users := []*domain.User{
+		{ID: 1, Balance: decimal.NewFromFloat(1000.0), FirstName: "Alice"},
+		{ID: 2, Balance: decimal.NewFromFloat(2000.0), FirstName: "Bob"},
 	}
 
-	portfolio1 := []*portfolio.PortfolioItem{
-		{StockSymbol: "AAPL", Quantity: 10},
+	portfolio1 := []*domain.PortfolioItem{
+		{StockSymbol: "AAPL", Quantity: decimal.NewFromFloat(10.0)},
 	}
-	portfolio2 := []*portfolio.PortfolioItem{
-		{StockSymbol: "GOOG", Quantity: 5},
+	portfolio2 := []*domain.PortfolioItem{
+		{StockSymbol: "GOOG", Quantity: decimal.NewFromFloat(5.0)},
 	}
 
-	quoteAAPL := &exchange.Quote{Symbol: "AAPL", Price: 150.0}
-	quoteGOOG := &exchange.Quote{Symbol: "GOOG", Price: 200.0}
+	quoteAAPL := &domain.Quote{Symbol: "AAPL", Price: decimal.NewFromFloat(150.0)}
+	quoteGOOG := &domain.Quote{Symbol: "GOOG", Price: decimal.NewFromFloat(200.0)}
 
 	mockLadderRepo.On("GetActiveLadder", ctx).Return(int64(1), nil)
 	mockUserRepo.On("GetUsers", ctx).Return(users, nil)
 
-	mockUserRepo.On("GetUserBalance", ctx, int64(1), int64(1)).Return(1000.0, nil)
-	mockUserRepo.On("GetUserBalance", ctx, int64(2), int64(1)).Return(2000.0, nil)
+	mockUserRepo.On("GetUserBalance", ctx, int64(1), int64(1)).Return(decimal.NewFromFloat(1000.0), nil)
+	mockUserRepo.On("GetUserBalance", ctx, int64(2), int64(1)).Return(decimal.NewFromFloat(2000.0), nil)
 
 	mockPortfolioRepo.On("GetPortfolio", ctx, int64(1), int64(1)).Return(portfolio1, nil)
 	mockPortfolioRepo.On("GetPortfolio", ctx, int64(2), int64(1)).Return(portfolio2, nil)
@@ -91,7 +91,8 @@ func TestLeaderBoardService_GetLeaderboard(t *testing.T) {
 
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockLadderRepo := new(mocks.MockLadderRepository)
-	lbService := service.NewLeaderBoardService(mockUserRepo, nil, nil, mockLadderRepo, redisClient)
+	leaderboardRepo := redisRepo.NewLeaderboardRepository(redisClient)
+	lbService := service.NewLeaderBoardService(mockUserRepo, nil, nil, mockLadderRepo, leaderboardRepo)
 
 	ctx := context.Background()
 
@@ -102,9 +103,9 @@ func TestLeaderBoardService_GetLeaderboard(t *testing.T) {
 	redisClient.ZAdd(ctx, "leaderboard:1", redis.Z{Score: 2500, Member: "1"})
 	redisClient.ZAdd(ctx, "leaderboard:1", redis.Z{Score: 1500, Member: "3"})
 
-	mockUserRepo.On("GetUser", ctx, int64(2)).Return(&user.User{Id: 2, FirstName: "Bob", LastName: "B", IsPublic: false}, nil)
-	mockUserRepo.On("GetUser", ctx, int64(1)).Return(&user.User{
-		Id:        1,
+	mockUserRepo.On("GetUser", ctx, int64(2)).Return(&domain.User{ID: 2, FirstName: "Bob", LastName: "B", IsPublic: false}, nil)
+	mockUserRepo.On("GetUser", ctx, int64(1)).Return(&domain.User{
+		ID:        1,
 		Username:  "user1",
 		FirstName: "First1",
 		LastName:  "Last1",
@@ -113,12 +114,7 @@ func TestLeaderBoardService_GetLeaderboard(t *testing.T) {
 	// User 3 is missing (testing cleanup)
 	mockUserRepo.On("GetUser", ctx, int64(3)).Return(nil, assert.AnError)
 
-	req := &leaderboard.GetLeaderboardRequest{
-		Limit:  10,
-		Offset: 0,
-	}
-
-	resp, err := lbService.GetLeaderboard(ctx, req)
+	resp, err := lbService.GetLeaderboard(ctx, 0, 10)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 
@@ -126,7 +122,7 @@ func TestLeaderBoardService_GetLeaderboard(t *testing.T) {
 	assert.Equal(t, int32(2), resp.TotalCount)
 	assert.Len(t, resp.Entries, 2)
 
-	assert.Equal(t, int64(2), resp.Entries[0].User.Id)
+	assert.Equal(t, int64(2), resp.Entries[0].User.ID)
 	assert.Equal(t, int32(1), resp.Entries[0].Rank)
 	assert.Equal(t, 3000.0, resp.Entries[0].Score)
 	assert.Equal(t, "Classified", resp.Entries[0].User.Username)
@@ -134,7 +130,7 @@ func TestLeaderBoardService_GetLeaderboard(t *testing.T) {
 	assert.Equal(t, "", resp.Entries[0].User.LastName)
 	assert.False(t, resp.Entries[0].User.IsPublic)
 
-	assert.Equal(t, int64(1), resp.Entries[1].User.Id)
+	assert.Equal(t, int64(1), resp.Entries[1].User.ID)
 	assert.Equal(t, int32(2), resp.Entries[1].Rank)
 	assert.Equal(t, 2500.0, resp.Entries[1].Score)
 	assert.Equal(t, "First1", resp.Entries[1].User.FirstName)

@@ -21,7 +21,10 @@ require github.com/caarlos0/env/v11 v11.4.1
 
 require github.com/joho/godotenv v1.5.1
 
-require github.com/TwiN/go-away v1.8.1
+require (
+	github.com/TwiN/go-away v1.8.1
+	github.com/shopspring/decimal v1.4.0
+)
 
 require (
 	github.com/moby/moby/api v1.54.1 // indirect
@@ -90,7 +93,7 @@ require (
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/quic-go/quic-go v0.59.0 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
-	github.com/shirou/gopsutil/v4 v4.26.3 // indirect
+	github.com/shirou/gopsutil/v4 v4.26.5 // indirect
 	github.com/sirupsen/logrus v1.9.4 // indirect
 	github.com/stretchr/objx v0.5.3 // indirect
 	github.com/tklauser/go-sysconf v0.3.16 // indirect

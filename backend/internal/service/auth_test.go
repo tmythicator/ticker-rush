@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 
-	pb "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
@@ -18,8 +18,8 @@ func TestAuthService_GenerateToken(t *testing.T) {
 		secret       = "test-secret"
 	)
 
-	user := &pb.User{
-		Id:       testUserID,
+	user := &domain.User{
+		ID:       testUserID,
 		Username: testUsername,
 	}
 

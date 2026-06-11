@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/shopspring/decimal"
 )
 
 const banUser = `-- name: BanUser :exec
@@ -89,7 +90,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateU
 const getUser = `-- name: GetUser :one
 SELECT id, username, first_name, last_name, website, created_at, is_public, is_admin
 FROM users
-WHERE id = $1 LIMIT 1
+WHERE id = $1
 `
 
 type GetUserRow struct {
@@ -122,7 +123,7 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (GetUserRow, error) {
 const getUserByUsername = `-- name: GetUserByUsername :one
 SELECT id, username, password_hash, first_name, last_name, website, created_at, is_public, is_admin
 FROM users
-WHERE username = $1 LIMIT 1
+WHERE username = $1
 `
 
 type GetUserByUsernameRow struct {
@@ -157,7 +158,7 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUs
 const getUserForUpdate = `-- name: GetUserForUpdate :one
 SELECT id, username, first_name, last_name, website, created_at, is_public, is_admin
 FROM users
-WHERE id = $1 LIMIT 1 FOR UPDATE
+WHERE id = $1 FOR UPDATE
 `
 
 type GetUserForUpdateRow struct {
@@ -188,9 +189,6 @@ func (q *Queries) GetUserForUpdate(ctx context.Context, id int64) (GetUserForUpd
 }
 
 const getUserWithPortfolioForActiveLadder = `-- name: GetUserWithPortfolioForActiveLadder :many
-WITH active_ladder AS (
-    SELECT id, initial_balance FROM ladders WHERE is_active = true LIMIT 1
-)
 SELECT u.id AS user_id,
        u.username,
        u.first_name,
@@ -201,16 +199,15 @@ SELECT u.id AS user_id,
        u.is_admin,
        u.is_banned,
        COALESCE(al.id, 0)::bigint AS ladder_id,
-       COALESCE(lb.balance, al.initial_balance, 0.0) AS balance,
+       COALESCE(lp.balance, al.initial_balance, 0.0) AS balance,
        lpi.stock_symbol,
        COALESCE(lpi.quantity, 0.0)::float8 AS quantity,
        COALESCE(lpi.average_price, 0.0)::float8 AS average_price,
        (lp.user_id IS NOT NULL)::boolean AS is_participating
 FROM users u
-LEFT JOIN active_ladder al ON TRUE
+LEFT JOIN ladders al ON al.is_active = true
 LEFT JOIN ladder_participants lp ON u.id = lp.user_id AND lp.ladder_id = al.id
 LEFT JOIN ladder_portfolio_items lpi ON u.id = lpi.user_id AND lpi.ladder_id = al.id
-LEFT JOIN ladder_balances lb ON u.id = lb.user_id AND lb.ladder_id = al.id
 WHERE u.id = $1
 `
 
@@ -225,7 +222,7 @@ type GetUserWithPortfolioForActiveLadderRow struct {
 	IsAdmin         bool
 	IsBanned        bool
 	LadderID        int64
-	Balance         float64
+	Balance         decimal.Decimal
 	StockSymbol     pgtype.Text
 	Quantity        float64
 	AveragePrice    float64

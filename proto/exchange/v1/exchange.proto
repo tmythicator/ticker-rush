@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package exchange.v1;
 
-import "user/v1/user.proto";
 import "ladder/v1/ladder.proto";
 
 option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1;exchange";
@@ -21,7 +20,6 @@ service ExchangeService {
   rpc GetQuote(GetQuoteRequest) returns (GetQuoteResponse);
   rpc BuyStock(BuyStockRequest) returns (BuyStockResponse);
   rpc SellStock(SellStockRequest) returns (SellStockResponse);
-  rpc GetHistory(GetHistoryRequest) returns (GetHistoryResponse);
 }
 
 message GetQuoteRequest {

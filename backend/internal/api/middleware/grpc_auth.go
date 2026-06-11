@@ -48,3 +48,14 @@ func GrpcAuthInterceptor(jwtSecret string) grpc.UnaryServerInterceptor {
 		return handler(newCtx, req)
 	}
 }
+
+// GetRequiredUserID retrieves the authenticated user's ID from a gRPC context
+// or returns an unauthenticated gRPC status error if not found.
+func GetRequiredUserID(ctx context.Context) (int64, error) {
+	userID, ok := ctx.Value(UserIDContextKey).(int64)
+	if !ok {
+		return 0, status.Errorf(codes.Unauthenticated, "user ID not found in context")
+	}
+
+	return userID, nil
+}

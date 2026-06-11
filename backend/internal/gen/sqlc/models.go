@@ -6,6 +6,7 @@ package sqlc
 
 import (
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/shopspring/decimal"
 )
 
 type Ladder struct {
@@ -14,21 +15,16 @@ type Ladder struct {
 	Type           string
 	StartTime      pgtype.Timestamptz
 	EndTime        pgtype.Timestamptz
-	InitialBalance float64
+	InitialBalance decimal.Decimal
 	CreatedAt      pgtype.Timestamptz
 	IsActive       bool
-}
-
-type LadderBalance struct {
-	LadderID int64
-	UserID   int64
-	Balance  float64
 }
 
 type LadderParticipant struct {
 	LadderID     int64
 	UserID       int64
-	FinalBalance float64
+	Balance      decimal.Decimal
+	FinalBalance decimal.Decimal
 	FinalRank    pgtype.Int4
 	JoinedAt     pgtype.Timestamptz
 }
@@ -37,8 +33,8 @@ type LadderPortfolioItem struct {
 	LadderID     int64
 	UserID       int64
 	StockSymbol  string
-	Quantity     float64
-	AveragePrice float64
+	Quantity     decimal.Decimal
+	AveragePrice decimal.Decimal
 }
 
 type LadderTicker struct {
@@ -49,7 +45,7 @@ type LadderTicker struct {
 
 type MarketQuote struct {
 	Symbol    string
-	Price     pgtype.Numeric
+	Price     decimal.Decimal
 	Source    string
 	CreatedAt pgtype.Timestamptz
 }

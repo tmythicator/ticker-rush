@@ -53,6 +53,8 @@ type App struct {
 	tradeService       *service.TradeService
 	marketService      *service.MarketService
 	leaderboardService *service.LeaderBoardService
+	lifecycleWorker    *worker.LadderLifecycleWorker
+	leaderboardWorker  *worker.LeaderboardWorker
 	restHandler        *handler.RestHandler
 	valkeyClient       *redis.Client
 	postgreClient      *pgxpool.Pool
@@ -79,12 +81,19 @@ func main() {
 	}
 }
 
-func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
+func NewApp(ctx context.Context, cfg *config.Config) (app *App, err error) {
 	// Connect to Valkey
-	valkeyClient, err := valkey.NewClient(fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort))
-	if err != nil {
-		return nil, fmt.Errorf("valkey creation failed: %w", err)
+	valkeyClient := redis.NewClient(&redis.Options{
+		Addr: fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort),
+	})
+	if err = valkeyClient.Ping(ctx).Err(); err != nil {
+		return nil, fmt.Errorf("valkey connection failed: %w", err)
 	}
+	defer func() {
+		if err != nil {
+			_ = valkeyClient.Close()
+		}
+	}()
 
 	// Connect to Postgres
 	postgreConnStr := cfg.DatabaseURL()
@@ -97,12 +106,18 @@ func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create database pool: %w", err)
 	}
+	defer func() {
+		if err != nil {
+			postgreClient.Close()
+		}
+	}()
 
 	// Initialize repositories
 	ladderRepo := postgres.NewLadderRepository(postgreClient)
 	userRepo := postgres.NewUserRepository(postgreClient)
 	portfolioRepo := postgres.NewPortfolioRepository(postgreClient)
 	marketRepo := valkey.NewMarketRepository(valkeyClient)
+	leaderboardRepo := valkey.NewLeaderboardRepository(valkeyClient)
 	historyRepo := postgres.NewHistoryRepository(postgreClient)
 	transactor := postgres.NewPgxTransactor(postgreClient)
 
@@ -110,10 +125,14 @@ func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 	userService := service.NewUserService(userRepo, portfolioRepo, ladderRepo)
 	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
 	marketService := service.NewMarketService(marketRepo, historyRepo, ladderRepo)
-	ladderService := service.NewLadderService(ladderRepo, transactor)
-	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, ladderRepo, valkeyClient)
+	ladderService := service.NewLadderService(ladderRepo)
+	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
 
 	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, ladderService, cfg.JWTSecret)
+
+	// Initialize workers
+	leaderboardWorker := worker.NewLeaderboardWorker(leaderboardService, 1*time.Minute)
+	lifecycleWorker := worker.NewLadderLifecycleWorker(ladderRepo, portfolioRepo, marketRepo, 1*time.Minute)
 
 	return &App{
 		cfg:                cfg,
@@ -121,6 +140,8 @@ func NewApp(ctx context.Context, cfg *config.Config) (*App, error) {
 		tradeService:       tradeService,
 		marketService:      marketService,
 		leaderboardService: leaderboardService,
+		lifecycleWorker:    lifecycleWorker,
+		leaderboardWorker:  leaderboardWorker,
 		restHandler:        restHandler,
 		valkeyClient:       valkeyClient,
 		postgreClient:      postgreClient,
@@ -189,10 +210,18 @@ func (a *App) Run(ctx context.Context) error {
 	})
 
 	// Leaderboard Worker
-	lbWorker := worker.NewLeaderboardWorker(a.leaderboardService, 10*time.Minute)
 	g.Go(func() error {
-		if lbErr := lbWorker.Start(ctx); lbErr != nil && !errors.Is(lbErr, context.Canceled) {
+		if lbErr := a.leaderboardWorker.Start(ctx); lbErr != nil && !errors.Is(lbErr, context.Canceled) {
 			return fmt.Errorf("leaderboard worker error: %w", lbErr)
+		}
+
+		return nil
+	})
+
+	// Ladder Lifecycle Worker
+	g.Go(func() error {
+		if llErr := a.lifecycleWorker.Start(ctx); llErr != nil && !errors.Is(llErr, context.Canceled) {
+			return fmt.Errorf("ladder lifecycle worker error: %w", llErr)
 		}
 
 		return nil
@@ -202,10 +231,6 @@ func (a *App) Run(ctx context.Context) error {
 }
 
 func (a *App) Close() {
-	if a.valkeyClient != nil {
-		_ = a.valkeyClient.Close()
-	}
-	if a.postgreClient != nil {
-		a.postgreClient.Close()
-	}
+	_ = a.valkeyClient.Close()
+	a.postgreClient.Close()
 }

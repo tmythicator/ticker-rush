@@ -33,31 +33,6 @@ message LadderParticipant {
   google.protobuf.Timestamp joined_at = 4;
 }
 
-message LadderLeaderboardEntry {
-  LadderParticipant participant = 1;
-}
-
-message ListLaddersRequest {}
-message ListLaddersResponse {
-  repeated Ladder ladders = 1;
-}
-
-message GetActiveLadderRequest {}
 message GetActiveLadderResponse {
   Ladder ladder = 1;
-}
-
-message GetLadderLeaderboardRequest {
-  int64 ladder_id = 1;
-  int32 limit = 2;
-}
-message GetLadderLeaderboardResponse {
-  repeated LadderLeaderboardEntry entries = 1;
-}
-
-message GetMyLadderStatsRequest {
-  int64 ladder_id = 1;
-}
-message GetMyLadderStatsResponse {
-  LadderParticipant participant = 1;
 }

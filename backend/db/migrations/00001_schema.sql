@@ -44,16 +44,10 @@ CREATE TABLE IF NOT EXISTS ladder_tickers (
 CREATE TABLE IF NOT EXISTS ladder_participants (
     ladder_id BIGINT NOT NULL REFERENCES ladders(id) ON DELETE CASCADE,
     user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    balance NUMERIC NOT NULL,
     final_balance NUMERIC,
     final_rank INT,
     joined_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    PRIMARY KEY (ladder_id, user_id)
-);
-
-CREATE TABLE IF NOT EXISTS ladder_balances (
-    ladder_id BIGINT NOT NULL REFERENCES ladders(id) ON DELETE CASCADE,
-    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    balance NUMERIC NOT NULL,
     PRIMARY KEY (ladder_id, user_id)
 );
 
@@ -68,7 +62,6 @@ CREATE TABLE IF NOT EXISTS ladder_portfolio_items (
 
 -- +goose Down
 DROP TABLE IF EXISTS ladder_portfolio_items;
-DROP TABLE IF EXISTS ladder_balances;
 DROP TABLE IF EXISTS ladder_participants;
 DROP TABLE IF EXISTS ladder_tickers;
 DROP TABLE IF EXISTS ladders;

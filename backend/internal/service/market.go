@@ -7,8 +7,7 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 )
 
 // MarketService handles stock market data operations.
@@ -32,7 +31,7 @@ func NewMarketService(
 }
 
 // GetQuote gets a quote for a symbol, if allowed.
-func (s *MarketService) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, error) {
+func (s *MarketService) GetQuote(ctx context.Context, symbol string) (*domain.Quote, error) {
 	allowed, err := s.isSymbolAllowed(ctx, symbol)
 	if err != nil {
 		return nil, err
@@ -61,7 +60,7 @@ func (s *MarketService) SubscribeToQuotes(
 }
 
 // GetHistory retrieves historical quotes for a symbol.
-func (s *MarketService) GetHistory(ctx context.Context, symbol string, limit int) ([]*exchange.Quote, error) {
+func (s *MarketService) GetHistory(ctx context.Context, symbol string, limit int) ([]*domain.Quote, error) {
 	allowed, err := s.isSymbolAllowed(ctx, symbol)
 	if err != nil {
 		return nil, err
@@ -78,12 +77,13 @@ func (s *MarketService) isSymbolAllowed(ctx context.Context, symbol string) (boo
 	if err != nil {
 		return false, err
 	}
+
 	allowedTickers, err := s.ladderRepo.GetAllowedTickers(ctx, ladderID)
 	if err != nil {
 		return false, err
 	}
 
-	return slices.ContainsFunc(allowedTickers, func(t *ladder.TickerInfo) bool {
+	return slices.ContainsFunc(allowedTickers, func(t *domain.TickerInfo) bool {
 		return t.Symbol == symbol
 	}), nil
 }

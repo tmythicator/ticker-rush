@@ -16,7 +16,6 @@ import (
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
@@ -78,14 +77,14 @@ func (h *RestHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), createdUser.GetId())
+	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), createdUser.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user profile after creation"})
 
 		return
 	}
 
-	c.JSON(http.StatusOK, &user.CreateUserResponse{User: fullUser})
+	c.JSON(http.StatusOK, &user.CreateUserResponse{User: ToExternalUser(fullUser)})
 }
 
 // Login handles user authentication.
@@ -104,7 +103,7 @@ func (h *RestHandler) Login(c *gin.Context) {
 		return
 	}
 
-	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), authenticatedUser.GetId())
+	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), authenticatedUser.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user profile"})
 
@@ -119,7 +118,7 @@ func (h *RestHandler) Login(c *gin.Context) {
 	}
 
 	c.SetCookie("auth_token", token, 3600*24, "/", "", false, true)
-	c.JSON(http.StatusOK, &user.LoginResponse{User: fullUser})
+	c.JSON(http.StatusOK, &user.LoginResponse{User: ToExternalUser(fullUser)})
 }
 
 // Logout handles user logout.
@@ -130,10 +129,8 @@ func (h *RestHandler) Logout(c *gin.Context) {
 
 // UpdateUser handles user profile updates.
 func (h *RestHandler) UpdateUser(c *gin.Context) {
-	userID, exists := c.Get(middleware.UserIDKey)
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-
+	userID, ok := h.getUserID(c)
+	if !ok {
 		return
 	}
 
@@ -146,7 +143,7 @@ func (h *RestHandler) UpdateUser(c *gin.Context) {
 
 	updatedUser, err := h.userService.UpdateUser(
 		c.Request.Context(),
-		userID.(int64),
+		userID,
 		req.FirstName,
 		req.LastName,
 		req.Website,
@@ -164,7 +161,7 @@ func (h *RestHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &user.UpdateUserResponse{User: updatedUser})
+	c.JSON(http.StatusOK, &user.UpdateUserResponse{User: ToExternalUser(updatedUser)})
 }
 
 // GetPublicProfile handles retrieving a user's public profile.
@@ -188,31 +185,34 @@ func (h *RestHandler) GetPublicProfile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &user.GetPublicProfileResponse{User: publicProfile})
+	c.JSON(http.StatusOK, &user.GetPublicProfileResponse{User: ToExternalUser(publicProfile)})
 }
 
 // GetMe returns the current user's profile.
 func (h *RestHandler) GetMe(c *gin.Context) {
-	userID, exists := c.Get(middleware.UserIDKey)
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-
+	userID, ok := h.getUserID(c)
+	if !ok {
 		return
 	}
 
-	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userID.(int64))
+	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
 
 		return
 	}
 
-	c.JSON(http.StatusOK, &user.GetUserResponse{User: fullUser})
+	c.JSON(http.StatusOK, &user.GetUserResponse{User: ToExternalUser(fullUser)})
 }
 
 // GetQuote returns a stock quote for a given symbol.
 func (h *RestHandler) GetQuote(c *gin.Context) {
-	symbol := c.DefaultQuery("symbol", "AAPL")
+	symbol := c.Query("symbol")
+	if symbol == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Symbol is required"})
+
+		return
+	}
 
 	quote, err := h.marketService.GetQuote(c.Request.Context(), symbol)
 	if err != nil {
@@ -236,15 +236,13 @@ func (h *RestHandler) GetQuote(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &exchange.GetQuoteResponse{Quote: quote})
+	c.JSON(http.StatusOK, &exchange.GetQuoteResponse{Quote: ToExternalQuote(quote)})
 }
 
 // BuyStock handles stock purchase requests.
 func (h *RestHandler) BuyStock(c *gin.Context) {
-	userID, exists := c.Get(middleware.UserIDKey)
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-
+	userID, ok := h.getUserID(c)
+	if !ok {
 		return
 	}
 
@@ -255,7 +253,7 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 		return
 	}
 
-	_, err := h.tradeService.BuyStock(c.Request.Context(), userID.(int64), req.Symbol, req.Quantity)
+	_, err := h.tradeService.BuyStock(c.Request.Context(), userID, req.Symbol, req.Quantity)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrInsufficientFunds) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
@@ -286,7 +284,7 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 		return
 	}
 
-	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userID.(int64))
+	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
 
@@ -297,17 +295,15 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 		Success: true,
 		Message: "Bought successfully",
 		Participant: &ladder.LadderParticipant{
-			User: fullUser,
+			User: ToExternalUser(fullUser),
 		},
 	})
 }
 
 // SellStock handles stock sale requests.
 func (h *RestHandler) SellStock(c *gin.Context) {
-	userID, exists := c.Get(middleware.UserIDKey)
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-
+	userID, ok := h.getUserID(c)
+	if !ok {
 		return
 	}
 
@@ -318,7 +314,7 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 		return
 	}
 
-	_, err := h.tradeService.SellStock(c.Request.Context(), userID.(int64), req.Symbol, req.Quantity)
+	_, err := h.tradeService.SellStock(c.Request.Context(), userID, req.Symbol, req.Quantity)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrInsufficientQuantity) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
@@ -343,7 +339,7 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 		return
 	}
 
-	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userID.(int64))
+	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
 
@@ -354,7 +350,7 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 		Success: true,
 		Message: "Sold successfully",
 		Participant: &ladder.LadderParticipant{
-			User: fullUser,
+			User: ToExternalUser(fullUser),
 		},
 	})
 }
@@ -364,13 +360,13 @@ func (h *RestHandler) GetLeaderboard(c *gin.Context) {
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 
-	resp, err := h.leadService.GetLeaderboard(c.Request.Context(), &leaderboard.GetLeaderboardRequest{Limit: int32(limit), Offset: int32(offset)})
+	resp, err := h.leadService.GetLeaderboard(c.Request.Context(), offset, limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch leaderboard"})
 
 		return
 	}
-	c.JSON(http.StatusOK, resp)
+	c.JSON(http.StatusOK, ToExternalLeaderboardResponse(resp))
 }
 
 // GetActiveLadder returns full metadata for the currently active ladder.
@@ -383,7 +379,7 @@ func (h *RestHandler) GetActiveLadder(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, &ladder.GetActiveLadderResponse{
-		Ladder: l,
+		Ladder: ToExternalLadder(l),
 	})
 }
 
@@ -478,21 +474,24 @@ func (h *RestHandler) GetHistory(c *gin.Context) {
 		return
 	}
 
+	protoHistory := make([]*exchange.Quote, len(history))
+	for i, q := range history {
+		protoHistory[i] = ToExternalQuote(q)
+	}
+
 	c.JSON(http.StatusOK, &exchange.GetHistoryResponse{
-		History: history,
+		History: protoHistory,
 	})
 }
 
 // JoinLadder allows a user to join the active ladder.
 func (h *RestHandler) JoinLadder(c *gin.Context) {
-	userID, exists := c.Get(middleware.UserIDKey)
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-
+	userID, ok := h.getUserID(c)
+	if !ok {
 		return
 	}
 
-	err := h.ladderService.JoinLadder(c.Request.Context(), userID.(int64))
+	err := h.ladderService.JoinLadder(c.Request.Context(), userID)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrAlreadyJoinedLadder) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -505,4 +504,16 @@ func (h *RestHandler) JoinLadder(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Joined ladder successfully"})
+}
+
+// GetUserID retrieves the authenticated user ID from context and aborts with a 500 status if missing.
+func (h *RestHandler) getUserID(c *gin.Context) (int64, bool) {
+	userID, ok := middleware.GetUserID(c)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal authentication configuration error"})
+
+		return 0, false
+	}
+
+	return userID, true
 }

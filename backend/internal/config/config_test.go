@@ -27,6 +27,7 @@ func TestLoadConfig_Defaults(t *testing.T) {
 	assert.Equal(t, "postgres", cfg.PostgresPass)
 	assert.Equal(t, "ticker_rush", cfg.PostgresDB)
 	assert.Equal(t, 5432, cfg.PostgresPort)
+	assert.Equal(t, 1*time.Minute, cfg.MarketFetcherRefreshInterval)
 	assert.Equal(t, "secret", cfg.JWTSecret)
 	// FinnhubKey is required but has no default, so it will be empty here
 	assert.Empty(t, cfg.FinnhubKey)
@@ -42,6 +43,7 @@ func TestLoadConfig_Overrides(t *testing.T) {
 	require.NoError(t, os.Setenv("FINNHUB_FETCH_INTERVAL", "500ms")) // Test duration parsing
 	require.NoError(t, os.Setenv("FINNHUB_API_KEY", "secret_key"))
 	require.NoError(t, os.Setenv("FINNHUB_TIMEOUT", "5s"))
+	require.NoError(t, os.Setenv("MARKET_FETCHER_REFRESH_INTERVAL", "2m"))
 	require.NoError(t, os.Setenv("POSTGRES_USER", "admin"))
 	require.NoError(t, os.Setenv("POSTGRES_PASSWORD", "secure"))
 	require.NoError(t, os.Setenv("POSTGRES_DB", "prod_db"))
@@ -60,6 +62,7 @@ func TestLoadConfig_Overrides(t *testing.T) {
 	assert.Equal(t, 500*time.Millisecond, cfg.FinnhubFetchInterval)
 	assert.Equal(t, "secret_key", cfg.FinnhubKey)
 	assert.Equal(t, 5*time.Second, cfg.FinnhubTimeout)
+	assert.Equal(t, 2*time.Minute, cfg.MarketFetcherRefreshInterval)
 	assert.Equal(t, "admin", cfg.PostgresUser)
 	assert.Equal(t, "secure", cfg.PostgresPass)
 	assert.Equal(t, "prod_db", cfg.PostgresDB)
