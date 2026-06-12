@@ -1,5 +1,5 @@
-import { PortfolioTable } from '@/components/PortfolioTable/PortfolioTable';
-import { Header, StatsGrid } from '@/components/Profile';
+import { PortfolioHoldings } from '@/components/PortfolioTable';
+import { ProfileHeader, StatsGrid } from '@/components/Profile';
 import { useAuth } from '@/hooks/useAuth';
 
 export const ProfilePage = () => {
@@ -11,9 +11,9 @@ export const ProfilePage = () => {
 
   return (
     <div className="max-w-6xl w-full mx-auto p-4 lg:p-6 space-y-8">
-      <Header />
+      <ProfileHeader />
       <StatsGrid {...user} />
-      <PortfolioTable portfolio={user.portfolio ?? {}} />
+      <PortfolioHoldings portfolio={user.portfolio ?? {}} />
     </div>
   );
 };

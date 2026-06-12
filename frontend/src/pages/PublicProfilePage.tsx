@@ -1,25 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-
-import { PortfolioTable } from '@/components/PortfolioTable/PortfolioTable';
+import { PortfolioTable } from '@/components/PortfolioTable';
 import { StatsGrid } from '@/components/Profile/StatsGrid';
 import { IconLock, IconRefresh } from '@/components/icons/CustomIcons';
-import { QUERY_KEY_PUBLIC_PROFILE } from '@/lib/queryKeys';
-import { getPublicProfile } from '@/types';
+import { usePublicProfileQuery } from '@/hooks/usePublicProfileQuery';
 
 export const PublicProfilePage = () => {
   const { username } = useParams<{ username: string }>();
 
-  const {
-    data: user,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: QUERY_KEY_PUBLIC_PROFILE(username!),
-    queryFn: () => getPublicProfile({ username: username! }),
-    enabled: !!username,
-    retry: false,
-  });
+  const { data: user, isLoading, error } = usePublicProfileQuery(username);
 
   if (isLoading) {
     return (
@@ -72,7 +60,7 @@ export const PublicProfilePage = () => {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-foreground">Portfolio</h2>
           <div className="glass-panel rounded-xl overflow-hidden border border-border/50">
-            <PortfolioTable portfolio={user.portfolio || {}} isReadOnly />
+            <PortfolioTable items={Object.values(user.portfolio || {})} isReadOnly />
           </div>
         </div>
       </div>
