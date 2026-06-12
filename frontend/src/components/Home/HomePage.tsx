@@ -1,10 +1,9 @@
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/shared/buttonVariants';
 import { IconArrowRight } from '@icons/CustomIcons';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { HomeChart } from './HomeChart';
-
+import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
-import { Navigate } from 'react-router-dom';
 
 export const HomePage = () => {
   const { user, isLoading } = useAuth();
@@ -38,14 +37,21 @@ export const HomePage = () => {
             </p>
           </div>
           <div className="flex flex-col gap-2 min-[400px]:flex-row mt-8">
-            <Button asChild size="lg" className="h-12 px-8 text-base">
-              <Link to="/register">
-                Get Started <IconArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="h-12 px-8 text-base">
-              <Link to="/leaderboard">View Leaderboard</Link>
-            </Button>
+            <Link
+              to="/register"
+              className={cn(buttonVariants({ size: 'lg' }), 'h-12 px-8 text-base')}
+            >
+              Get Started <IconArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+            <Link
+              to="/leaderboard"
+              className={cn(
+                buttonVariants({ variant: 'outline', size: 'lg' }),
+                'h-12 px-8 text-base',
+              )}
+            >
+              View Leaderboard
+            </Link>
           </div>
         </div>
 

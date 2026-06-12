@@ -1,7 +1,7 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/components/shared/Button';
+import { Card } from '@/components/shared/Card';
+import { Input } from '@/components/shared/Input';
+import { Label } from '@/components/shared/Label';
 import { useAuth } from '@/hooks/useAuth';
 import { login as apiLogin } from '@/lib/api';
 import { loginSchema, type LoginFormData } from '@/lib/schemas';
@@ -46,11 +46,11 @@ export const LoginPage = () => {
 
   return (
     <div className="flex-1 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-brutalist">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <Card className="w-full max-w-md p-6 shadow-brutalist">
+        <div className="flex flex-col space-y-1.5 text-center mb-6">
+          <h2 className="text-2xl font-bold">Login</h2>
+        </div>
+        <div>
           {backendError && (
             <div className="bg-destructive/15 text-destructive p-3 rounded-md mb-4 text-sm font-medium border border-destructive">
               {backendError.message}
@@ -71,23 +71,19 @@ export const LoginPage = () => {
                 <p className="text-destructive text-sm font-medium">{errors.password.message}</p>
               )}
             </div>
-            <Button
-              type="submit"
-              disabled={isPending || isSubmitting}
-              className="w-full font-bold shadow-brutalist-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:translate-x-[4px] active:translate-y-[4px]"
-            >
+            <Button type="submit" disabled={isPending || isSubmitting} className="w-full">
               {isPending || isSubmitting ? 'Logging in...' : 'Login'}
             </Button>
           </form>
-        </CardContent>
-        <CardFooter className="justify-center">
+        </div>
+        <div className="flex justify-center mt-6 pt-4 border-t border-border/50">
           <p className="text-muted-foreground text-sm">
             Don't have an account?{' '}
             <Link to="/register" className="text-primary hover:underline font-bold">
               Register
             </Link>
           </p>
-        </CardFooter>
+        </div>
       </Card>
     </div>
   );
