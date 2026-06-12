@@ -5,7 +5,7 @@ import {
   MarketStatusGuard,
   TradePanel,
 } from '@/components/Dashboard';
-import { PortfolioTable } from '@/components/PortfolioTable/PortfolioTable';
+import { PortfolioHoldings } from '@/components/PortfolioTable';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuotesSSE } from '@/hooks/useQuotesSSE';
 import { useTradeSymbol } from '@/hooks/useTradeSymbol';
@@ -43,7 +43,7 @@ export const DashboardPage = () => {
           </MarketStatusGuard>
         </div>
 
-        <PortfolioTable portfolio={user?.portfolio ?? {}} />
+        <PortfolioHoldings portfolio={user?.portfolio ?? {}} />
       </div>
 
       <div className="hidden lg:flex lg:col-span-3 flex-col gap-4 h-full" id="trade-panel-desktop">
