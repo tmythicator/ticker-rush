@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '@/components/shared/Button';
 
 export const CookieBanner = () => {
   const [isVisible, setIsVisible] = useState(() => {
@@ -24,12 +25,9 @@ export const CookieBanner = () => {
         </div>
 
         <div className="flex justify-end">
-          <button
-            onClick={handleAccept}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 rounded-md text-sm font-medium transition-colors w-full sm:w-auto"
-          >
+          <Button onClick={handleAccept} className="w-full sm:w-auto px-8">
             I Understand & Agree
-          </button>
+          </Button>
         </div>
       </div>
     </div>

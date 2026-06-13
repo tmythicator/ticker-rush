@@ -5,3 +5,4 @@ export const QUERY_KEY_QUOTE = (symbol: TradeSymbol) => ['quote', symbol];
 export const QUERY_KEY_HISTORY = (symbol: TradeSymbol) => ['history', symbol];
 export const QUERY_KEY_LEADERBOARD = ['leaderboard'];
 export const QUERY_KEY_PUBLIC_PROFILE = (username: string) => ['publicProfile', username];
+export const QUERY_KEY_ACTIVE_LADDER = ['ladder', 'active'];

@@ -1,2 +1,2 @@
-export * from './Header';
+export { ProfileHeader } from './ProfileHeader';
 export * from './StatsGrid';

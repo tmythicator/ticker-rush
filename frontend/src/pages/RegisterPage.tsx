@@ -1,14 +1,8 @@
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/components/shared/Button';
+import { Card } from '@/components/shared/Card';
+import { Input } from '@/components/shared/Input';
+import { Label } from '@/components/shared/Label';
+import { Checkbox } from '@/components/shared/Checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { login as apiLogin, register as apiRegister } from '@/lib/api';
 import { registerSchema, type RegisterFormData } from '@/lib/schemas';
@@ -63,14 +57,12 @@ export const RegisterPage = () => {
 
   return (
     <div className="flex-1 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-brutalist">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Register</CardTitle>
-          <CardDescription className="text-center">
-            Create an account to start trading
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <Card className="w-full max-w-md p-6 shadow-brutalist">
+        <div className="flex flex-col space-y-1.5 text-center mb-6">
+          <h2 className="text-2xl font-bold">Register</h2>
+          <p className="text-sm text-muted-foreground">Create an account to start trading</p>
+        </div>
+        <div>
           {backendError && (
             <div className="bg-destructive/15 text-destructive p-3 rounded-md mb-4 text-sm font-medium border border-destructive">
               {backendError.message}
@@ -115,12 +107,7 @@ export const RegisterPage = () => {
             </div>
 
             <div className="flex flex-row items-center space-x-2 pt-2">
-              <input
-                type="checkbox"
-                id="agbAccepted"
-                {...register('agbAccepted')}
-                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary bg-background shadow-sm"
-              />
+              <Checkbox id="agbAccepted" {...register('agbAccepted')} className="h-4 w-4" />
               <Label htmlFor="agbAccepted" className="text-sm cursor-pointer leading-5">
                 I accept the{' '}
                 <Link to="/agb" className="text-primary hover:underline">
@@ -136,23 +123,19 @@ export const RegisterPage = () => {
             {errors.agbAccepted && (
               <p className="text-destructive text-sm font-medium">{errors.agbAccepted.message}</p>
             )}
-            <Button
-              type="submit"
-              className="w-full font-bold shadow-brutalist-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:translate-x-[4px] active:translate-y-[4px]"
-              disabled={isSubmitting || isRegistering}
-            >
+            <Button type="submit" className="w-full" disabled={isSubmitting || isRegistering}>
               {isSubmitting || isRegistering ? 'Creating Account...' : 'Register'}
             </Button>
           </form>
-        </CardContent>
-        <CardFooter className="justify-center">
+        </div>
+        <div className="flex justify-center mt-6 pt-4 border-t border-border/50">
           <p className="text-muted-foreground text-sm">
             Already have an account?{' '}
             <Link to="/login" className="text-primary hover:underline font-bold">
               Login
             </Link>
           </p>
-        </CardFooter>
+        </div>
       </Card>
     </div>
   );

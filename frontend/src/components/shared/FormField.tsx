@@ -1,5 +1,5 @@
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Input } from '@/components/shared/Input';
+import { Label } from '@/components/shared/Label';
 import { type FieldValues, type Path, type UseFormRegister } from 'react-hook-form';
 
 interface FormFieldProps<T extends FieldValues> {
@@ -26,7 +26,7 @@ export const FormField = <T extends FieldValues>({
       id={id}
       type={type}
       placeholder={placeholder}
-      className={error ? 'border-destructive focus-visible:ring-destructive' : ''}
+      variant={error ? 'error' : 'default'}
     />
     {error && <p className="text-xs text-destructive">{error}</p>}
   </div>

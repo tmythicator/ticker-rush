@@ -1,5 +1,15 @@
-import { Modal } from '@/components/Modal';
-import { FormField } from '@/components/ui/form-field';
+import {
+  Modal,
+  ModalCard,
+  ModalHeader,
+  ModalTitle,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+} from '@/components/Modal';
+import { Button } from '@/components/shared/Button';
+import { FormField } from '@/components/shared/FormField';
+import { Checkbox } from '@/components/shared/Checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { updateUser } from '@/lib/api';
 import { updateUserSchema, type UpdateUserFormData } from '@/lib/schemas';
@@ -11,6 +21,12 @@ interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const toggleCardStyles = {
+  container:
+    'bg-muted/30 p-4 rounded-xl border border-border/50 flex items-center justify-between group cursor-pointer hover:bg-muted/50 transition-colors',
+  badge: 'text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium',
+};
 
 export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => {
   const { user } = useAuth();
@@ -50,88 +66,87 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
   });
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Edit Profile">
-      <form onSubmit={handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            Personal Information
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              label="First Name"
-              id="firstName"
-              register={register}
-              error={errors.firstName?.message}
-              placeholder="John"
-            />
-            <FormField
-              label="Last Name"
-              id="lastName"
-              register={register}
-              error={errors.lastName?.message}
-              placeholder="Doe"
-            />
-          </div>
-        </div>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalCard size="md">
+        <form onSubmit={handleSubmit((data) => mutation.mutate(data))}>
+          <ModalHeader>
+            <ModalTitle>Edit Profile</ModalTitle>
+            <ModalCloseButton />
+          </ModalHeader>
 
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            Public Profile
-          </h3>
-          <FormField
-            label="Website"
-            id="website"
-            register={register}
-            error={errors.website?.message}
-            placeholder="https://example.com"
-          />
-
-          <div
-            className="bg-muted/30 p-4 rounded-xl border border-border/50 flex items-center justify-between group cursor-pointer hover:bg-muted/50 transition-colors"
-            onClick={() => setValue('isPublic', !isPublic, { shouldDirty: true })}
-          >
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-foreground">Profile Visibility</span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
-                  {isPublic ? 'Public' : 'Private'}
-                </span>
+          <ModalBody className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                Personal Information
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  label="First Name"
+                  id="firstName"
+                  register={register}
+                  error={errors.firstName?.message}
+                  placeholder="John"
+                />
+                <FormField
+                  label="Last Name"
+                  id="lastName"
+                  register={register}
+                  error={errors.lastName?.message}
+                  placeholder="Doe"
+                />
               </div>
-              <p className="text-xs text-muted-foreground">
-                When public, your portfolio allocation is visible on the leaderboard.
-              </p>
             </div>
-            <input
-              type="checkbox"
-              {...register('isPublic')}
-              className="h-5 w-5 rounded border-border text-primary focus:ring-primary/50 bg-background accent-primary cursor-pointer"
-            />
-          </div>
-        </div>
 
-        {mutation.isError && (
-          <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium">
-            {mutation.error instanceof Error ? mutation.error.message : 'Failed to update profile'}
-          </div>
-        )}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                Public Profile
+              </h3>
+              <FormField
+                label="Website"
+                id="website"
+                register={register}
+                error={errors.website?.message}
+                placeholder="https://example.com"
+              />
 
-        <div className="flex gap-3 pt-4">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 px-4 py-2.5 bg-muted text-foreground font-medium rounded-xl hover:bg-muted/80 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={mutation.isPending}
-            className="flex-1 px-4 py-2.5 bg-primary text-primary-foreground font-medium rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20"
-          >
-            {mutation.isPending ? 'Saving...' : 'Save Changes'}
-          </button>
-        </div>
-      </form>
+              <div
+                className={toggleCardStyles.container}
+                onClick={() => setValue('isPublic', !isPublic, { shouldDirty: true })}
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-foreground">Profile Visibility</span>
+                    <span className={toggleCardStyles.badge}>
+                      {isPublic ? 'Public' : 'Private'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    When public, your portfolio allocation is visible on the leaderboard.
+                  </p>
+                </div>
+                <Checkbox {...register('isPublic')} />
+              </div>
+            </div>
+
+            {mutation.isError && (
+              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium">
+                {mutation.error instanceof Error
+                  ? mutation.error.message
+                  : 'Failed to update profile'}
+              </div>
+            )}
+          </ModalBody>
+
+          <ModalFooter>
+            <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
+              Cancel
+            </Button>
+            <Button type="submit" disabled={mutation.isPending} className="flex-1">
+              {mutation.isPending ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </ModalFooter>
+        </form>
+      </ModalCard>
     </Modal>
   );
 };

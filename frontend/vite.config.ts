@@ -46,21 +46,23 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         output: {
-          manualChunks: {
-            vendor: [
-              'react',
-              'react-dom',
-              'react-router-dom',
-              '@tanstack/react-query',
-              'class-variance-authority',
-              'clsx',
-              'tailwind-merge',
-              'next-themes',
-              '@radix-ui/react-label',
-              '@radix-ui/react-slot',
-            ],
-            forms: ['react-hook-form', 'zod', '@hookform/resolvers'],
-            charts: ['lightweight-charts'],
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('lightweight-charts') || id.includes('fancy-canvas')) {
+                return 'charts';
+              }
+              if (
+                id.includes('react-hook-form') ||
+                id.includes('zod') ||
+                id.includes('@hookform/resolvers')
+              ) {
+                return 'forms';
+              }
+              if (id.includes('@bufbuild')) {
+                return 'protobuf';
+              }
+              return 'vendor';
+            }
           },
         },
       },
