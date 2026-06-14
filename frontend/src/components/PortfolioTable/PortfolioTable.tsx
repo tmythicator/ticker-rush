@@ -20,7 +20,7 @@ export const PortfolioTable = ({
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-left">
+      <table className="w-full text-left" data-testid="portfolio-table">
         <PortfolioTableHeader isReadOnly={isReadOnly} />
         <tbody className="divide-y divide-border">
           {items.map((item) => (

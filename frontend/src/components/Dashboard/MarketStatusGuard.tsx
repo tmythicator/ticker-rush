@@ -1,4 +1,5 @@
 import { IconMoon } from '@/components/icons/CustomIcons';
+import { Card } from '@/components/shared/Card';
 import type { Quote, User } from '@/types';
 import type { ReactNode } from 'react';
 
@@ -13,37 +14,46 @@ export const MarketStatusGuard = ({ user, quote, children }: MarketStatusGuardPr
 
   if (!user.is_participating) {
     return (
-      <div className="bg-card rounded-lg shadow-sm border border-border p-6 flex flex-col items-center justify-center text-center h-full min-h-[300px]">
-        <IconMoon className="w-8 h-8 mb-4 text-secondary/50" />
+      <Card
+        data-testid="participation-required-guard"
+        className="flex h-full min-h-[300px] flex-col items-center justify-center p-6 text-center"
+      >
+        <IconMoon className="mb-4 h-8 w-8 text-secondary/50" />
         <h3 className="text-xl font-bold text-foreground">Participation Required</h3>
-        <p className="text-muted-foreground mt-2">
+        <p className="mt-2 text-muted-foreground">
           Join the active ladder to unlock trading features and track your performance.
         </p>
-      </div>
+      </Card>
     );
   }
 
   if (quote?.is_closed) {
     return (
-      <div className="bg-card rounded-lg shadow-sm border border-border p-6 flex flex-col items-center justify-center text-center h-full min-h-[300px]">
-        <IconMoon className="w-8 h-8 mb-4 text-primary" />
+      <Card
+        data-testid="market-closed-guard"
+        className="flex h-full min-h-[300px] flex-col items-center justify-center p-6 text-center"
+      >
+        <IconMoon className="mb-4 h-8 w-8 text-primary" />
         <h3 className="text-xl font-bold text-foreground">Market Closed</h3>
-        <p className="text-muted-foreground mt-2">
+        <p className="mt-2 text-muted-foreground">
           Trading is currently unavailable.
           <br />
           Please come back during market hours.
         </p>
-      </div>
+      </Card>
     );
   }
 
   if (!quote) {
     return (
-      <div className="bg-card rounded-lg shadow-sm border border-border p-6 flex flex-col items-center justify-center text-center h-full min-h-[300px]">
-        <div className="w-8 h-8 mb-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <Card
+        data-testid="loading-market-guard"
+        className="flex h-full min-h-[300px] flex-col items-center justify-center p-6 text-center"
+      >
+        <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         <h3 className="text-xl font-bold text-foreground">Loading Market Data</h3>
-        <p className="text-muted-foreground mt-2">Fetching the latest quotes...</p>
-      </div>
+        <p className="mt-2 text-muted-foreground">Fetching the latest quotes...</p>
+      </Card>
     );
   }
 
