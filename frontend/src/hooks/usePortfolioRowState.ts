@@ -8,13 +8,16 @@ export const usePortfolioRowState = (item: PortfolioItem) => {
   const { data: config } = useTickers();
   const { data: quote } = useQuoteQuery(item.stock_symbol);
 
-  const { symbol, source, isMarketClosed } = useMemo(() => {
+  const { symbol, source, isMarketClosed, isTradable } = useMemo(() => {
     const tickers = config ?? [];
-    const tickerInfo = tickers.find((t) => t.symbol === item.stock_symbol);
+    const tickerInfo = tickers.find(
+      (t) => t.symbol.toUpperCase() === item.stock_symbol.toUpperCase(),
+    );
     return {
       symbol: (tickerInfo?.symbol ?? item.stock_symbol).toUpperCase(),
       source: (tickerInfo?.source ?? quote?.source ?? 'Finnhub') as TickerSource,
       isMarketClosed: quote?.is_closed ?? false,
+      isTradable: config ? !!tickerInfo : true,
     };
   }, [config, item.stock_symbol, quote?.source, quote?.is_closed]);
 
@@ -35,6 +38,7 @@ export const usePortfolioRowState = (item: PortfolioItem) => {
     symbol,
     source,
     isMarketClosed,
+    isTradable,
     quote,
     marketValue,
     pnl,
