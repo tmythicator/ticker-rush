@@ -37,6 +37,7 @@ export function ThemeToggle() {
           onClick={() => setTheme(value)}
           icon={icon}
           label={label}
+          value={value}
         />
       ))}
     </div>
