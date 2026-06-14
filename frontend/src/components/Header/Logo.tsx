@@ -2,7 +2,11 @@ import { Link } from 'react-router-dom';
 import { IconActivity } from '@/components/icons/CustomIcons';
 
 export const Logo = () => (
-  <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+  <Link
+    to="/"
+    data-testid="header-logo"
+    className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+  >
     <div className="bg-primary p-1.5 rounded-lg shadow-sm">
       <IconActivity className="w-5 h-5 text-primary-foreground" />
     </div>
