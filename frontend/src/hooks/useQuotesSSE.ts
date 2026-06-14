@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { type Quote } from '@/types';
-import { QUERY_KEY_QUOTE } from '@/lib/queryKeys';
+import { queryKeys } from '@/lib/queryKeys';
 import { useQuoteQuery } from '@/hooks/useQuoteQuery';
 
 export const useQuotesSSE = (symbol: string | null) => {
@@ -15,7 +15,7 @@ export const useQuotesSSE = (symbol: string | null) => {
   // State management
   const setQuote = useCallback(
     (newData: Quote) => {
-      queryClient.setQueryData(QUERY_KEY_QUOTE(newData.symbol), (oldData: Quote | null) => {
+      queryClient.setQueryData(queryKeys.quotes.detail(newData.symbol), (oldData: Quote | null) => {
         if (!oldData || newData.timestamp > oldData.timestamp) {
           return newData;
         }

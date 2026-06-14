@@ -1,5 +1,5 @@
 import { getHistory } from '@/lib/api';
-import { QUERY_KEY_HISTORY } from '@/lib/queryKeys';
+import { queryKeys } from '@/lib/queryKeys';
 import { type TradeSymbol } from '@/types';
 import { useQuery } from '@tanstack/react-query';
 import { type ISeriesApi, type Time } from 'lightweight-charts';
@@ -10,7 +10,7 @@ export const useChartHistory = (
   seriesRef: React.RefObject<ISeriesApi<'Area'> | null>,
 ) => {
   const { data: history } = useQuery({
-    queryKey: QUERY_KEY_HISTORY(symbol || ''),
+    queryKey: queryKeys.quotes.history(symbol || ''),
     queryFn: () => getHistory({ symbol: symbol!, limit: 1000 }),
     enabled: !!symbol,
     staleTime: 1000 * 60 * 5,

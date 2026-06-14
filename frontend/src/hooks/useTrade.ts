@@ -1,5 +1,5 @@
 import { buyStock, sellStock } from '@/lib/api';
-import { QUERY_KEY_USER } from '@/lib/queryKeys';
+import { queryKeys } from '@/lib/queryKeys';
 import { TradeAction } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -24,7 +24,7 @@ export const useTrade = (options: UseTradeOptions) => {
         : sellStock({ symbol: options.symbol, quantity });
     },
     onSuccess: (updatedUser) => {
-      queryClient.setQueryData(QUERY_KEY_USER, updatedUser);
+      queryClient.setQueryData(queryKeys.user.me, updatedUser);
       options.onSuccess?.();
     },
   });

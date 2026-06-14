@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, type ReactNode } from 'react';
 import { useUserQuery } from '@/hooks/useUserQuery';
 import { logout as apiLogout } from '@/lib/api';
-import { QUERY_KEY_USER } from '@/lib/queryKeys';
+import { queryKeys } from '@/lib/queryKeys';
 import { AuthContext } from './AuthContextDefinition';
 import { type User } from '@/types';
 
@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const setAuth = useCallback(
     (newUser: User | null) => {
-      queryClient.setQueryData(QUERY_KEY_USER, newUser);
+      queryClient.setQueryData(queryKeys.user.me, newUser);
     },
     [queryClient],
   );
