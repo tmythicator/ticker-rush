@@ -4,13 +4,13 @@ import { ColorType, CrosshairMode, type ChartOptions, type DeepPartial } from 'l
 import { useRef, useMemo } from 'react';
 import type { TradeSymbol } from '@/types';
 import { getHistory } from '@/lib/api';
-import { QUERY_KEY_HISTORY } from '@/lib/queryKeys';
+import { queryKeys } from '@/lib/queryKeys';
 
 export const HomeChart = ({ symbol }: { symbol: TradeSymbol }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
 
   const { data: history } = useQuery({
-    queryKey: QUERY_KEY_HISTORY(symbol),
+    queryKey: queryKeys.quotes.history(symbol),
     queryFn: () => getHistory({ symbol, limit: 100 }),
     enabled: !!symbol,
     staleTime: 1000 * 60 * 3,
@@ -65,7 +65,6 @@ export const HomeChart = ({ symbol }: { symbol: TradeSymbol }) => {
 
   return (
     <div className="w-full h-[400px] relative">
-      {/* Overlay Info */}
       <div className="absolute top-6 left-6 z-20 pointer-events-none">
         <div className="flex items-baseline gap-2">
           <h3 className="text-3xl font-black text-foreground tracking-tight">Bitcoin</h3>
@@ -82,7 +81,6 @@ export const HomeChart = ({ symbol }: { symbol: TradeSymbol }) => {
         )}
       </div>
 
-      {/* Gradient Overlay for that "fade" effect */}
       <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 pointer-events-none" />
       <div ref={chartContainerRef} className="w-full h-full" />
     </div>

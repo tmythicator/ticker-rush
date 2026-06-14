@@ -12,6 +12,7 @@ import { Logo } from './Header/Logo';
 import { Navigation } from './Header/Navigation';
 import { UserBalance } from './Header/UserBalance';
 import { AuthButtons } from './Header/AuthButtons';
+import { MobileMenu } from './Header/MobileMenu';
 
 export const Header = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -36,7 +37,10 @@ export const Header = () => {
 
   return (
     <>
-      <header className="h-16 bg-background border-b border-border flex items-center px-4 lg:px-8 justify-between sticky top-0 z-50">
+      <header
+        data-testid="app-header"
+        className="h-16 bg-background border-b border-border flex items-center px-4 lg:px-8 justify-between sticky top-0 z-50"
+      >
         <div className="flex items-center gap-4">
           <Logo />
           {isAuthenticated && (
@@ -56,9 +60,8 @@ export const Header = () => {
               <NavLink to="/profile" className="block">
                 <Avatar initials={user.first_name[0]} username={user.username} />
               </NavLink>
-
-              {/* Desktop Logout */}
               <Button
+                data-testid="logout-button"
                 onClick={handleLogout}
                 variant="ghost"
                 size="icon"
@@ -67,9 +70,13 @@ export const Header = () => {
               >
                 <IconLogOut className="w-5 h-5" />
               </Button>
-
-              {/* Mobile Menu Toggle */}
-              <Button onClick={toggleMenu} variant="ghost" size="icon" className="md:hidden">
+              <Button
+                data-testid="mobile-menu-toggle"
+                onClick={toggleMenu}
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+              >
                 {isMobileMenuOpen ? (
                   <IconX className="w-5 h-5" />
                 ) : (
@@ -83,32 +90,12 @@ export const Header = () => {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-40 bg-background/80 backdrop-blur-sm top-16">
-          <div className="bg-background border-b border-border p-4 shadow-lg space-y-4">
-            <Navigation
-              getLinkStyle={getLinkStyle}
-              onItemClick={() => setIsMobileMenuOpen(false)}
-              className="flex flex-col gap-2"
-            />
-            <div className="border-t border-border pt-4 flex items-center justify-between gap-4">
-              <Button
-                onClick={handleLogout}
-                variant="ghostDestructive"
-                className="flex items-center gap-2"
-              >
-                <IconLogOut className="w-4 h-4" />
-                Logout
-              </Button>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-muted-foreground mr-2">Theme</span>
-                <ThemeToggle />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <MobileMenu
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        onLogout={handleLogout}
+        getLinkStyle={getLinkStyle}
+      />
     </>
   );
 };

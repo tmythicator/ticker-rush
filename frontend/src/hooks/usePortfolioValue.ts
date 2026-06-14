@@ -1,5 +1,5 @@
 import { getQuote } from '@/lib/api';
-import { QUERY_KEY_QUOTE } from '@/lib/queryKeys';
+import { queryKeys } from '@/lib/queryKeys';
 import { type PortfolioItem } from '@/types';
 import { useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -9,7 +9,7 @@ export const usePortfolioValue = (portfolio: Record<string, PortfolioItem> | und
 
   const results = useQueries({
     queries: symbols.map((symbol) => ({
-      queryKey: QUERY_KEY_QUOTE(symbol),
+      queryKey: queryKeys.quotes.detail(symbol),
       queryFn: () => getQuote({ symbol }),
       staleTime: 1000 * 30,
       retry: false,

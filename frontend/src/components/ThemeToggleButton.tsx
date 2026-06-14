@@ -6,6 +6,7 @@ interface ThemeToggleButtonProps {
   onClick: () => void;
   icon: React.ComponentType<{ className?: string }>;
   label: string;
+  value: string;
 }
 
 export const ThemeToggleButton = ({
@@ -13,9 +14,11 @@ export const ThemeToggleButton = ({
   onClick,
   icon: Icon,
   label,
+  value,
 }: ThemeToggleButtonProps) => {
   return (
     <Button
+      data-testid={`theme-toggle-${value}`}
       variant="unstyled"
       size="unstyled"
       onClick={onClick}

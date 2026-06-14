@@ -3,10 +3,14 @@ import { buttonVariants } from '@/components/shared/buttonVariants';
 
 export const AuthButtons = () => (
   <div className="flex gap-2">
-    <NavLink to="/login" className={buttonVariants({ variant: 'ghost' })}>
+    <NavLink to="/login" data-testid="login-link" className={buttonVariants({ variant: 'ghost' })}>
       Login
     </NavLink>
-    <NavLink to="/register" className={buttonVariants({ variant: 'default' })}>
+    <NavLink
+      to="/register"
+      data-testid="register-link"
+      className={buttonVariants({ variant: 'default' })}
+    >
       Register
     </NavLink>
   </div>

@@ -17,14 +17,17 @@ export const PortfolioRow = ({
   onTradeClick,
   isReadOnly = false,
 }: PortfolioRowProps) => {
-  const { symbol, source, isMarketClosed, quote, marketValue, pnl, pnlColorClass } =
+  const { symbol, source, isMarketClosed, isTradable, quote, marketValue, pnl, pnlColorClass } =
     usePortfolioRowState(item);
 
   const loadingIndicator = <span className="animate-pulse">...</span>;
 
   return (
-    <tr className="hover:bg-muted/50 transition-colors">
-      <AssetInfoCell symbol={symbol} source={source} />
+    <tr
+      data-testid={`portfolio-row-${symbol.toLowerCase()}`}
+      className="hover:bg-muted/50 transition-colors"
+    >
+      <AssetInfoCell symbol={symbol} source={source} isTradable={isTradable} />
 
       <AssetFininfoCell variant="muted">{item.quantity}</AssetFininfoCell>
 
@@ -44,6 +47,7 @@ export const PortfolioRow = ({
         <RowActionsCell
           item={item}
           isMarketClosed={isMarketClosed}
+          isTradable={isTradable}
           onSellClick={onSellClick}
           onTradeClick={onTradeClick}
         />

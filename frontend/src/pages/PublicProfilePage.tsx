@@ -19,7 +19,10 @@ export const PublicProfilePage = () => {
 
   if (error || !user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+      <div
+        data-testid="profile-unavailable"
+        className="flex flex-col items-center justify-center min-h-[60vh] gap-4"
+      >
         <IconLock className="w-8 h-8 text-primary" />
         <h1 className="text-2xl font-bold text-foreground">Profile Unavailable</h1>
         <p className="text-muted-foreground">This profile is private or does not exist.</p>
@@ -34,11 +37,16 @@ export const PublicProfilePage = () => {
 
       <div className="container max-w-7xl mx-auto py-12 px-6 space-y-12 relative z-10">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold text-foreground bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600 w-fit">
+          <h1
+            data-testid="profile-name"
+            className="text-3xl font-bold text-foreground bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600 w-fit"
+          >
             {user.first_name} {user.last_name}
           </h1>
           <div className="flex flex-col gap-1 text-muted-foreground">
-            <span className="font-mono">@{user.username}</span>
+            <span data-testid="profile-username" className="font-mono">
+              @{user.username}
+            </span>
             {user.website && (
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-sm font-semibold text-foreground/80">Website:</span>

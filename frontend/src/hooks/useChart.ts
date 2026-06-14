@@ -89,7 +89,7 @@ export const useChart = ({ chartContainerRef, quote, symbol, options }: UseChart
       },
       width: chartContainerRef.current.clientWidth,
       height: 500,
-      autoSize: true,
+      autoSize: false,
       timeScale: {
         timeVisible: true,
         secondsVisible: true,

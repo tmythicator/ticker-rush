@@ -1,8 +1,18 @@
 import { type TradeSymbol } from '@/types';
 
-export const QUERY_KEY_USER = ['user'];
-export const QUERY_KEY_QUOTE = (symbol: TradeSymbol) => ['quote', symbol];
-export const QUERY_KEY_HISTORY = (symbol: TradeSymbol) => ['history', symbol];
-export const QUERY_KEY_LEADERBOARD = ['leaderboard'];
-export const QUERY_KEY_PUBLIC_PROFILE = (username: string) => ['publicProfile', username];
-export const QUERY_KEY_ACTIVE_LADDER = ['ladder', 'active'];
+export const queryKeys = {
+  user: {
+    me: ['user'] as const,
+    publicProfile: (username: string) => ['publicProfile', username] as const,
+  },
+  quotes: {
+    detail: (symbol: TradeSymbol) => ['quote', symbol] as const,
+    history: (symbol: TradeSymbol) => ['history', symbol] as const,
+  },
+  leaderboard: {
+    all: ['leaderboard'] as const,
+  },
+  ladder: {
+    active: ['ladder', 'active'] as const,
+  },
+} as const;
