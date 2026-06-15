@@ -7,7 +7,7 @@ interface ModalFooterProps {
 
 export const ModalFooter = ({ children, className }: ModalFooterProps) => {
   return (
-    <div className={cn('flex gap-3 pt-4 mt-6 border-t border-border/50', className)}>
+    <div className={cn('mt-6 flex gap-3 border-t border-border/50 pt-4', className)}>
       {children}
     </div>
   );

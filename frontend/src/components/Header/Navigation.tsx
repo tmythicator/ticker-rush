@@ -14,7 +14,7 @@ export const Navigation = ({ getLinkStyle, onItemClick, className }: NavigationP
       className={(params) => getLinkStyle(params.isActive)}
       onClick={onItemClick}
     >
-      <IconTrophy className="w-4 h-4" />
+      <IconTrophy className="h-4 w-4" />
       Ladder
     </NavLink>
     <NavLink
@@ -22,7 +22,7 @@ export const Navigation = ({ getLinkStyle, onItemClick, className }: NavigationP
       className={(params) => getLinkStyle(params.isActive)}
       onClick={onItemClick}
     >
-      <IconUser className="w-4 h-4" />
+      <IconUser className="h-4 w-4" />
       Profile
     </NavLink>
     <NavLink
@@ -30,7 +30,7 @@ export const Navigation = ({ getLinkStyle, onItemClick, className }: NavigationP
       className={(params) => getLinkStyle(params.isActive)}
       onClick={onItemClick}
     >
-      <IconBarChart className="w-4 h-4" />
+      <IconBarChart className="h-4 w-4" />
       Terminal
     </NavLink>
   </nav>

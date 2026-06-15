@@ -12,7 +12,7 @@ export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
       <div
         ref={ref}
         className={cn(
-          'w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full border-2 border-background shadow-sm flex items-center justify-center text-white font-bold text-xs cursor-pointer hover:opacity-90 transition-opacity',
+          'flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-background bg-gradient-to-br from-blue-500 to-indigo-600 text-xs font-bold text-white shadow-sm transition-opacity hover:opacity-90',
           className,
         )}
         title={username}

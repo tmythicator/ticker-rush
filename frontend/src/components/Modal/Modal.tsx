@@ -35,7 +35,7 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
         aria-modal="true"
       >
         <div
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity duration-200 animate-in fade-in"
           onClick={onClose}
           aria-hidden="true"
         />

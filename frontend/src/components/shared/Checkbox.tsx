@@ -10,7 +10,7 @@ export const Checkbox = ({ className, ref, ...props }: CheckboxProps) => {
     <input
       type="checkbox"
       className={cn(
-        'h-5 w-5 rounded border-border text-primary focus:ring-primary/50 bg-background accent-primary cursor-pointer transition-colors',
+        'h-5 w-5 cursor-pointer rounded border-border bg-background text-primary accent-primary transition-colors focus:ring-primary/50',
         className,
       )}
       ref={ref}

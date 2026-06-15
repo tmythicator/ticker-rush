@@ -16,21 +16,21 @@ export const MobileMenu = ({ isOpen, onClose, onLogout, getLinkStyle }: MobileMe
   return (
     <div
       data-testid="mobile-menu"
-      className="md:hidden fixed inset-0 z-40 bg-background/80 backdrop-blur-sm top-16"
+      className="fixed inset-0 top-16 z-40 bg-background/80 backdrop-blur-sm md:hidden"
     >
-      <div className="bg-background border-b border-border p-4 shadow-lg space-y-4">
+      <div className="space-y-4 border-b border-border bg-background p-4 shadow-lg">
         <Navigation
           getLinkStyle={getLinkStyle}
           onItemClick={onClose}
           className="flex flex-col gap-2"
         />
-        <div className="border-t border-border pt-4 flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4 border-t border-border pt-4">
           <Button onClick={onLogout} variant="ghostDestructive" className="flex items-center gap-2">
-            <IconLogOut className="w-4 h-4" />
+            <IconLogOut className="h-4 w-4" />
             Logout
           </Button>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-muted-foreground mr-2">Theme</span>
+            <span className="mr-2 text-sm font-medium text-muted-foreground">Theme</span>
             <ThemeToggle />
           </div>
         </div>

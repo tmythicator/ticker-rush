@@ -76,7 +76,7 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
 
           <ModalBody className="space-y-6">
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                 Personal Information
               </h3>
               <div className="grid grid-cols-2 gap-4">
@@ -98,7 +98,7 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                 Public Profile
               </h3>
               <FormField
@@ -129,7 +129,7 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
             </div>
 
             {mutation.isError && (
-              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium">
+              <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive">
                 {mutation.error instanceof Error
                   ? mutation.error.message
                   : 'Failed to update profile'}

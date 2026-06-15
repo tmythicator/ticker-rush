@@ -30,7 +30,7 @@ export const JoinLadderActions = ({
         disabled={isPending}
         onClick={() => setIsConfirming(false)}
         variant="ghost"
-        className="text-xs text-muted-foreground hover:text-foreground uppercase tracking-wider font-semibold h-auto py-1.5"
+        className="h-auto py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground"
       >
         Cancel
       </Button>

@@ -5,12 +5,12 @@ export const Logo = () => (
   <Link
     to="/"
     data-testid="header-logo"
-    className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+    className="flex items-center gap-2 transition-opacity hover:opacity-80"
   >
-    <div className="bg-primary p-1.5 rounded-lg shadow-sm">
-      <IconActivity className="w-5 h-5 text-primary-foreground" />
+    <div className="rounded-lg bg-primary p-1.5 shadow-sm">
+      <IconActivity className="h-5 w-5 text-primary-foreground" />
     </div>
-    <span className="font-bold text-lg tracking-tight text-foreground hidden sm:block">
+    <span className="hidden text-lg font-bold tracking-tight text-foreground sm:block">
       Ticker Rush
     </span>
   </Link>

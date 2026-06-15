@@ -4,7 +4,7 @@ interface PortfolioTableHeaderProps {
 
 export const PortfolioTableHeader = ({ isReadOnly }: PortfolioTableHeaderProps) => (
   <thead>
-    <tr className="bg-muted text-muted-foreground text-xs uppercase tracking-wider font-bold">
+    <tr className="bg-muted text-xs font-bold uppercase tracking-wider text-muted-foreground">
       <th className="px-6 py-4">Asset</th>
       <th className="px-6 py-4 text-right">Quantity</th>
       <th className="px-6 py-4 text-right">Avg Price</th>

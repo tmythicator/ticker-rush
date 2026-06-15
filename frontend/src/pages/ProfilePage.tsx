@@ -10,7 +10,7 @@ export const ProfilePage = () => {
   }
 
   return (
-    <div className="max-w-6xl w-full mx-auto p-4 lg:p-6 space-y-8">
+    <div className="mx-auto w-full max-w-6xl space-y-8 p-4 lg:p-6">
       <ProfileHeader />
       <StatsGrid {...user} />
       <PortfolioHoldings portfolio={user.portfolio ?? {}} />

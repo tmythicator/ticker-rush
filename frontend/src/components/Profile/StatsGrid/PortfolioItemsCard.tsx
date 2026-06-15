@@ -8,16 +8,16 @@ interface PortfolioItemsCardProps {
 export const PortfolioItemsCard = ({ count }: PortfolioItemsCardProps) => (
   <Card className="flex flex-col justify-between p-6">
     <div className="flex items-center gap-3">
-      <div className="p-2 bg-primary/10 text-primary rounded-xl">
-        <IconBriefcase className="w-5 h-5" />
+      <div className="rounded-xl bg-primary/10 p-2 text-primary">
+        <IconBriefcase className="h-5 w-5" />
       </div>
       <div>
-        <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider block">
+        <span className="block text-xs font-bold uppercase tracking-wider text-muted-foreground">
           Portfolio Items
         </span>
-        <div className="text-2xl font-bold text-foreground mt-0.5">{count}</div>
+        <div className="mt-0.5 text-2xl font-bold text-foreground">{count}</div>
       </div>
     </div>
-    <p className="text-xs text-muted-foreground mt-4">Active positions in your portfolio.</p>
+    <p className="mt-4 text-xs text-muted-foreground">Active positions in your portfolio.</p>
   </Card>
 );

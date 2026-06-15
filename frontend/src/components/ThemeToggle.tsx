@@ -15,7 +15,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="relative flex h-8 shrink-0 items-center gap-1 border-2 border-border bg-muted p-0.5 shadow-brutalist-sm">
+      <div className="shadow-brutalist-sm relative flex h-8 shrink-0 items-center gap-1 border-2 border-border bg-muted p-0.5">
         {THEME_OPTIONS.map(({ value, icon: Icon }) => (
           <div
             key={value}

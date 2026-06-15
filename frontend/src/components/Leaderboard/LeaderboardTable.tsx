@@ -9,8 +9,8 @@ interface LeaderboardTableProps {
 
 export const LeaderboardTable = ({ entries }: LeaderboardTableProps) => {
   return (
-    <div className="rounded-xl border border-border bg-card/50 shadow-sm overflow-hidden">
-      <table className="w-full text-sm text-left">
+    <div className="overflow-hidden rounded-xl border border-border bg-card/50 shadow-sm">
+      <table className="w-full text-left text-sm">
         <LeaderboardHeader />
         <tbody className="divide-y divide-border">
           {entries.map((entry) => (

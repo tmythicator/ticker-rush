@@ -16,7 +16,7 @@ export const SourceBadge = ({ source, className, ref, ...props }: SourceBadgePro
     <span
       ref={ref}
       className={cn(
-        'text-xs font-bold px-1.5 py-0.5 rounded cursor-help transition-colors',
+        'cursor-help rounded px-1.5 py-0.5 text-xs font-bold transition-colors',
         colors,
         className,
       )}

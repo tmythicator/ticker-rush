@@ -8,15 +8,15 @@ export const LeaderboardPage = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-10 flex justify-center items-center h-64">
+      <div className="container mx-auto flex h-64 items-center justify-center py-10">
         <IconRefresh className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-10 px-4">
-      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden text-card-foreground">
+    <div className="container mx-auto px-4 py-10">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
         {ladder && <LadderDetails ladder={ladder} />}
 
         <div className="bg-background/20">

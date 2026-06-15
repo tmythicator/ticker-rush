@@ -10,10 +10,10 @@ interface SymbolFieldProps {
 
 export const SymbolField = ({ symbol, source }: SymbolFieldProps) => (
   <div>
-    <Label className="block text-xs text-muted-foreground uppercase tracking-wider mb-2">
+    <Label className="mb-2 block text-xs uppercase tracking-wider text-muted-foreground">
       Symbol
     </Label>
-    <div className="w-full bg-muted border border-border rounded-lg px-3 py-3 flex items-center gap-3 opacity-70">
+    <div className="flex w-full items-center gap-3 rounded-lg border border-border bg-muted px-3 py-3 opacity-70">
       {source && <SourceBadge source={source} />}
       <Input
         type="text"
@@ -21,7 +21,7 @@ export const SymbolField = ({ symbol, source }: SymbolFieldProps) => (
         disabled
         variant="unstyled"
         size="unstyled"
-        className="flex-1 font-mono text-sm font-bold text-muted-foreground cursor-default"
+        className="flex-1 cursor-default font-mono text-sm font-bold text-muted-foreground"
       />
     </div>
   </div>

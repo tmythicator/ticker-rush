@@ -29,8 +29,8 @@ export const TradeOrderInput = ({ asset, form, onTrade }: TradeOrderInputProps) 
   const { quantity, setQuantity, error, disabled } = form;
 
   return (
-    <div className={`space-y-5 flex-1 ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
-      {error && <div className="text-xs text-red-600 font-bold mb-2">{error}</div>}
+    <div className={`flex-1 space-y-5 ${disabled ? 'pointer-events-none opacity-50' : ''}`}>
+      {error && <div className="mb-2 text-xs font-bold text-red-600">{error}</div>}
 
       <SymbolField symbol={symbol} source={source} />
 

@@ -16,9 +16,9 @@ export const CookieBanner = () => {
   return (
     <div
       data-testid="cookie-banner"
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm duration-200 animate-in fade-in"
     >
-      <div className="w-full max-w-lg bg-card border border-border rounded-xl shadow-2xl p-6 space-y-6">
+      <div className="w-full max-w-lg space-y-6 rounded-xl border border-border bg-card p-6 shadow-2xl">
         <div className="space-y-2">
           <h2 className="text-xl font-semibold tracking-tight">Cookie Notice</h2>
           <p className="text-muted-foreground">
@@ -31,7 +31,7 @@ export const CookieBanner = () => {
           <Button
             data-testid="cookie-banner-accept-button"
             onClick={handleAccept}
-            className="w-full sm:w-auto px-8"
+            className="w-full px-8 sm:w-auto"
           >
             I Understand & Agree
           </Button>

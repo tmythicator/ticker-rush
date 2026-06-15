@@ -7,6 +7,6 @@ interface ModalHeaderProps {
 
 export const ModalHeader = ({ children, className }: ModalHeaderProps) => {
   return (
-    <div className={cn('flex items-center justify-between mb-5 gap-4', className)}>{children}</div>
+    <div className={cn('mb-5 flex items-center justify-between gap-4', className)}>{children}</div>
   );
 };

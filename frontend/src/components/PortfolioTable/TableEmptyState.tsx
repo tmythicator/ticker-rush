@@ -7,7 +7,7 @@ export const TableEmptyState = ({ isReadOnly }: TableEmptyStateProps) => (
     <td
       colSpan={isReadOnly ? 6 : 7}
       data-testid="portfolio-empty-state"
-      className="px-6 py-12 text-center text-muted-foreground italic"
+      className="px-6 py-12 text-center italic text-muted-foreground"
     >
       No assets found in your portfolio.{!isReadOnly && ' Start trading!'}
     </td>
