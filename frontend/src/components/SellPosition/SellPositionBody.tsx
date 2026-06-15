@@ -1,4 +1,5 @@
 import { ModalBody } from '@/components/Modal';
+import { ErrorMessage } from '@/components/shared/ErrorMessage';
 
 interface SellPositionBodyProps {
   displaySymbol: string;
@@ -52,9 +53,9 @@ export const SellPositionBody = ({
       </div>
 
       {isPriceError && (
-        <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-2 text-xs text-destructive">
+        <ErrorMessage variant="xs">
           Failed to fetch current price. You cannot sell at this time.
-        </div>
+        </ErrorMessage>
       )}
     </ModalBody>
   );

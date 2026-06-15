@@ -1,6 +1,7 @@
 import { Button } from '@/components/shared/Button';
 import { Card } from '@/components/shared/Card';
 import { FormInput } from '@/components/shared/FormInput';
+import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { Label } from '@/components/shared/Label';
 import { Checkbox } from '@/components/shared/Checkbox';
 import { FormField } from '@/components/shared/FormField';
@@ -64,11 +65,7 @@ export const RegisterPage = () => {
           <p className="text-sm text-muted-foreground">Create an account to start trading</p>
         </div>
         <div>
-          {backendError && (
-            <div className="mb-4 rounded-md border border-destructive bg-destructive/15 p-3 text-sm font-medium text-destructive">
-              {backendError.message}
-            </div>
-          )}
+          {backendError && <ErrorMessage className="mb-4" message={backendError.message} />}
           <form
             onSubmit={handleSubmit((data) => registerUser(data))}
             className="space-y-4"
@@ -80,6 +77,7 @@ export const RegisterPage = () => {
               required
               register={register}
               error={errors.username?.message}
+              data-testid="username-input"
             />
 
             <div className="grid grid-cols-2 gap-4">
@@ -89,6 +87,7 @@ export const RegisterPage = () => {
                 required
                 register={register}
                 error={errors.firstName?.message}
+                data-testid="first-name-input"
               />
               <FormInput
                 label="Last Name"
@@ -96,6 +95,7 @@ export const RegisterPage = () => {
                 required
                 register={register}
                 error={errors.lastName?.message}
+                data-testid="last-name-input"
               />
             </div>
 
@@ -106,11 +106,17 @@ export const RegisterPage = () => {
               required
               register={register}
               error={errors.password?.message}
+              data-testid="password-input"
             />
 
             <FormField error={errors.agbAccepted?.message}>
               <div className="flex flex-row items-center space-x-2 pt-2">
-                <Checkbox id="agbAccepted" {...register('agbAccepted')} className="h-4 w-4" />
+                <Checkbox
+                  id="agbAccepted"
+                  {...register('agbAccepted')}
+                  className="h-4 w-4"
+                  data-testid="agb-checkbox"
+                />
                 <Label htmlFor="agbAccepted" className="cursor-pointer text-sm leading-5">
                   I accept the{' '}
                   <Link to="/agb" className="text-primary hover:underline">
@@ -124,7 +130,12 @@ export const RegisterPage = () => {
                 </Label>
               </div>
             </FormField>
-            <Button type="submit" className="w-full" disabled={isSubmitting || isRegistering}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isSubmitting || isRegistering}
+              data-testid="register-submit"
+            >
               {isSubmitting || isRegistering ? 'Creating Account...' : 'Register'}
             </Button>
           </form>
