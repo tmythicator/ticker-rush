@@ -8,16 +8,16 @@ interface StatCardProps {
 }
 
 export const StatCard = ({ label, value, trend, icon: Icon }: StatCardProps) => (
-  <div className="bg-card p-4 rounded-lg border border-border shadow-sm flex items-start justify-between hover:shadow-md transition-shadow">
+  <div className="flex items-start justify-between rounded-lg border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
     <div>
-      <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
+      <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
         {label}
       </span>
-      <div className="text-2xl font-bold text-foreground mt-1">{value}</div>
-      {trend && <div className="text-xs font-medium text-green-600 mt-1">{trend}</div>}
+      <div className="mt-1 text-2xl font-bold text-foreground">{value}</div>
+      {trend && <div className="mt-1 text-xs font-medium text-green-600">{trend}</div>}
     </div>
-    <div className="p-2 bg-muted rounded-lg">
-      <Icon className="w-4 h-4 text-muted-foreground" />
+    <div className="rounded-lg bg-muted p-2">
+      <Icon className="h-4 w-4 text-muted-foreground" />
     </div>
   </div>
 );

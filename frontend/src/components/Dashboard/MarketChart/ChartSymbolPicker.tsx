@@ -23,14 +23,14 @@ export const ChartSymbolPicker = ({ symbol, onSymbolChange }: ChartSymbolPickerP
   const source = (tickerInfo?.source ?? 'Finnhub') as TickerSource;
 
   return (
-    <div className="relative group/select">
+    <div className="group/select relative">
       <div className="flex items-center gap-2">
         {symbol && <SourceBadge source={source} />}
         <select
           value={symbol || ''}
           onChange={handleSymbolChange}
           disabled={tickers.length === 0}
-          className="appearance-none bg-transparent pl-1 pr-6 py-1.5 font-bold text-foreground text-lg tracking-tight focus:outline-none cursor-pointer hover:text-primary transition-colors disabled:cursor-not-allowed disabled:text-muted-foreground"
+          className="cursor-pointer appearance-none bg-transparent py-1.5 pl-1 pr-6 text-lg font-bold tracking-tight text-foreground transition-colors hover:text-primary focus:outline-none disabled:cursor-not-allowed disabled:text-muted-foreground"
         >
           {tickers.length === 0 ? (
             <option value="">No assets available</option>
@@ -46,7 +46,7 @@ export const ChartSymbolPicker = ({ symbol, onSymbolChange }: ChartSymbolPickerP
             ))
           )}
         </select>
-        <IconChevronDown className="w-4 h-4 text-muted-foreground absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none group-hover/select:text-primary transition-colors" />
+        <IconChevronDown className="pointer-events-none absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-hover/select:text-primary" />
       </div>
     </div>
   );

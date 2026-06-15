@@ -15,7 +15,7 @@ export const ModalCloseButton = ({ className }: ModalCloseButtonProps) => {
       onClick={onClose}
       variant="ghost"
       size="icon"
-      className={cn('rounded-full h-8 w-8 shrink-0', className)}
+      className={cn('h-8 w-8 shrink-0 rounded-full', className)}
     >
       <IconX className="h-5 w-5" />
       <span className="sr-only">Close</span>

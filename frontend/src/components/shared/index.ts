@@ -9,3 +9,4 @@ export { labelVariants } from './labelVariants';
 export { SourceBadge, type SourceBadgeProps } from './SourceBadge';
 export { Checkbox, type CheckboxProps } from './Checkbox';
 export { Avatar, type AvatarProps } from './Avatar';
+export { FormInput, type FormInputProps } from './FormInput';

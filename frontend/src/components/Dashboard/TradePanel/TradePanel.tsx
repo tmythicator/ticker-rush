@@ -18,14 +18,14 @@ export const TradePanel = ({ quote, onTradeSuccess }: TradePanelProps) => {
 
   if (!symbol) {
     return (
-      <Card className="p-6 flex flex-col h-full items-center justify-center text-muted-foreground">
+      <Card className="flex h-full flex-col items-center justify-center p-6 text-muted-foreground">
         No active ticker selected.
       </Card>
     );
   }
 
   return (
-    <Card className="p-6 flex flex-col h-full relative overflow-hidden">
+    <Card className="relative flex h-full flex-col overflow-hidden p-6">
       <TradePanelHeader isLoading={isLoading} />
       <TradeOrderInput asset={asset} form={form} onTrade={handleTrade} />
 

@@ -23,7 +23,7 @@ export const StatsGrid = (user: User) => {
   const totalPnL = totalNetWorth - INITIAL_BALANCE;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       <NetWorthCard totalNetWorth={totalNetWorth} cash={user.balance} assets={investedCapital} />
       <PortfolioItemsCard count={portfolioItems.length} />
       <TotalGainLossCard totalPnL={totalPnL} />

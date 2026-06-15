@@ -32,7 +32,7 @@ export const RowActionsCell = ({
           className="h-8 px-3 text-xs"
           disabled={isActionDisabled}
         >
-          <IconTrash className="w-3 h-3 mr-1" />
+          <IconTrash className="mr-1 h-3 w-3" />
           Sell All
         </Button>
         <Button
@@ -45,7 +45,7 @@ export const RowActionsCell = ({
           title={buttonTitle || 'Trade'}
         >
           Trade
-          <IconArrowRight className="w-3 h-3 ml-1" />
+          <IconArrowRight className="ml-1 h-3 w-3" />
         </Button>
       </div>
     </td>

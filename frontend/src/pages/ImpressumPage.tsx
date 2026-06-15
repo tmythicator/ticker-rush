@@ -1,10 +1,10 @@
 export const ImpressumPage = () => {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl text-foreground pb-24">
-      <h1 className="text-3xl font-bold mb-6 text-primary">Legal Notice (Impressum)</h1>
+    <div className="container mx-auto max-w-3xl px-4 py-8 pb-24 text-foreground">
+      <h1 className="mb-6 text-3xl font-bold text-primary">Legal Notice (Impressum)</h1>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-2 text-foreground/90">
+        <h2 className="mb-2 text-xl font-semibold text-foreground/90">
           Information according to § 5 TMG
         </h2>
         <p className="text-muted-foreground">
@@ -18,14 +18,14 @@ export const ImpressumPage = () => {
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-2 text-foreground/90">Contact</h2>
+        <h2 className="mb-2 text-xl font-semibold text-foreground/90">Contact</h2>
         <p className="text-muted-foreground">
           E-Mail: {import.meta.env.VITE_LEGAL_EMAIL || '[VITE_LEGAL_EMAIL]'}
         </p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-2 text-foreground/90">
+        <h2 className="mb-2 text-xl font-semibold text-foreground/90">
           Responsible for Content (V.i.S.d.P.)
         </h2>
         <p className="text-muted-foreground">
@@ -41,7 +41,7 @@ export const ImpressumPage = () => {
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-2 text-foreground/90">Notice</h2>
+        <h2 className="mb-2 text-xl font-semibold text-foreground/90">Notice</h2>
         <p className="text-muted-foreground">
           This is a private project for demonstration and educational purposes (Dies ist ein
           privates Projekt zu Demonstrations- und Bildungszwecken). No commercial purpose is pursued
@@ -50,7 +50,7 @@ export const ImpressumPage = () => {
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-2 text-foreground/90">EU Dispute Resolution</h2>
+        <h2 className="mb-2 text-xl font-semibold text-foreground/90">EU Dispute Resolution</h2>
         <p className="text-muted-foreground">
           As this is a private offer and no economic business transaction takes place, we are not
           willing or obliged to participate in dispute resolution proceedings before a consumer

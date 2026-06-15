@@ -1,7 +1,6 @@
 import { Button } from '@/components/shared/Button';
 import { Card } from '@/components/shared/Card';
-import { Input } from '@/components/shared/Input';
-import { Label } from '@/components/shared/Label';
+import { FormInput } from '@/components/shared/FormInput';
 import { useAuth } from '@/hooks/useAuth';
 import { login as apiLogin } from '@/lib/api';
 import { loginSchema, type LoginFormData } from '@/lib/schemas';
@@ -45,41 +44,43 @@ export const LoginPage = () => {
   });
 
   return (
-    <div className="flex-1 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-6 shadow-brutalist">
-        <div className="flex flex-col space-y-1.5 text-center mb-6">
+    <div className="flex flex-1 items-center justify-center p-4">
+      <Card className="shadow-brutalist w-full max-w-md p-6">
+        <div className="mb-6 flex flex-col space-y-1.5 text-center">
           <h2 className="text-2xl font-bold">Login</h2>
         </div>
         <div>
           {backendError && (
-            <div className="bg-destructive/15 text-destructive p-3 rounded-md mb-4 text-sm font-medium border border-destructive">
+            <div className="mb-4 rounded-md border border-destructive bg-destructive/15 p-3 text-sm font-medium text-destructive">
               {backendError.message}
             </div>
           )}
           <form onSubmit={handleSubmit((data) => loginUser(data))} className="space-y-4" noValidate>
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input id="username" type="text" required {...register('username')} />
-              {errors.username && (
-                <p className="text-destructive text-sm font-medium">{errors.username.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required {...register('password')} />
-              {errors.password && (
-                <p className="text-destructive text-sm font-medium">{errors.password.message}</p>
-              )}
-            </div>
+            <FormInput
+              label="Username"
+              id="username"
+              type="text"
+              required
+              register={register}
+              error={errors.username?.message}
+            />
+            <FormInput
+              label="Password"
+              id="password"
+              type="password"
+              required
+              register={register}
+              error={errors.password?.message}
+            />
             <Button type="submit" disabled={isPending || isSubmitting} className="w-full">
               {isPending || isSubmitting ? 'Logging in...' : 'Login'}
             </Button>
           </form>
         </div>
-        <div className="flex justify-center mt-6 pt-4 border-t border-border/50">
-          <p className="text-muted-foreground text-sm">
+        <div className="mt-6 flex justify-center border-t border-border/50 pt-4">
+          <p className="text-sm text-muted-foreground">
             Don't have an account?{' '}
-            <Link to="/register" className="text-primary hover:underline font-bold">
+            <Link to="/register" className="font-bold text-primary hover:underline">
               Register
             </Link>
           </p>

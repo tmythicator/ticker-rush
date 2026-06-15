@@ -8,7 +8,7 @@ interface TradeButtonsProps {
 
 export const TradeButtons = ({ handleTrade, disabled }: TradeButtonsProps) => {
   return (
-    <div className="pt-2 grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 gap-3 pt-2">
       <TradeButton
         type={TradeAction.BUY}
         onClick={() => handleTrade(TradeAction.BUY)}

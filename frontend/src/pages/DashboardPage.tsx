@@ -16,17 +16,17 @@ export const DashboardPage = () => {
   const { quote, error: isQuoteError } = useQuotesSSE(symbol);
 
   return (
-    <div className="max-w-[1800px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 pb-6">
-      <div className="lg:col-span-9 flex flex-col gap-6">
+    <div className="mx-auto grid w-full max-w-[1800px] grid-cols-1 gap-6 p-4 pb-6 lg:grid-cols-12 lg:p-6">
+      <div className="flex flex-col gap-6 lg:col-span-9">
         <DashboardStats user={user} />
 
         {!user?.is_participating && (
-          <div className="animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="duration-500 animate-in fade-in slide-in-from-top-4">
             <JoinLadderButton />
           </div>
         )}
 
-        <div className="bg-card rounded-lg shadow-sm border border-border p-1 overflow-hidden h-[500px] relative">
+        <div className="relative h-[500px] overflow-hidden rounded-lg border border-border bg-card p-1 shadow-sm">
           <MarketChart
             key={symbol}
             symbol={symbol}
@@ -46,7 +46,7 @@ export const DashboardPage = () => {
         <PortfolioHoldings portfolio={user?.portfolio ?? {}} />
       </div>
 
-      <div className="hidden lg:flex lg:col-span-3 flex-col gap-4 h-full" id="trade-panel-desktop">
+      <div className="hidden h-full flex-col gap-4 lg:col-span-3 lg:flex" id="trade-panel-desktop">
         <MarketStatusGuard user={user} quote={quote}>
           <TradePanel quote={quote} />
         </MarketStatusGuard>

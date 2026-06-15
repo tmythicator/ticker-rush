@@ -64,14 +64,14 @@ export const HomeChart = ({ symbol }: { symbol: TradeSymbol }) => {
   });
 
   return (
-    <div className="w-full h-[400px] relative">
-      <div className="absolute top-6 left-6 z-20 pointer-events-none">
+    <div className="relative h-[400px] w-full">
+      <div className="pointer-events-none absolute left-6 top-6 z-20">
         <div className="flex items-baseline gap-2">
-          <h3 className="text-3xl font-black text-foreground tracking-tight">Bitcoin</h3>
+          <h3 className="text-3xl font-black tracking-tight text-foreground">Bitcoin</h3>
           <span className="text-lg font-medium text-muted-foreground">BTC</span>
         </div>
         {latestPrice !== null && latestPrice !== undefined && (
-          <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 mt-2 tracking-tighter">
+          <div className="mt-2 bg-gradient-to-r from-emerald-400 to-cyan-500 bg-clip-text text-5xl font-bold tracking-tighter text-transparent">
             $
             {latestPrice.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -81,8 +81,8 @@ export const HomeChart = ({ symbol }: { symbol: TradeSymbol }) => {
         )}
       </div>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 pointer-events-none" />
-      <div ref={chartContainerRef} className="w-full h-full" />
+      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-background via-transparent to-transparent" />
+      <div ref={chartContainerRef} className="h-full w-full" />
     </div>
   );
 };

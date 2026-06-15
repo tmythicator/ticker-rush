@@ -25,7 +25,7 @@ export const PortfolioRow = ({
   return (
     <tr
       data-testid={`portfolio-row-${symbol.toLowerCase()}`}
-      className="hover:bg-muted/50 transition-colors"
+      className="transition-colors hover:bg-muted/50"
     >
       <AssetInfoCell symbol={symbol} source={source} isTradable={isTradable} />
 

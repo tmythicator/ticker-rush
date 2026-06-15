@@ -19,7 +19,7 @@ export const PercentageSelector = ({
   if (!buyingPower || !price || price <= 0) return null;
 
   return (
-    <div className="flex gap-1.5 mt-2.5">
+    <div className="mt-2.5 flex gap-1.5">
       {PERCENTAGE_PRESETS.map((pct) => (
         <Button
           key={pct}
@@ -27,7 +27,7 @@ export const PercentageSelector = ({
           disabled={disabled}
           variant="secondary"
           size="sm"
-          className="flex-1 h-7 text-[10px] font-bold tracking-wider bg-muted/40 hover:bg-primary/10 hover:text-primary border border-border/40 hover:border-primary/30 rounded-md transition-all duration-200 active:scale-95"
+          className="h-7 flex-1 rounded-md border border-border/40 bg-muted/40 text-[10px] font-bold tracking-wider transition-all duration-200 hover:border-primary/30 hover:bg-primary/10 hover:text-primary active:scale-95"
         >
           {`${pct * 100}%`}
         </Button>

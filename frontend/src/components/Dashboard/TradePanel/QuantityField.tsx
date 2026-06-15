@@ -25,13 +25,13 @@ export const QuantityField = ({
 
   return (
     <div>
-      <Label className="block text-xs text-muted-foreground uppercase tracking-wider mb-2 flex justify-between items-center">
+      <Label className="mb-2 block flex items-center justify-between text-xs uppercase tracking-wider text-muted-foreground">
         <span>Quantity</span>
         {positionQuantity > 0 && (
           <Button
             onClick={() => setQuantity(positionQuantity.toString())}
             variant="link"
-            className="h-auto p-0 text-blue-500 hover:text-blue-600 font-bold text-xs"
+            className="h-auto p-0 text-xs font-bold text-blue-500 hover:text-blue-600"
           >
             Sell All ({positionQuantity})
           </Button>
@@ -46,10 +46,10 @@ export const QuantityField = ({
           min="0"
           step="any"
           disabled={disabled}
-          className="font-mono text-lg [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className="font-mono text-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
         {showControls && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
+          <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center">
             <MaxButton
               buyingPower={buyingPower}
               price={price}

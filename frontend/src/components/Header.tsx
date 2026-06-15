@@ -39,16 +39,16 @@ export const Header = () => {
     <>
       <header
         data-testid="app-header"
-        className="h-16 bg-background border-b border-border flex items-center px-4 lg:px-8 justify-between sticky top-0 z-50"
+        className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-border bg-background px-4 lg:px-8"
       >
         <div className="flex items-center gap-4">
           <Logo />
           {isAuthenticated && (
-            <Navigation getLinkStyle={getLinkStyle} className="hidden md:flex items-center gap-1" />
+            <Navigation getLinkStyle={getLinkStyle} className="hidden items-center gap-1 md:flex" />
           )}
         </div>
 
-        <div className="flex items-center gap-3 md:gap-4 text-sm font-medium">
+        <div className="flex items-center gap-3 text-sm font-medium md:gap-4">
           <div className="hidden sm:block">
             <ThemeToggle />
           </div>
@@ -68,7 +68,7 @@ export const Header = () => {
                 className="hidden md:flex"
                 title="Logout"
               >
-                <IconLogOut className="w-5 h-5" />
+                <IconLogOut className="h-5 w-5" />
               </Button>
               <Button
                 data-testid="mobile-menu-toggle"
@@ -78,9 +78,9 @@ export const Header = () => {
                 className="md:hidden"
               >
                 {isMobileMenuOpen ? (
-                  <IconX className="w-5 h-5" />
+                  <IconX className="h-5 w-5" />
                 ) : (
-                  <IconMenu className="w-5 h-5" />
+                  <IconMenu className="h-5 w-5" />
                 )}
               </Button>
             </>

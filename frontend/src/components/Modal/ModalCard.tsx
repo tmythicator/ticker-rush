@@ -28,7 +28,7 @@ export const ModalCard = ({ children, size = 'sm', className }: ModalCardProps) 
       ref={cardRef}
       tabIndex={-1}
       className={cn(
-        'relative w-full transform overflow-hidden rounded-lg bg-card p-6 text-left shadow-xl transition-all border border-border animate-in fade-in zoom-in-95 duration-200 outline-none z-10',
+        'relative z-10 w-full transform overflow-hidden rounded-lg border border-border bg-card p-6 text-left shadow-xl outline-none transition-all duration-200 animate-in fade-in zoom-in-95',
         sizeClasses[size],
         className,
       )}

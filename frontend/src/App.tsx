@@ -37,10 +37,10 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="min-h-[100dvh] bg-background text-foreground flex flex-col font-sans">
+        <div className="flex min-h-[100dvh] flex-col bg-background font-sans text-foreground">
           <Header />
 
-          <main className="flex-1 flex flex-col">
+          <main className="flex flex-1 flex-col">
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<LoginPage />} />

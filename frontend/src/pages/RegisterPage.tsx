@@ -1,8 +1,9 @@
 import { Button } from '@/components/shared/Button';
 import { Card } from '@/components/shared/Card';
-import { Input } from '@/components/shared/Input';
+import { FormInput } from '@/components/shared/FormInput';
 import { Label } from '@/components/shared/Label';
 import { Checkbox } from '@/components/shared/Checkbox';
+import { FormField } from '@/components/shared/FormField';
 import { useAuth } from '@/hooks/useAuth';
 import { login as apiLogin, register as apiRegister } from '@/lib/api';
 import { registerSchema, type RegisterFormData } from '@/lib/schemas';
@@ -56,15 +57,15 @@ export const RegisterPage = () => {
   });
 
   return (
-    <div className="flex-1 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-6 shadow-brutalist">
-        <div className="flex flex-col space-y-1.5 text-center mb-6">
+    <div className="flex flex-1 items-center justify-center p-4">
+      <Card className="shadow-brutalist w-full max-w-md p-6">
+        <div className="mb-6 flex flex-col space-y-1.5 text-center">
           <h2 className="text-2xl font-bold">Register</h2>
           <p className="text-sm text-muted-foreground">Create an account to start trading</p>
         </div>
         <div>
           {backendError && (
-            <div className="bg-destructive/15 text-destructive p-3 rounded-md mb-4 text-sm font-medium border border-destructive">
+            <div className="mb-4 rounded-md border border-destructive bg-destructive/15 p-3 text-sm font-medium text-destructive">
               {backendError.message}
             </div>
           )}
@@ -73,65 +74,65 @@ export const RegisterPage = () => {
             className="space-y-4"
             noValidate
           >
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input id="username" {...register('username')} required />
-              {errors.username && (
-                <p className="text-destructive text-sm font-medium">{errors.username.message}</p>
-              )}
-            </div>
+            <FormInput
+              label="Username"
+              id="username"
+              required
+              register={register}
+              error={errors.username?.message}
+            />
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
-                <Input id="firstName" {...register('firstName')} required />
-                {errors.firstName && (
-                  <p className="text-destructive text-sm font-medium">{errors.firstName.message}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input id="lastName" {...register('lastName')} required />
-                {errors.lastName && (
-                  <p className="text-destructive text-sm font-medium">{errors.lastName.message}</p>
-                )}
-              </div>
+              <FormInput
+                label="First Name"
+                id="firstName"
+                required
+                register={register}
+                error={errors.firstName?.message}
+              />
+              <FormInput
+                label="Last Name"
+                id="lastName"
+                required
+                register={register}
+                error={errors.lastName?.message}
+              />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" {...register('password')} required />
-              {errors.password && (
-                <p className="text-destructive text-sm font-medium">{errors.password.message}</p>
-              )}
-            </div>
+            <FormInput
+              label="Password"
+              id="password"
+              type="password"
+              required
+              register={register}
+              error={errors.password?.message}
+            />
 
-            <div className="flex flex-row items-center space-x-2 pt-2">
-              <Checkbox id="agbAccepted" {...register('agbAccepted')} className="h-4 w-4" />
-              <Label htmlFor="agbAccepted" className="text-sm cursor-pointer leading-5">
-                I accept the{' '}
-                <Link to="/agb" className="text-primary hover:underline">
-                  Terms and Conditions (AGB)
-                </Link>{' '}
-                and{' '}
-                <Link to="/privacy" className="text-primary hover:underline">
-                  Privacy Policy
-                </Link>
-                .
-              </Label>
-            </div>
-            {errors.agbAccepted && (
-              <p className="text-destructive text-sm font-medium">{errors.agbAccepted.message}</p>
-            )}
+            <FormField error={errors.agbAccepted?.message}>
+              <div className="flex flex-row items-center space-x-2 pt-2">
+                <Checkbox id="agbAccepted" {...register('agbAccepted')} className="h-4 w-4" />
+                <Label htmlFor="agbAccepted" className="cursor-pointer text-sm leading-5">
+                  I accept the{' '}
+                  <Link to="/agb" className="text-primary hover:underline">
+                    Terms and Conditions (AGB)
+                  </Link>{' '}
+                  and{' '}
+                  <Link to="/privacy" className="text-primary hover:underline">
+                    Privacy Policy
+                  </Link>
+                  .
+                </Label>
+              </div>
+            </FormField>
             <Button type="submit" className="w-full" disabled={isSubmitting || isRegistering}>
               {isSubmitting || isRegistering ? 'Creating Account...' : 'Register'}
             </Button>
           </form>
         </div>
-        <div className="flex justify-center mt-6 pt-4 border-t border-border/50">
-          <p className="text-muted-foreground text-sm">
+        <div className="mt-6 flex justify-center border-t border-border/50 pt-4">
+          <p className="text-sm text-muted-foreground">
             Already have an account?{' '}
-            <Link to="/login" className="text-primary hover:underline font-bold">
+            <Link to="/login" className="font-bold text-primary hover:underline">
               Login
             </Link>
           </p>

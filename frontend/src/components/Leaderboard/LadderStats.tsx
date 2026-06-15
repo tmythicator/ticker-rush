@@ -9,12 +9,12 @@ interface LadderStatsProps {
 export const LadderStats = ({ endTime, initialBalance }: LadderStatsProps) => {
   return (
     <div className="flex flex-wrap gap-4">
-      <div className="flex items-center gap-4 bg-muted/30 p-4 rounded-xl border border-border">
+      <div className="flex items-center gap-4 rounded-xl border border-border bg-muted/30 p-4">
         <div className="text-blue-500">
-          <IconCalendar className="w-6 h-6" />
+          <IconCalendar className="h-6 w-6" />
         </div>
         <div>
-          <div className="text-[10px] uppercase font-black text-muted-foreground tracking-tighter mb-0.5">
+          <div className="mb-0.5 text-[10px] font-black uppercase tracking-tighter text-muted-foreground">
             Competition Ends
           </div>
           <div className="text-base font-bold tabular-nums">
@@ -23,12 +23,12 @@ export const LadderStats = ({ endTime, initialBalance }: LadderStatsProps) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-4 bg-muted/30 p-4 rounded-xl border border-border">
+      <div className="flex items-center gap-4 rounded-xl border border-border bg-muted/30 p-4">
         <div className="text-emerald-500">
-          <IconWallet className="w-6 h-6" />
+          <IconWallet className="h-6 w-6" />
         </div>
         <div>
-          <div className="text-[10px] uppercase font-black text-muted-foreground tracking-tighter mb-0.5">
+          <div className="mb-0.5 text-[10px] font-black uppercase tracking-tighter text-muted-foreground">
             Starting Capital
           </div>
           <div className="text-base font-bold tabular-nums">

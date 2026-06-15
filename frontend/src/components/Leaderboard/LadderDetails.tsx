@@ -9,8 +9,8 @@ interface LadderDetailsProps {
 
 export const LadderDetails = ({ ladder }: LadderDetailsProps) => {
   return (
-    <div className="p-8 border-b border-border">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-8">
+    <div className="border-b border-border p-8">
+      <div className="mb-8 flex flex-col justify-between gap-8 lg:flex-row lg:items-center">
         <LadderHeader name={ladder.name} type={ladder.type} />
         <LadderStats endTime={ladder.end_time} initialBalance={ladder.initial_balance} />
       </div>

@@ -10,9 +10,9 @@ export const DashboardStats = ({ user }: DashboardStatsProps) => {
   const stats = useDashboardStats(user);
 
   return (
-    <div className="flex sm:grid sm:grid-cols-3 gap-4 lg:gap-6 overflow-x-auto pb-4 sm:pb-0 snap-x no-scrollbar">
+    <div className="no-scrollbar flex snap-x gap-4 overflow-x-auto pb-4 sm:grid sm:grid-cols-3 sm:pb-0 lg:gap-6">
       {stats.map((stat, i) => (
-        <div key={i} className="snap-center min-w-[240px] sm:min-w-0">
+        <div key={i} className="min-w-[240px] snap-center sm:min-w-0">
           <StatCard {...stat} />
         </div>
       ))}
