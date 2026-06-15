@@ -1,7 +1,6 @@
 import { Button } from '@/components/shared/Button';
 import { Card } from '@/components/shared/Card';
-import { Input } from '@/components/shared/Input';
-import { Label } from '@/components/shared/Label';
+import { FormInput } from '@/components/shared/FormInput';
 import { useAuth } from '@/hooks/useAuth';
 import { login as apiLogin } from '@/lib/api';
 import { loginSchema, type LoginFormData } from '@/lib/schemas';
@@ -57,20 +56,22 @@ export const LoginPage = () => {
             </div>
           )}
           <form onSubmit={handleSubmit((data) => loginUser(data))} className="space-y-4" noValidate>
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input id="username" type="text" required {...register('username')} />
-              {errors.username && (
-                <p className="text-sm font-medium text-destructive">{errors.username.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required {...register('password')} />
-              {errors.password && (
-                <p className="text-sm font-medium text-destructive">{errors.password.message}</p>
-              )}
-            </div>
+            <FormInput
+              label="Username"
+              id="username"
+              type="text"
+              required
+              register={register}
+              error={errors.username?.message}
+            />
+            <FormInput
+              label="Password"
+              id="password"
+              type="password"
+              required
+              register={register}
+              error={errors.password?.message}
+            />
             <Button type="submit" disabled={isPending || isSubmitting} className="w-full">
               {isPending || isSubmitting ? 'Logging in...' : 'Login'}
             </Button>

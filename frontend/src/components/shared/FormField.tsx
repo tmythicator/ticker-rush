@@ -1,33 +1,28 @@
-import { Input } from '@/components/shared/Input';
+import * as React from 'react';
 import { Label } from '@/components/shared/Label';
-import { type FieldValues, type Path, type UseFormRegister } from 'react-hook-form';
+import { cn } from '@/lib/utils';
 
-interface FormFieldProps<T extends FieldValues> {
-  label: string;
-  id: Path<T>;
-  register: UseFormRegister<T>;
+export interface FormFieldProps extends React.HTMLAttributes<HTMLDivElement> {
+  label?: string;
+  htmlFor?: string;
   error?: string;
-  placeholder?: string;
-  type?: string;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
-export const FormField = <T extends FieldValues>({
+export const FormField = ({
   label,
-  id,
-  register,
+  htmlFor,
   error,
-  placeholder,
-  type = 'text',
-}: FormFieldProps<T>) => (
-  <div className="space-y-2">
-    <Label htmlFor={id}>{label}</Label>
-    <Input
-      {...register(id)}
-      id={id}
-      type={type}
-      placeholder={placeholder}
-      variant={error ? 'error' : 'default'}
-    />
-    {error && <p className="text-xs text-destructive">{error}</p>}
-  </div>
-);
+  className,
+  children,
+  ref,
+  ...props
+}: FormFieldProps) => {
+  return (
+    <div ref={ref} className={cn('space-y-2', className)} {...props}>
+      {label && <Label htmlFor={htmlFor}>{label}</Label>}
+      {children}
+      {error && <p className="text-xs text-destructive">{error}</p>}
+    </div>
+  );
+};

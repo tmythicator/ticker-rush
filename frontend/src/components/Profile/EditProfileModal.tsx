@@ -8,7 +8,7 @@ import {
   ModalFooter,
 } from '@/components/Modal';
 import { Button } from '@/components/shared/Button';
-import { FormField } from '@/components/shared/FormField';
+import { FormInput } from '@/components/shared/FormInput';
 import { Checkbox } from '@/components/shared/Checkbox';
 import { useAuth } from '@/hooks/useAuth';
 import { updateUser } from '@/lib/api';
@@ -80,19 +80,19 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
                 Personal Information
               </h3>
               <div className="grid grid-cols-2 gap-4">
-                <FormField
+                <FormInput
                   label="First Name"
                   id="firstName"
+                  placeholder="John"
                   register={register}
                   error={errors.firstName?.message}
-                  placeholder="John"
                 />
-                <FormField
+                <FormInput
                   label="Last Name"
                   id="lastName"
+                  placeholder="Doe"
                   register={register}
                   error={errors.lastName?.message}
-                  placeholder="Doe"
                 />
               </div>
             </div>
@@ -101,12 +101,12 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                 Public Profile
               </h3>
-              <FormField
+              <FormInput
                 label="Website"
                 id="website"
+                placeholder="https://example.com"
                 register={register}
                 error={errors.website?.message}
-                placeholder="https://example.com"
               />
 
               <div
