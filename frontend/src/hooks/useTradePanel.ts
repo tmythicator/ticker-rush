@@ -32,11 +32,12 @@ export const useTradePanel = ({ quote, onTradeSuccess }: UseTradePanelProps) => 
   });
 
   const qty = parseFloat(quantity) || 0;
-  const estCost = qty * currentPrice;
+  const roundedQty = Math.round(qty * 100000) / 100000;
+  const estCost = roundedQty * currentPrice;
 
   const handleTrade = (action: TradeAction) => {
     if (!symbol) return;
-    executeTrade({ action, quantity: qty });
+    executeTrade({ action, quantity: roundedQty });
   };
 
   return {
