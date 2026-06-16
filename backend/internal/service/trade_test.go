@@ -403,25 +403,28 @@ func TestTradeService_SellStock_Success(t *testing.T) {
 	initialUser := &domain.User{ID: userID, Balance: decimal.NewFromFloat(startBalance)}
 	mockUserRepo.On("GetUserForUpdate", mock.Anything, userID).Return(initialUser, nil)
 	mockUserRepo.On("GetUserBalance", mock.Anything, userID, int64(1)).Return(decimal.NewFromFloat(startBalance), nil)
-	
+
 	// Mock owning 5 shares
 	mockPortRepo.On("GetPortfolioItemForUpdate", mock.Anything, userID, int64(1), symbol).
 		Return(&domain.PortfolioItem{StockSymbol: symbol, Quantity: decimal.NewFromFloat(5.0), AveragePrice: decimal.NewFromFloat(100.0)}, nil)
-	
+
 	mockUserRepo.On("UpdateUserBalance", mock.Anything, userID, int64(1), mock.MatchedBy(func(d decimal.Decimal) bool {
 		v, _ := d.Float64()
+
 		return v == expectedBalance
 	})).Return(nil)
-	
+
 	// SetPortfolioItem should be called with remaining 3 shares (5 - 2)
 	mockPortRepo.On("SetPortfolioItem", mock.Anything, userID, int64(1), symbol, mock.MatchedBy(func(q decimal.Decimal) bool {
 		v, _ := q.Float64()
+
 		return v == 3.0
 	}), mock.MatchedBy(func(p decimal.Decimal) bool {
 		v, _ := p.Float64()
+
 		return v == 100.0 // Average price shouldn't change when selling
 	})).Return(nil)
-	
+
 	mockTx.On("Commit", mock.Anything).Return(nil)
 	mockTx.On("Rollback", mock.Anything).Return(nil)
 

@@ -152,6 +152,7 @@ func (s *TradeService) SellStock(
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, apperrors.ErrInsufficientQuantity
 		}
+
 		return nil, err
 	}
 
@@ -247,5 +248,6 @@ func validateQuantity(quantity float64) error {
 	if math.IsNaN(quantity) || math.IsInf(quantity, 0) || quantity <= 0 || quantity > 1_000_000_000 {
 		return apperrors.ErrInvalidQuantity
 	}
+
 	return nil
 }

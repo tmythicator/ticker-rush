@@ -363,4 +363,3 @@ func TestUserService_UpdateUser(t *testing.T) {
 		assert.Equal(t, apperrors.ErrProfanityDetected, err)
 	})
 }
-
