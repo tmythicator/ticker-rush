@@ -2,6 +2,7 @@ import { TradeAction, type TickerSource } from '@/types';
 import { TradeButtons } from './TradeButtons';
 import { SymbolField } from './SymbolField';
 import { QuantityField } from './QuantityField';
+import { ErrorMessage } from '@/components/shared/ErrorMessage';
 
 export interface TradeOrderAsset {
   symbol: string;
@@ -30,7 +31,7 @@ export const TradeOrderInput = ({ asset, form, onTrade }: TradeOrderInputProps) 
 
   return (
     <div className={`flex-1 space-y-5 ${disabled ? 'pointer-events-none opacity-50' : ''}`}>
-      {error && <div className="mb-2 text-xs font-bold text-red-600">{error}</div>}
+      {error && <ErrorMessage variant="xs" className="mb-2" message={error} />}
 
       <SymbolField symbol={symbol} source={source} />
 

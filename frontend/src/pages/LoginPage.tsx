@@ -1,6 +1,7 @@
 import { Button } from '@/components/shared/Button';
 import { Card } from '@/components/shared/Card';
 import { FormInput } from '@/components/shared/FormInput';
+import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { useAuth } from '@/hooks/useAuth';
 import { login as apiLogin } from '@/lib/api';
 import { loginSchema, type LoginFormData } from '@/lib/schemas';
@@ -50,11 +51,7 @@ export const LoginPage = () => {
           <h2 className="text-2xl font-bold">Login</h2>
         </div>
         <div>
-          {backendError && (
-            <div className="mb-4 rounded-md border border-destructive bg-destructive/15 p-3 text-sm font-medium text-destructive">
-              {backendError.message}
-            </div>
-          )}
+          {backendError && <ErrorMessage className="mb-4" message={backendError.message} />}
           <form onSubmit={handleSubmit((data) => loginUser(data))} className="space-y-4" noValidate>
             <FormInput
               label="Username"
@@ -63,6 +60,7 @@ export const LoginPage = () => {
               required
               register={register}
               error={errors.username?.message}
+              data-testid="username-input"
             />
             <FormInput
               label="Password"
@@ -71,8 +69,14 @@ export const LoginPage = () => {
               required
               register={register}
               error={errors.password?.message}
+              data-testid="password-input"
             />
-            <Button type="submit" disabled={isPending || isSubmitting} className="w-full">
+            <Button
+              type="submit"
+              disabled={isPending || isSubmitting}
+              className="w-full"
+              data-testid="login-submit"
+            >
               {isPending || isSubmitting ? 'Logging in...' : 'Login'}
             </Button>
           </form>
