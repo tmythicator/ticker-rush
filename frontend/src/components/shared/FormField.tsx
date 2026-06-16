@@ -22,7 +22,11 @@ export const FormField = ({
     <div ref={ref} className={cn('space-y-2', className)} {...props}>
       {label && <Label htmlFor={htmlFor}>{label}</Label>}
       {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && (
+        <p data-testid="field-error" className="text-xs text-destructive">
+          {error}
+        </p>
+      )}
     </div>
   );
 };
