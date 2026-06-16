@@ -18,9 +18,12 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
+// SessionDuration represents the lifetime of a user session (both JWT token and cookie).
+const SessionDuration = 30 * 24 * time.Hour
+
 // GenerateToken generates a new JWT token for the user.
 func GenerateToken(user *domain.User, secret string) (string, error) {
-	expirationTime := time.Now().Add(24 * time.Hour)
+	expirationTime := time.Now().Add(SessionDuration)
 	claims := &Claims{
 		UserID:   user.ID,
 		Username: user.Username,

@@ -117,7 +117,7 @@ func (h *RestHandler) Login(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("auth_token", token, 3600*24, "/", "", false, true)
+	c.SetCookie("auth_token", token, int(service.SessionDuration.Seconds()), "/", "", false, true)
 	c.JSON(http.StatusOK, &user.LoginResponse{User: ToExternalUser(fullUser)})
 }
 
