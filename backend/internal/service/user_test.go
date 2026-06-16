@@ -264,3 +264,103 @@ func TestUserService_GetPublicProfile(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestUserService_UpdateUser(t *testing.T) {
+	mockUserRepo := new(mocks.MockUserRepository)
+	userService := service.NewUserService(mockUserRepo, nil, nil)
+	userID := int64(1)
+
+	t.Run("Success with http website", func(t *testing.T) {
+		existingUser := &domain.User{
+			ID:        userID,
+			FirstName: "Old",
+			LastName:  "Name",
+			Website:   "",
+			IsPublic:  false,
+		}
+		mockUserRepo.On("GetUser", ctx, userID).Return(existingUser, nil).Once()
+		mockUserRepo.On("UpdateUserProfile", ctx, mock.MatchedBy(func(u *domain.User) bool {
+			return u.FirstName == "New" && u.LastName == "Name" && u.Website == "http://example.com" && u.IsPublic == true
+		})).Return(nil).Once()
+
+		res, err := userService.UpdateUser(ctx, userID, "New", "Name", "http://example.com", true)
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+		assert.Equal(t, "New", res.FirstName)
+		assert.Equal(t, "http://example.com", res.Website)
+	})
+
+	t.Run("Success with https website", func(t *testing.T) {
+		existingUser := &domain.User{
+			ID:        userID,
+			FirstName: "Old",
+			LastName:  "Name",
+			Website:   "",
+			IsPublic:  false,
+		}
+		mockUserRepo.On("GetUser", ctx, userID).Return(existingUser, nil).Once()
+		mockUserRepo.On("UpdateUserProfile", ctx, mock.MatchedBy(func(u *domain.User) bool {
+			return u.Website == "https://example.com"
+		})).Return(nil).Once()
+
+		res, err := userService.UpdateUser(ctx, userID, "New", "Name", "https://example.com", true)
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+	})
+
+	t.Run("Success with empty website", func(t *testing.T) {
+		existingUser := &domain.User{
+			ID:        userID,
+			FirstName: "Old",
+			LastName:  "Name",
+			Website:   "",
+			IsPublic:  false,
+		}
+		mockUserRepo.On("GetUser", ctx, userID).Return(existingUser, nil).Once()
+		mockUserRepo.On("UpdateUserProfile", ctx, mock.MatchedBy(func(u *domain.User) bool {
+			return u.Website == ""
+		})).Return(nil).Once()
+
+		res, err := userService.UpdateUser(ctx, userID, "New", "Name", "", true)
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+	})
+
+	t.Run("Failure with data URL website", func(t *testing.T) {
+		_, err := userService.UpdateUser(ctx, userID, "New", "Name", "data:text/html,<html></html>", true)
+		assert.Error(t, err)
+		assert.Equal(t, apperrors.ErrInvalidWebsiteFormat, err)
+	})
+
+	t.Run("Failure with javascript URL website", func(t *testing.T) {
+		_, err := userService.UpdateUser(ctx, userID, "New", "Name", "javascript:alert(1)", true)
+		assert.Error(t, err)
+		assert.Equal(t, apperrors.ErrInvalidWebsiteFormat, err)
+	})
+
+	t.Run("Failure with no protocol website", func(t *testing.T) {
+		_, err := userService.UpdateUser(ctx, userID, "New", "Name", "google.com", true)
+		assert.Error(t, err)
+		assert.Equal(t, apperrors.ErrInvalidWebsiteFormat, err)
+	})
+
+	t.Run("Failure with too long website", func(t *testing.T) {
+		longWebsite := "https://example.com/" + string(make([]byte, 201))
+		_, err := userService.UpdateUser(ctx, userID, "New", "Name", longWebsite, true)
+		assert.Error(t, err)
+		assert.Equal(t, apperrors.ErrInvalidWebsiteFormat, err)
+	})
+
+	t.Run("Failure with name required", func(t *testing.T) {
+		_, err := userService.UpdateUser(ctx, userID, "", "Name", "https://example.com", true)
+		assert.Error(t, err)
+		assert.Equal(t, apperrors.ErrNameRequired, err)
+	})
+
+	t.Run("Failure with profanity name", func(t *testing.T) {
+		_, err := userService.UpdateUser(ctx, userID, "fuck", "Name", "https://example.com", true)
+		assert.Error(t, err)
+		assert.Equal(t, apperrors.ErrProfanityDetected, err)
+	})
+}
+

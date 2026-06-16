@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"net/url"
 	"regexp"
 	"slices"
 	"time"
@@ -113,6 +114,17 @@ func (s *UserService) UpdateUser(
 	// Profanity Check
 	if goaway.IsProfane(firstName) || goaway.IsProfane(lastName) {
 		return nil, apperrors.ErrProfanityDetected
+	}
+
+	// Website Check
+	if website != "" {
+		if len(website) > 200 {
+			return nil, apperrors.ErrInvalidWebsiteFormat
+		}
+		u, err := url.ParseRequestURI(website)
+		if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+			return nil, apperrors.ErrInvalidWebsiteFormat
+		}
 	}
 
 	// Get existing user to preserve other fields
