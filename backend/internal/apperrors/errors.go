@@ -41,5 +41,5 @@ var (
 	// ErrInvalidWebsiteFormat is returned when the website format is invalid.
 	ErrInvalidWebsiteFormat = errors.New("website must be a valid URL starting with http:// or https://")
 	// ErrInvalidQuantity is returned when a trade quantity is invalid.
-	ErrInvalidQuantity = errors.New("quantity must be greater than 0 and less than or equal to 1,000,000,000")
+	ErrInvalidQuantity = errors.New("quantity must be between 0.00001 and 1,000,000,000")
 )

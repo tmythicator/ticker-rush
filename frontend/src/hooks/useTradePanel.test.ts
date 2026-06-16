@@ -58,4 +58,31 @@ describe('useTradePanel', () => {
       quantity: 10,
     });
   });
+
+  it('rounds quantity to 5 decimal places on submission', () => {
+    (useAuth as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+      user: mockUserParticipating,
+    });
+
+    const executeTradeSpy = vi.fn();
+    (useTrade as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+      executeTrade: executeTradeSpy,
+      isLoading: false,
+      error: null,
+    });
+
+    const { result } = renderHook(() => useTradePanel({ quote: mockActiveQuote }));
+
+    act(() => {
+      result.current.form.setQuantity('1.000018');
+    });
+    act(() => {
+      result.current.handleTrade(TradeAction.BUY);
+    });
+    expect(result.current.form.error).toBeNull();
+    expect(executeTradeSpy).toHaveBeenCalledWith({
+      action: TradeAction.BUY,
+      quantity: 1.00002,
+    });
+  });
 });

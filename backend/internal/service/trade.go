@@ -46,7 +46,8 @@ func (s *TradeService) BuyStock(
 	symbol string,
 	quantity float64,
 ) (*domain.User, error) {
-	if err := validateQuantity(quantity); err != nil {
+	validQty, err := validateQuantity(quantity)
+	if err != nil {
 		return nil, err
 	}
 
@@ -55,7 +56,7 @@ func (s *TradeService) BuyStock(
 		return nil, err
 	}
 
-	quantityDec := decimal.NewFromFloat(quantity)
+	quantityDec := decimal.NewFromFloat(validQty)
 	cost := price.Mul(quantityDec)
 
 	// START TRANSACTION
@@ -124,7 +125,8 @@ func (s *TradeService) SellStock(
 	symbol string,
 	quantity float64,
 ) (*domain.User, error) {
-	if err := validateQuantity(quantity); err != nil {
+	validQty, err := validateQuantity(quantity)
+	if err != nil {
 		return nil, err
 	}
 
@@ -133,7 +135,7 @@ func (s *TradeService) SellStock(
 		return nil, err
 	}
 
-	quantityDec := decimal.NewFromFloat(quantity)
+	quantityDec := decimal.NewFromFloat(validQty)
 	totalSaleValue := price.Mul(quantityDec)
 
 	// START TRANSACTION
@@ -244,10 +246,15 @@ func (s *TradeService) updatePortfolioPersistence(
 	return repo.SetPortfolioItem(ctx, userID, ladderID, symbol, newQty, avgPrice)
 }
 
-func validateQuantity(quantity float64) error {
-	if math.IsNaN(quantity) || math.IsInf(quantity, 0) || quantity <= 0 || quantity > 1_000_000_000 {
-		return apperrors.ErrInvalidQuantity
+func validateQuantity(quantity float64) (float64, error) {
+	if math.IsNaN(quantity) || math.IsInf(quantity, 0) || quantity < 0.00001 || quantity > 1_000_000_000 {
+		return 0, apperrors.ErrInvalidQuantity
 	}
 
-	return nil
+	rounded := math.Round(quantity*100000) / 100000
+	if rounded < 0.00001 {
+		return 0, apperrors.ErrInvalidQuantity
+	}
+
+	return rounded, nil
 }
