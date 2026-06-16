@@ -247,12 +247,12 @@ func (s *TradeService) updatePortfolioPersistence(
 }
 
 func validateQuantity(quantity float64) (float64, error) {
-	if math.IsNaN(quantity) || math.IsInf(quantity, 0) || quantity < 0.00001 || quantity > 1_000_000_000 {
+	if math.IsNaN(quantity) || math.IsInf(quantity, 0) || quantity < 0.00000001 || quantity > 1_000_000_000 {
 		return 0, apperrors.ErrInvalidQuantity
 	}
 
-	rounded := math.Round(quantity*100000) / 100000
-	if rounded < 0.00001 {
+	rounded := math.Round(quantity*100000000) / 100000000
+	if rounded < 0.00000001 {
 		return 0, apperrors.ErrInvalidQuantity
 	}
 

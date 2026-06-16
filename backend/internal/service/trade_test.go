@@ -567,7 +567,7 @@ func TestTradeService_BuyStock_InvalidQuantity(t *testing.T) {
 		{"Plus Inf quantity", math.Inf(1)},
 		{"Minus Inf quantity", math.Inf(-1)},
 		{"Too large quantity", 1_000_000_001.0},
-		{"Too small quantity", 0.000009},
+		{"Too small quantity", 0.000000009},
 	}
 
 	for _, tc := range testCases {
@@ -593,7 +593,7 @@ func TestTradeService_SellStock_InvalidQuantity(t *testing.T) {
 		{"Plus Inf quantity", math.Inf(1)},
 		{"Minus Inf quantity", math.Inf(-1)},
 		{"Too large quantity", 1_000_000_001.0},
-		{"Too small quantity", 0.000009},
+		{"Too small quantity", 0.000000009},
 	}
 
 	for _, tc := range testCases {
