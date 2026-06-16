@@ -89,6 +89,7 @@ jobs:
 
 
             export DOCKER_TAG="${{ github.ref_name }}"
+            export DOCKER_TAG="${DOCKER_TAG#v}"
 
             echo "Deploying version: $DOCKER_TAG"
 
