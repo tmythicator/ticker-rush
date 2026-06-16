@@ -113,4 +113,54 @@ describe('EditProfileModal', () => {
       expect(mockOnClose).toHaveBeenCalled();
     });
   });
+
+  it('displays validation error for invalid website URLs', async () => {
+    const user = userEvent.setup();
+    renderModal();
+
+    await waitFor(() => {
+      expect(screen.getByTestId('website-input')).toHaveValue('https://example.com');
+    });
+
+    // 1. Check data URL scheme restriction
+    await user.clear(screen.getByTestId('website-input'));
+    await user.type(screen.getByTestId('website-input'), 'data:text/html,hello');
+    await user.click(screen.getByTestId('edit-profile-submit'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('field-error')).toHaveTextContent(
+        'Website must start with http:// or https://',
+      );
+    });
+
+    // 2. Check missing protocol restriction
+    await user.clear(screen.getByTestId('website-input'));
+    await user.type(screen.getByTestId('website-input'), 'google.com');
+    await user.click(screen.getByTestId('edit-profile-submit'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('field-error')).toHaveTextContent('Invalid URL format');
+    });
+
+    // 3. Check invalid URL format with correct protocol
+    await user.clear(screen.getByTestId('website-input'));
+    await user.type(screen.getByTestId('website-input'), 'http://invalid url');
+    await user.click(screen.getByTestId('edit-profile-submit'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('field-error')).toHaveTextContent('Invalid URL format');
+    });
+
+    // 4. Check website length restriction (>200 chars)
+    await user.clear(screen.getByTestId('website-input'));
+    const longWebsite = 'https://' + 'a'.repeat(200);
+    await user.type(screen.getByTestId('website-input'), longWebsite);
+    await user.click(screen.getByTestId('edit-profile-submit'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('field-error')).toHaveTextContent(
+        'Website must be at most 200 characters long',
+      );
+    });
+  });
 });

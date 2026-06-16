@@ -67,7 +67,13 @@ func (h *RestHandler) CreateUser(c *gin.Context) {
 		req.AgbAccepted,
 	)
 	if err != nil {
-		if errors.Is(err, apperrors.ErrAGBNotAccepted) {
+		if errors.Is(err, apperrors.ErrAGBNotAccepted) ||
+			errors.Is(err, apperrors.ErrPasswordTooShort) ||
+			errors.Is(err, apperrors.ErrPasswordTooLong) ||
+			errors.Is(err, apperrors.ErrInvalidUsernameFormat) ||
+			errors.Is(err, apperrors.ErrNameRequired) ||
+			errors.Is(err, apperrors.ErrProfanityDetected) ||
+			errors.Is(err, apperrors.ErrUsernameNotAllowed) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 
 			return
@@ -151,7 +157,9 @@ func (h *RestHandler) UpdateUser(c *gin.Context) {
 	)
 
 	if err != nil {
-		if errors.Is(err, apperrors.ErrNameRequired) || errors.Is(err, apperrors.ErrProfanityDetected) {
+		if errors.Is(err, apperrors.ErrNameRequired) ||
+			errors.Is(err, apperrors.ErrProfanityDetected) ||
+			errors.Is(err, apperrors.ErrInvalidWebsiteFormat) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 
 			return
@@ -279,6 +287,12 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 			return
 		}
 
+		if errors.Is(err, apperrors.ErrInvalidQuantity) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+			return
+		}
+
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
 
 		return
@@ -330,6 +344,12 @@ func (h *RestHandler) SellStock(c *gin.Context) {
 
 		if errors.Is(err, apperrors.ErrMarketClosed) {
 			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+
+			return
+		}
+
+		if errors.Is(err, apperrors.ErrInvalidQuantity) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 
 			return
 		}

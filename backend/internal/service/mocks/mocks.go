@@ -161,6 +161,9 @@ func (m *MockPortfolioRepository) GetPortfolioItem(
 	symbol string,
 ) (*domain.PortfolioItem, error) {
 	args := m.Called(ctx, userID, ladderID, symbol)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 
 	return args.Get(0).(*domain.PortfolioItem), args.Error(1)
 }
@@ -173,6 +176,9 @@ func (m *MockPortfolioRepository) GetPortfolioItemForUpdate(
 	symbol string,
 ) (*domain.PortfolioItem, error) {
 	args := m.Called(ctx, userID, ladderID, symbol)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
 
 	return args.Get(0).(*domain.PortfolioItem), args.Error(1)
 }

@@ -22,7 +22,15 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 export const updateUserSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
-  website: z.url().optional().or(z.literal('')),
+  website: z
+    .url({ message: 'Invalid URL format' })
+    .max(200, 'Website must be at most 200 characters long')
+    .refine(
+      (val) => !val || val.startsWith('http://') || val.startsWith('https://'),
+      'Website must start with http:// or https://',
+    )
+    .optional()
+    .or(z.literal('')),
   isPublic: z.boolean(),
 });
 

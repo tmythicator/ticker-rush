@@ -38,4 +38,8 @@ var (
 	ErrAlreadyJoinedLadder = errors.New("user has already joined the ladder")
 	// ErrLadderNotActive is returned when trading occurs outside the ladder timeframe.
 	ErrLadderNotActive = errors.New("ladder is not currently active")
+	// ErrInvalidWebsiteFormat is returned when the website format is invalid.
+	ErrInvalidWebsiteFormat = errors.New("website must be a valid URL starting with http:// or https://")
+	// ErrInvalidQuantity is returned when a trade quantity is invalid.
+	ErrInvalidQuantity = errors.New("quantity must be greater than 0 and less than or equal to 1,000,000,000")
 )

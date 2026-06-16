@@ -2,8 +2,11 @@ package service
 
 import (
 	"context"
+	"errors"
+	"math"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/shopspring/decimal"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
@@ -43,6 +46,10 @@ func (s *TradeService) BuyStock(
 	symbol string,
 	quantity float64,
 ) (*domain.User, error) {
+	if err := validateQuantity(quantity); err != nil {
+		return nil, err
+	}
+
 	price, ladderID, err := s.validateMarketAndParticipation(ctx, userID, symbol)
 	if err != nil {
 		return nil, err
@@ -117,6 +124,10 @@ func (s *TradeService) SellStock(
 	symbol string,
 	quantity float64,
 ) (*domain.User, error) {
+	if err := validateQuantity(quantity); err != nil {
+		return nil, err
+	}
+
 	price, ladderID, err := s.validateMarketAndParticipation(ctx, userID, symbol)
 	if err != nil {
 		return nil, err
@@ -138,6 +149,10 @@ func (s *TradeService) SellStock(
 	// 1. Check Portfolio Item
 	item, err := txPortfolioRepo.GetPortfolioItemForUpdate(ctx, userID, ladderID, symbol)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, apperrors.ErrInsufficientQuantity
+		}
+
 		return nil, err
 	}
 
@@ -227,4 +242,12 @@ func (s *TradeService) updatePortfolioPersistence(
 	}
 
 	return repo.SetPortfolioItem(ctx, userID, ladderID, symbol, newQty, avgPrice)
+}
+
+func validateQuantity(quantity float64) error {
+	if math.IsNaN(quantity) || math.IsInf(quantity, 0) || quantity <= 0 || quantity > 1_000_000_000 {
+		return apperrors.ErrInvalidQuantity
+	}
+
+	return nil
 }
