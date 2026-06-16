@@ -128,7 +128,9 @@ describe('EditProfileModal', () => {
     await user.click(screen.getByTestId('edit-profile-submit'));
 
     await waitFor(() => {
-      expect(screen.getByTestId('field-error')).toHaveTextContent('Website must start with http:// or https://');
+      expect(screen.getByTestId('field-error')).toHaveTextContent(
+        'Website must start with http:// or https://',
+      );
     });
 
     // 2. Check missing protocol restriction
@@ -156,7 +158,9 @@ describe('EditProfileModal', () => {
     await user.click(screen.getByTestId('edit-profile-submit'));
 
     await waitFor(() => {
-      expect(screen.getByTestId('field-error')).toHaveTextContent('Website must be at most 200 characters long');
+      expect(screen.getByTestId('field-error')).toHaveTextContent(
+        'Website must be at most 200 characters long',
+      );
     });
   });
 });
