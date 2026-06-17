@@ -29,10 +29,34 @@ server {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
 
+    # Block access to hidden files (dotfiles like .git, .env)
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    # Block access to backup, log, and environment config files
+    location ~* \.(env|bak|config|sql|db|log|sh)$ {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
     location / {
         root /usr/share/nginx/html;
         index index.html index.htm;
         try_files $uri $uri/ /index.html;
+
+        # Disable caching for HTML to prevent chunk loading errors on new builds
+        add_header Cache-Control "no-store, no-cache, must-revalidate";
+    }
+
+    # Cache static hashed assets heavily
+    location /assets/ {
+        root /usr/share/nginx/html;
+        expires 1y;
+        add_header Cache-Control "public, no-transform";
     }
 
     # SSE endpoint - disabled buffering, long timeout
