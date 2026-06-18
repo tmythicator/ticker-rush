@@ -54,6 +54,8 @@
           process-compose
           docker-compose
           go-task
+          hurl
+          gettext
         ];
 
       in

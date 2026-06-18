@@ -72,6 +72,7 @@ tasks:
     cmds:
       - task: backend:test
       - task: frontend:test
+      - task: infra:test-nginx
 
   ci:
     desc: Run all CI checks (lint, format check, tests)
@@ -80,6 +81,7 @@ tasks:
       - task: backend:ci
       - task: frontend:ci
       - task: bot:ci
+      - task: infra:test-nginx
 
   lint:
     desc: Lint all code
@@ -290,3 +292,8 @@ tasks:
     dir: bot
     cmds:
       - bun x tsc --noEmit
+
+  infra:test-nginx:
+    desc: Run integration tests for Nginx configuration
+    cmds:
+      - ./scripts/test-nginx.sh
