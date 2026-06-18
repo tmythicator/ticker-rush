@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "frontend/**"
+      - "container/**"
+      - "scripts/**"
       - "Taskfile.yml"
       - "flake.nix"
       - "flake.lock"
@@ -13,6 +15,8 @@ on:
     branches: [main]
     paths:
       - "frontend/**"
+      - "container/**"
+      - "scripts/**"
       - "Taskfile.yml"
       - "flake.nix"
       - "flake.lock"
@@ -37,3 +41,7 @@ jobs:
 
       - name: Run CI (Lint, Format Check, Test)
         run: nix develop --command task frontend:ci
+
+      - name: Run Nginx Config Integration Tests
+        run: nix develop --command task infra:test-nginx
+

@@ -36,52 +36,15 @@ server {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
 
-    # Block access to hidden files
-    location ~ /\. {
-        return 444;
-        access_log off;
-        log_not_found off;
-    }
-
-    # Block access to backup, log, and environment config files
-    location ~* \.(env|bak|config|sql|db|log|sh|ini|plist)$ {
-        return 444;
-        access_log off;
-        log_not_found off;
-    }
-
-    # Block specific sensitive config files
-    location ~* /(firebase\.json|composer\.json|package\.json|package-lock\.json|yarn\.lock|pnpm-lock\.yaml) {
-        return 444;
-        access_log off;
-        log_not_found off;
-    }
-
-    # Block common scanning targets
-    location ~* /(wp-admin|wp-login|xmlrpc|phpmyadmin|adminer|mysql|myadmin) {
-        return 444;
-        access_log off;
-        log_not_found off;
-    }
-
-    location / {
-        root /usr/share/nginx/html;
-        index index.html index.htm;
-        try_files $uri $uri/ /index.html;
-
-        # Disable caching for HTML to prevent chunk loading errors on new builds
-        add_header Cache-Control "no-store, no-cache, must-revalidate";
-    }
-
     # Cache static hashed assets heavily
-    location /assets/ {
+    location ^~ /assets/ {
         root /usr/share/nginx/html;
         expires 1y;
         add_header Cache-Control "public, no-transform";
     }
 
-    # SSE endpoint - disabled buffering, long timeout
-    location /api/quotes/events {
+    # SSE endpoint
+    location = /api/quotes/events {
         proxy_pass http://exchange:${SERVER_PORT};
 
         proxy_set_header Connection "";
@@ -90,8 +53,38 @@ server {
     }
 
     # Standard API endpoints
-    location /api/ {
+    location ^~ /api/ {
         proxy_pass http://exchange:${SERVER_PORT};
+    }
+
+    # Allow specific static files in root
+    location ~ ^/(index\.html|robots\.txt|sitemap\.xml|icon\.svg|favicon\.ico)$ {
+        root /usr/share/nginx/html;
+    }
+
+    # Allow root exactly
+    location = / {
+        root /usr/share/nginx/html;
+        try_files /index.html =404;
+
+        # Disable caching for HTML to prevent chunk loading errors on new builds
+        add_header Cache-Control "no-store, no-cache, must-revalidate";
+    }
+
+    # Allow legitimate SPA routes
+    location ~ ^/(login|register|leaderboard|impressum|privacy|agb|trade|profile|users/[a-zA-Z0-9_-]+)/?$ {
+        root /usr/share/nginx/html;
+        try_files /index.html =404;
+
+        # Disable caching for HTML to prevent chunk loading errors on new builds
+        add_header Cache-Control "no-store, no-cache, must-revalidate";
+    }
+
+    # Fallback: Block all other requests
+    location / {
+        return 403;
+        access_log off;
+        log_not_found off;
     }
 
     error_page 500 502 503 504 /50x.html;
