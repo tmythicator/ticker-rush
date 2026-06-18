@@ -87,6 +87,8 @@ jobs:
           script: |
             cd ${{ secrets.PROD_VM_DEPLOY_PATH }}
 
+            git fetch origin
+            git reset --hard origin/main
 
             export DOCKER_TAG="${{ github.ref_name }}"
             export DOCKER_TAG="${DOCKER_TAG#v}"
