@@ -47,9 +47,13 @@ server {
     location = /api/quotes/events {
         proxy_pass http://exchange:${SERVER_PORT};
 
-        proxy_set_header Connection "";
+        proxy_set_header Connection "keep-alive";
+        proxy_set_header Upgrade "";
         proxy_buffering off;
         proxy_cache off;
+        proxy_read_timeout 86400s;
+        proxy_send_timeout 86400s;
+        chunked_transfer_encoding on;
     }
 
     # Standard API endpoints

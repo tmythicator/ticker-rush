@@ -7,6 +7,7 @@ readonly TEST_PORT=8080
 readonly SITE_DOMAIN="localhost"
 readonly SERVER_PORT=8081
 readonly TEMP_CONF_FILE="container/nginx-test.run.conf"
+readonly TEMP_HTML_DIR="container/test-html.run"
 
 for cmd in docker hurl envsubst; do
   if ! command -v "$cmd" &>/dev/null; then
@@ -19,6 +20,7 @@ cleanup() {
   echo "Cleaning up test container and temporary files..."
   docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
   rm -f "$TEMP_CONF_FILE" || true
+  rm -rf "$TEMP_HTML_DIR" || true
 }
 trap cleanup EXIT
 
@@ -37,15 +39,19 @@ envsubst '$SITE_DOMAIN,$SERVER_PORT' < container/nginx.conf.template \
   | sed 's/ssl_ciphers/#ssl_ciphers/g' \
   > "$TEMP_CONF_FILE"
 
-# 2. Run temporary Nginx container (mounting config, public assets, and index.html)
+# 2. Prepare flat HTML assets directory to avoid nested Docker volume mount placeholders on host
+mkdir -p "$TEMP_HTML_DIR"
+cp -r frontend/public/* "$TEMP_HTML_DIR/"
+cp frontend/index.html "$TEMP_HTML_DIR/"
+
+# 3. Run temporary Nginx container
 echo "Starting test Nginx container..."
 docker run -d \
   --name "$CONTAINER_NAME" \
   --add-host "exchange:127.0.0.1" \
   -p "${TEST_PORT}:${TEST_PORT}" \
   -v "$(pwd)/${TEMP_CONF_FILE}:/etc/nginx/conf.d/default.conf" \
-  -v "$(pwd)/frontend/public:/usr/share/nginx/html" \
-  -v "$(pwd)/frontend/index.html:/usr/share/nginx/html/index.html" \
+  -v "$(pwd)/${TEMP_HTML_DIR}:/usr/share/nginx/html" \
   nginx:alpine
 
 # Verify Nginx container started successfully
