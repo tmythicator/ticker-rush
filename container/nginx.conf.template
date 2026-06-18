@@ -1,4 +1,11 @@
 server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+    return 444;
+}
+
+server {
     listen 80;
     server_name ${SITE_DOMAIN} www.${SITE_DOMAIN} localhost;
 
@@ -29,16 +36,30 @@ server {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
 
-    # Block access to hidden files (dotfiles like .git, .env)
+    # Block access to hidden files
     location ~ /\. {
-        deny all;
+        return 444;
         access_log off;
         log_not_found off;
     }
 
     # Block access to backup, log, and environment config files
-    location ~* \.(env|bak|config|sql|db|log|sh)$ {
-        deny all;
+    location ~* \.(env|bak|config|sql|db|log|sh|ini|plist)$ {
+        return 444;
+        access_log off;
+        log_not_found off;
+    }
+
+    # Block specific sensitive config files
+    location ~* /(firebase\.json|composer\.json|package\.json|package-lock\.json|yarn\.lock|pnpm-lock\.yaml) {
+        return 444;
+        access_log off;
+        log_not_found off;
+    }
+
+    # Block common scanning targets
+    location ~* /(wp-admin|wp-login|xmlrpc|phpmyadmin|adminer|mysql|myadmin) {
+        return 444;
         access_log off;
         log_not_found off;
     }
