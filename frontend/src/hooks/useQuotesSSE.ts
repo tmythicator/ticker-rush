@@ -6,14 +6,13 @@ import { useQuoteQuery } from '@/hooks/useQuoteQuery';
 
 export const useQuotesSSE = (symbol: string | null) => {
   const [error, setError] = useState<Event | null>(null);
-
   const queryClient = useQueryClient();
 
   // Initial hydration + subscriber
   const { data: quote = null } = useQuoteQuery(symbol);
 
-  // State management
-  const setQuote = useCallback(
+  // Check event sequence timestamps and update if needed
+  const updateCache = useCallback(
     (newData: Quote) => {
       queryClient.setQueryData(queryKeys.quotes.detail(newData.symbol), (oldData: Quote | null) => {
         if (!oldData || newData.timestamp > oldData.timestamp) {
@@ -45,16 +44,27 @@ export const useQuotesSSE = (symbol: string | null) => {
     eventSource.addEventListener('quote', (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data) as Quote;
-        setQuote(data);
+        updateCache(data);
       } catch (err) {
         console.error('SSE: Parse Error', err);
       }
     });
 
-    return () => {
+    // Cleanup handler for page transition, refresh or suspend
+    const cleanup = () => {
       eventSource.close();
     };
-  }, [setQuote, symbol]);
+
+    // Listen to both beforeunload (legacy) and pagehide (modern)
+    window.addEventListener('beforeunload', cleanup);
+    window.addEventListener('pagehide', cleanup);
+
+    return () => {
+      window.removeEventListener('beforeunload', cleanup);
+      window.removeEventListener('pagehide', cleanup);
+      cleanup();
+    };
+  }, [updateCache, symbol]);
 
   return { quote, error };
 };
