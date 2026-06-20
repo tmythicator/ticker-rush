@@ -398,3 +398,25 @@ func (m *MockLeaderboardRepository) RemoveFromLeaderboard(ctx context.Context, l
 
 	return args.Error(0)
 }
+
+// MockHistoryRepository is a mock implementation of HistoryRepository.
+type MockHistoryRepository struct {
+	mock.Mock
+}
+
+// SaveQuote mock.
+func (m *MockHistoryRepository) SaveQuote(ctx context.Context, quote *domain.Quote) error {
+	args := m.Called(ctx, quote)
+
+	return args.Error(0)
+}
+
+// GetHistory mock.
+func (m *MockHistoryRepository) GetHistory(ctx context.Context, symbol string, limit int) ([]*domain.Quote, error) {
+	args := m.Called(ctx, symbol, limit)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).([]*domain.Quote), args.Error(1)
+}
