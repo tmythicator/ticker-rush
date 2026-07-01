@@ -235,7 +235,7 @@ type GetLadderLeaderboardParams struct {
 type GetLadderLeaderboardRow struct {
 	LadderID     int64
 	UserID       int64
-	FinalBalance decimal.Decimal
+	FinalBalance decimal.NullDecimal
 	FinalRank    pgtype.Int4
 	JoinedAt     pgtype.Timestamptz
 	Username     string
@@ -514,7 +514,7 @@ ON CONFLICT (ladder_id, user_id) DO UPDATE SET
 type InsertLadderParticipantParams struct {
 	LadderID     int64
 	UserID       int64
-	FinalBalance decimal.Decimal
+	FinalBalance decimal.NullDecimal
 	FinalRank    pgtype.Int4
 }
 

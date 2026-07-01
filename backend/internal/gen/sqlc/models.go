@@ -24,7 +24,7 @@ type LadderParticipant struct {
 	LadderID     int64
 	UserID       int64
 	Balance      decimal.Decimal
-	FinalBalance decimal.Decimal
+	FinalBalance decimal.NullDecimal
 	FinalRank    pgtype.Int4
 	JoinedAt     pgtype.Timestamptz
 }
