@@ -181,7 +181,7 @@ func (r *LadderRepository) GetLadderParticipants(ctx context.Context, ladderID i
 			},
 			Balance:      row.Balance,
 			FinalRank:    row.FinalRank.Int32,
-			FinalBalance: row.FinalBalance,
+			FinalBalance: row.FinalBalance.Decimal,
 			JoinedAt:     row.JoinedAt.Time,
 		}
 	}
@@ -194,7 +194,7 @@ func (r *LadderRepository) InsertLadderParticipant(ctx context.Context, ladderID
 	return r.queries.InsertLadderParticipant(ctx, sqlc.InsertLadderParticipantParams{
 		LadderID:     ladderID,
 		UserID:       userID,
-		FinalBalance: finalBalance,
+		FinalBalance: decimal.NullDecimal{Decimal: finalBalance, Valid: true},
 		FinalRank:    pgtype.Int4{Int32: finalRank, Valid: true},
 	})
 }

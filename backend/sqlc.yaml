@@ -18,7 +18,7 @@ sql:
           - column: "ladders.initial_balance"
             go_type: "github.com/shopspring/decimal.Decimal"
           - column: "ladder_participants.final_balance"
-            go_type: "github.com/shopspring/decimal.Decimal"
+            go_type: "github.com/shopspring/decimal.NullDecimal"
           - column: "market_quotes.price"
             go_type: "github.com/shopspring/decimal.Decimal"
           - column: "latest_quotes.price"
