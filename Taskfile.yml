@@ -145,6 +145,12 @@ tasks:
     cmds:
       - go run cmd/migrate/main.go
 
+  backend:seed:
+    desc: Seed database with development mock data
+    dir: backend
+    cmds:
+      - go run cmd/seed/main.go
+
   backend:build:
     desc: Build the backend services
     dir: backend
