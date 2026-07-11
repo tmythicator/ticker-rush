@@ -45,23 +45,6 @@ type CreateUserParams struct {
 	AgbAcceptedAt time.Time
 }
 
-
-// LadderRepository defines the interface for ladder management.
-type LadderRepository interface {
-	GetActiveLadder(ctx context.Context) (int64, error)
-	GetLadder(ctx context.Context, id int64) (*domain.Ladder, error)
-	GetAllowedTickers(ctx context.Context, ladderID int64) ([]*domain.TickerInfo, error)
-	JoinLadder(ctx context.Context, ladderID int64, userID int64) error
-	IsUserInLadder(ctx context.Context, ladderID int64, userID int64) (bool, error)
-	GetExpiredActiveLadders(ctx context.Context, now time.Time) ([]*domain.Ladder, error)
-	GetPendingLaddersToActivate(ctx context.Context, now time.Time) ([]*domain.Ladder, error)
-	UpdateLadderStatus(ctx context.Context, id int64, isActive bool) error
-	GetLadderParticipants(ctx context.Context, ladderID int64) ([]domain.LadderParticipant, error)
-	InsertLadderParticipant(ctx context.Context, ladderID int64, userID int64, finalBalance decimal.Decimal, finalRank int32) error
-	PruneLadderParticipants(ctx context.Context, ladderID int64, rankThreshold int32) error
-	DeleteLadderPortfolioItemsByLadder(ctx context.Context, ladderID int64) error
-}
-
 // PortfolioRepository defines the interface for portfolio persistence.
 type PortfolioRepository interface {
 	GetPortfolio(ctx context.Context, userID int64, ladderID int64) ([]*domain.PortfolioItem, error)

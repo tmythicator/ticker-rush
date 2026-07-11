@@ -25,7 +25,7 @@ func TestLadderService_JoinLadder(t *testing.T) {
 		mockRepo.On("GetActiveLadder", ctx).Return(ladderID, nil)
 		mockRepo.On("JoinLadder", ctx, ladderID, userID).Return(nil)
 
-		s := service.NewLadderService(mockRepo)
+		s := service.NewLadder(mockRepo)
 		err := s.JoinLadder(ctx, userID)
 
 		assert.NoError(t, err)
@@ -38,7 +38,7 @@ func TestLadderService_JoinLadder(t *testing.T) {
 		mockRepo.On("GetActiveLadder", ctx).Return(ladderID, nil)
 		mockRepo.On("JoinLadder", ctx, ladderID, userID).Return(apperrors.ErrAlreadyJoinedLadder)
 
-		s := service.NewLadderService(mockRepo)
+		s := service.NewLadder(mockRepo)
 		err := s.JoinLadder(ctx, userID)
 
 		assert.Error(t, err)
