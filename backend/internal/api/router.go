@@ -11,6 +11,7 @@ import (
 
 	"github.com/tmythicator/ticker-rush/backend/internal/api/handler"
 	"github.com/tmythicator/ticker-rush/backend/internal/api/middleware"
+	"github.com/tmythicator/ticker-rush/backend/internal/api/swagger"
 	"github.com/tmythicator/ticker-rush/backend/internal/config"
 )
 
@@ -58,6 +59,8 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 			protected.POST("/sell", handler.SellStock)
 		}
 	}
+
+	swagger.RegisterRoutes(api)
 
 	return &Router{engine: engine}, nil
 }

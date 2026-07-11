@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ticker Rush API Docs</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+  <style>
+    html { box-sizing: border-box; overflow: -y-scroll; }
+    *, *:before, *:after { box-sizing: inherit; }
+    body { margin: 0; background: #fafafa; }
+  </style>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = () => {
+      window.ui = SwaggerUIBundle({
+        urls: [
+          { url: "/api/swagger/docs/user/v1/user.swagger.json", name: "User API" },
+          { url: "/api/swagger/docs/exchange/v1/exchange.swagger.json", name: "Exchange API" },
+          { url: "/api/swagger/docs/ladder/v1/ladder.swagger.json", name: "Ladder API" },
+          { url: "/api/swagger/docs/leaderboard/v1/leaderboard.swagger.json", name: "Leaderboard API" }
+        ],
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        layout: "StandaloneLayout",
+        validatorUrl: null
+      });
+    };
+  </script>
+</body>
+</html>
