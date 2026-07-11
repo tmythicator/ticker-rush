@@ -31,7 +31,7 @@ func TestMarketService_GetQuote(t *testing.T) {
 		}, nil)
 		mockMarketRepo.On("GetQuote", ctx, symbol).Return(expectedQuote, nil)
 
-		s := service.NewMarketService(mockMarketRepo, mockHistoryRepo, mockLadderRepo)
+		s := service.NewMarket(mockMarketRepo, mockHistoryRepo, mockLadderRepo)
 		q, err := s.GetQuote(ctx, symbol)
 
 		assert.NoError(t, err)
@@ -50,7 +50,7 @@ func TestMarketService_GetQuote(t *testing.T) {
 			{Symbol: "GOOG"},
 		}, nil)
 
-		s := service.NewMarketService(mockMarketRepo, mockHistoryRepo, mockLadderRepo)
+		s := service.NewMarket(mockMarketRepo, mockHistoryRepo, mockLadderRepo)
 		q, err := s.GetQuote(ctx, symbol)
 
 		assert.ErrorIs(t, err, apperrors.ErrSymbolNotAllowed)
@@ -66,7 +66,7 @@ func TestMarketService_GetQuote(t *testing.T) {
 		expectedErr := errors.New("db error")
 		mockLadderRepo.On("GetActiveLadder", ctx).Return(int64(0), expectedErr)
 
-		s := service.NewMarketService(mockMarketRepo, mockHistoryRepo, mockLadderRepo)
+		s := service.NewMarket(mockMarketRepo, mockHistoryRepo, mockLadderRepo)
 		q, err := s.GetQuote(ctx, symbol)
 
 		assert.ErrorIs(t, err, expectedErr)
@@ -92,7 +92,7 @@ func TestMarketService_SubscribeToQuotes(t *testing.T) {
 		}, nil)
 		mockMarketRepo.On("SubscribeToQuotes", ctx, symbol).Return(expectedPubSub)
 
-		s := service.NewMarketService(mockMarketRepo, mockHistoryRepo, mockLadderRepo)
+		s := service.NewMarket(mockMarketRepo, mockHistoryRepo, mockLadderRepo)
 		pb, err := s.SubscribeToQuotes(ctx, symbol)
 
 		assert.NoError(t, err)
@@ -111,7 +111,7 @@ func TestMarketService_SubscribeToQuotes(t *testing.T) {
 			{Symbol: "MSFT"},
 		}, nil)
 
-		s := service.NewMarketService(mockMarketRepo, mockHistoryRepo, mockLadderRepo)
+		s := service.NewMarket(mockMarketRepo, mockHistoryRepo, mockLadderRepo)
 		pb, err := s.SubscribeToQuotes(ctx, symbol)
 
 		assert.ErrorIs(t, err, apperrors.ErrSymbolNotAllowed)
@@ -140,7 +140,7 @@ func TestMarketService_GetHistory(t *testing.T) {
 		}, nil)
 		mockHistoryRepo.On("GetHistory", ctx, symbol, limit).Return(expectedHistory, nil)
 
-		s := service.NewMarketService(mockMarketRepo, mockHistoryRepo, mockLadderRepo)
+		s := service.NewMarket(mockMarketRepo, mockHistoryRepo, mockLadderRepo)
 		h, err := s.GetHistory(ctx, symbol, limit)
 
 		assert.NoError(t, err)
@@ -159,7 +159,7 @@ func TestMarketService_GetHistory(t *testing.T) {
 			{Symbol: "GOOG"},
 		}, nil)
 
-		s := service.NewMarketService(mockMarketRepo, mockHistoryRepo, mockLadderRepo)
+		s := service.NewMarket(mockMarketRepo, mockHistoryRepo, mockLadderRepo)
 		h, err := s.GetHistory(ctx, symbol, limit)
 
 		assert.ErrorIs(t, err, apperrors.ErrSymbolNotAllowed)

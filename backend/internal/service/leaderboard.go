@@ -7,24 +7,40 @@ import (
 	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 )
 
-// LeaderBoardService handles the calculation and retrieval of user rankings.
-type LeaderBoardService struct {
-	userRepo        UserRepository
+// LeaderboardScore represents a single score entry in the leaderboard.
+type LeaderboardScore struct {
+	UserID int64
+	Score  float64
+}
+
+// LeaderboardRepository defines the interface for leaderboard state storage (e.g. Valkey/Redis).
+type LeaderboardRepository interface {
+	UpdateRank(ctx context.Context, ladderID int64, userID int64, score float64) error
+	GetLeaderboard(ctx context.Context, ladderID int64, offset, limit int) ([]LeaderboardScore, error)
+	GetLastUpdate(ctx context.Context, ladderID int64) (int64, error)
+	SetLastUpdate(ctx context.Context, ladderID int64, timestamp int64) error
+	GetTotalCount(ctx context.Context, ladderID int64) (int64, error)
+	RemoveFromLeaderboard(ctx context.Context, ladderID int64, userID int64) error
+}
+
+// Leaderboard handles the calculation and retrieval of user rankings.
+type Leaderboard struct {
+	userRepo        UserRepo
 	portfolioRepo   PortfolioRepository
 	marketRepo      MarketRepository
 	leaderboardRepo LeaderboardRepository
 	ladderRepo      LadderRepository
 }
 
-// NewLeaderBoardService creates a new instance of LeaderBoardService with required dependencies.
-func NewLeaderBoardService(
-	userRepo UserRepository,
+// NewLeaderboard creates a new instance of Leaderboard with required dependencies.
+func NewLeaderboard(
+	userRepo UserRepo,
 	portfolioRepo PortfolioRepository,
 	marketRepo MarketRepository,
 	ladderRepo LadderRepository,
 	leaderboardRepo LeaderboardRepository,
-) *LeaderBoardService {
-	return &LeaderBoardService{
+) *Leaderboard {
+	return &Leaderboard{
 		userRepo:        userRepo,
 		portfolioRepo:   portfolioRepo,
 		marketRepo:      marketRepo,
@@ -34,7 +50,7 @@ func NewLeaderBoardService(
 }
 
 // UpdateLeaderboard recalculates the net worth of all users and updates the Redis Sorted Set for the active ladder.
-func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
+func (s *Leaderboard) UpdateLeaderboard(ctx context.Context) error {
 	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
 	if err != nil {
 		return err
@@ -83,7 +99,7 @@ func (s *LeaderBoardService) UpdateLeaderboard(ctx context.Context) error {
 }
 
 // GetLeaderboard retrieves a paginated list of top performing users from Redis/Valkey for the active ladder.
-func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, offset, limit int) (*domain.LeaderboardResponse, error) {
+func (s *Leaderboard) GetLeaderboard(ctx context.Context, offset, limit int) (*domain.LeaderboardResponse, error) {
 	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
 	if err != nil {
 		return nil, err
@@ -139,7 +155,7 @@ func (s *LeaderBoardService) GetLeaderboard(ctx context.Context, offset, limit i
 }
 
 // anonymizeUser masks user fields if the user is not public.
-func (s *LeaderBoardService) anonymizeUser(u *domain.User) domain.User {
+func (s *Leaderboard) anonymizeUser(u *domain.User) domain.User {
 	if u.IsPublic {
 		return *u
 	}

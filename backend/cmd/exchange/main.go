@@ -49,10 +49,10 @@ import (
 
 type App struct {
 	cfg                *config.Config
-	userService        *service.UserService
-	tradeService       *service.TradeService
-	marketService      *service.MarketService
-	leaderboardService *service.LeaderBoardService
+	userService        *service.User
+	tradeService       *service.Trade
+	marketService      *service.Market
+	leaderboardService *service.Leaderboard
 	lifecycleWorker    *worker.LadderLifecycleWorker
 	leaderboardWorker  *worker.LeaderboardWorker
 	restHandler        *handler.RestHandler
@@ -114,7 +114,7 @@ func NewApp(ctx context.Context, cfg *config.Config) (app *App, err error) {
 
 	// Initialize repositories
 	ladderRepo := postgres.NewLadderRepository(postgreClient)
-	userRepo := postgres.NewUserRepository(postgreClient)
+	userRepo := postgres.NewUser(postgreClient)
 	portfolioRepo := postgres.NewPortfolioRepository(postgreClient)
 	marketRepo := valkey.NewMarketRepository(valkeyClient)
 	leaderboardRepo := valkey.NewLeaderboardRepository(valkeyClient)
@@ -122,11 +122,11 @@ func NewApp(ctx context.Context, cfg *config.Config) (app *App, err error) {
 	transactor := postgres.NewPgxTransactor(postgreClient)
 
 	// Initialize services
-	userService := service.NewUserService(userRepo, portfolioRepo, ladderRepo)
-	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
-	marketService := service.NewMarketService(marketRepo, historyRepo, ladderRepo)
-	ladderService := service.NewLadderService(ladderRepo)
-	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
+	userService := service.NewUser(userRepo, portfolioRepo, ladderRepo)
+	tradeService := service.NewTrade(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
+	marketService := service.NewMarket(marketRepo, historyRepo, ladderRepo)
+	ladderService := service.NewLadder(ladderRepo)
+	leaderboardService := service.NewLeaderboard(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
 
 	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, ladderService, cfg.JWTSecret)
 

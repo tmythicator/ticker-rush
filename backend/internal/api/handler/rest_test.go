@@ -43,12 +43,12 @@ var (
 	valkeyClient  *redis.Client
 	dbPool        *pgxpool.Pool
 	ladderRepo    *postgreRepo.LadderRepository
-	userRepo      *postgreRepo.UserRepository
+	userRepo      *postgreRepo.User
 	portfolioRepo *postgreRepo.PortfolioRepository
 	marketRepo    *redisRepo.MarketRepository
-	userService   *service.UserService
-	tradeService  *service.TradeService
-	marketService *service.MarketService
+	userService   *service.User
+	tradeService  *service.Trade
+	marketService *service.Market
 )
 
 func setupTestPostgres(t *testing.T) string {
@@ -118,19 +118,19 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 
 	// Initialize Layers
 	ladderRepo = postgreRepo.NewLadderRepository(dbPool)
-	userRepo = postgreRepo.NewUserRepository(dbPool)
+	userRepo = postgreRepo.NewUser(dbPool)
 	portfolioRepo = postgreRepo.NewPortfolioRepository(dbPool)
 	marketRepo = redisRepo.NewMarketRepository(valkeyClient)
 	leaderboardRepo := redisRepo.NewLeaderboardRepository(valkeyClient)
 	transactor := postgreRepo.NewPgxTransactor(dbPool)
 	historyRepo := &MockHistoryRepository{}
 
-	userService = service.NewUserService(userRepo, portfolioRepo, ladderRepo)
-	tradeService = service.NewTradeService(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
-	ladderService := service.NewLadderService(ladderRepo)
-	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
+	userService = service.NewUser(userRepo, portfolioRepo, ladderRepo)
+	tradeService = service.NewTrade(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
+	ladderService := service.NewLadder(ladderRepo)
+	leaderboardService := service.NewLeaderboard(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
 
-	marketService = service.NewMarketService(marketRepo, historyRepo, ladderRepo)
+	marketService = service.NewMarket(marketRepo, historyRepo, ladderRepo)
 
 	cfg := &config.Config{
 		ServerPort: 8080,

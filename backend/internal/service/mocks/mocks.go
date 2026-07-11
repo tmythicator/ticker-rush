@@ -131,10 +131,10 @@ func (m *MockUserRepository) GetUserWithPortfolioForActiveLadder(ctx context.Con
 }
 
 // WithTx returns a new UserRepository with the transaction.
-func (m *MockUserRepository) WithTx(tx service.Transaction) service.UserRepository {
+func (m *MockUserRepository) WithTx(tx service.Transaction) service.UserRepo {
 	args := m.Called(tx)
 
-	return args.Get(0).(service.UserRepository)
+	return args.Get(0).(service.UserRepo)
 }
 
 // MockPortfolioRepository is a mock implementation of PortfolioRepository.

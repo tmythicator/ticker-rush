@@ -13,24 +13,47 @@ import (
 	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 )
 
-// TradeService handles stock trading operations.
-type TradeService struct {
-	userRepo      UserRepository
+// PortfolioRepository defines the interface for portfolio persistence.
+type PortfolioRepository interface {
+	GetPortfolio(ctx context.Context, userID int64, ladderID int64) ([]*domain.PortfolioItem, error)
+	GetPortfolioItem(ctx context.Context, userID int64, ladderID int64, symbol string) (*domain.PortfolioItem, error)
+
+	GetPortfolioItemForUpdate(
+		ctx context.Context,
+		userID int64,
+		ladderID int64,
+		symbol string,
+	) (*domain.PortfolioItem, error)
+	SetPortfolioItem(
+		ctx context.Context,
+		userID int64,
+		ladderID int64,
+		symbol string,
+		quantity decimal.Decimal,
+		averagePrice decimal.Decimal,
+	) error
+	DeletePortfolioItem(ctx context.Context, userID int64, ladderID int64, symbol string) error
+	WithTx(tx Transaction) PortfolioRepository
+}
+
+// Trade handles stock trading operations.
+type Trade struct {
+	userRepo      UserRepo
 	portfolioRepo PortfolioRepository
 	marketRepo    MarketRepository
 	ladderRepo    LadderRepository
 	transactor    Transactor
 }
 
-// NewTradeService creates a new instance of TradeService.
-func NewTradeService(
-	userRepo UserRepository,
+// NewTrade creates a new instance of Trade.
+func NewTrade(
+	userRepo UserRepo,
 	portfolioRepo PortfolioRepository,
 	marketRepo MarketRepository,
 	ladderRepo LadderRepository,
 	transactor Transactor,
-) *TradeService {
-	return &TradeService{
+) *Trade {
+	return &Trade{
 		userRepo:      userRepo,
 		portfolioRepo: portfolioRepo,
 		marketRepo:    marketRepo,
@@ -40,7 +63,7 @@ func NewTradeService(
 }
 
 // BuyStock purchases a stock for a user for the active ladder.
-func (s *TradeService) BuyStock(
+func (s *Trade) BuyStock(
 	ctx context.Context,
 	userID int64,
 	symbol string,
@@ -119,7 +142,7 @@ func (s *TradeService) BuyStock(
 }
 
 // SellStock sells a stock for a user for the active ladder.
-func (s *TradeService) SellStock(
+func (s *Trade) SellStock(
 	ctx context.Context,
 	userID int64,
 	symbol string,
@@ -194,7 +217,7 @@ func (s *TradeService) SellStock(
 	return user, nil
 }
 
-func (s *TradeService) validateMarketAndParticipation(ctx context.Context, userID int64, symbol string) (decimal.Decimal, int64, error) {
+func (s *Trade) validateMarketAndParticipation(ctx context.Context, userID int64, symbol string) (decimal.Decimal, int64, error) {
 	quote, err := s.marketRepo.GetQuote(ctx, symbol)
 	if err != nil {
 		return decimal.Zero, 0, err
@@ -230,7 +253,7 @@ func (s *TradeService) validateMarketAndParticipation(ctx context.Context, userI
 	return quote.Price, ladderID, nil
 }
 
-func (s *TradeService) updatePortfolioPersistence(
+func (s *Trade) updatePortfolioPersistence(
 	ctx context.Context,
 	repo PortfolioRepository,
 	userID int64,

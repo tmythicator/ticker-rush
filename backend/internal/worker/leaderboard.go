@@ -11,12 +11,12 @@ import (
 
 // LeaderboardWorker is a worker that periodically updates the leaderboard.
 type LeaderboardWorker struct {
-	lbService *service.LeaderBoardService
+	lbService *service.Leaderboard
 	interval  time.Duration
 }
 
 // NewLeaderboardWorker creates a new instance of LeaderboardWorker.
-func NewLeaderboardWorker(lbService *service.LeaderBoardService, interval time.Duration) *LeaderboardWorker {
+func NewLeaderboardWorker(lbService *service.Leaderboard, interval time.Duration) *LeaderboardWorker {
 	return &LeaderboardWorker{
 		lbService: lbService,
 		interval:  interval,

@@ -22,21 +22,21 @@ import (
 
 // RestHandler handles HTTP requests for the API.
 type RestHandler struct {
-	userService   *service.UserService
-	tradeService  *service.TradeService
-	marketService *service.MarketService
-	leadService   *service.LeaderBoardService
-	ladderService *service.LadderService
+	userService   *service.User
+	tradeService  *service.Trade
+	marketService *service.Market
+	leadService   *service.Leaderboard
+	ladderService *service.Ladder
 	jwtSecret     string
 }
 
 // NewRestHandler creates a new instance of RestHandler.
 func NewRestHandler(
-	userService *service.UserService,
-	tradeService *service.TradeService,
-	marketService *service.MarketService,
-	leadService *service.LeaderBoardService,
-	ladderService *service.LadderService,
+	userService *service.User,
+	tradeService *service.Trade,
+	marketService *service.Market,
+	leadService *service.Leaderboard,
+	ladderService *service.Ladder,
 	jwtSecret string,
 ) *RestHandler {
 	return &RestHandler{

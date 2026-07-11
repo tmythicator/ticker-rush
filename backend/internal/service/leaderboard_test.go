@@ -32,7 +32,7 @@ func TestLeaderBoardService_UpdateLeaderboard(t *testing.T) {
 	mockLadderRepo := new(mocks.MockLadderRepository)
 	leaderboardRepo := redisRepo.NewLeaderboardRepository(redisClient)
 
-	lbService := service.NewLeaderBoardService(mockUserRepo, mockPortfolioRepo, mockMarketRepo, mockLadderRepo, leaderboardRepo)
+	lbService := service.NewLeaderboard(mockUserRepo, mockPortfolioRepo, mockMarketRepo, mockLadderRepo, leaderboardRepo)
 
 	ctx := context.Background()
 
@@ -92,7 +92,7 @@ func TestLeaderBoardService_GetLeaderboard(t *testing.T) {
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockLadderRepo := new(mocks.MockLadderRepository)
 	leaderboardRepo := redisRepo.NewLeaderboardRepository(redisClient)
-	lbService := service.NewLeaderBoardService(mockUserRepo, nil, nil, mockLadderRepo, leaderboardRepo)
+	lbService := service.NewLeaderboard(mockUserRepo, nil, nil, mockLadderRepo, leaderboardRepo)
 
 	ctx := context.Background()
 
