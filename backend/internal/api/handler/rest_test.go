@@ -185,6 +185,12 @@ func TestCreateUser_AgbNotAccepted(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, "application/problem+json", w.Header().Get("Content-Type"))
+	var prob apperrors.ProblemDetails
+	err := json.Unmarshal(w.Body.Bytes(), &prob)
+	assert.NoError(t, err)
+	assert.Equal(t, apperrors.TypeValidation, prob.Type)
+	assert.Equal(t, apperrors.ErrAGBNotAccepted.Error(), prob.Detail)
 }
 
 func TestLogin(t *testing.T) {
@@ -372,7 +378,12 @@ func TestInsufficientFunds(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusPaymentRequired, w.Code)
-	assert.Error(t, apperrors.ErrInsufficientFunds)
+	assert.Equal(t, "application/problem+json", w.Header().Get("Content-Type"))
+	var prob apperrors.ProblemDetails
+	err := json.Unmarshal(w.Body.Bytes(), &prob)
+	assert.NoError(t, err)
+	assert.Equal(t, apperrors.TypeInsufficientFunds, prob.Type)
+	assert.Equal(t, apperrors.ErrInsufficientFunds.Error(), prob.Detail)
 }
 
 func TestSellAllStock(t *testing.T) {
@@ -474,6 +485,12 @@ func TestGetPublicProfile(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
+		assert.Equal(t, "application/problem+json", w.Header().Get("Content-Type"))
+		var prob apperrors.ProblemDetails
+		err := json.Unmarshal(w.Body.Bytes(), &prob)
+		assert.NoError(t, err)
+		assert.Equal(t, apperrors.TypeNotFound, prob.Type)
+		assert.Equal(t, "User not found or profile is private", prob.Detail)
 	})
 
 	t.Run("Get Non-Existent Profile - NotFound", func(t *testing.T) {
@@ -482,6 +499,12 @@ func TestGetPublicProfile(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
+		assert.Equal(t, "application/problem+json", w.Header().Get("Content-Type"))
+		var prob apperrors.ProblemDetails
+		err := json.Unmarshal(w.Body.Bytes(), &prob)
+		assert.NoError(t, err)
+		assert.Equal(t, apperrors.TypeNotFound, prob.Type)
+		assert.Equal(t, "User not found or profile is private", prob.Detail)
 	})
 }
 

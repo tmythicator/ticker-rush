@@ -53,7 +53,7 @@ func NewRestHandler(
 func (h *RestHandler) CreateUser(c *gin.Context) {
 	req := user.CreateUserRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		RespondWithProblem(c, http.StatusBadRequest, apperrors.TypeValidation, "Invalid request body", nil)
 
 		return
 	}
@@ -67,25 +67,16 @@ func (h *RestHandler) CreateUser(c *gin.Context) {
 		req.AgbAccepted,
 	)
 	if err != nil {
-		if errors.Is(err, apperrors.ErrAGBNotAccepted) ||
-			errors.Is(err, apperrors.ErrPasswordTooShort) ||
-			errors.Is(err, apperrors.ErrPasswordTooLong) ||
-			errors.Is(err, apperrors.ErrInvalidUsernameFormat) ||
-			errors.Is(err, apperrors.ErrNameRequired) ||
-			errors.Is(err, apperrors.ErrProfanityDetected) ||
-			errors.Is(err, apperrors.ErrUsernameNotAllowed) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-
-			return
-		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		status, errType, detail := apperrors.MatchError(err)
+		invalidParams := apperrors.ValidationErrorParams(err)
+		RespondWithProblem(c, status, errType, detail, invalidParams)
 
 		return
 	}
 
 	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), createdUser.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user profile after creation"})
+		RespondWithProblem(c, http.StatusInternalServerError, apperrors.TypeInternalError, "Failed to fetch user profile after creation", nil)
 
 		return
 	}
@@ -97,28 +88,28 @@ func (h *RestHandler) CreateUser(c *gin.Context) {
 func (h *RestHandler) Login(c *gin.Context) {
 	var req user.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		RespondWithProblem(c, http.StatusBadRequest, apperrors.TypeValidation, "Invalid request body", nil)
 
 		return
 	}
 
 	authenticatedUser, err := h.userService.Authenticate(c.Request.Context(), req.Username, req.Password)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		RespondWithProblem(c, http.StatusUnauthorized, apperrors.TypeAuthRequired, "Invalid username or password", nil)
 
 		return
 	}
 
 	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), authenticatedUser.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user profile"})
+		RespondWithProblem(c, http.StatusInternalServerError, apperrors.TypeInternalError, "Failed to fetch user profile", nil)
 
 		return
 	}
 
 	token, err := service.GenerateToken(authenticatedUser, h.jwtSecret)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		RespondWithProblem(c, http.StatusInternalServerError, apperrors.TypeInternalError, "Failed to generate token", nil)
 
 		return
 	}
@@ -142,7 +133,7 @@ func (h *RestHandler) UpdateUser(c *gin.Context) {
 
 	var req user.UpdateUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		RespondWithProblem(c, http.StatusBadRequest, apperrors.TypeValidation, "Invalid request body", nil)
 
 		return
 	}
@@ -157,14 +148,9 @@ func (h *RestHandler) UpdateUser(c *gin.Context) {
 	)
 
 	if err != nil {
-		if errors.Is(err, apperrors.ErrNameRequired) ||
-			errors.Is(err, apperrors.ErrProfanityDetected) ||
-			errors.Is(err, apperrors.ErrInvalidWebsiteFormat) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-
-			return
-		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		status, errType, detail := apperrors.MatchError(err)
+		invalidParams := apperrors.ValidationErrorParams(err)
+		RespondWithProblem(c, status, errType, detail, invalidParams)
 
 		return
 	}
@@ -176,7 +162,7 @@ func (h *RestHandler) UpdateUser(c *gin.Context) {
 func (h *RestHandler) GetPublicProfile(c *gin.Context) {
 	username := c.Param("username")
 	if username == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Username is required"})
+		RespondWithProblem(c, http.StatusBadRequest, apperrors.TypeValidation, "Username is required", nil)
 
 		return
 	}
@@ -184,11 +170,13 @@ func (h *RestHandler) GetPublicProfile(c *gin.Context) {
 	publicProfile, err := h.userService.GetPublicProfile(c.Request.Context(), username)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrUserNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "User not found or profile is private"})
+			RespondWithProblem(c, http.StatusNotFound, apperrors.TypeNotFound, "User not found or profile is private", nil)
 
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch profile"})
+		status, errType, detail := apperrors.MatchError(err)
+		invalidParams := apperrors.ValidationErrorParams(err)
+		RespondWithProblem(c, status, errType, detail, invalidParams)
 
 		return
 	}
@@ -205,7 +193,7 @@ func (h *RestHandler) GetMe(c *gin.Context) {
 
 	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
+		RespondWithProblem(c, http.StatusInternalServerError, apperrors.TypeInternalError, "Internal Service Error", nil)
 
 		return
 	}
@@ -217,29 +205,28 @@ func (h *RestHandler) GetMe(c *gin.Context) {
 func (h *RestHandler) GetQuote(c *gin.Context) {
 	symbol := c.Param("symbol")
 	if symbol == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Symbol is required"})
+		RespondWithProblem(c, http.StatusBadRequest, apperrors.TypeValidation, "Symbol is required", nil)
 
 		return
 	}
 
 	quote, err := h.marketService.GetQuote(c.Request.Context(), symbol)
 	if err != nil {
-		if errors.Is(err, apperrors.ErrSymbolNotAllowed) {
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-
-			return
-		}
-
 		if errors.Is(err, redis.Nil) {
-			c.JSON(
+			RespondWithProblem(
+				c,
 				http.StatusServiceUnavailable,
-				gin.H{"error": "Market data warming up, please retry"},
+				apperrors.TypeInternalError,
+				"Market data warming up, please retry",
+				nil,
 			)
 
 			return
 		}
 
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
+		status, errType, detail := apperrors.MatchError(err)
+		invalidParams := apperrors.ValidationErrorParams(err)
+		RespondWithProblem(c, status, errType, detail, invalidParams)
 
 		return
 	}
@@ -256,7 +243,7 @@ func (h *RestHandler) CreateTrade(c *gin.Context) {
 
 	var req exchange.CreateTradeRequest
 	if err := c.BindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		RespondWithProblem(c, http.StatusBadRequest, apperrors.TypeValidation, "Invalid request body", nil)
 
 		return
 	}
@@ -271,50 +258,22 @@ func (h *RestHandler) CreateTrade(c *gin.Context) {
 		_, err = h.tradeService.SellStock(c.Request.Context(), userID, req.Symbol, req.Quantity)
 		msg = "Sold successfully"
 	default:
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid trade action"})
+		RespondWithProblem(c, http.StatusBadRequest, apperrors.TypeValidation, "Invalid trade action", nil)
 
 		return
 	}
 
 	if err != nil {
-		if errors.Is(err, apperrors.ErrInsufficientFunds) {
-			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
-
-			return
-		}
-
-		if errors.Is(err, apperrors.ErrInsufficientQuantity) {
-			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
-
-			return
-		}
-
-		if errors.Is(err, apperrors.ErrMarketClosed) {
-			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
-
-			return
-		}
-
-		if errors.Is(err, apperrors.ErrNotJoinedLadder) {
-			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
-
-			return
-		}
-
-		if errors.Is(err, apperrors.ErrInvalidQuantity) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-
-			return
-		}
-
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
+		status, errType, detail := apperrors.MatchError(err)
+		invalidParams := apperrors.ValidationErrorParams(err)
+		RespondWithProblem(c, status, errType, detail, invalidParams)
 
 		return
 	}
 
 	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
+		RespondWithProblem(c, http.StatusInternalServerError, apperrors.TypeInternalError, "Internal Service Error", nil)
 
 		return
 	}
@@ -335,7 +294,7 @@ func (h *RestHandler) GetLeaderboard(c *gin.Context) {
 
 	resp, err := h.leadService.GetLeaderboard(c.Request.Context(), offset, limit)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch leaderboard"})
+		RespondWithProblem(c, http.StatusInternalServerError, apperrors.TypeInternalError, "Failed to fetch leaderboard", nil)
 
 		return
 	}
@@ -346,7 +305,7 @@ func (h *RestHandler) GetLeaderboard(c *gin.Context) {
 func (h *RestHandler) GetActiveLadder(c *gin.Context) {
 	l, err := h.ladderService.GetActiveLadder(c.Request.Context())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch active ladder"})
+		RespondWithProblem(c, http.StatusInternalServerError, apperrors.TypeInternalError, "Failed to fetch active ladder", nil)
 
 		return
 	}
@@ -372,7 +331,7 @@ func (h *RestHandler) StreamQuotes(c *gin.Context) {
 	pubsub, err := h.marketService.SubscribeToQuotes(c.Request.Context(), symbol)
 	if err != nil {
 		log.Printf("[StreamQuotes] Failed to subscribe: %v", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		RespondWithProblem(c, http.StatusBadRequest, apperrors.TypeValidation, err.Error(), nil)
 
 		return
 	}
@@ -423,7 +382,7 @@ func (h *RestHandler) SendHeartbeat(w io.Writer) {
 func (h *RestHandler) GetHistory(c *gin.Context) {
 	symbol := c.Param("symbol")
 	if symbol == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
+		RespondWithProblem(c, http.StatusBadRequest, apperrors.TypeValidation, "symbol is required", nil)
 
 		return
 	}
@@ -437,12 +396,9 @@ func (h *RestHandler) GetHistory(c *gin.Context) {
 
 	history, err := h.marketService.GetHistory(c.Request.Context(), symbol, limit)
 	if err != nil {
-		if errors.Is(err, apperrors.ErrSymbolNotAllowed) {
-			c.JSON(http.StatusForbidden, gin.H{"error": "symbol not allowed"})
-
-			return
-		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		status, errType, detail := apperrors.MatchError(err)
+		invalidParams := apperrors.ValidationErrorParams(err)
+		RespondWithProblem(c, status, errType, detail, invalidParams)
 
 		return
 	}
@@ -466,12 +422,9 @@ func (h *RestHandler) JoinLadder(c *gin.Context) {
 
 	err := h.ladderService.JoinLadder(c.Request.Context(), userID)
 	if err != nil {
-		if errors.Is(err, apperrors.ErrAlreadyJoinedLadder) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-
-			return
-		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to join ladder"})
+		status, errType, detail := apperrors.MatchError(err)
+		invalidParams := apperrors.ValidationErrorParams(err)
+		RespondWithProblem(c, status, errType, detail, invalidParams)
 
 		return
 	}
@@ -483,7 +436,13 @@ func (h *RestHandler) JoinLadder(c *gin.Context) {
 func (h *RestHandler) getUserID(c *gin.Context) (int64, bool) {
 	userID, ok := middleware.GetUserID(c)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal authentication configuration error"})
+		RespondWithProblem(
+			c,
+			http.StatusInternalServerError,
+			apperrors.TypeInternalError,
+			"Internal authentication configuration error",
+			nil,
+		)
 
 		return 0, false
 	}

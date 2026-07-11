@@ -21,21 +21,30 @@ import {
   UpdateUserResponse,
   type User,
 } from './proto/user/v1/user';
+import { ApiError, type InvalidParam, parseProblemDetails } from './errors';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/v1`;
 
-class ApiError extends Error {
-  status: number;
-  constructor(message: string, status: number) {
-    super(message);
-    this.status = status;
+export { ApiError, type InvalidParam };
+
+const handleResponseError = async (res: Response): Promise<never> => {
+  const contentType = res.headers.get('Content-Type') || '';
+  if (
+    contentType.includes('application/problem+json') ||
+    contentType.includes('application/json')
+  ) {
+    const data = await res.json().catch(() => ({}));
+    throw parseProblemDetails(data, res.status);
   }
-}
+  throw new ApiError(`Error: ${res.status}`, res.status);
+};
 
 export const api = {
   get: async <T>(endpoint: string): Promise<T> => {
     const res = await fetch(`${API_URL}${endpoint}`);
-    if (!res.ok) throw new ApiError(`Error: ${res.status}`, res.status);
+    if (!res.ok) {
+      await handleResponseError(res);
+    }
     return res.json();
   },
   post: async <T>(endpoint: string, body: unknown): Promise<T> => {
@@ -47,8 +56,7 @@ export const api = {
       body: JSON.stringify(body),
     });
     if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new ApiError(errorData.error || `Error: ${res.status}`, res.status);
+      await handleResponseError(res);
     }
     return res.json();
   },
@@ -61,8 +69,7 @@ export const api = {
       body: JSON.stringify(body),
     });
     if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new ApiError(errorData.error || `Error: ${res.status}`, res.status);
+      await handleResponseError(res);
     }
     return res.json();
   },
@@ -71,8 +78,7 @@ export const api = {
       method: 'DELETE',
     });
     if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new ApiError(errorData.error || `Error: ${res.status}`, res.status);
+      await handleResponseError(res);
     }
     if (res.status === 204) return {} as T;
     return res.json().catch(() => ({}));
