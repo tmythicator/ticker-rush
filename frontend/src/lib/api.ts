@@ -66,6 +66,17 @@ export const api = {
     }
     return res.json();
   },
+  delete: async <T = void>(endpoint: string): Promise<T> => {
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new ApiError(errorData.error || `Error: ${res.status}`, res.status);
+    }
+    if (res.status === 204) return {} as T;
+    return res.json().catch(() => ({}));
+  },
 };
 
 export const getQuote = async (req: GetQuoteRequest): Promise<Quote> => {
@@ -90,14 +101,14 @@ export const createTrade = async (req: CreateTradeRequest): Promise<User> => {
 };
 
 export const login = async (req: LoginRequest): Promise<User> => {
-  const json = await api.post('/login', req);
+  const json = await api.post('/sessions', req);
   const { user } = LoginResponse.fromJSON(json);
   if (!user) throw new Error('Login failed');
   return user;
 };
 
 export const logout = async (): Promise<void> => {
-  return api.post('/logout', {});
+  return api.delete('/sessions');
 };
 
 export const getLeaderboard = async (
@@ -108,7 +119,7 @@ export const getLeaderboard = async (
 };
 
 export const register = async (req: CreateUserRequest): Promise<User> => {
-  const json = await api.post('/register', req);
+  const json = await api.post('/users', req);
   const { user } = CreateUserResponse.fromJSON(json);
   if (!user) throw new Error('Registration failed');
   return user;
@@ -121,7 +132,7 @@ export const getActiveLadder = async (): Promise<Ladder | undefined> => {
 };
 
 export const joinLadder = async (): Promise<void> => {
-  await api.post('/ladder/join', {});
+  await api.post('/ladder/participants', {});
 };
 
 export const getHistory = async (req: GetHistoryRequest): Promise<Quote[]> => {

@@ -31,7 +31,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 
 	engine.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{fmt.Sprintf("http://localhost:%d", cfg.ClientPort)},
-		AllowMethods:     []string{"GET", "POST"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
@@ -39,9 +39,9 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 
 	v1 := engine.Group("/api/v1")
 	{
-		v1.POST("/login", handler.Login)
-		v1.POST("/logout", handler.Logout)
-		v1.POST("/register", handler.CreateUser)
+		v1.POST("/sessions", handler.Login)
+		v1.DELETE("/sessions", handler.Logout)
+		v1.POST("/users", handler.CreateUser)
 		v1.GET("/ladder/active", handler.GetActiveLadder)
 		v1.GET("/quotes/:symbol/history", handler.GetHistory)
 		v1.GET("/leaderboard", handler.GetLeaderboard)
@@ -50,7 +50,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 		protected := v1.Group("/")
 		protected.Use(middleware.AuthMiddleware(cfg.JWTSecret))
 		{
-			protected.POST("/ladder/join", handler.JoinLadder)
+			protected.POST("/ladder/participants", handler.JoinLadder)
 			protected.GET("/quotes/events", handler.StreamQuotes)
 			protected.GET("/quotes/:symbol", handler.GetQuote)
 			protected.GET("/profile", handler.GetMe)

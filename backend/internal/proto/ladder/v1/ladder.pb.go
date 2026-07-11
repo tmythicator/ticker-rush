@@ -480,14 +480,14 @@ const file_ladder_v1_ladder_proto_rawDesc = "" +
 	"\x11JoinLadderRequest\"H\n" +
 	"\x12JoinLadderResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\x85\x02\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\x8e\x02\n" +
 	"\rLadderService\x12w\n" +
-	"\x0fGetActiveLadder\x12!.ladder.v1.GetActiveLadderRequest\x1a\".ladder.v1.GetActiveLadderResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/api/v1/ladder/active\x12{\n" +
+	"\x0fGetActiveLadder\x12!.ladder.v1.GetActiveLadderRequest\x1a\".ladder.v1.GetActiveLadderResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/api/v1/ladder/active\x12\x83\x01\n" +
 	"\n" +
-	"JoinLadder\x12\x1c.ladder.v1.JoinLadderRequest\x1a\x1d.ladder.v1.JoinLadderResponse\"0\x92A\x12b\x10\n" +
+	"JoinLadder\x12\x1c.ladder.v1.JoinLadderRequest\x1a\x1d.ladder.v1.JoinLadderResponse\"8\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
-	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x15\"\x13/api/v1/ladder/joinB\xfd\x01\x92A\xad\x01\x12V\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x1d\"\x1b/api/v1/ladder/participantsB\xfd\x01\x92A\xad\x01\x12V\n" +
 	"\x12Ladder Service API\x129API for viewing and participating in competition ladders.2\x051.0.0ZS\n" +
 	"Q\n" +
 	"\n" +

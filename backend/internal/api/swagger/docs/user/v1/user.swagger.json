@@ -17,68 +17,6 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/login": {
-      "post": {
-        "summary": "Login authenticates a user and establishes an HTTP session (via Cookie).",
-        "operationId": "UserService_Login",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1LoginResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "description": "Request to authenticate a user.",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1LoginRequest"
-            }
-          }
-        ],
-        "tags": [
-          "UserService"
-        ]
-      }
-    },
-    "/api/v1/logout": {
-      "post": {
-        "summary": "Logout invalidates the active HTTP session cookie.",
-        "operationId": "UserService_Logout",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1LogoutResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "tags": [
-          "UserService"
-        ],
-        "security": [
-          {
-            "CookieAuth": []
-          }
-        ]
-      }
-    },
     "/api/v1/profile": {
       "get": {
         "summary": "GetMe returns the authenticated user's full private profile (including balance and portfolio).",
@@ -144,7 +82,67 @@
         ]
       }
     },
-    "/api/v1/register": {
+    "/api/v1/sessions": {
+      "delete": {
+        "summary": "Logout invalidates the active HTTP session cookie.",
+        "operationId": "UserService_Logout",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LogoutResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
+        ],
+        "security": [
+          {
+            "CookieAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Login authenticates a user and establishes an HTTP session (via Cookie).",
+        "operationId": "UserService_Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Request to authenticate a user.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1LoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/v1/users": {
       "post": {
         "summary": "CreateUser registers a new player account.",
         "operationId": "UserService_CreateUser",

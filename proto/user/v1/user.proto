@@ -154,7 +154,7 @@ service UserService {
   // CreateUser registers a new player account.
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
     option (google.api.http) = {
-      post: "/api/v1/register"
+      post: "/api/v1/users"
       body: "*"
     };
   }
@@ -162,14 +162,14 @@ service UserService {
   // Login authenticates a user and establishes an HTTP session (via Cookie).
   rpc Login(LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
-      post: "/api/v1/login"
+      post: "/api/v1/sessions"
       body: "*"
     };
   }
 
   // Logout invalidates the active HTTP session cookie.
   rpc Logout(LogoutRequest) returns (LogoutResponse) {
-    option (google.api.http) = {post: "/api/v1/logout"};
+    option (google.api.http) = {delete: "/api/v1/sessions"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       security: {
         security_requirement: {

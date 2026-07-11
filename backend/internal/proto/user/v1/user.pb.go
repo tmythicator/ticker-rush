@@ -909,15 +909,15 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\x17GetPublicProfileRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\"=\n" +
 	"\x18GetPublicProfileResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user2\x84\x05\n" +
-	"\vUserService\x12b\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user2\x86\x05\n" +
+	"\vUserService\x12_\n" +
 	"\n" +
-	"CreateUser\x12\x1a.user.v1.CreateUserRequest\x1a\x1b.user.v1.CreateUserResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/api/v1/register\x12P\n" +
-	"\x05Login\x12\x15.user.v1.LoginRequest\x1a\x16.user.v1.LoginResponse\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/api/v1/login\x12f\n" +
-	"\x06Logout\x12\x16.user.v1.LogoutRequest\x1a\x17.user.v1.LogoutResponse\"+\x92A\x12b\x10\n" +
+	"CreateUser\x12\x1a.user.v1.CreateUserRequest\x1a\x1b.user.v1.CreateUserResponse\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/api/v1/users\x12S\n" +
+	"\x05Login\x12\x15.user.v1.LoginRequest\x1a\x16.user.v1.LoginResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/api/v1/sessions\x12h\n" +
+	"\x06Logout\x12\x16.user.v1.LogoutRequest\x1a\x17.user.v1.LogoutResponse\"-\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
-	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x10\"\x0e/api/v1/logout\x12d\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x12*\x10/api/v1/sessions\x12d\n" +
 	"\x05GetMe\x12\x15.user.v1.GetMeRequest\x1a\x16.user.v1.GetMeResponse\",\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +

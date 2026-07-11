@@ -159,7 +159,7 @@ func TestCreateUser(t *testing.T) {
 		testUsername,
 	)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/register", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/users", bytes.NewBufferString(reqBody))
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -181,7 +181,7 @@ func TestCreateUser_AgbNotAccepted(t *testing.T) {
 
 	reqBody := `{"username": "test_user_2", "password": "password123", "first_name": "Test", "last_name": "User", "agb_accepted": false}`
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/register", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/users", bytes.NewBufferString(reqBody))
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -208,7 +208,7 @@ func TestLogin(t *testing.T) {
 	// Perform Login
 	reqBody := fmt.Sprintf(`{"username": "%s", "password": "password123"}`, testUsername)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/login", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/sessions", bytes.NewBufferString(reqBody))
 	router.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -558,7 +558,7 @@ func setupJoinedUser(ctx context.Context, t *testing.T, r *api.Router, balance f
 
 	// Join Ladder
 	wJoin := httptest.NewRecorder()
-	reqJoin, _ := http.NewRequest(http.MethodPost, "/api/v1/ladder/join", nil)
+	reqJoin, _ := http.NewRequest(http.MethodPost, "/api/v1/ladder/participants", nil)
 	reqJoin.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	r.ServeHTTP(wJoin, reqJoin)
 	if wJoin.Code != http.StatusOK {

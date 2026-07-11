@@ -40,7 +40,7 @@
         ]
       }
     },
-    "/api/v1/ladder/join": {
+    "/api/v1/ladder/participants": {
       "post": {
         "summary": "JoinLadder enrolls the authenticated user into the active ladder competition.",
         "operationId": "LadderService_JoinLadder",
