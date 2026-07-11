@@ -20,7 +20,7 @@ export class ApiError extends Error {
       detail?: string;
       instance?: string;
       invalidParams?: InvalidParam[];
-    }
+    },
   ) {
     super(message);
     this.status = status;

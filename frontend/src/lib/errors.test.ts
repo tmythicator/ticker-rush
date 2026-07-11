@@ -16,7 +16,7 @@ describe('ApiError', () => {
       title: 'Validation Failed',
       detail: 'Password too short',
       instance: '/api/v1/users',
-      invalidParams: [{ name: 'password', reason: 'Must be at least 8 chars' }]
+      invalidParams: [{ name: 'password', reason: 'Must be at least 8 chars' }],
     };
 
     const error = new ApiError('Password too short', 400, details);
@@ -37,7 +37,7 @@ describe('parseProblemDetails', () => {
       title: 'Validation Failed',
       detail: 'Password too short',
       instance: '/api/v1/users',
-      invalid_params: [{ name: 'password', reason: 'Must be at least 8 chars' }]
+      invalid_params: [{ name: 'password', reason: 'Must be at least 8 chars' }],
     };
 
     const error = parseProblemDetails(payload, 400);
@@ -52,7 +52,7 @@ describe('parseProblemDetails', () => {
 
   it('should fallback to legacy error field if RFC 7807 detail is missing', () => {
     const payload = {
-      error: 'Legacy error message'
+      error: 'Legacy error message',
     };
 
     const error = parseProblemDetails(payload, 400);
