@@ -3,17 +3,16 @@ syntax = "proto3";
 package leaderboard.v1;
 
 import "google/api/annotations.proto";
-import "user/v1/user.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
+import "user/v1/user.proto";
 
 option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1;leaderboard";
-
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
-    title: "Leaderboard Service API";
-    version: "1.0.0";
-    description: "API for retrieving paginated player standings and ranks.";
-  };
+    title: "Leaderboard Service API"
+    version: "1.0.0"
+    description: "API for retrieving paginated player standings and ranks."
+  }
 };
 
 // Single participant standing on the leaderboard.
@@ -48,8 +47,6 @@ message GetLeaderboardResponse {
 service LeaderBoardService {
   // GetLeaderboard retrieves a paginated list of top players ranked by score.
   rpc GetLeaderboard(GetLeaderboardRequest) returns (GetLeaderboardResponse) {
-    option (google.api.http) = {
-      get: "/api/leaderboard"
-    };
+    option (google.api.http) = {get: "/api/leaderboard"};
   }
 }

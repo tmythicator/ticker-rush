@@ -210,7 +210,7 @@ func (h *RestHandler) GetMe(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &user.GetUserResponse{User: ToExternalUser(fullUser)})
+	c.JSON(http.StatusOK, &user.GetMeResponse{User: ToExternalUser(fullUser)})
 }
 
 // GetQuote returns a stock quote for a given symbol.

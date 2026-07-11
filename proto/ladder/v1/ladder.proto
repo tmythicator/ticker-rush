@@ -5,28 +5,27 @@ package ladder.v1;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
-import "user/v1/user.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
+import "user/v1/user.proto";
 
 option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1;ladder";
-
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
-    title: "Ladder Service API";
-    version: "1.0.0";
-    description: "API for viewing and participating in competition ladders.";
-  };
+    title: "Ladder Service API"
+    version: "1.0.0"
+    description: "API for viewing and participating in competition ladders."
+  }
   security_definitions: {
     security: {
-      key: "CookieAuth";
+      key: "CookieAuth"
       value: {
-        type: TYPE_API_KEY;
-        in: IN_HEADER;
-        name: "auth_token";
-        description: "Authentication cookie 'auth_token' containing JWT";
+        type: TYPE_API_KEY
+        in: IN_HEADER
+        name: "auth_token"
+        description: "Authentication cookie 'auth_token' containing JWT"
       }
     }
-  };
+  }
 };
 
 // Competition cycle or season.
@@ -71,11 +70,17 @@ message LadderParticipant {
   google.protobuf.Timestamp joined_at = 4;
 }
 
+// Request to retrieve active ladder.
+message GetActiveLadderRequest {}
+
 // Response containing active ladder metadata.
 message GetActiveLadderResponse {
   // Active competition ladder.
   Ladder ladder = 1;
 }
+
+// Request to join a ladder.
+message JoinLadderRequest {}
 
 // Response for joining a ladder.
 message JoinLadderResponse {
@@ -88,22 +93,18 @@ message JoinLadderResponse {
 // LadderService manages active competition cycles and handles user enrollment.
 service LadderService {
   // GetActiveLadder retrieves full metadata for the currently active ladder.
-  rpc GetActiveLadder(google.protobuf.Empty) returns (GetActiveLadderResponse) {
-    option (google.api.http) = {
-      get: "/api/ladder/active"
-    };
+  rpc GetActiveLadder(GetActiveLadderRequest) returns (GetActiveLadderResponse) {
+    option (google.api.http) = {get: "/api/ladder/active"};
   }
 
   // JoinLadder enrolls the authenticated user into the active ladder competition.
-  rpc JoinLadder(google.protobuf.Empty) returns (JoinLadderResponse) {
-    option (google.api.http) = {
-      post: "/api/ladder/join"
-    };
+  rpc JoinLadder(JoinLadderRequest) returns (JoinLadderResponse) {
+    option (google.api.http) = {post: "/api/ladder/join"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       security: {
         security_requirement: {
-          key: "CookieAuth";
-          value: {};
+          key: "CookieAuth"
+          value: {}
         }
       }
     };
