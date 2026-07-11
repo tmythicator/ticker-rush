@@ -2,67 +2,202 @@ syntax = "proto3";
 
 package user.v1;
 
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "portfolio/v1/portfolio.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1;user";
 
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "User Service API";
+    version: "1.0.0";
+    description: "API for managing user registration, authentication, and profile settings.";
+  };
+  security_definitions: {
+    security: {
+      key: "CookieAuth";
+      value: {
+        type: TYPE_API_KEY;
+        in: IN_HEADER;
+        name: "auth_token";
+        description: "Authentication cookie 'auth_token' containing JWT";
+      }
+    }
+  };
+};
+
+// Player account profile.
 message User {
+  // Unique database identifier.
   int64 id = 1;
+  // Username of the account.
   string username = 2;
+  // First name of the user.
   string first_name = 3;
+  // Last name of the user.
   string last_name = 4;
+  // Optional website URL.
   string website = 5;
+  // Whether the profile and portfolio are public.
   bool is_public = 6;
+  // Whether the user is an admin.
   bool is_admin = 7;
+  // Whether the user is banned.
   bool is_banned = 8;
+  // Creation timestamp of the account.
   google.protobuf.Timestamp created_at = 9;
+  // Current cash balance in USD.
   double balance = 10;
+  // Current stock portfolio holdings.
   map<string, portfolio.v1.PortfolioItem> portfolio = 11;
+  // Whether the user is participating in the current competition.
   bool is_participating = 12;
 }
 
+// Request to register a new user.
 message CreateUserRequest {
+  // Unique username (3-20 characters).
   string username = 1;
+  // Secure password (min 8 characters).
   string password = 2;
+  // First name of the user.
   string first_name = 3;
+  // Last name of the user.
   string last_name = 4;
+  // Optional website URL.
   string website = 5;
+  // Accept terms of service flag.
   bool agb_accepted = 6;
 }
 
+// Response containing the registered user.
 message CreateUserResponse {
+  // Details of the registered user.
   User user = 1;
 }
 
+// Request to update the current profile.
 message UpdateUserRequest {
+  // Updated first name.
   string first_name = 1;
+  // Updated last name.
   string last_name = 2;
+  // Updated website URL.
   string website = 3;
+  // Sets whether the profile is public.
   bool is_public = 4;
 }
 
+// Response containing the updated profile.
 message UpdateUserResponse {
+  // Details of the updated user.
   User user = 1;
 }
 
+// Request to authenticate a user.
 message LoginRequest {
+  // User's username.
   string username = 1;
+  // User's password.
   string password = 2;
 }
 
+// Response containing the authenticated user.
 message LoginResponse {
+  // Details of the authenticated user.
   User user = 1;
 }
 
+// Response containing the current user profile.
 message GetUserResponse {
+  // Details of the current user.
   User user = 1;
 }
 
+// Request to fetch a public profile.
 message GetPublicProfileRequest {
+  // Username of the profile to fetch.
   string username = 1;
 }
 
+// Response containing the public profile.
 message GetPublicProfileResponse {
+  // Public details of the user.
   User user = 1;
 }
+
+// UserService manages account registration, authentication, logout, and profile updates.
+service UserService {
+  // CreateUser registers a new player account.
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
+    option (google.api.http) = {
+      post: "/api/register"
+      body: "*"
+    };
+  }
+
+  // Login authenticates a user and establishes an HTTP session (via Cookie).
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/api/login"
+      body: "*"
+    };
+  }
+
+  // Logout invalidates the active HTTP session cookie.
+  rpc Logout(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/logout"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "CookieAuth";
+          value: {};
+        }
+      }
+    };
+  }
+
+  // GetMe returns the authenticated user's full private profile (including balance and portfolio).
+  rpc GetMe(google.protobuf.Empty) returns (GetUserResponse) {
+    option (google.api.http) = {
+      get: "/api/user/me"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "CookieAuth";
+          value: {};
+        }
+      }
+    };
+  }
+
+  // UpdateUser modifies the profile attributes of the authenticated user.
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
+    option (google.api.http) = {
+      put: "/api/user/me"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      security: {
+        security_requirement: {
+          key: "CookieAuth";
+          value: {};
+        }
+      }
+    };
+  }
+
+  // GetPublicProfile retrieves the public information of a user profile by username.
+  rpc GetPublicProfile(GetPublicProfileRequest) returns (GetPublicProfileResponse) {
+    option (google.api.http) = {
+      get: "/api/users/{username}"
+    };
+  }
+}
+
