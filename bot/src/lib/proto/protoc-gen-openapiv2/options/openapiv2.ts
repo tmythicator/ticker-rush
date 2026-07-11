@@ -14,13 +14,17 @@ export const protobufPackage = "grpc.gateway.protoc_gen_openapiv2.options";
  * Scheme describes the schemes supported by the OpenAPI Swagger
  * and Operation objects.
  */
-export enum Scheme {
-  UNKNOWN = 0,
-  HTTP = 1,
-  HTTPS = 2,
-  WS = 3,
-  WSS = 4,
-  UNRECOGNIZED = -1,
+export const Scheme = { UNKNOWN: 0, HTTP: 1, HTTPS: 2, WS: 3, WSS: 4, UNRECOGNIZED: -1 } as const;
+
+export type Scheme = typeof Scheme[keyof typeof Scheme];
+
+export namespace Scheme {
+  export type UNKNOWN = typeof Scheme.UNKNOWN;
+  export type HTTP = typeof Scheme.HTTP;
+  export type HTTPS = typeof Scheme.HTTPS;
+  export type WS = typeof Scheme.WS;
+  export type WSS = typeof Scheme.WSS;
+  export type UNRECOGNIZED = typeof Scheme.UNRECOGNIZED;
 }
 
 export function schemeFromJSON(object: any): Scheme {
@@ -339,13 +343,24 @@ export interface HeaderParameter {
  * `Type` is a supported HTTP header type.
  * See https://swagger.io/specification/v2/#parameterType.
  */
-export enum HeaderParameter_Type {
-  UNKNOWN = 0,
-  STRING = 1,
-  NUMBER = 2,
-  INTEGER = 3,
-  BOOLEAN = 4,
-  UNRECOGNIZED = -1,
+export const HeaderParameter_Type = {
+  UNKNOWN: 0,
+  STRING: 1,
+  NUMBER: 2,
+  INTEGER: 3,
+  BOOLEAN: 4,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type HeaderParameter_Type = typeof HeaderParameter_Type[keyof typeof HeaderParameter_Type];
+
+export namespace HeaderParameter_Type {
+  export type UNKNOWN = typeof HeaderParameter_Type.UNKNOWN;
+  export type STRING = typeof HeaderParameter_Type.STRING;
+  export type NUMBER = typeof HeaderParameter_Type.NUMBER;
+  export type INTEGER = typeof HeaderParameter_Type.INTEGER;
+  export type BOOLEAN = typeof HeaderParameter_Type.BOOLEAN;
+  export type UNRECOGNIZED = typeof HeaderParameter_Type.UNRECOGNIZED;
 }
 
 export function headerParameter_TypeFromJSON(object: any): HeaderParameter_Type {
@@ -793,16 +808,31 @@ export interface JSONSchema {
   extensions: { [key: string]: any | undefined };
 }
 
-export enum JSONSchema_JSONSchemaSimpleTypes {
-  UNKNOWN = 0,
-  ARRAY = 1,
-  BOOLEAN = 2,
-  INTEGER = 3,
-  NULL = 4,
-  NUMBER = 5,
-  OBJECT = 6,
-  STRING = 7,
-  UNRECOGNIZED = -1,
+export const JSONSchema_JSONSchemaSimpleTypes = {
+  UNKNOWN: 0,
+  ARRAY: 1,
+  BOOLEAN: 2,
+  INTEGER: 3,
+  NULL: 4,
+  NUMBER: 5,
+  OBJECT: 6,
+  STRING: 7,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type JSONSchema_JSONSchemaSimpleTypes =
+  typeof JSONSchema_JSONSchemaSimpleTypes[keyof typeof JSONSchema_JSONSchemaSimpleTypes];
+
+export namespace JSONSchema_JSONSchemaSimpleTypes {
+  export type UNKNOWN = typeof JSONSchema_JSONSchemaSimpleTypes.UNKNOWN;
+  export type ARRAY = typeof JSONSchema_JSONSchemaSimpleTypes.ARRAY;
+  export type BOOLEAN = typeof JSONSchema_JSONSchemaSimpleTypes.BOOLEAN;
+  export type INTEGER = typeof JSONSchema_JSONSchemaSimpleTypes.INTEGER;
+  export type NULL = typeof JSONSchema_JSONSchemaSimpleTypes.NULL;
+  export type NUMBER = typeof JSONSchema_JSONSchemaSimpleTypes.NUMBER;
+  export type OBJECT = typeof JSONSchema_JSONSchemaSimpleTypes.OBJECT;
+  export type STRING = typeof JSONSchema_JSONSchemaSimpleTypes.STRING;
+  export type UNRECOGNIZED = typeof JSONSchema_JSONSchemaSimpleTypes.UNRECOGNIZED;
 }
 
 export function jSONSchema_JSONSchemaSimpleTypesFromJSON(object: any): JSONSchema_JSONSchemaSimpleTypes {
@@ -1010,12 +1040,22 @@ export interface SecurityScheme {
  * The type of the security scheme. Valid values are "basic",
  * "apiKey" or "oauth2".
  */
-export enum SecurityScheme_Type {
-  TYPE_INVALID = 0,
-  TYPE_BASIC = 1,
-  TYPE_API_KEY = 2,
-  TYPE_OAUTH2 = 3,
-  UNRECOGNIZED = -1,
+export const SecurityScheme_Type = {
+  TYPE_INVALID: 0,
+  TYPE_BASIC: 1,
+  TYPE_API_KEY: 2,
+  TYPE_OAUTH2: 3,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type SecurityScheme_Type = typeof SecurityScheme_Type[keyof typeof SecurityScheme_Type];
+
+export namespace SecurityScheme_Type {
+  export type TYPE_INVALID = typeof SecurityScheme_Type.TYPE_INVALID;
+  export type TYPE_BASIC = typeof SecurityScheme_Type.TYPE_BASIC;
+  export type TYPE_API_KEY = typeof SecurityScheme_Type.TYPE_API_KEY;
+  export type TYPE_OAUTH2 = typeof SecurityScheme_Type.TYPE_OAUTH2;
+  export type UNRECOGNIZED = typeof SecurityScheme_Type.UNRECOGNIZED;
 }
 
 export function securityScheme_TypeFromJSON(object: any): SecurityScheme_Type {
@@ -1056,11 +1096,15 @@ export function securityScheme_TypeToJSON(object: SecurityScheme_Type): string {
 }
 
 /** The location of the API key. Valid values are "query" or "header". */
-export enum SecurityScheme_In {
-  IN_INVALID = 0,
-  IN_QUERY = 1,
-  IN_HEADER = 2,
-  UNRECOGNIZED = -1,
+export const SecurityScheme_In = { IN_INVALID: 0, IN_QUERY: 1, IN_HEADER: 2, UNRECOGNIZED: -1 } as const;
+
+export type SecurityScheme_In = typeof SecurityScheme_In[keyof typeof SecurityScheme_In];
+
+export namespace SecurityScheme_In {
+  export type IN_INVALID = typeof SecurityScheme_In.IN_INVALID;
+  export type IN_QUERY = typeof SecurityScheme_In.IN_QUERY;
+  export type IN_HEADER = typeof SecurityScheme_In.IN_HEADER;
+  export type UNRECOGNIZED = typeof SecurityScheme_In.UNRECOGNIZED;
 }
 
 export function securityScheme_InFromJSON(object: any): SecurityScheme_In {
@@ -1099,13 +1143,24 @@ export function securityScheme_InToJSON(object: SecurityScheme_In): string {
  * The flow used by the OAuth2 security scheme. Valid values are
  * "implicit", "password", "application" or "accessCode".
  */
-export enum SecurityScheme_Flow {
-  FLOW_INVALID = 0,
-  FLOW_IMPLICIT = 1,
-  FLOW_PASSWORD = 2,
-  FLOW_APPLICATION = 3,
-  FLOW_ACCESS_CODE = 4,
-  UNRECOGNIZED = -1,
+export const SecurityScheme_Flow = {
+  FLOW_INVALID: 0,
+  FLOW_IMPLICIT: 1,
+  FLOW_PASSWORD: 2,
+  FLOW_APPLICATION: 3,
+  FLOW_ACCESS_CODE: 4,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type SecurityScheme_Flow = typeof SecurityScheme_Flow[keyof typeof SecurityScheme_Flow];
+
+export namespace SecurityScheme_Flow {
+  export type FLOW_INVALID = typeof SecurityScheme_Flow.FLOW_INVALID;
+  export type FLOW_IMPLICIT = typeof SecurityScheme_Flow.FLOW_IMPLICIT;
+  export type FLOW_PASSWORD = typeof SecurityScheme_Flow.FLOW_PASSWORD;
+  export type FLOW_APPLICATION = typeof SecurityScheme_Flow.FLOW_APPLICATION;
+  export type FLOW_ACCESS_CODE = typeof SecurityScheme_Flow.FLOW_ACCESS_CODE;
+  export type UNRECOGNIZED = typeof SecurityScheme_Flow.UNRECOGNIZED;
 }
 
 export function securityScheme_FlowFromJSON(object: any): SecurityScheme_Flow {

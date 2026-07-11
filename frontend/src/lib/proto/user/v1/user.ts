@@ -100,8 +100,22 @@ export interface LoginResponse {
   user: User | undefined;
 }
 
+/** Request to logout. */
+export interface LogoutRequest {
+}
+
+/** Response for logout. */
+export interface LogoutResponse {
+  /** Status or success message. */
+  message: string;
+}
+
+/** Request to fetch the current user profile. */
+export interface GetMeRequest {
+}
+
 /** Response containing the current user profile. */
-export interface GetUserResponse {
+export interface GetMeResponse {
   /** Details of the current user. */
   user: User | undefined;
 }
@@ -1020,22 +1034,166 @@ export const LoginResponse: MessageFns<LoginResponse> = {
   },
 };
 
-function createBaseGetUserResponse(): GetUserResponse {
+function createBaseLogoutRequest(): LogoutRequest {
+  return {};
+}
+
+export const LogoutRequest: MessageFns<LogoutRequest> = {
+  encode(_: LogoutRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): LogoutRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLogoutRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): LogoutRequest {
+    return {};
+  },
+
+  toJSON(_: LogoutRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<LogoutRequest>, I>>(base?: I): LogoutRequest {
+    return LogoutRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<LogoutRequest>, I>>(_: I): LogoutRequest {
+    const message = createBaseLogoutRequest();
+    return message;
+  },
+};
+
+function createBaseLogoutResponse(): LogoutResponse {
+  return { message: "" };
+}
+
+export const LogoutResponse: MessageFns<LogoutResponse> = {
+  encode(message: LogoutResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.message !== "") {
+      writer.uint32(10).string(message.message);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): LogoutResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLogoutResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LogoutResponse {
+    return { message: isSet(object.message) ? globalThis.String(object.message) : "" };
+  },
+
+  toJSON(message: LogoutResponse): unknown {
+    const obj: any = {};
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<LogoutResponse>, I>>(base?: I): LogoutResponse {
+    return LogoutResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<LogoutResponse>, I>>(object: I): LogoutResponse {
+    const message = createBaseLogoutResponse();
+    message.message = object.message ?? "";
+    return message;
+  },
+};
+
+function createBaseGetMeRequest(): GetMeRequest {
+  return {};
+}
+
+export const GetMeRequest: MessageFns<GetMeRequest> = {
+  encode(_: GetMeRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetMeRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetMeRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): GetMeRequest {
+    return {};
+  },
+
+  toJSON(_: GetMeRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetMeRequest>, I>>(base?: I): GetMeRequest {
+    return GetMeRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetMeRequest>, I>>(_: I): GetMeRequest {
+    const message = createBaseGetMeRequest();
+    return message;
+  },
+};
+
+function createBaseGetMeResponse(): GetMeResponse {
   return { user: undefined };
 }
 
-export const GetUserResponse: MessageFns<GetUserResponse> = {
-  encode(message: GetUserResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const GetMeResponse: MessageFns<GetMeResponse> = {
+  encode(message: GetMeResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.user !== undefined) {
       User.encode(message.user, writer.uint32(10).fork()).join();
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetUserResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number): GetMeResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetUserResponse();
+    const message = createBaseGetMeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1056,11 +1214,11 @@ export const GetUserResponse: MessageFns<GetUserResponse> = {
     return message;
   },
 
-  fromJSON(object: any): GetUserResponse {
+  fromJSON(object: any): GetMeResponse {
     return { user: isSet(object.user) ? User.fromJSON(object.user) : undefined };
   },
 
-  toJSON(message: GetUserResponse): unknown {
+  toJSON(message: GetMeResponse): unknown {
     const obj: any = {};
     if (message.user !== undefined) {
       obj.user = User.toJSON(message.user);
@@ -1068,11 +1226,11 @@ export const GetUserResponse: MessageFns<GetUserResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetUserResponse>, I>>(base?: I): GetUserResponse {
-    return GetUserResponse.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<GetMeResponse>, I>>(base?: I): GetMeResponse {
+    return GetMeResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetUserResponse>, I>>(object: I): GetUserResponse {
-    const message = createBaseGetUserResponse();
+  fromPartial<I extends Exact<DeepPartial<GetMeResponse>, I>>(object: I): GetMeResponse {
+    const message = createBaseGetMeResponse();
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     return message;
   },

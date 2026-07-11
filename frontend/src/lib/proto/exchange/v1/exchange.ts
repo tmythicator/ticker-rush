@@ -60,6 +60,12 @@ export interface StreamQuotesRequest {
   symbol: string;
 }
 
+/** Response payload for real-time quote stream. */
+export interface StreamQuotesResponse {
+  /** Live stock quote update. */
+  quote: Quote | undefined;
+}
+
 /** Request payload to purchase stock. */
 export interface BuyStockRequest {
   /** Stock ticker symbol to buy. */
@@ -566,6 +572,64 @@ export const StreamQuotesRequest: MessageFns<StreamQuotesRequest> = {
   fromPartial<I extends Exact<DeepPartial<StreamQuotesRequest>, I>>(object: I): StreamQuotesRequest {
     const message = createBaseStreamQuotesRequest();
     message.symbol = object.symbol ?? "";
+    return message;
+  },
+};
+
+function createBaseStreamQuotesResponse(): StreamQuotesResponse {
+  return { quote: undefined };
+}
+
+export const StreamQuotesResponse: MessageFns<StreamQuotesResponse> = {
+  encode(message: StreamQuotesResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.quote !== undefined) {
+      Quote.encode(message.quote, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): StreamQuotesResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseStreamQuotesResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.quote = Quote.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): StreamQuotesResponse {
+    return { quote: isSet(object.quote) ? Quote.fromJSON(object.quote) : undefined };
+  },
+
+  toJSON(message: StreamQuotesResponse): unknown {
+    const obj: any = {};
+    if (message.quote !== undefined) {
+      obj.quote = Quote.toJSON(message.quote);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<StreamQuotesResponse>, I>>(base?: I): StreamQuotesResponse {
+    return StreamQuotesResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<StreamQuotesResponse>, I>>(object: I): StreamQuotesResponse {
+    const message = createBaseStreamQuotesResponse();
+    message.quote = (object.quote !== undefined && object.quote !== null) ? Quote.fromPartial(object.quote) : undefined;
     return message;
   },
 };

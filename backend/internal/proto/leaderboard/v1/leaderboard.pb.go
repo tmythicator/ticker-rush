@@ -211,7 +211,7 @@ var File_leaderboard_v1_leaderboard_proto protoreflect.FileDescriptor
 
 const file_leaderboard_v1_leaderboard_proto_rawDesc = "" +
 	"\n" +
-	" leaderboard/v1/leaderboard.proto\x12\x0eleaderboard.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x12user/v1/user.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"_\n" +
+	" leaderboard/v1/leaderboard.proto\x12\x0eleaderboard.v1\x1a\x1cgoogle/api/annotations.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x12user/v1/user.proto\"_\n" +
 	"\x10LeaderboardEntry\x12!\n" +
 	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\x12\x12\n" +
 	"\x04rank\x18\x02 \x01(\x05R\x04rank\x12\x14\n" +

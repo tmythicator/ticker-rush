@@ -363,6 +363,52 @@ func (x *StreamQuotesRequest) GetSymbol() string {
 	return ""
 }
 
+// Response payload for real-time quote stream.
+type StreamQuotesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Live stock quote update.
+	Quote         *Quote `protobuf:"bytes,1,opt,name=quote,proto3" json:"quote,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StreamQuotesResponse) Reset() {
+	*x = StreamQuotesResponse{}
+	mi := &file_exchange_v1_exchange_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamQuotesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamQuotesResponse) ProtoMessage() {}
+
+func (x *StreamQuotesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_exchange_v1_exchange_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamQuotesResponse.ProtoReflect.Descriptor instead.
+func (*StreamQuotesResponse) Descriptor() ([]byte, []int) {
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *StreamQuotesResponse) GetQuote() *Quote {
+	if x != nil {
+		return x.Quote
+	}
+	return nil
+}
+
 // Request payload to purchase stock.
 type BuyStockRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -376,7 +422,7 @@ type BuyStockRequest struct {
 
 func (x *BuyStockRequest) Reset() {
 	*x = BuyStockRequest{}
-	mi := &file_exchange_v1_exchange_proto_msgTypes[6]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -388,7 +434,7 @@ func (x *BuyStockRequest) String() string {
 func (*BuyStockRequest) ProtoMessage() {}
 
 func (x *BuyStockRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_exchange_v1_exchange_proto_msgTypes[6]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -401,7 +447,7 @@ func (x *BuyStockRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuyStockRequest.ProtoReflect.Descriptor instead.
 func (*BuyStockRequest) Descriptor() ([]byte, []int) {
-	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{6}
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *BuyStockRequest) GetSymbol() string {
@@ -433,7 +479,7 @@ type BuyStockResponse struct {
 
 func (x *BuyStockResponse) Reset() {
 	*x = BuyStockResponse{}
-	mi := &file_exchange_v1_exchange_proto_msgTypes[7]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -445,7 +491,7 @@ func (x *BuyStockResponse) String() string {
 func (*BuyStockResponse) ProtoMessage() {}
 
 func (x *BuyStockResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_exchange_v1_exchange_proto_msgTypes[7]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -458,7 +504,7 @@ func (x *BuyStockResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuyStockResponse.ProtoReflect.Descriptor instead.
 func (*BuyStockResponse) Descriptor() ([]byte, []int) {
-	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{7}
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *BuyStockResponse) GetSuccess() bool {
@@ -495,7 +541,7 @@ type SellStockRequest struct {
 
 func (x *SellStockRequest) Reset() {
 	*x = SellStockRequest{}
-	mi := &file_exchange_v1_exchange_proto_msgTypes[8]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -507,7 +553,7 @@ func (x *SellStockRequest) String() string {
 func (*SellStockRequest) ProtoMessage() {}
 
 func (x *SellStockRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_exchange_v1_exchange_proto_msgTypes[8]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -520,7 +566,7 @@ func (x *SellStockRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SellStockRequest.ProtoReflect.Descriptor instead.
 func (*SellStockRequest) Descriptor() ([]byte, []int) {
-	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{8}
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *SellStockRequest) GetSymbol() string {
@@ -552,7 +598,7 @@ type SellStockResponse struct {
 
 func (x *SellStockResponse) Reset() {
 	*x = SellStockResponse{}
-	mi := &file_exchange_v1_exchange_proto_msgTypes[9]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -564,7 +610,7 @@ func (x *SellStockResponse) String() string {
 func (*SellStockResponse) ProtoMessage() {}
 
 func (x *SellStockResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_exchange_v1_exchange_proto_msgTypes[9]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -577,7 +623,7 @@ func (x *SellStockResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SellStockResponse.ProtoReflect.Descriptor instead.
 func (*SellStockResponse) Descriptor() ([]byte, []int) {
-	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{9}
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *SellStockResponse) GetSuccess() bool {
@@ -624,7 +670,9 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x12GetHistoryResponse\x12,\n" +
 	"\ahistory\x18\x01 \x03(\v2\x12.exchange.v1.QuoteR\ahistory\"-\n" +
 	"\x13StreamQuotesRequest\x12\x16\n" +
-	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"E\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"@\n" +
+	"\x14StreamQuotesResponse\x12(\n" +
+	"\x05quote\x18\x01 \x01(\v2\x12.exchange.v1.QuoteR\x05quote\"E\n" +
 	"\x0fBuyStockRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x01R\bquantity\"\x86\x01\n" +
@@ -638,7 +686,7 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x11SellStockResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12>\n" +
-	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant2\xcb\x04\n" +
+	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant2\xdb\x04\n" +
 	"\x0fExchangeService\x12p\n" +
 	"\bGetQuote\x12\x1c.exchange.v1.GetQuoteRequest\x1a\x1d.exchange.v1.GetQuoteResponse\"'\x92A\x12b\x10\n" +
 	"\x0e\n" +
@@ -646,8 +694,8 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\f\x12\n" +
 	"/api/quote\x12c\n" +
 	"\n" +
-	"GetHistory\x12\x1e.exchange.v1.GetHistoryRequest\x1a\x1f.exchange.v1.GetHistoryResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/api/history\x12w\n" +
-	"\fStreamQuotes\x12 .exchange.v1.StreamQuotesRequest\x1a\x12.exchange.v1.Quote\"/\x92A\x12b\x10\n" +
+	"GetHistory\x12\x1e.exchange.v1.GetHistoryRequest\x1a\x1f.exchange.v1.GetHistoryResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/api/history\x12\x86\x01\n" +
+	"\fStreamQuotes\x12 .exchange.v1.StreamQuotesRequest\x1a!.exchange.v1.StreamQuotesResponse\"/\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
 	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x14\x12\x12/api/quotes/events0\x01\x12q\n" +
@@ -677,7 +725,7 @@ func file_exchange_v1_exchange_proto_rawDescGZIP() []byte {
 	return file_exchange_v1_exchange_proto_rawDescData
 }
 
-var file_exchange_v1_exchange_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_exchange_v1_exchange_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_exchange_v1_exchange_proto_goTypes = []any{
 	(*Quote)(nil),                // 0: exchange.v1.Quote
 	(*GetQuoteRequest)(nil),      // 1: exchange.v1.GetQuoteRequest
@@ -685,32 +733,34 @@ var file_exchange_v1_exchange_proto_goTypes = []any{
 	(*GetHistoryRequest)(nil),    // 3: exchange.v1.GetHistoryRequest
 	(*GetHistoryResponse)(nil),   // 4: exchange.v1.GetHistoryResponse
 	(*StreamQuotesRequest)(nil),  // 5: exchange.v1.StreamQuotesRequest
-	(*BuyStockRequest)(nil),      // 6: exchange.v1.BuyStockRequest
-	(*BuyStockResponse)(nil),     // 7: exchange.v1.BuyStockResponse
-	(*SellStockRequest)(nil),     // 8: exchange.v1.SellStockRequest
-	(*SellStockResponse)(nil),    // 9: exchange.v1.SellStockResponse
-	(*v1.LadderParticipant)(nil), // 10: ladder.v1.LadderParticipant
+	(*StreamQuotesResponse)(nil), // 6: exchange.v1.StreamQuotesResponse
+	(*BuyStockRequest)(nil),      // 7: exchange.v1.BuyStockRequest
+	(*BuyStockResponse)(nil),     // 8: exchange.v1.BuyStockResponse
+	(*SellStockRequest)(nil),     // 9: exchange.v1.SellStockRequest
+	(*SellStockResponse)(nil),    // 10: exchange.v1.SellStockResponse
+	(*v1.LadderParticipant)(nil), // 11: ladder.v1.LadderParticipant
 }
 var file_exchange_v1_exchange_proto_depIdxs = []int32{
 	0,  // 0: exchange.v1.GetQuoteResponse.quote:type_name -> exchange.v1.Quote
 	0,  // 1: exchange.v1.GetHistoryResponse.history:type_name -> exchange.v1.Quote
-	10, // 2: exchange.v1.BuyStockResponse.participant:type_name -> ladder.v1.LadderParticipant
-	10, // 3: exchange.v1.SellStockResponse.participant:type_name -> ladder.v1.LadderParticipant
-	1,  // 4: exchange.v1.ExchangeService.GetQuote:input_type -> exchange.v1.GetQuoteRequest
-	3,  // 5: exchange.v1.ExchangeService.GetHistory:input_type -> exchange.v1.GetHistoryRequest
-	5,  // 6: exchange.v1.ExchangeService.StreamQuotes:input_type -> exchange.v1.StreamQuotesRequest
-	6,  // 7: exchange.v1.ExchangeService.BuyStock:input_type -> exchange.v1.BuyStockRequest
-	8,  // 8: exchange.v1.ExchangeService.SellStock:input_type -> exchange.v1.SellStockRequest
-	2,  // 9: exchange.v1.ExchangeService.GetQuote:output_type -> exchange.v1.GetQuoteResponse
-	4,  // 10: exchange.v1.ExchangeService.GetHistory:output_type -> exchange.v1.GetHistoryResponse
-	0,  // 11: exchange.v1.ExchangeService.StreamQuotes:output_type -> exchange.v1.Quote
-	7,  // 12: exchange.v1.ExchangeService.BuyStock:output_type -> exchange.v1.BuyStockResponse
-	9,  // 13: exchange.v1.ExchangeService.SellStock:output_type -> exchange.v1.SellStockResponse
-	9,  // [9:14] is the sub-list for method output_type
-	4,  // [4:9] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	0,  // 2: exchange.v1.StreamQuotesResponse.quote:type_name -> exchange.v1.Quote
+	11, // 3: exchange.v1.BuyStockResponse.participant:type_name -> ladder.v1.LadderParticipant
+	11, // 4: exchange.v1.SellStockResponse.participant:type_name -> ladder.v1.LadderParticipant
+	1,  // 5: exchange.v1.ExchangeService.GetQuote:input_type -> exchange.v1.GetQuoteRequest
+	3,  // 6: exchange.v1.ExchangeService.GetHistory:input_type -> exchange.v1.GetHistoryRequest
+	5,  // 7: exchange.v1.ExchangeService.StreamQuotes:input_type -> exchange.v1.StreamQuotesRequest
+	7,  // 8: exchange.v1.ExchangeService.BuyStock:input_type -> exchange.v1.BuyStockRequest
+	9,  // 9: exchange.v1.ExchangeService.SellStock:input_type -> exchange.v1.SellStockRequest
+	2,  // 10: exchange.v1.ExchangeService.GetQuote:output_type -> exchange.v1.GetQuoteResponse
+	4,  // 11: exchange.v1.ExchangeService.GetHistory:output_type -> exchange.v1.GetHistoryResponse
+	6,  // 12: exchange.v1.ExchangeService.StreamQuotes:output_type -> exchange.v1.StreamQuotesResponse
+	8,  // 13: exchange.v1.ExchangeService.BuyStock:output_type -> exchange.v1.BuyStockResponse
+	10, // 14: exchange.v1.ExchangeService.SellStock:output_type -> exchange.v1.SellStockResponse
+	10, // [10:15] is the sub-list for method output_type
+	5,  // [5:10] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_exchange_v1_exchange_proto_init() }
@@ -724,7 +774,7 @@ func file_exchange_v1_exchange_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_exchange_v1_exchange_proto_rawDesc), len(file_exchange_v1_exchange_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

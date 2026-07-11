@@ -12,7 +12,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	_ "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -528,29 +528,27 @@ func (x *LoginResponse) GetUser() *User {
 	return nil
 }
 
-// Response containing the current user profile.
-type GetUserResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Details of the current user.
-	User          *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+// Request to logout.
+type LogoutRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetUserResponse) Reset() {
-	*x = GetUserResponse{}
+func (x *LogoutRequest) Reset() {
+	*x = LogoutRequest{}
 	mi := &file_user_v1_user_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetUserResponse) String() string {
+func (x *LogoutRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetUserResponse) ProtoMessage() {}
+func (*LogoutRequest) ProtoMessage() {}
 
-func (x *GetUserResponse) ProtoReflect() protoreflect.Message {
+func (x *LogoutRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_user_v1_user_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -562,12 +560,134 @@ func (x *GetUserResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetUserResponse.ProtoReflect.Descriptor instead.
-func (*GetUserResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use LogoutRequest.ProtoReflect.Descriptor instead.
+func (*LogoutRequest) Descriptor() ([]byte, []int) {
 	return file_user_v1_user_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *GetUserResponse) GetUser() *User {
+// Response for logout.
+type LogoutResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Status or success message.
+	Message       string `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LogoutResponse) Reset() {
+	*x = LogoutResponse{}
+	mi := &file_user_v1_user_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LogoutResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LogoutResponse) ProtoMessage() {}
+
+func (x *LogoutResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_user_v1_user_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LogoutResponse.ProtoReflect.Descriptor instead.
+func (*LogoutResponse) Descriptor() ([]byte, []int) {
+	return file_user_v1_user_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *LogoutResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+// Request to fetch the current user profile.
+type GetMeRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMeRequest) Reset() {
+	*x = GetMeRequest{}
+	mi := &file_user_v1_user_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMeRequest) ProtoMessage() {}
+
+func (x *GetMeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_user_v1_user_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMeRequest.ProtoReflect.Descriptor instead.
+func (*GetMeRequest) Descriptor() ([]byte, []int) {
+	return file_user_v1_user_proto_rawDescGZIP(), []int{9}
+}
+
+// Response containing the current user profile.
+type GetMeResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Details of the current user.
+	User          *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMeResponse) Reset() {
+	*x = GetMeResponse{}
+	mi := &file_user_v1_user_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMeResponse) ProtoMessage() {}
+
+func (x *GetMeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_user_v1_user_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMeResponse.ProtoReflect.Descriptor instead.
+func (*GetMeResponse) Descriptor() ([]byte, []int) {
+	return file_user_v1_user_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *GetMeResponse) GetUser() *User {
 	if x != nil {
 		return x.User
 	}
@@ -585,7 +705,7 @@ type GetPublicProfileRequest struct {
 
 func (x *GetPublicProfileRequest) Reset() {
 	*x = GetPublicProfileRequest{}
-	mi := &file_user_v1_user_proto_msgTypes[8]
+	mi := &file_user_v1_user_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -597,7 +717,7 @@ func (x *GetPublicProfileRequest) String() string {
 func (*GetPublicProfileRequest) ProtoMessage() {}
 
 func (x *GetPublicProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_user_proto_msgTypes[8]
+	mi := &file_user_v1_user_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -610,7 +730,7 @@ func (x *GetPublicProfileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPublicProfileRequest.ProtoReflect.Descriptor instead.
 func (*GetPublicProfileRequest) Descriptor() ([]byte, []int) {
-	return file_user_v1_user_proto_rawDescGZIP(), []int{8}
+	return file_user_v1_user_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetPublicProfileRequest) GetUsername() string {
@@ -631,7 +751,7 @@ type GetPublicProfileResponse struct {
 
 func (x *GetPublicProfileResponse) Reset() {
 	*x = GetPublicProfileResponse{}
-	mi := &file_user_v1_user_proto_msgTypes[9]
+	mi := &file_user_v1_user_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -643,7 +763,7 @@ func (x *GetPublicProfileResponse) String() string {
 func (*GetPublicProfileResponse) ProtoMessage() {}
 
 func (x *GetPublicProfileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_user_proto_msgTypes[9]
+	mi := &file_user_v1_user_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -656,7 +776,7 @@ func (x *GetPublicProfileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPublicProfileResponse.ProtoReflect.Descriptor instead.
 func (*GetPublicProfileResponse) Descriptor() ([]byte, []int) {
-	return file_user_v1_user_proto_rawDescGZIP(), []int{9}
+	return file_user_v1_user_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetPublicProfileResponse) GetUser() *User {
@@ -712,23 +832,27 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"2\n" +
 	"\rLoginResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"4\n" +
-	"\x0fGetUserResponse\x12!\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"\x0f\n" +
+	"\rLogoutRequest\"*\n" +
+	"\x0eLogoutResponse\x12\x18\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"\x0e\n" +
+	"\fGetMeRequest\"2\n" +
+	"\rGetMeResponse\x12!\n" +
 	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"5\n" +
 	"\x17GetPublicProfileRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\"=\n" +
 	"\x18GetPublicProfileResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user2\xf4\x04\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user2\xf2\x04\n" +
 	"\vUserService\x12_\n" +
 	"\n" +
 	"CreateUser\x12\x1a.user.v1.CreateUserRequest\x1a\x1b.user.v1.CreateUserResponse\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/api/register\x12M\n" +
 	"\x05Login\x12\x15.user.v1.LoginRequest\x1a\x16.user.v1.LoginResponse\"\x15\x82\xd3\xe4\x93\x02\x0f:\x01*\"\n" +
-	"/api/login\x12b\n" +
-	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"(\x92A\x12b\x10\n" +
+	"/api/login\x12c\n" +
+	"\x06Logout\x12\x16.user.v1.LogoutRequest\x1a\x17.user.v1.LogoutResponse\"(\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
-	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\r\"\v/api/logout\x12d\n" +
-	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\x18.user.v1.GetUserResponse\")\x92A\x12b\x10\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\r\"\v/api/logout\x12a\n" +
+	"\x05GetMe\x12\x15.user.v1.GetMeRequest\x1a\x16.user.v1.GetMeResponse\")\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
 	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x0e\x12\f/api/user/me\x12s\n" +
@@ -756,7 +880,7 @@ func file_user_v1_user_proto_rawDescGZIP() []byte {
 	return file_user_v1_user_proto_rawDescData
 }
 
-var file_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_user_v1_user_proto_goTypes = []any{
 	(*User)(nil),                     // 0: user.v1.User
 	(*CreateUserRequest)(nil),        // 1: user.v1.CreateUserRequest
@@ -765,35 +889,37 @@ var file_user_v1_user_proto_goTypes = []any{
 	(*UpdateUserResponse)(nil),       // 4: user.v1.UpdateUserResponse
 	(*LoginRequest)(nil),             // 5: user.v1.LoginRequest
 	(*LoginResponse)(nil),            // 6: user.v1.LoginResponse
-	(*GetUserResponse)(nil),          // 7: user.v1.GetUserResponse
-	(*GetPublicProfileRequest)(nil),  // 8: user.v1.GetPublicProfileRequest
-	(*GetPublicProfileResponse)(nil), // 9: user.v1.GetPublicProfileResponse
-	nil,                              // 10: user.v1.User.PortfolioEntry
-	(*timestamppb.Timestamp)(nil),    // 11: google.protobuf.Timestamp
-	(*v1.PortfolioItem)(nil),         // 12: portfolio.v1.PortfolioItem
-	(*emptypb.Empty)(nil),            // 13: google.protobuf.Empty
+	(*LogoutRequest)(nil),            // 7: user.v1.LogoutRequest
+	(*LogoutResponse)(nil),           // 8: user.v1.LogoutResponse
+	(*GetMeRequest)(nil),             // 9: user.v1.GetMeRequest
+	(*GetMeResponse)(nil),            // 10: user.v1.GetMeResponse
+	(*GetPublicProfileRequest)(nil),  // 11: user.v1.GetPublicProfileRequest
+	(*GetPublicProfileResponse)(nil), // 12: user.v1.GetPublicProfileResponse
+	nil,                              // 13: user.v1.User.PortfolioEntry
+	(*timestamppb.Timestamp)(nil),    // 14: google.protobuf.Timestamp
+	(*v1.PortfolioItem)(nil),         // 15: portfolio.v1.PortfolioItem
 }
 var file_user_v1_user_proto_depIdxs = []int32{
-	11, // 0: user.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	10, // 1: user.v1.User.portfolio:type_name -> user.v1.User.PortfolioEntry
+	14, // 0: user.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	13, // 1: user.v1.User.portfolio:type_name -> user.v1.User.PortfolioEntry
 	0,  // 2: user.v1.CreateUserResponse.user:type_name -> user.v1.User
 	0,  // 3: user.v1.UpdateUserResponse.user:type_name -> user.v1.User
 	0,  // 4: user.v1.LoginResponse.user:type_name -> user.v1.User
-	0,  // 5: user.v1.GetUserResponse.user:type_name -> user.v1.User
+	0,  // 5: user.v1.GetMeResponse.user:type_name -> user.v1.User
 	0,  // 6: user.v1.GetPublicProfileResponse.user:type_name -> user.v1.User
-	12, // 7: user.v1.User.PortfolioEntry.value:type_name -> portfolio.v1.PortfolioItem
+	15, // 7: user.v1.User.PortfolioEntry.value:type_name -> portfolio.v1.PortfolioItem
 	1,  // 8: user.v1.UserService.CreateUser:input_type -> user.v1.CreateUserRequest
 	5,  // 9: user.v1.UserService.Login:input_type -> user.v1.LoginRequest
-	13, // 10: user.v1.UserService.Logout:input_type -> google.protobuf.Empty
-	13, // 11: user.v1.UserService.GetMe:input_type -> google.protobuf.Empty
+	7,  // 10: user.v1.UserService.Logout:input_type -> user.v1.LogoutRequest
+	9,  // 11: user.v1.UserService.GetMe:input_type -> user.v1.GetMeRequest
 	3,  // 12: user.v1.UserService.UpdateUser:input_type -> user.v1.UpdateUserRequest
-	8,  // 13: user.v1.UserService.GetPublicProfile:input_type -> user.v1.GetPublicProfileRequest
+	11, // 13: user.v1.UserService.GetPublicProfile:input_type -> user.v1.GetPublicProfileRequest
 	2,  // 14: user.v1.UserService.CreateUser:output_type -> user.v1.CreateUserResponse
 	6,  // 15: user.v1.UserService.Login:output_type -> user.v1.LoginResponse
-	13, // 16: user.v1.UserService.Logout:output_type -> google.protobuf.Empty
-	7,  // 17: user.v1.UserService.GetMe:output_type -> user.v1.GetUserResponse
+	8,  // 16: user.v1.UserService.Logout:output_type -> user.v1.LogoutResponse
+	10, // 17: user.v1.UserService.GetMe:output_type -> user.v1.GetMeResponse
 	4,  // 18: user.v1.UserService.UpdateUser:output_type -> user.v1.UpdateUserResponse
-	9,  // 19: user.v1.UserService.GetPublicProfile:output_type -> user.v1.GetPublicProfileResponse
+	12, // 19: user.v1.UserService.GetPublicProfile:output_type -> user.v1.GetPublicProfileResponse
 	14, // [14:20] is the sub-list for method output_type
 	8,  // [8:14] is the sub-list for method input_type
 	8,  // [8:8] is the sub-list for extension type_name
@@ -812,7 +938,7 @@ func file_user_v1_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_v1_user_proto_rawDesc), len(file_user_v1_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

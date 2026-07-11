@@ -15,10 +15,17 @@ export const protobufPackage = "google.protobuf";
  *
  * The JSON representation for `NullValue` is JSON `null`.
  */
-export enum NullValue {
+export const NullValue = {
   /** NULL_VALUE - Null value. */
-  NULL_VALUE = 0,
-  UNRECOGNIZED = -1,
+  NULL_VALUE: 0,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type NullValue = typeof NullValue[keyof typeof NullValue];
+
+export namespace NullValue {
+  export type NULL_VALUE = typeof NullValue.NULL_VALUE;
+  export type UNRECOGNIZED = typeof NullValue.UNRECOGNIZED;
 }
 
 export function nullValueFromJSON(object: any): NullValue {

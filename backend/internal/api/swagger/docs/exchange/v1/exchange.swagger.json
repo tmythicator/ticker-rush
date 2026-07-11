@@ -144,13 +144,13 @@
               "type": "object",
               "properties": {
                 "result": {
-                  "$ref": "#/definitions/v1Quote"
+                  "$ref": "#/definitions/v1StreamQuotesResponse"
                 },
                 "error": {
                   "$ref": "#/definitions/rpcStatus"
                 }
               },
-              "title": "Stream result of v1Quote"
+              "title": "Stream result of v1StreamQuotesResponse"
             }
           },
           "default": {
@@ -416,6 +416,16 @@
         }
       },
       "description": "Response payload for a stock sale."
+    },
+    "v1StreamQuotesResponse": {
+      "type": "object",
+      "properties": {
+        "quote": {
+          "$ref": "#/definitions/v1Quote",
+          "description": "Live stock quote update."
+        }
+      },
+      "description": "Response payload for real-time quote stream."
     },
     "v1User": {
       "type": "object",

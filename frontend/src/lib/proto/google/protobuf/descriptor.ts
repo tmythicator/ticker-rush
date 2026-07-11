@@ -10,47 +10,66 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 export const protobufPackage = "google.protobuf";
 
 /** The full set of known editions. */
-export enum Edition {
+export const Edition = {
   /** EDITION_UNKNOWN - A placeholder for an unknown edition value. */
-  EDITION_UNKNOWN = 0,
+  EDITION_UNKNOWN: 0,
   /**
    * EDITION_LEGACY - A placeholder edition for specifying default behaviors *before* a feature
    * was first introduced.  This is effectively an "infinite past".
    */
-  EDITION_LEGACY = 900,
+  EDITION_LEGACY: 900,
   /**
    * EDITION_PROTO2 - Legacy syntax "editions".  These pre-date editions, but behave much like
    * distinct editions.  These can't be used to specify the edition of proto
    * files, but feature definitions must supply proto2/proto3 defaults for
    * backwards compatibility.
    */
-  EDITION_PROTO2 = 998,
-  EDITION_PROTO3 = 999,
+  EDITION_PROTO2: 998,
+  EDITION_PROTO3: 999,
   /**
    * EDITION_2023 - Editions that have been released.  The specific values are arbitrary and
    * should not be depended on, but they will always be time-ordered for easy
    * comparison.
    */
-  EDITION_2023 = 1000,
-  EDITION_2024 = 1001,
+  EDITION_2023: 1000,
+  EDITION_2024: 1001,
   /** EDITION_UNSTABLE - A placeholder edition for developing and testing unscheduled features. */
-  EDITION_UNSTABLE = 9999,
+  EDITION_UNSTABLE: 9999,
   /**
    * EDITION_1_TEST_ONLY - Placeholder editions for testing feature resolution.  These should not be
    * used or relied on outside of tests.
    */
-  EDITION_1_TEST_ONLY = 1,
-  EDITION_2_TEST_ONLY = 2,
-  EDITION_99997_TEST_ONLY = 99997,
-  EDITION_99998_TEST_ONLY = 99998,
-  EDITION_99999_TEST_ONLY = 99999,
+  EDITION_1_TEST_ONLY: 1,
+  EDITION_2_TEST_ONLY: 2,
+  EDITION_99997_TEST_ONLY: 99997,
+  EDITION_99998_TEST_ONLY: 99998,
+  EDITION_99999_TEST_ONLY: 99999,
   /**
    * EDITION_MAX - Placeholder for specifying unbounded edition support.  This should only
    * ever be used by plugins that can expect to never require any changes to
    * support a new edition.
    */
-  EDITION_MAX = 2147483647,
-  UNRECOGNIZED = -1,
+  EDITION_MAX: 2147483647,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type Edition = typeof Edition[keyof typeof Edition];
+
+export namespace Edition {
+  export type EDITION_UNKNOWN = typeof Edition.EDITION_UNKNOWN;
+  export type EDITION_LEGACY = typeof Edition.EDITION_LEGACY;
+  export type EDITION_PROTO2 = typeof Edition.EDITION_PROTO2;
+  export type EDITION_PROTO3 = typeof Edition.EDITION_PROTO3;
+  export type EDITION_2023 = typeof Edition.EDITION_2023;
+  export type EDITION_2024 = typeof Edition.EDITION_2024;
+  export type EDITION_UNSTABLE = typeof Edition.EDITION_UNSTABLE;
+  export type EDITION_1_TEST_ONLY = typeof Edition.EDITION_1_TEST_ONLY;
+  export type EDITION_2_TEST_ONLY = typeof Edition.EDITION_2_TEST_ONLY;
+  export type EDITION_99997_TEST_ONLY = typeof Edition.EDITION_99997_TEST_ONLY;
+  export type EDITION_99998_TEST_ONLY = typeof Edition.EDITION_99998_TEST_ONLY;
+  export type EDITION_99999_TEST_ONLY = typeof Edition.EDITION_99999_TEST_ONLY;
+  export type EDITION_MAX = typeof Edition.EDITION_MAX;
+  export type UNRECOGNIZED = typeof Edition.UNRECOGNIZED;
 }
 
 export function editionFromJSON(object: any): Edition {
@@ -142,11 +161,20 @@ export function editionToJSON(object: Edition): string {
  * on `message` and `enum` as they are the only types available to be referenced
  * from other files.
  */
-export enum SymbolVisibility {
-  VISIBILITY_UNSET = 0,
-  VISIBILITY_LOCAL = 1,
-  VISIBILITY_EXPORT = 2,
-  UNRECOGNIZED = -1,
+export const SymbolVisibility = {
+  VISIBILITY_UNSET: 0,
+  VISIBILITY_LOCAL: 1,
+  VISIBILITY_EXPORT: 2,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type SymbolVisibility = typeof SymbolVisibility[keyof typeof SymbolVisibility];
+
+export namespace SymbolVisibility {
+  export type VISIBILITY_UNSET = typeof SymbolVisibility.VISIBILITY_UNSET;
+  export type VISIBILITY_LOCAL = typeof SymbolVisibility.VISIBILITY_LOCAL;
+  export type VISIBILITY_EXPORT = typeof SymbolVisibility.VISIBILITY_EXPORT;
+  export type UNRECOGNIZED = typeof SymbolVisibility.UNRECOGNIZED;
 }
 
 export function symbolVisibilityFromJSON(object: any): SymbolVisibility {
@@ -317,11 +345,20 @@ export interface ExtensionRangeOptions {
 }
 
 /** The verification state of the extension range. */
-export enum ExtensionRangeOptions_VerificationState {
+export const ExtensionRangeOptions_VerificationState = {
   /** DECLARATION - All the extensions of the range must be declared. */
-  DECLARATION = 0,
-  UNVERIFIED = 1,
-  UNRECOGNIZED = -1,
+  DECLARATION: 0,
+  UNVERIFIED: 1,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type ExtensionRangeOptions_VerificationState =
+  typeof ExtensionRangeOptions_VerificationState[keyof typeof ExtensionRangeOptions_VerificationState];
+
+export namespace ExtensionRangeOptions_VerificationState {
+  export type DECLARATION = typeof ExtensionRangeOptions_VerificationState.DECLARATION;
+  export type UNVERIFIED = typeof ExtensionRangeOptions_VerificationState.UNVERIFIED;
+  export type UNRECOGNIZED = typeof ExtensionRangeOptions_VerificationState.UNRECOGNIZED;
 }
 
 export function extensionRangeOptions_VerificationStateFromJSON(object: any): ExtensionRangeOptions_VerificationState {
@@ -469,28 +506,28 @@ export interface FieldDescriptorProto {
   proto3_optional?: boolean | undefined;
 }
 
-export enum FieldDescriptorProto_Type {
+export const FieldDescriptorProto_Type = {
   /**
    * TYPE_DOUBLE - 0 is reserved for errors.
    * Order is weird for historical reasons.
    */
-  TYPE_DOUBLE = 1,
-  TYPE_FLOAT = 2,
+  TYPE_DOUBLE: 1,
+  TYPE_FLOAT: 2,
   /**
    * TYPE_INT64 - Not ZigZag encoded.  Negative numbers take 10 bytes.  Use TYPE_SINT64 if
    * negative values are likely.
    */
-  TYPE_INT64 = 3,
-  TYPE_UINT64 = 4,
+  TYPE_INT64: 3,
+  TYPE_UINT64: 4,
   /**
    * TYPE_INT32 - Not ZigZag encoded.  Negative numbers take 10 bytes.  Use TYPE_SINT32 if
    * negative values are likely.
    */
-  TYPE_INT32 = 5,
-  TYPE_FIXED64 = 6,
-  TYPE_FIXED32 = 7,
-  TYPE_BOOL = 8,
-  TYPE_STRING = 9,
+  TYPE_INT32: 5,
+  TYPE_FIXED64: 6,
+  TYPE_FIXED32: 7,
+  TYPE_BOOL: 8,
+  TYPE_STRING: 9,
   /**
    * TYPE_GROUP - Tag-delimited aggregate.
    * Group type is deprecated and not supported after google.protobuf. However, Proto3
@@ -498,20 +535,44 @@ export enum FieldDescriptorProto_Type {
    * treat group fields as unknown fields.  In Editions, the group wire format
    * can be enabled via the `message_encoding` feature.
    */
-  TYPE_GROUP = 10,
+  TYPE_GROUP: 10,
   /** TYPE_MESSAGE - Length-delimited aggregate. */
-  TYPE_MESSAGE = 11,
+  TYPE_MESSAGE: 11,
   /** TYPE_BYTES - New in version 2. */
-  TYPE_BYTES = 12,
-  TYPE_UINT32 = 13,
-  TYPE_ENUM = 14,
-  TYPE_SFIXED32 = 15,
-  TYPE_SFIXED64 = 16,
+  TYPE_BYTES: 12,
+  TYPE_UINT32: 13,
+  TYPE_ENUM: 14,
+  TYPE_SFIXED32: 15,
+  TYPE_SFIXED64: 16,
   /** TYPE_SINT32 - Uses ZigZag encoding. */
-  TYPE_SINT32 = 17,
+  TYPE_SINT32: 17,
   /** TYPE_SINT64 - Uses ZigZag encoding. */
-  TYPE_SINT64 = 18,
-  UNRECOGNIZED = -1,
+  TYPE_SINT64: 18,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type FieldDescriptorProto_Type = typeof FieldDescriptorProto_Type[keyof typeof FieldDescriptorProto_Type];
+
+export namespace FieldDescriptorProto_Type {
+  export type TYPE_DOUBLE = typeof FieldDescriptorProto_Type.TYPE_DOUBLE;
+  export type TYPE_FLOAT = typeof FieldDescriptorProto_Type.TYPE_FLOAT;
+  export type TYPE_INT64 = typeof FieldDescriptorProto_Type.TYPE_INT64;
+  export type TYPE_UINT64 = typeof FieldDescriptorProto_Type.TYPE_UINT64;
+  export type TYPE_INT32 = typeof FieldDescriptorProto_Type.TYPE_INT32;
+  export type TYPE_FIXED64 = typeof FieldDescriptorProto_Type.TYPE_FIXED64;
+  export type TYPE_FIXED32 = typeof FieldDescriptorProto_Type.TYPE_FIXED32;
+  export type TYPE_BOOL = typeof FieldDescriptorProto_Type.TYPE_BOOL;
+  export type TYPE_STRING = typeof FieldDescriptorProto_Type.TYPE_STRING;
+  export type TYPE_GROUP = typeof FieldDescriptorProto_Type.TYPE_GROUP;
+  export type TYPE_MESSAGE = typeof FieldDescriptorProto_Type.TYPE_MESSAGE;
+  export type TYPE_BYTES = typeof FieldDescriptorProto_Type.TYPE_BYTES;
+  export type TYPE_UINT32 = typeof FieldDescriptorProto_Type.TYPE_UINT32;
+  export type TYPE_ENUM = typeof FieldDescriptorProto_Type.TYPE_ENUM;
+  export type TYPE_SFIXED32 = typeof FieldDescriptorProto_Type.TYPE_SFIXED32;
+  export type TYPE_SFIXED64 = typeof FieldDescriptorProto_Type.TYPE_SFIXED64;
+  export type TYPE_SINT32 = typeof FieldDescriptorProto_Type.TYPE_SINT32;
+  export type TYPE_SINT64 = typeof FieldDescriptorProto_Type.TYPE_SINT64;
+  export type UNRECOGNIZED = typeof FieldDescriptorProto_Type.UNRECOGNIZED;
 }
 
 export function fieldDescriptorProto_TypeFromJSON(object: any): FieldDescriptorProto_Type {
@@ -621,17 +682,26 @@ export function fieldDescriptorProto_TypeToJSON(object: FieldDescriptorProto_Typ
   }
 }
 
-export enum FieldDescriptorProto_Label {
+export const FieldDescriptorProto_Label = {
   /** LABEL_OPTIONAL - 0 is reserved for errors */
-  LABEL_OPTIONAL = 1,
-  LABEL_REPEATED = 3,
+  LABEL_OPTIONAL: 1,
+  LABEL_REPEATED: 3,
   /**
    * LABEL_REQUIRED - The required label is only allowed in google.protobuf.  In proto3 and Editions
    * it's explicitly prohibited.  In Editions, the `field_presence` feature
    * can be used to get this behavior.
    */
-  LABEL_REQUIRED = 2,
-  UNRECOGNIZED = -1,
+  LABEL_REQUIRED: 2,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type FieldDescriptorProto_Label = typeof FieldDescriptorProto_Label[keyof typeof FieldDescriptorProto_Label];
+
+export namespace FieldDescriptorProto_Label {
+  export type LABEL_OPTIONAL = typeof FieldDescriptorProto_Label.LABEL_OPTIONAL;
+  export type LABEL_REPEATED = typeof FieldDescriptorProto_Label.LABEL_REPEATED;
+  export type LABEL_REQUIRED = typeof FieldDescriptorProto_Label.LABEL_REQUIRED;
+  export type UNRECOGNIZED = typeof FieldDescriptorProto_Label.UNRECOGNIZED;
 }
 
 export function fieldDescriptorProto_LabelFromJSON(object: any): FieldDescriptorProto_Label {
@@ -913,14 +983,23 @@ export interface FileOptions {
 }
 
 /** Generated classes can be optimized for speed or code size. */
-export enum FileOptions_OptimizeMode {
+export const FileOptions_OptimizeMode = {
   /** SPEED - Generate complete code for parsing, serialization, */
-  SPEED = 1,
+  SPEED: 1,
   /** CODE_SIZE - etc. */
-  CODE_SIZE = 2,
+  CODE_SIZE: 2,
   /** LITE_RUNTIME - Generate code using MessageLite and the lite runtime. */
-  LITE_RUNTIME = 3,
-  UNRECOGNIZED = -1,
+  LITE_RUNTIME: 3,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type FileOptions_OptimizeMode = typeof FileOptions_OptimizeMode[keyof typeof FileOptions_OptimizeMode];
+
+export namespace FileOptions_OptimizeMode {
+  export type SPEED = typeof FileOptions_OptimizeMode.SPEED;
+  export type CODE_SIZE = typeof FileOptions_OptimizeMode.CODE_SIZE;
+  export type LITE_RUNTIME = typeof FileOptions_OptimizeMode.LITE_RUNTIME;
+  export type UNRECOGNIZED = typeof FileOptions_OptimizeMode.UNRECOGNIZED;
 }
 
 export function fileOptions_OptimizeModeFromJSON(object: any): FileOptions_OptimizeMode {
@@ -1168,9 +1247,9 @@ export interface FieldOptions {
   uninterpreted_option: UninterpretedOption[];
 }
 
-export enum FieldOptions_CType {
+export const FieldOptions_CType = {
   /** STRING - Default mode. */
-  STRING = 0,
+  STRING: 0,
   /**
    * CORD - The option [ctype=CORD] may be applied to a non-repeated field of type
    * "bytes". It indicates that in C++, the data should be stored in a Cord
@@ -1179,9 +1258,18 @@ export enum FieldOptions_CType {
    * Cord, or when parsing with aliasing enabled, as the parsed Cord may then
    * alias the original buffer.
    */
-  CORD = 1,
-  STRING_PIECE = 2,
-  UNRECOGNIZED = -1,
+  CORD: 1,
+  STRING_PIECE: 2,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type FieldOptions_CType = typeof FieldOptions_CType[keyof typeof FieldOptions_CType];
+
+export namespace FieldOptions_CType {
+  export type STRING = typeof FieldOptions_CType.STRING;
+  export type CORD = typeof FieldOptions_CType.CORD;
+  export type STRING_PIECE = typeof FieldOptions_CType.STRING_PIECE;
+  export type UNRECOGNIZED = typeof FieldOptions_CType.UNRECOGNIZED;
 }
 
 export function fieldOptions_CTypeFromJSON(object: any): FieldOptions_CType {
@@ -1216,14 +1304,23 @@ export function fieldOptions_CTypeToJSON(object: FieldOptions_CType): string {
   }
 }
 
-export enum FieldOptions_JSType {
+export const FieldOptions_JSType = {
   /** JS_NORMAL - Use the default type. */
-  JS_NORMAL = 0,
+  JS_NORMAL: 0,
   /** JS_STRING - Use JavaScript strings. */
-  JS_STRING = 1,
+  JS_STRING: 1,
   /** JS_NUMBER - Use JavaScript numbers. */
-  JS_NUMBER = 2,
-  UNRECOGNIZED = -1,
+  JS_NUMBER: 2,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type FieldOptions_JSType = typeof FieldOptions_JSType[keyof typeof FieldOptions_JSType];
+
+export namespace FieldOptions_JSType {
+  export type JS_NORMAL = typeof FieldOptions_JSType.JS_NORMAL;
+  export type JS_STRING = typeof FieldOptions_JSType.JS_STRING;
+  export type JS_NUMBER = typeof FieldOptions_JSType.JS_NUMBER;
+  export type UNRECOGNIZED = typeof FieldOptions_JSType.UNRECOGNIZED;
 }
 
 export function fieldOptions_JSTypeFromJSON(object: any): FieldOptions_JSType {
@@ -1259,11 +1356,21 @@ export function fieldOptions_JSTypeToJSON(object: FieldOptions_JSType): string {
 }
 
 /** If set to RETENTION_SOURCE, the option will be omitted from the binary. */
-export enum FieldOptions_OptionRetention {
-  RETENTION_UNKNOWN = 0,
-  RETENTION_RUNTIME = 1,
-  RETENTION_SOURCE = 2,
-  UNRECOGNIZED = -1,
+export const FieldOptions_OptionRetention = {
+  RETENTION_UNKNOWN: 0,
+  RETENTION_RUNTIME: 1,
+  RETENTION_SOURCE: 2,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type FieldOptions_OptionRetention =
+  typeof FieldOptions_OptionRetention[keyof typeof FieldOptions_OptionRetention];
+
+export namespace FieldOptions_OptionRetention {
+  export type RETENTION_UNKNOWN = typeof FieldOptions_OptionRetention.RETENTION_UNKNOWN;
+  export type RETENTION_RUNTIME = typeof FieldOptions_OptionRetention.RETENTION_RUNTIME;
+  export type RETENTION_SOURCE = typeof FieldOptions_OptionRetention.RETENTION_SOURCE;
+  export type UNRECOGNIZED = typeof FieldOptions_OptionRetention.UNRECOGNIZED;
 }
 
 export function fieldOptions_OptionRetentionFromJSON(object: any): FieldOptions_OptionRetention {
@@ -1303,18 +1410,35 @@ export function fieldOptions_OptionRetentionToJSON(object: FieldOptions_OptionRe
  * as an option. If it is unset, then the field may be freely used as an
  * option on any kind of entity.
  */
-export enum FieldOptions_OptionTargetType {
-  TARGET_TYPE_UNKNOWN = 0,
-  TARGET_TYPE_FILE = 1,
-  TARGET_TYPE_EXTENSION_RANGE = 2,
-  TARGET_TYPE_MESSAGE = 3,
-  TARGET_TYPE_FIELD = 4,
-  TARGET_TYPE_ONEOF = 5,
-  TARGET_TYPE_ENUM = 6,
-  TARGET_TYPE_ENUM_ENTRY = 7,
-  TARGET_TYPE_SERVICE = 8,
-  TARGET_TYPE_METHOD = 9,
-  UNRECOGNIZED = -1,
+export const FieldOptions_OptionTargetType = {
+  TARGET_TYPE_UNKNOWN: 0,
+  TARGET_TYPE_FILE: 1,
+  TARGET_TYPE_EXTENSION_RANGE: 2,
+  TARGET_TYPE_MESSAGE: 3,
+  TARGET_TYPE_FIELD: 4,
+  TARGET_TYPE_ONEOF: 5,
+  TARGET_TYPE_ENUM: 6,
+  TARGET_TYPE_ENUM_ENTRY: 7,
+  TARGET_TYPE_SERVICE: 8,
+  TARGET_TYPE_METHOD: 9,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type FieldOptions_OptionTargetType =
+  typeof FieldOptions_OptionTargetType[keyof typeof FieldOptions_OptionTargetType];
+
+export namespace FieldOptions_OptionTargetType {
+  export type TARGET_TYPE_UNKNOWN = typeof FieldOptions_OptionTargetType.TARGET_TYPE_UNKNOWN;
+  export type TARGET_TYPE_FILE = typeof FieldOptions_OptionTargetType.TARGET_TYPE_FILE;
+  export type TARGET_TYPE_EXTENSION_RANGE = typeof FieldOptions_OptionTargetType.TARGET_TYPE_EXTENSION_RANGE;
+  export type TARGET_TYPE_MESSAGE = typeof FieldOptions_OptionTargetType.TARGET_TYPE_MESSAGE;
+  export type TARGET_TYPE_FIELD = typeof FieldOptions_OptionTargetType.TARGET_TYPE_FIELD;
+  export type TARGET_TYPE_ONEOF = typeof FieldOptions_OptionTargetType.TARGET_TYPE_ONEOF;
+  export type TARGET_TYPE_ENUM = typeof FieldOptions_OptionTargetType.TARGET_TYPE_ENUM;
+  export type TARGET_TYPE_ENUM_ENTRY = typeof FieldOptions_OptionTargetType.TARGET_TYPE_ENUM_ENTRY;
+  export type TARGET_TYPE_SERVICE = typeof FieldOptions_OptionTargetType.TARGET_TYPE_SERVICE;
+  export type TARGET_TYPE_METHOD = typeof FieldOptions_OptionTargetType.TARGET_TYPE_METHOD;
+  export type UNRECOGNIZED = typeof FieldOptions_OptionTargetType.UNRECOGNIZED;
 }
 
 export function fieldOptions_OptionTargetTypeFromJSON(object: any): FieldOptions_OptionTargetType {
@@ -1568,13 +1692,23 @@ export interface MethodOptions {
  * or neither? HTTP based RPC implementation may choose GET verb for safe
  * methods, and PUT verb for idempotent methods instead of the default POST.
  */
-export enum MethodOptions_IdempotencyLevel {
-  IDEMPOTENCY_UNKNOWN = 0,
+export const MethodOptions_IdempotencyLevel = {
+  IDEMPOTENCY_UNKNOWN: 0,
   /** NO_SIDE_EFFECTS - implies idempotent */
-  NO_SIDE_EFFECTS = 1,
+  NO_SIDE_EFFECTS: 1,
   /** IDEMPOTENT - idempotent, but may have side effects */
-  IDEMPOTENT = 2,
-  UNRECOGNIZED = -1,
+  IDEMPOTENT: 2,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type MethodOptions_IdempotencyLevel =
+  typeof MethodOptions_IdempotencyLevel[keyof typeof MethodOptions_IdempotencyLevel];
+
+export namespace MethodOptions_IdempotencyLevel {
+  export type IDEMPOTENCY_UNKNOWN = typeof MethodOptions_IdempotencyLevel.IDEMPOTENCY_UNKNOWN;
+  export type NO_SIDE_EFFECTS = typeof MethodOptions_IdempotencyLevel.NO_SIDE_EFFECTS;
+  export type IDEMPOTENT = typeof MethodOptions_IdempotencyLevel.IDEMPOTENT;
+  export type UNRECOGNIZED = typeof MethodOptions_IdempotencyLevel.UNRECOGNIZED;
 }
 
 export function methodOptions_IdempotencyLevelFromJSON(object: any): MethodOptions_IdempotencyLevel {
@@ -1662,12 +1796,22 @@ export interface FeatureSet {
   default_symbol_visibility?: FeatureSet_VisibilityFeature_DefaultSymbolVisibility | undefined;
 }
 
-export enum FeatureSet_FieldPresence {
-  FIELD_PRESENCE_UNKNOWN = 0,
-  EXPLICIT = 1,
-  IMPLICIT = 2,
-  LEGACY_REQUIRED = 3,
-  UNRECOGNIZED = -1,
+export const FeatureSet_FieldPresence = {
+  FIELD_PRESENCE_UNKNOWN: 0,
+  EXPLICIT: 1,
+  IMPLICIT: 2,
+  LEGACY_REQUIRED: 3,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type FeatureSet_FieldPresence = typeof FeatureSet_FieldPresence[keyof typeof FeatureSet_FieldPresence];
+
+export namespace FeatureSet_FieldPresence {
+  export type FIELD_PRESENCE_UNKNOWN = typeof FeatureSet_FieldPresence.FIELD_PRESENCE_UNKNOWN;
+  export type EXPLICIT = typeof FeatureSet_FieldPresence.EXPLICIT;
+  export type IMPLICIT = typeof FeatureSet_FieldPresence.IMPLICIT;
+  export type LEGACY_REQUIRED = typeof FeatureSet_FieldPresence.LEGACY_REQUIRED;
+  export type UNRECOGNIZED = typeof FeatureSet_FieldPresence.UNRECOGNIZED;
 }
 
 export function featureSet_FieldPresenceFromJSON(object: any): FeatureSet_FieldPresence {
@@ -1707,11 +1851,15 @@ export function featureSet_FieldPresenceToJSON(object: FeatureSet_FieldPresence)
   }
 }
 
-export enum FeatureSet_EnumType {
-  ENUM_TYPE_UNKNOWN = 0,
-  OPEN = 1,
-  CLOSED = 2,
-  UNRECOGNIZED = -1,
+export const FeatureSet_EnumType = { ENUM_TYPE_UNKNOWN: 0, OPEN: 1, CLOSED: 2, UNRECOGNIZED: -1 } as const;
+
+export type FeatureSet_EnumType = typeof FeatureSet_EnumType[keyof typeof FeatureSet_EnumType];
+
+export namespace FeatureSet_EnumType {
+  export type ENUM_TYPE_UNKNOWN = typeof FeatureSet_EnumType.ENUM_TYPE_UNKNOWN;
+  export type OPEN = typeof FeatureSet_EnumType.OPEN;
+  export type CLOSED = typeof FeatureSet_EnumType.CLOSED;
+  export type UNRECOGNIZED = typeof FeatureSet_EnumType.UNRECOGNIZED;
 }
 
 export function featureSet_EnumTypeFromJSON(object: any): FeatureSet_EnumType {
@@ -1746,11 +1894,21 @@ export function featureSet_EnumTypeToJSON(object: FeatureSet_EnumType): string {
   }
 }
 
-export enum FeatureSet_RepeatedFieldEncoding {
-  REPEATED_FIELD_ENCODING_UNKNOWN = 0,
-  PACKED = 1,
-  EXPANDED = 2,
-  UNRECOGNIZED = -1,
+export const FeatureSet_RepeatedFieldEncoding = {
+  REPEATED_FIELD_ENCODING_UNKNOWN: 0,
+  PACKED: 1,
+  EXPANDED: 2,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type FeatureSet_RepeatedFieldEncoding =
+  typeof FeatureSet_RepeatedFieldEncoding[keyof typeof FeatureSet_RepeatedFieldEncoding];
+
+export namespace FeatureSet_RepeatedFieldEncoding {
+  export type REPEATED_FIELD_ENCODING_UNKNOWN = typeof FeatureSet_RepeatedFieldEncoding.REPEATED_FIELD_ENCODING_UNKNOWN;
+  export type PACKED = typeof FeatureSet_RepeatedFieldEncoding.PACKED;
+  export type EXPANDED = typeof FeatureSet_RepeatedFieldEncoding.EXPANDED;
+  export type UNRECOGNIZED = typeof FeatureSet_RepeatedFieldEncoding.UNRECOGNIZED;
 }
 
 export function featureSet_RepeatedFieldEncodingFromJSON(object: any): FeatureSet_RepeatedFieldEncoding {
@@ -1785,11 +1943,15 @@ export function featureSet_RepeatedFieldEncodingToJSON(object: FeatureSet_Repeat
   }
 }
 
-export enum FeatureSet_Utf8Validation {
-  UTF8_VALIDATION_UNKNOWN = 0,
-  VERIFY = 2,
-  NONE = 3,
-  UNRECOGNIZED = -1,
+export const FeatureSet_Utf8Validation = { UTF8_VALIDATION_UNKNOWN: 0, VERIFY: 2, NONE: 3, UNRECOGNIZED: -1 } as const;
+
+export type FeatureSet_Utf8Validation = typeof FeatureSet_Utf8Validation[keyof typeof FeatureSet_Utf8Validation];
+
+export namespace FeatureSet_Utf8Validation {
+  export type UTF8_VALIDATION_UNKNOWN = typeof FeatureSet_Utf8Validation.UTF8_VALIDATION_UNKNOWN;
+  export type VERIFY = typeof FeatureSet_Utf8Validation.VERIFY;
+  export type NONE = typeof FeatureSet_Utf8Validation.NONE;
+  export type UNRECOGNIZED = typeof FeatureSet_Utf8Validation.UNRECOGNIZED;
 }
 
 export function featureSet_Utf8ValidationFromJSON(object: any): FeatureSet_Utf8Validation {
@@ -1824,11 +1986,20 @@ export function featureSet_Utf8ValidationToJSON(object: FeatureSet_Utf8Validatio
   }
 }
 
-export enum FeatureSet_MessageEncoding {
-  MESSAGE_ENCODING_UNKNOWN = 0,
-  LENGTH_PREFIXED = 1,
-  DELIMITED = 2,
-  UNRECOGNIZED = -1,
+export const FeatureSet_MessageEncoding = {
+  MESSAGE_ENCODING_UNKNOWN: 0,
+  LENGTH_PREFIXED: 1,
+  DELIMITED: 2,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type FeatureSet_MessageEncoding = typeof FeatureSet_MessageEncoding[keyof typeof FeatureSet_MessageEncoding];
+
+export namespace FeatureSet_MessageEncoding {
+  export type MESSAGE_ENCODING_UNKNOWN = typeof FeatureSet_MessageEncoding.MESSAGE_ENCODING_UNKNOWN;
+  export type LENGTH_PREFIXED = typeof FeatureSet_MessageEncoding.LENGTH_PREFIXED;
+  export type DELIMITED = typeof FeatureSet_MessageEncoding.DELIMITED;
+  export type UNRECOGNIZED = typeof FeatureSet_MessageEncoding.UNRECOGNIZED;
 }
 
 export function featureSet_MessageEncodingFromJSON(object: any): FeatureSet_MessageEncoding {
@@ -1863,11 +2034,20 @@ export function featureSet_MessageEncodingToJSON(object: FeatureSet_MessageEncod
   }
 }
 
-export enum FeatureSet_JsonFormat {
-  JSON_FORMAT_UNKNOWN = 0,
-  ALLOW = 1,
-  LEGACY_BEST_EFFORT = 2,
-  UNRECOGNIZED = -1,
+export const FeatureSet_JsonFormat = {
+  JSON_FORMAT_UNKNOWN: 0,
+  ALLOW: 1,
+  LEGACY_BEST_EFFORT: 2,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type FeatureSet_JsonFormat = typeof FeatureSet_JsonFormat[keyof typeof FeatureSet_JsonFormat];
+
+export namespace FeatureSet_JsonFormat {
+  export type JSON_FORMAT_UNKNOWN = typeof FeatureSet_JsonFormat.JSON_FORMAT_UNKNOWN;
+  export type ALLOW = typeof FeatureSet_JsonFormat.ALLOW;
+  export type LEGACY_BEST_EFFORT = typeof FeatureSet_JsonFormat.LEGACY_BEST_EFFORT;
+  export type UNRECOGNIZED = typeof FeatureSet_JsonFormat.UNRECOGNIZED;
 }
 
 export function featureSet_JsonFormatFromJSON(object: any): FeatureSet_JsonFormat {
@@ -1902,11 +2082,21 @@ export function featureSet_JsonFormatToJSON(object: FeatureSet_JsonFormat): stri
   }
 }
 
-export enum FeatureSet_EnforceNamingStyle {
-  ENFORCE_NAMING_STYLE_UNKNOWN = 0,
-  STYLE2024 = 1,
-  STYLE_LEGACY = 2,
-  UNRECOGNIZED = -1,
+export const FeatureSet_EnforceNamingStyle = {
+  ENFORCE_NAMING_STYLE_UNKNOWN: 0,
+  STYLE2024: 1,
+  STYLE_LEGACY: 2,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type FeatureSet_EnforceNamingStyle =
+  typeof FeatureSet_EnforceNamingStyle[keyof typeof FeatureSet_EnforceNamingStyle];
+
+export namespace FeatureSet_EnforceNamingStyle {
+  export type ENFORCE_NAMING_STYLE_UNKNOWN = typeof FeatureSet_EnforceNamingStyle.ENFORCE_NAMING_STYLE_UNKNOWN;
+  export type STYLE2024 = typeof FeatureSet_EnforceNamingStyle.STYLE2024;
+  export type STYLE_LEGACY = typeof FeatureSet_EnforceNamingStyle.STYLE_LEGACY;
+  export type UNRECOGNIZED = typeof FeatureSet_EnforceNamingStyle.UNRECOGNIZED;
 }
 
 export function featureSet_EnforceNamingStyleFromJSON(object: any): FeatureSet_EnforceNamingStyle {
@@ -1944,21 +2134,36 @@ export function featureSet_EnforceNamingStyleToJSON(object: FeatureSet_EnforceNa
 export interface FeatureSet_VisibilityFeature {
 }
 
-export enum FeatureSet_VisibilityFeature_DefaultSymbolVisibility {
-  DEFAULT_SYMBOL_VISIBILITY_UNKNOWN = 0,
+export const FeatureSet_VisibilityFeature_DefaultSymbolVisibility = {
+  DEFAULT_SYMBOL_VISIBILITY_UNKNOWN: 0,
   /** EXPORT_ALL - Default pre-EDITION_2024, all UNSET visibility are export. */
-  EXPORT_ALL = 1,
+  EXPORT_ALL: 1,
   /** EXPORT_TOP_LEVEL - All top-level symbols default to export, nested default to local. */
-  EXPORT_TOP_LEVEL = 2,
+  EXPORT_TOP_LEVEL: 2,
   /** LOCAL_ALL - All symbols default to local. */
-  LOCAL_ALL = 3,
+  LOCAL_ALL: 3,
   /**
    * STRICT - All symbols local by default. Nested types cannot be exported.
    * With special case caveat for message { enum {} reserved 1 to max; }
    * This is the recommended setting for new protos.
    */
-  STRICT = 4,
-  UNRECOGNIZED = -1,
+  STRICT: 4,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type FeatureSet_VisibilityFeature_DefaultSymbolVisibility =
+  typeof FeatureSet_VisibilityFeature_DefaultSymbolVisibility[
+    keyof typeof FeatureSet_VisibilityFeature_DefaultSymbolVisibility
+  ];
+
+export namespace FeatureSet_VisibilityFeature_DefaultSymbolVisibility {
+  export type DEFAULT_SYMBOL_VISIBILITY_UNKNOWN =
+    typeof FeatureSet_VisibilityFeature_DefaultSymbolVisibility.DEFAULT_SYMBOL_VISIBILITY_UNKNOWN;
+  export type EXPORT_ALL = typeof FeatureSet_VisibilityFeature_DefaultSymbolVisibility.EXPORT_ALL;
+  export type EXPORT_TOP_LEVEL = typeof FeatureSet_VisibilityFeature_DefaultSymbolVisibility.EXPORT_TOP_LEVEL;
+  export type LOCAL_ALL = typeof FeatureSet_VisibilityFeature_DefaultSymbolVisibility.LOCAL_ALL;
+  export type STRICT = typeof FeatureSet_VisibilityFeature_DefaultSymbolVisibility.STRICT;
+  export type UNRECOGNIZED = typeof FeatureSet_VisibilityFeature_DefaultSymbolVisibility.UNRECOGNIZED;
 }
 
 export function featureSet_VisibilityFeature_DefaultSymbolVisibilityFromJSON(
@@ -2232,14 +2437,24 @@ export interface GeneratedCodeInfo_Annotation {
  * Represents the identified object's effect on the element in the original
  * .proto file.
  */
-export enum GeneratedCodeInfo_Annotation_Semantic {
+export const GeneratedCodeInfo_Annotation_Semantic = {
   /** NONE - There is no effect or the effect is indescribable. */
-  NONE = 0,
+  NONE: 0,
   /** SET - The element is set or otherwise mutated. */
-  SET = 1,
+  SET: 1,
   /** ALIAS - An alias to the element is returned. */
-  ALIAS = 2,
-  UNRECOGNIZED = -1,
+  ALIAS: 2,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type GeneratedCodeInfo_Annotation_Semantic =
+  typeof GeneratedCodeInfo_Annotation_Semantic[keyof typeof GeneratedCodeInfo_Annotation_Semantic];
+
+export namespace GeneratedCodeInfo_Annotation_Semantic {
+  export type NONE = typeof GeneratedCodeInfo_Annotation_Semantic.NONE;
+  export type SET = typeof GeneratedCodeInfo_Annotation_Semantic.SET;
+  export type ALIAS = typeof GeneratedCodeInfo_Annotation_Semantic.ALIAS;
+  export type UNRECOGNIZED = typeof GeneratedCodeInfo_Annotation_Semantic.UNRECOGNIZED;
 }
 
 export function generatedCodeInfo_Annotation_SemanticFromJSON(object: any): GeneratedCodeInfo_Annotation_Semantic {

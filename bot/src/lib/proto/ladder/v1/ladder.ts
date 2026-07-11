@@ -61,10 +61,18 @@ export interface LadderParticipant {
   joined_at: Date | undefined;
 }
 
+/** Request to retrieve active ladder. */
+export interface GetActiveLadderRequest {
+}
+
 /** Response containing active ladder metadata. */
 export interface GetActiveLadderResponse {
   /** Active competition ladder. */
   ladder: Ladder | undefined;
+}
+
+/** Request to join a ladder. */
+export interface JoinLadderRequest {
 }
 
 /** Response for joining a ladder. */
@@ -493,6 +501,49 @@ export const LadderParticipant: MessageFns<LadderParticipant> = {
   },
 };
 
+function createBaseGetActiveLadderRequest(): GetActiveLadderRequest {
+  return {};
+}
+
+export const GetActiveLadderRequest: MessageFns<GetActiveLadderRequest> = {
+  encode(_: GetActiveLadderRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetActiveLadderRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetActiveLadderRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): GetActiveLadderRequest {
+    return {};
+  },
+
+  toJSON(_: GetActiveLadderRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetActiveLadderRequest>, I>>(base?: I): GetActiveLadderRequest {
+    return GetActiveLadderRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetActiveLadderRequest>, I>>(_: I): GetActiveLadderRequest {
+    const message = createBaseGetActiveLadderRequest();
+    return message;
+  },
+};
+
 function createBaseGetActiveLadderResponse(): GetActiveLadderResponse {
   return { ladder: undefined };
 }
@@ -549,6 +600,49 @@ export const GetActiveLadderResponse: MessageFns<GetActiveLadderResponse> = {
     message.ladder = (object.ladder !== undefined && object.ladder !== null)
       ? Ladder.fromPartial(object.ladder)
       : undefined;
+    return message;
+  },
+};
+
+function createBaseJoinLadderRequest(): JoinLadderRequest {
+  return {};
+}
+
+export const JoinLadderRequest: MessageFns<JoinLadderRequest> = {
+  encode(_: JoinLadderRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): JoinLadderRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseJoinLadderRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): JoinLadderRequest {
+    return {};
+  },
+
+  toJSON(_: JoinLadderRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<JoinLadderRequest>, I>>(base?: I): JoinLadderRequest {
+    return JoinLadderRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<JoinLadderRequest>, I>>(_: I): JoinLadderRequest {
+    const message = createBaseJoinLadderRequest();
     return message;
   },
 };

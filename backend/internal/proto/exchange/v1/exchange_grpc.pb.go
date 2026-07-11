@@ -37,7 +37,7 @@ type ExchangeServiceClient interface {
 	// Returns historical quote candles for a stock.
 	GetHistory(ctx context.Context, in *GetHistoryRequest, opts ...grpc.CallOption) (*GetHistoryResponse, error)
 	// Opens a Server-Sent Events (SSE) stream for real-time stock quote updates.
-	StreamQuotes(ctx context.Context, in *StreamQuotesRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Quote], error)
+	StreamQuotes(ctx context.Context, in *StreamQuotesRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamQuotesResponse], error)
 	// Purchases stock shares for the authenticated user.
 	BuyStock(ctx context.Context, in *BuyStockRequest, opts ...grpc.CallOption) (*BuyStockResponse, error)
 	// Sells stock shares owned by the authenticated user.
@@ -72,13 +72,13 @@ func (c *exchangeServiceClient) GetHistory(ctx context.Context, in *GetHistoryRe
 	return out, nil
 }
 
-func (c *exchangeServiceClient) StreamQuotes(ctx context.Context, in *StreamQuotesRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Quote], error) {
+func (c *exchangeServiceClient) StreamQuotes(ctx context.Context, in *StreamQuotesRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamQuotesResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	stream, err := c.cc.NewStream(ctx, &ExchangeService_ServiceDesc.Streams[0], ExchangeService_StreamQuotes_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[StreamQuotesRequest, Quote]{ClientStream: stream}
+	x := &grpc.GenericClientStream[StreamQuotesRequest, StreamQuotesResponse]{ClientStream: stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (c *exchangeServiceClient) StreamQuotes(ctx context.Context, in *StreamQuot
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ExchangeService_StreamQuotesClient = grpc.ServerStreamingClient[Quote]
+type ExchangeService_StreamQuotesClient = grpc.ServerStreamingClient[StreamQuotesResponse]
 
 func (c *exchangeServiceClient) BuyStock(ctx context.Context, in *BuyStockRequest, opts ...grpc.CallOption) (*BuyStockResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
@@ -122,7 +122,7 @@ type ExchangeServiceServer interface {
 	// Returns historical quote candles for a stock.
 	GetHistory(context.Context, *GetHistoryRequest) (*GetHistoryResponse, error)
 	// Opens a Server-Sent Events (SSE) stream for real-time stock quote updates.
-	StreamQuotes(*StreamQuotesRequest, grpc.ServerStreamingServer[Quote]) error
+	StreamQuotes(*StreamQuotesRequest, grpc.ServerStreamingServer[StreamQuotesResponse]) error
 	// Purchases stock shares for the authenticated user.
 	BuyStock(context.Context, *BuyStockRequest) (*BuyStockResponse, error)
 	// Sells stock shares owned by the authenticated user.
@@ -143,7 +143,7 @@ func (UnimplementedExchangeServiceServer) GetQuote(context.Context, *GetQuoteReq
 func (UnimplementedExchangeServiceServer) GetHistory(context.Context, *GetHistoryRequest) (*GetHistoryResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetHistory not implemented")
 }
-func (UnimplementedExchangeServiceServer) StreamQuotes(*StreamQuotesRequest, grpc.ServerStreamingServer[Quote]) error {
+func (UnimplementedExchangeServiceServer) StreamQuotes(*StreamQuotesRequest, grpc.ServerStreamingServer[StreamQuotesResponse]) error {
 	return status.Error(codes.Unimplemented, "method StreamQuotes not implemented")
 }
 func (UnimplementedExchangeServiceServer) BuyStock(context.Context, *BuyStockRequest) (*BuyStockResponse, error) {
@@ -214,11 +214,11 @@ func _ExchangeService_StreamQuotes_Handler(srv interface{}, stream grpc.ServerSt
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(ExchangeServiceServer).StreamQuotes(m, &grpc.GenericServerStream[StreamQuotesRequest, Quote]{ServerStream: stream})
+	return srv.(ExchangeServiceServer).StreamQuotes(m, &grpc.GenericServerStream[StreamQuotesRequest, StreamQuotesResponse]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ExchangeService_StreamQuotesServer = grpc.ServerStreamingServer[Quote]
+type ExchangeService_StreamQuotesServer = grpc.ServerStreamingServer[StreamQuotesResponse]
 
 func _ExchangeService_BuyStock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BuyStockRequest)

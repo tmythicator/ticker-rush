@@ -59,8 +59,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "type": "object",
-              "properties": {}
+              "$ref": "#/definitions/v1LogoutResponse"
             }
           },
           "default": {
@@ -122,7 +121,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1GetUserResponse"
+              "$ref": "#/definitions/v1GetMeResponse"
             }
           },
           "default": {
@@ -281,6 +280,16 @@
       },
       "description": "Response containing the registered user."
     },
+    "v1GetMeResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User",
+          "description": "Details of the current user."
+        }
+      },
+      "description": "Response containing the current user profile."
+    },
     "v1GetPublicProfileResponse": {
       "type": "object",
       "properties": {
@@ -290,16 +299,6 @@
         }
       },
       "description": "Response containing the public profile."
-    },
-    "v1GetUserResponse": {
-      "type": "object",
-      "properties": {
-        "user": {
-          "$ref": "#/definitions/v1User",
-          "description": "Details of the current user."
-        }
-      },
-      "description": "Response containing the current user profile."
     },
     "v1LoginRequest": {
       "type": "object",
@@ -324,6 +323,16 @@
         }
       },
       "description": "Response containing the authenticated user."
+    },
+    "v1LogoutResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "Status or success message."
+        }
+      },
+      "description": "Response for logout."
     },
     "v1PortfolioItem": {
       "type": "object",

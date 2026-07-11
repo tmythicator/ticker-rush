@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -31,9 +30,9 @@ const (
 // LadderService manages active competition cycles and handles user enrollment.
 type LadderServiceClient interface {
 	// GetActiveLadder retrieves full metadata for the currently active ladder.
-	GetActiveLadder(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetActiveLadderResponse, error)
+	GetActiveLadder(ctx context.Context, in *GetActiveLadderRequest, opts ...grpc.CallOption) (*GetActiveLadderResponse, error)
 	// JoinLadder enrolls the authenticated user into the active ladder competition.
-	JoinLadder(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*JoinLadderResponse, error)
+	JoinLadder(ctx context.Context, in *JoinLadderRequest, opts ...grpc.CallOption) (*JoinLadderResponse, error)
 }
 
 type ladderServiceClient struct {
@@ -44,7 +43,7 @@ func NewLadderServiceClient(cc grpc.ClientConnInterface) LadderServiceClient {
 	return &ladderServiceClient{cc}
 }
 
-func (c *ladderServiceClient) GetActiveLadder(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetActiveLadderResponse, error) {
+func (c *ladderServiceClient) GetActiveLadder(ctx context.Context, in *GetActiveLadderRequest, opts ...grpc.CallOption) (*GetActiveLadderResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetActiveLadderResponse)
 	err := c.cc.Invoke(ctx, LadderService_GetActiveLadder_FullMethodName, in, out, cOpts...)
@@ -54,7 +53,7 @@ func (c *ladderServiceClient) GetActiveLadder(ctx context.Context, in *emptypb.E
 	return out, nil
 }
 
-func (c *ladderServiceClient) JoinLadder(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*JoinLadderResponse, error) {
+func (c *ladderServiceClient) JoinLadder(ctx context.Context, in *JoinLadderRequest, opts ...grpc.CallOption) (*JoinLadderResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(JoinLadderResponse)
 	err := c.cc.Invoke(ctx, LadderService_JoinLadder_FullMethodName, in, out, cOpts...)
@@ -71,9 +70,9 @@ func (c *ladderServiceClient) JoinLadder(ctx context.Context, in *emptypb.Empty,
 // LadderService manages active competition cycles and handles user enrollment.
 type LadderServiceServer interface {
 	// GetActiveLadder retrieves full metadata for the currently active ladder.
-	GetActiveLadder(context.Context, *emptypb.Empty) (*GetActiveLadderResponse, error)
+	GetActiveLadder(context.Context, *GetActiveLadderRequest) (*GetActiveLadderResponse, error)
 	// JoinLadder enrolls the authenticated user into the active ladder competition.
-	JoinLadder(context.Context, *emptypb.Empty) (*JoinLadderResponse, error)
+	JoinLadder(context.Context, *JoinLadderRequest) (*JoinLadderResponse, error)
 	mustEmbedUnimplementedLadderServiceServer()
 }
 
@@ -84,10 +83,10 @@ type LadderServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedLadderServiceServer struct{}
 
-func (UnimplementedLadderServiceServer) GetActiveLadder(context.Context, *emptypb.Empty) (*GetActiveLadderResponse, error) {
+func (UnimplementedLadderServiceServer) GetActiveLadder(context.Context, *GetActiveLadderRequest) (*GetActiveLadderResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetActiveLadder not implemented")
 }
-func (UnimplementedLadderServiceServer) JoinLadder(context.Context, *emptypb.Empty) (*JoinLadderResponse, error) {
+func (UnimplementedLadderServiceServer) JoinLadder(context.Context, *JoinLadderRequest) (*JoinLadderResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method JoinLadder not implemented")
 }
 func (UnimplementedLadderServiceServer) mustEmbedUnimplementedLadderServiceServer() {}
@@ -112,7 +111,7 @@ func RegisterLadderServiceServer(s grpc.ServiceRegistrar, srv LadderServiceServe
 }
 
 func _LadderService_GetActiveLadder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(GetActiveLadderRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -124,13 +123,13 @@ func _LadderService_GetActiveLadder_Handler(srv interface{}, ctx context.Context
 		FullMethod: LadderService_GetActiveLadder_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LadderServiceServer).GetActiveLadder(ctx, req.(*emptypb.Empty))
+		return srv.(LadderServiceServer).GetActiveLadder(ctx, req.(*GetActiveLadderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _LadderService_JoinLadder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(JoinLadderRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -142,7 +141,7 @@ func _LadderService_JoinLadder_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: LadderService_JoinLadder_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LadderServiceServer).JoinLadder(ctx, req.(*emptypb.Empty))
+		return srv.(LadderServiceServer).JoinLadder(ctx, req.(*JoinLadderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

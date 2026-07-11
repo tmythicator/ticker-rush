@@ -12,7 +12,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	_ "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -272,6 +272,43 @@ func (x *LadderParticipant) GetJoinedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+// Request to retrieve active ladder.
+type GetActiveLadderRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetActiveLadderRequest) Reset() {
+	*x = GetActiveLadderRequest{}
+	mi := &file_ladder_v1_ladder_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetActiveLadderRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetActiveLadderRequest) ProtoMessage() {}
+
+func (x *GetActiveLadderRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ladder_v1_ladder_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetActiveLadderRequest.ProtoReflect.Descriptor instead.
+func (*GetActiveLadderRequest) Descriptor() ([]byte, []int) {
+	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{3}
+}
+
 // Response containing active ladder metadata.
 type GetActiveLadderResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -283,7 +320,7 @@ type GetActiveLadderResponse struct {
 
 func (x *GetActiveLadderResponse) Reset() {
 	*x = GetActiveLadderResponse{}
-	mi := &file_ladder_v1_ladder_proto_msgTypes[3]
+	mi := &file_ladder_v1_ladder_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -295,7 +332,7 @@ func (x *GetActiveLadderResponse) String() string {
 func (*GetActiveLadderResponse) ProtoMessage() {}
 
 func (x *GetActiveLadderResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ladder_v1_ladder_proto_msgTypes[3]
+	mi := &file_ladder_v1_ladder_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -308,7 +345,7 @@ func (x *GetActiveLadderResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetActiveLadderResponse.ProtoReflect.Descriptor instead.
 func (*GetActiveLadderResponse) Descriptor() ([]byte, []int) {
-	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{3}
+	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetActiveLadderResponse) GetLadder() *Ladder {
@@ -316,6 +353,43 @@ func (x *GetActiveLadderResponse) GetLadder() *Ladder {
 		return x.Ladder
 	}
 	return nil
+}
+
+// Request to join a ladder.
+type JoinLadderRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *JoinLadderRequest) Reset() {
+	*x = JoinLadderRequest{}
+	mi := &file_ladder_v1_ladder_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *JoinLadderRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*JoinLadderRequest) ProtoMessage() {}
+
+func (x *JoinLadderRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ladder_v1_ladder_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use JoinLadderRequest.ProtoReflect.Descriptor instead.
+func (*JoinLadderRequest) Descriptor() ([]byte, []int) {
+	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{5}
 }
 
 // Response for joining a ladder.
@@ -331,7 +405,7 @@ type JoinLadderResponse struct {
 
 func (x *JoinLadderResponse) Reset() {
 	*x = JoinLadderResponse{}
-	mi := &file_ladder_v1_ladder_proto_msgTypes[4]
+	mi := &file_ladder_v1_ladder_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -343,7 +417,7 @@ func (x *JoinLadderResponse) String() string {
 func (*JoinLadderResponse) ProtoMessage() {}
 
 func (x *JoinLadderResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_ladder_v1_ladder_proto_msgTypes[4]
+	mi := &file_ladder_v1_ladder_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -356,7 +430,7 @@ func (x *JoinLadderResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinLadderResponse.ProtoReflect.Descriptor instead.
 func (*JoinLadderResponse) Descriptor() ([]byte, []int) {
-	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{4}
+	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *JoinLadderResponse) GetSuccess() bool {
@@ -377,7 +451,7 @@ var File_ladder_v1_ladder_proto protoreflect.FileDescriptor
 
 const file_ladder_v1_ladder_proto_rawDesc = "" +
 	"\n" +
-	"\x16ladder/v1/ladder.proto\x12\tladder.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x12user/v1/user.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\xf3\x02\n" +
+	"\x16ladder/v1/ladder.proto\x12\tladder.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x12user/v1/user.proto\"\xf3\x02\n" +
 	"\x06Ladder\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
@@ -399,16 +473,18 @@ const file_ladder_v1_ladder_proto_rawDesc = "" +
 	"\x04user\x18\x02 \x01(\v2\r.user.v1.UserR\x04user\x12\x1d\n" +
 	"\n" +
 	"final_rank\x18\x03 \x01(\x05R\tfinalRank\x127\n" +
-	"\tjoined_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\bjoinedAt\"D\n" +
+	"\tjoined_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\bjoinedAt\"\x18\n" +
+	"\x16GetActiveLadderRequest\"D\n" +
 	"\x17GetActiveLadderResponse\x12)\n" +
-	"\x06ladder\x18\x01 \x01(\v2\x11.ladder.v1.LadderR\x06ladder\"H\n" +
+	"\x06ladder\x18\x01 \x01(\v2\x11.ladder.v1.LadderR\x06ladder\"\x13\n" +
+	"\x11JoinLadderRequest\"H\n" +
 	"\x12JoinLadderResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\xee\x01\n" +
-	"\rLadderService\x12i\n" +
-	"\x0fGetActiveLadder\x12\x16.google.protobuf.Empty\x1a\".ladder.v1.GetActiveLadderResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/ladder/active\x12r\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\xff\x01\n" +
+	"\rLadderService\x12t\n" +
+	"\x0fGetActiveLadder\x12!.ladder.v1.GetActiveLadderRequest\x1a\".ladder.v1.GetActiveLadderResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/ladder/active\x12x\n" +
 	"\n" +
-	"JoinLadder\x12\x16.google.protobuf.Empty\x1a\x1d.ladder.v1.JoinLadderResponse\"-\x92A\x12b\x10\n" +
+	"JoinLadder\x12\x1c.ladder.v1.JoinLadderRequest\x1a\x1d.ladder.v1.JoinLadderResponse\"-\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
 	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x12\"\x10/api/ladder/joinB\xfd\x01\x92A\xad\x01\x12V\n" +
@@ -430,29 +506,30 @@ func file_ladder_v1_ladder_proto_rawDescGZIP() []byte {
 	return file_ladder_v1_ladder_proto_rawDescData
 }
 
-var file_ladder_v1_ladder_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_ladder_v1_ladder_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_ladder_v1_ladder_proto_goTypes = []any{
 	(*Ladder)(nil),                  // 0: ladder.v1.Ladder
 	(*TickerInfo)(nil),              // 1: ladder.v1.TickerInfo
 	(*LadderParticipant)(nil),       // 2: ladder.v1.LadderParticipant
-	(*GetActiveLadderResponse)(nil), // 3: ladder.v1.GetActiveLadderResponse
-	(*JoinLadderResponse)(nil),      // 4: ladder.v1.JoinLadderResponse
-	(*timestamppb.Timestamp)(nil),   // 5: google.protobuf.Timestamp
-	(*v1.User)(nil),                 // 6: user.v1.User
-	(*emptypb.Empty)(nil),           // 7: google.protobuf.Empty
+	(*GetActiveLadderRequest)(nil),  // 3: ladder.v1.GetActiveLadderRequest
+	(*GetActiveLadderResponse)(nil), // 4: ladder.v1.GetActiveLadderResponse
+	(*JoinLadderRequest)(nil),       // 5: ladder.v1.JoinLadderRequest
+	(*JoinLadderResponse)(nil),      // 6: ladder.v1.JoinLadderResponse
+	(*timestamppb.Timestamp)(nil),   // 7: google.protobuf.Timestamp
+	(*v1.User)(nil),                 // 8: user.v1.User
 }
 var file_ladder_v1_ladder_proto_depIdxs = []int32{
-	5, // 0: ladder.v1.Ladder.start_time:type_name -> google.protobuf.Timestamp
-	5, // 1: ladder.v1.Ladder.end_time:type_name -> google.protobuf.Timestamp
-	5, // 2: ladder.v1.Ladder.created_at:type_name -> google.protobuf.Timestamp
+	7, // 0: ladder.v1.Ladder.start_time:type_name -> google.protobuf.Timestamp
+	7, // 1: ladder.v1.Ladder.end_time:type_name -> google.protobuf.Timestamp
+	7, // 2: ladder.v1.Ladder.created_at:type_name -> google.protobuf.Timestamp
 	1, // 3: ladder.v1.Ladder.allowed_tickers:type_name -> ladder.v1.TickerInfo
-	6, // 4: ladder.v1.LadderParticipant.user:type_name -> user.v1.User
-	5, // 5: ladder.v1.LadderParticipant.joined_at:type_name -> google.protobuf.Timestamp
+	8, // 4: ladder.v1.LadderParticipant.user:type_name -> user.v1.User
+	7, // 5: ladder.v1.LadderParticipant.joined_at:type_name -> google.protobuf.Timestamp
 	0, // 6: ladder.v1.GetActiveLadderResponse.ladder:type_name -> ladder.v1.Ladder
-	7, // 7: ladder.v1.LadderService.GetActiveLadder:input_type -> google.protobuf.Empty
-	7, // 8: ladder.v1.LadderService.JoinLadder:input_type -> google.protobuf.Empty
-	3, // 9: ladder.v1.LadderService.GetActiveLadder:output_type -> ladder.v1.GetActiveLadderResponse
-	4, // 10: ladder.v1.LadderService.JoinLadder:output_type -> ladder.v1.JoinLadderResponse
+	3, // 7: ladder.v1.LadderService.GetActiveLadder:input_type -> ladder.v1.GetActiveLadderRequest
+	5, // 8: ladder.v1.LadderService.JoinLadder:input_type -> ladder.v1.JoinLadderRequest
+	4, // 9: ladder.v1.LadderService.GetActiveLadder:output_type -> ladder.v1.GetActiveLadderResponse
+	6, // 10: ladder.v1.LadderService.JoinLadder:output_type -> ladder.v1.JoinLadderResponse
 	9, // [9:11] is the sub-list for method output_type
 	7, // [7:9] is the sub-list for method input_type
 	7, // [7:7] is the sub-list for extension type_name
@@ -471,7 +548,7 @@ func file_ladder_v1_ladder_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ladder_v1_ladder_proto_rawDesc), len(file_ladder_v1_ladder_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
