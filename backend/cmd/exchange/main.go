@@ -49,7 +49,7 @@ import (
 
 type App struct {
 	cfg                *config.Config
-	userService        *service.UserService
+	userService        *service.User
 	tradeService       *service.TradeService
 	marketService      *service.MarketService
 	leaderboardService *service.LeaderBoardService
@@ -114,7 +114,7 @@ func NewApp(ctx context.Context, cfg *config.Config) (app *App, err error) {
 
 	// Initialize repositories
 	ladderRepo := postgres.NewLadderRepository(postgreClient)
-	userRepo := postgres.NewUserRepository(postgreClient)
+	userRepo := postgres.NewUser(postgreClient)
 	portfolioRepo := postgres.NewPortfolioRepository(postgreClient)
 	marketRepo := valkey.NewMarketRepository(valkeyClient)
 	leaderboardRepo := valkey.NewLeaderboardRepository(valkeyClient)
@@ -122,7 +122,7 @@ func NewApp(ctx context.Context, cfg *config.Config) (app *App, err error) {
 	transactor := postgres.NewPgxTransactor(postgreClient)
 
 	// Initialize services
-	userService := service.NewUserService(userRepo, portfolioRepo, ladderRepo)
+	userService := service.NewUser(userRepo, portfolioRepo, ladderRepo)
 	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
 	marketService := service.NewMarketService(marketRepo, historyRepo, ladderRepo)
 	ladderService := service.NewLadderService(ladderRepo)

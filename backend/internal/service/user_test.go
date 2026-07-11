@@ -44,7 +44,7 @@ func TestUserService_CreateUser(t *testing.T) {
 			!params.IsPublic
 	})).Return(expectedUser, nil)
 
-	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
+	userService := service.NewUser(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
 	user, err := userService.CreateUser(
 		ctx,
 		username,
@@ -65,7 +65,7 @@ func TestUserService_CreateUser_AgbNotAccepted(t *testing.T) {
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
 	mockLadderRepo := new(mocks.MockLadderRepository)
-	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
+	userService := service.NewUser(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
 	user, err := userService.CreateUser(
 		ctx,
 		"username",
@@ -86,7 +86,7 @@ func TestUserService_CreateUser_PasswordTooLong(t *testing.T) {
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
 	mockLadderRepo := new(mocks.MockLadderRepository)
-	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
+	userService := service.NewUser(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
 
 	// 73 chars
 	longPassword := "0123456789012345678901234567890123456789012345678901234567890123456789012"
@@ -111,7 +111,7 @@ func TestUserService_GetUserWithPortfolio(t *testing.T) {
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
 	mockLadderRepo := new(mocks.MockLadderRepository)
-	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
+	userService := service.NewUser(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
 	userID := int64(1)
 	now := time.Now()
 
@@ -158,7 +158,7 @@ func TestUserService_Authenticate(t *testing.T) {
 
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockLadderRepo := new(mocks.MockLadderRepository)
-	userService := service.NewUserService(mockUserRepo, nil, mockLadderRepo)
+	userService := service.NewUser(mockUserRepo, nil, mockLadderRepo)
 
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(truePassword), bcrypt.DefaultCost)
 
@@ -181,7 +181,7 @@ func TestUserService_Authenticate(t *testing.T) {
 
 func TestUserService_Authenticate_PasswordTooLong(t *testing.T) {
 	mockUserRepo := new(mocks.MockUserRepository)
-	userService := service.NewUserService(mockUserRepo, nil, nil)
+	userService := service.NewUser(mockUserRepo, nil, nil)
 
 	// 73 chars
 	longPassword := "0123456789012345678901234567890123456789012345678901234567890123456789012"
@@ -197,7 +197,7 @@ func TestUserService_GetPublicProfile(t *testing.T) {
 	mockUserRepo := new(mocks.MockUserRepository)
 	mockPortfolioRepo := new(mocks.MockPortfolioRepository)
 	mockLadderRepo := new(mocks.MockLadderRepository)
-	userService := service.NewUserService(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
+	userService := service.NewUser(mockUserRepo, mockPortfolioRepo, mockLadderRepo)
 
 	t.Run("Public User", func(t *testing.T) {
 		username := "publicUser"
@@ -267,7 +267,7 @@ func TestUserService_GetPublicProfile(t *testing.T) {
 
 func TestUserService_UpdateUser(t *testing.T) {
 	mockUserRepo := new(mocks.MockUserRepository)
-	userService := service.NewUserService(mockUserRepo, nil, nil)
+	userService := service.NewUser(mockUserRepo, nil, nil)
 	userID := int64(1)
 
 	t.Run("Success with http website", func(t *testing.T) {

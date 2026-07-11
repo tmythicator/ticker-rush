@@ -9,7 +9,7 @@ import (
 
 // LeaderBoardService handles the calculation and retrieval of user rankings.
 type LeaderBoardService struct {
-	userRepo        UserRepository
+	userRepo        UserRepo
 	portfolioRepo   PortfolioRepository
 	marketRepo      MarketRepository
 	leaderboardRepo LeaderboardRepository
@@ -18,7 +18,7 @@ type LeaderBoardService struct {
 
 // NewLeaderBoardService creates a new instance of LeaderBoardService with required dependencies.
 func NewLeaderBoardService(
-	userRepo UserRepository,
+	userRepo UserRepo,
 	portfolioRepo PortfolioRepository,
 	marketRepo MarketRepository,
 	ladderRepo LadderRepository,

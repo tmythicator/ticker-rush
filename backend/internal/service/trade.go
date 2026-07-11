@@ -15,7 +15,7 @@ import (
 
 // TradeService handles stock trading operations.
 type TradeService struct {
-	userRepo      UserRepository
+	userRepo      UserRepo
 	portfolioRepo PortfolioRepository
 	marketRepo    MarketRepository
 	ladderRepo    LadderRepository
@@ -24,7 +24,7 @@ type TradeService struct {
 
 // NewTradeService creates a new instance of TradeService.
 func NewTradeService(
-	userRepo UserRepository,
+	userRepo UserRepo,
 	portfolioRepo PortfolioRepository,
 	marketRepo MarketRepository,
 	ladderRepo LadderRepository,

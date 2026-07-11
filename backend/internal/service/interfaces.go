@@ -45,23 +45,6 @@ type CreateUserParams struct {
 	AgbAcceptedAt time.Time
 }
 
-// UserRepository defines the interface for user persistence.
-type UserRepository interface {
-	GetUsers(ctx context.Context) ([]*domain.User, error)
-	GetUser(ctx context.Context, id int64) (*domain.User, error)
-	GetUserByUsername(
-		ctx context.Context,
-		username string,
-	) (*domain.User, string, error) // Returns user, hash, error
-	CreateUser(ctx context.Context, params CreateUserParams) (*domain.User, error)
-
-	GetUserForUpdate(ctx context.Context, id int64) (*domain.User, error)
-	UpdateUserProfile(ctx context.Context, user *domain.User) error
-	UpdateUserBalance(ctx context.Context, userID int64, ladderID int64, balance decimal.Decimal) error
-	GetUserBalance(ctx context.Context, userID int64, ladderID int64) (decimal.Decimal, error)
-	GetUserWithPortfolioForActiveLadder(ctx context.Context, id int64) (*domain.User, error)
-	WithTx(tx Transaction) UserRepository
-}
 
 // LadderRepository defines the interface for ladder management.
 type LadderRepository interface {

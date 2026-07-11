@@ -43,10 +43,10 @@ var (
 	valkeyClient  *redis.Client
 	dbPool        *pgxpool.Pool
 	ladderRepo    *postgreRepo.LadderRepository
-	userRepo      *postgreRepo.UserRepository
+	userRepo      *postgreRepo.User
 	portfolioRepo *postgreRepo.PortfolioRepository
 	marketRepo    *redisRepo.MarketRepository
-	userService   *service.UserService
+	userService   *service.User
 	tradeService  *service.TradeService
 	marketService *service.MarketService
 )
@@ -118,14 +118,14 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 
 	// Initialize Layers
 	ladderRepo = postgreRepo.NewLadderRepository(dbPool)
-	userRepo = postgreRepo.NewUserRepository(dbPool)
+	userRepo = postgreRepo.NewUser(dbPool)
 	portfolioRepo = postgreRepo.NewPortfolioRepository(dbPool)
 	marketRepo = redisRepo.NewMarketRepository(valkeyClient)
 	leaderboardRepo := redisRepo.NewLeaderboardRepository(valkeyClient)
 	transactor := postgreRepo.NewPgxTransactor(dbPool)
 	historyRepo := &MockHistoryRepository{}
 
-	userService = service.NewUserService(userRepo, portfolioRepo, ladderRepo)
+	userService = service.NewUser(userRepo, portfolioRepo, ladderRepo)
 	tradeService = service.NewTradeService(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
 	ladderService := service.NewLadderService(ladderRepo)
 	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)

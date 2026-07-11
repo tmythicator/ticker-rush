@@ -61,7 +61,7 @@ func TestLadderRepository_GetLadderParticipants_WithNullFinalBalance(t *testing.
 
 	// Initialize repositories
 	ladderRepo := postgresRepo.NewLadderRepository(pool)
-	userRepo := postgresRepo.NewUserRepository(pool)
+	userRepo := postgresRepo.NewUser(pool)
 
 	// 1. Create a user
 	createdUser, err := userRepo.CreateUser(ctx, service.CreateUserParams{
