@@ -37,17 +37,17 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 		MaxAge:           12 * time.Hour,
 	}))
 
-	api := engine.Group("/api")
+	v1 := engine.Group("/api/v1")
 	{
-		api.POST("/login", handler.Login)
-		api.POST("/logout", handler.Logout)
-		api.POST("/register", handler.CreateUser)
-		api.GET("/ladder/active", handler.GetActiveLadder)
-		api.GET("/history", handler.GetHistory)
-		api.GET("/leaderboard", handler.GetLeaderboard)
-		api.GET("/users/:username", handler.GetPublicProfile)
+		v1.POST("/login", handler.Login)
+		v1.POST("/logout", handler.Logout)
+		v1.POST("/register", handler.CreateUser)
+		v1.GET("/ladder/active", handler.GetActiveLadder)
+		v1.GET("/history", handler.GetHistory)
+		v1.GET("/leaderboard", handler.GetLeaderboard)
+		v1.GET("/users/:username", handler.GetPublicProfile)
 
-		protected := api.Group("/")
+		protected := v1.Group("/")
 		protected.Use(middleware.AuthMiddleware(cfg.JWTSecret))
 		{
 			protected.POST("/ladder/join", handler.JoinLadder)
@@ -60,7 +60,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 		}
 	}
 
-	swagger.RegisterRoutes(api)
+	swagger.RegisterRoutes(engine.Group("/api"))
 
 	return &Router{engine: engine}, nil
 }

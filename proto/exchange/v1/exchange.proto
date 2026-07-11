@@ -48,7 +48,7 @@ message Quote {
 service ExchangeService {
   // Retrieves the current quote and metadata for a single stock.
   rpc GetQuote(GetQuoteRequest) returns (GetQuoteResponse) {
-    option (google.api.http) = {get: "/api/quote"};
+    option (google.api.http) = {get: "/api/v1/quote"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       security: {
         security_requirement: {
@@ -61,12 +61,12 @@ service ExchangeService {
 
   // Returns historical quote candles for a stock.
   rpc GetHistory(GetHistoryRequest) returns (GetHistoryResponse) {
-    option (google.api.http) = {get: "/api/history"};
+    option (google.api.http) = {get: "/api/v1/history"};
   }
 
   // Opens a Server-Sent Events (SSE) stream for real-time stock quote updates.
   rpc StreamQuotes(StreamQuotesRequest) returns (stream StreamQuotesResponse) {
-    option (google.api.http) = {get: "/api/quotes/events"};
+    option (google.api.http) = {get: "/api/v1/quotes/events"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       security: {
         security_requirement: {
@@ -80,7 +80,7 @@ service ExchangeService {
   // Purchases stock shares for the authenticated user.
   rpc BuyStock(BuyStockRequest) returns (BuyStockResponse) {
     option (google.api.http) = {
-      post: "/api/buy"
+      post: "/api/v1/buy"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -96,7 +96,7 @@ service ExchangeService {
   // Sells stock shares owned by the authenticated user.
   rpc SellStock(SellStockRequest) returns (SellStockResponse) {
     option (google.api.http) = {
-      post: "/api/sell"
+      post: "/api/v1/sell"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {

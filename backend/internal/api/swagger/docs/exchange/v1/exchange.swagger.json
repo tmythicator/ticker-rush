@@ -17,7 +17,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/buy": {
+    "/api/v1/buy": {
       "post": {
         "summary": "Purchases stock shares for the authenticated user.",
         "operationId": "ExchangeService_BuyStock",
@@ -56,7 +56,7 @@
         ]
       }
     },
-    "/api/history": {
+    "/api/v1/history": {
       "get": {
         "summary": "Returns historical quote candles for a stock.",
         "operationId": "ExchangeService_GetHistory",
@@ -96,7 +96,7 @@
         ]
       }
     },
-    "/api/quote": {
+    "/api/v1/quote": {
       "get": {
         "summary": "Retrieves the current quote and metadata for a single stock.",
         "operationId": "ExchangeService_GetQuote",
@@ -133,7 +133,7 @@
         ]
       }
     },
-    "/api/quotes/events": {
+    "/api/v1/quotes/events": {
       "get": {
         "summary": "Opens a Server-Sent Events (SSE) stream for real-time stock quote updates.",
         "operationId": "ExchangeService_StreamQuotes",
@@ -179,7 +179,7 @@
         ]
       }
     },
-    "/api/sell": {
+    "/api/v1/sell": {
       "post": {
         "summary": "Sells stock shares owned by the authenticated user.",
         "operationId": "ExchangeService_SellStock",

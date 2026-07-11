@@ -28,7 +28,7 @@ export const useQuotesSSE = (symbol: string | null) => {
   useEffect(() => {
     if (!symbol) return;
 
-    const url = `${import.meta.env.VITE_API_URL}/quotes/events?symbol=${symbol}`;
+    const url = `${import.meta.env.VITE_API_URL}/v1/quotes/events?symbol=${symbol}`;
     const eventSource = new EventSource(url);
 
     eventSource.onopen = (event) => {

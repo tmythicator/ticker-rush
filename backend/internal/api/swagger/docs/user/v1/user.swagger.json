@@ -17,7 +17,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/login": {
+    "/api/v1/login": {
       "post": {
         "summary": "Login authenticates a user and establishes an HTTP session (via Cookie).",
         "operationId": "UserService_Login",
@@ -51,7 +51,7 @@
         ]
       }
     },
-    "/api/logout": {
+    "/api/v1/logout": {
       "post": {
         "summary": "Logout invalidates the active HTTP session cookie.",
         "operationId": "UserService_Logout",
@@ -79,7 +79,7 @@
         ]
       }
     },
-    "/api/profile": {
+    "/api/v1/profile": {
       "get": {
         "summary": "GetMe returns the authenticated user's full private profile (including balance and portfolio).",
         "operationId": "UserService_GetMe",
@@ -144,7 +144,7 @@
         ]
       }
     },
-    "/api/register": {
+    "/api/v1/register": {
       "post": {
         "summary": "CreateUser registers a new player account.",
         "operationId": "UserService_CreateUser",
@@ -178,7 +178,7 @@
         ]
       }
     },
-    "/api/users/{username}": {
+    "/api/v1/users/{username}": {
       "get": {
         "summary": "GetPublicProfile retrieves the public information of a user profile by username.",
         "operationId": "UserService_GetPublicProfile",

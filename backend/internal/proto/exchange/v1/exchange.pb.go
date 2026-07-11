@@ -686,27 +686,26 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x11SellStockResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12>\n" +
-	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant2\xdb\x04\n" +
-	"\x0fExchangeService\x12p\n" +
-	"\bGetQuote\x12\x1c.exchange.v1.GetQuoteRequest\x1a\x1d.exchange.v1.GetQuoteResponse\"'\x92A\x12b\x10\n" +
+	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant2\xea\x04\n" +
+	"\x0fExchangeService\x12s\n" +
+	"\bGetQuote\x12\x1c.exchange.v1.GetQuoteRequest\x1a\x1d.exchange.v1.GetQuoteResponse\"*\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
-	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\f\x12\n" +
-	"/api/quote\x12c\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x0f\x12\r/api/v1/quote\x12f\n" +
 	"\n" +
-	"GetHistory\x12\x1e.exchange.v1.GetHistoryRequest\x1a\x1f.exchange.v1.GetHistoryResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/api/history\x12\x86\x01\n" +
-	"\fStreamQuotes\x12 .exchange.v1.StreamQuotesRequest\x1a!.exchange.v1.StreamQuotesResponse\"/\x92A\x12b\x10\n" +
+	"GetHistory\x12\x1e.exchange.v1.GetHistoryRequest\x1a\x1f.exchange.v1.GetHistoryResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/api/v1/history\x12\x89\x01\n" +
+	"\fStreamQuotes\x12 .exchange.v1.StreamQuotesRequest\x1a!.exchange.v1.StreamQuotesResponse\"2\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
-	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x14\x12\x12/api/quotes/events0\x01\x12q\n" +
-	"\bBuyStock\x12\x1c.exchange.v1.BuyStockRequest\x1a\x1d.exchange.v1.BuyStockResponse\"(\x92A\x12b\x10\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x17\x12\x15/api/v1/quotes/events0\x01\x12t\n" +
+	"\bBuyStock\x12\x1c.exchange.v1.BuyStockRequest\x1a\x1d.exchange.v1.BuyStockResponse\"+\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
-	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\r:\x01*\"\b/api/buy\x12u\n" +
-	"\tSellStock\x12\x1d.exchange.v1.SellStockRequest\x1a\x1e.exchange.v1.SellStockResponse\")\x92A\x12b\x10\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x10:\x01*\"\v/api/v1/buy\x12x\n" +
+	"\tSellStock\x12\x1d.exchange.v1.SellStockRequest\x1a\x1e.exchange.v1.SellStockResponse\",\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
-	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/api/sellB\xfc\x01\x92A\xa8\x01\x12Q\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/api/v1/sellB\xfc\x01\x92A\xa8\x01\x12Q\n" +
 	"\x14Exchange Service API\x122API for stock quotes, market history, and trading.2\x051.0.0ZS\n" +
 	"Q\n" +
 	"\n" +

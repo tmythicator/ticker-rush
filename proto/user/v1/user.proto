@@ -154,7 +154,7 @@ service UserService {
   // CreateUser registers a new player account.
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
     option (google.api.http) = {
-      post: "/api/register"
+      post: "/api/v1/register"
       body: "*"
     };
   }
@@ -162,14 +162,14 @@ service UserService {
   // Login authenticates a user and establishes an HTTP session (via Cookie).
   rpc Login(LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
-      post: "/api/login"
+      post: "/api/v1/login"
       body: "*"
     };
   }
 
   // Logout invalidates the active HTTP session cookie.
   rpc Logout(LogoutRequest) returns (LogoutResponse) {
-    option (google.api.http) = {post: "/api/logout"};
+    option (google.api.http) = {post: "/api/v1/logout"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       security: {
         security_requirement: {
@@ -182,7 +182,7 @@ service UserService {
 
   // GetMe returns the authenticated user's full private profile (including balance and portfolio).
   rpc GetMe(GetMeRequest) returns (GetMeResponse) {
-    option (google.api.http) = {get: "/api/profile"};
+    option (google.api.http) = {get: "/api/v1/profile"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       security: {
         security_requirement: {
@@ -196,7 +196,7 @@ service UserService {
   // UpdateUser modifies the profile attributes of the authenticated user.
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
     option (google.api.http) = {
-      put: "/api/profile"
+      put: "/api/v1/profile"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -211,6 +211,6 @@ service UserService {
 
   // GetPublicProfile retrieves the public information of a user profile by username.
   rpc GetPublicProfile(GetPublicProfileRequest) returns (GetPublicProfileResponse) {
-    option (google.api.http) = {get: "/api/users/{username}"};
+    option (google.api.http) = {get: "/api/v1/users/{username}"};
   }
 }

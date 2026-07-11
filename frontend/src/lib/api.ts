@@ -24,7 +24,7 @@ import {
   type User,
 } from './proto/user/v1/user';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = `${import.meta.env.VITE_API_URL}/v1`;
 
 class ApiError extends Error {
   status: number;
