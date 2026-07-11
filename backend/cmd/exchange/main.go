@@ -50,7 +50,7 @@ import (
 type App struct {
 	cfg                *config.Config
 	userService        *service.User
-	tradeService       *service.TradeService
+	tradeService       *service.Trade
 	marketService      *service.Market
 	leaderboardService *service.Leaderboard
 	lifecycleWorker    *worker.LadderLifecycleWorker
@@ -123,7 +123,7 @@ func NewApp(ctx context.Context, cfg *config.Config) (app *App, err error) {
 
 	// Initialize services
 	userService := service.NewUser(userRepo, portfolioRepo, ladderRepo)
-	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
+	tradeService := service.NewTrade(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
 	marketService := service.NewMarket(marketRepo, historyRepo, ladderRepo)
 	ladderService := service.NewLadder(ladderRepo)
 	leaderboardService := service.NewLeaderboard(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)

@@ -47,7 +47,7 @@ var (
 	portfolioRepo *postgreRepo.PortfolioRepository
 	marketRepo    *redisRepo.MarketRepository
 	userService   *service.User
-	tradeService  *service.TradeService
+	tradeService  *service.Trade
 	marketService *service.Market
 )
 
@@ -126,7 +126,7 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 	historyRepo := &MockHistoryRepository{}
 
 	userService = service.NewUser(userRepo, portfolioRepo, ladderRepo)
-	tradeService = service.NewTradeService(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
+	tradeService = service.NewTrade(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
 	ladderService := service.NewLadder(ladderRepo)
 	leaderboardService := service.NewLeaderboard(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
 

@@ -91,7 +91,7 @@ func TestTradeService_BuyStock_Success(t *testing.T) {
 	mockTx.On("Rollback", mock.Anything).Return(nil)
 
 	// 4. Execute
-	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
+	tradeService := service.NewTrade(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
 	user, err := tradeService.BuyStock(ctx, userID, symbol, quantity)
 
 	// 5. Verify
@@ -153,7 +153,7 @@ func TestTradeService_BuyStock_InsufficientFunds(t *testing.T) {
 	mockUserRepo.On("GetUserForUpdate", mock.Anything, userID).Return(initialUser, nil)
 	mockUserRepo.On("GetUserBalance", mock.Anything, userID, int64(1)).Return(decimal.NewFromFloat(startBalance), nil)
 
-	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
+	tradeService := service.NewTrade(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
 	_, err := tradeService.BuyStock(ctx, userID, symbol, quantity)
 
 	assert.Error(t, err)
@@ -197,7 +197,7 @@ func TestTradeService_BuyStock_MarketClosed(t *testing.T) {
 	ctx := context.Background()
 
 	// 3. Execute
-	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
+	tradeService := service.NewTrade(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
 	_, err := tradeService.BuyStock(ctx, userID, symbol, quantity)
 
 	// 4. Verify
@@ -252,7 +252,7 @@ func TestTradeService_BuyStock_NotJoined(t *testing.T) {
 	}, nil)
 	mockLadderRepo.On("IsUserInLadder", mock.Anything, int64(1), userID).Return(false, nil)
 
-	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
+	tradeService := service.NewTrade(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
 	_, err := tradeService.BuyStock(ctx, userID, symbol, quantity)
 
 	assert.Error(t, err)
@@ -302,7 +302,7 @@ func TestTradeService_SellStock_NotJoined(t *testing.T) {
 	}, nil)
 	mockLadderRepo.On("IsUserInLadder", mock.Anything, int64(1), userID).Return(false, nil)
 
-	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
+	tradeService := service.NewTrade(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
 	_, err := tradeService.SellStock(ctx, userID, symbol, quantity)
 
 	assert.Error(t, err)
@@ -347,7 +347,7 @@ func TestTradeService_BuyStock_LadderNotActive(t *testing.T) {
 		InitialBalance: decimal.NewFromFloat(1000),
 	}, nil)
 
-	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
+	tradeService := service.NewTrade(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
 	_, err := tradeService.BuyStock(ctx, userID, symbol, quantity)
 
 	assert.Error(t, err)
@@ -428,7 +428,7 @@ func TestTradeService_SellStock_Success(t *testing.T) {
 	mockTx.On("Commit", mock.Anything).Return(nil)
 	mockTx.On("Rollback", mock.Anything).Return(nil)
 
-	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
+	tradeService := service.NewTrade(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
 	user, err := tradeService.SellStock(ctx, userID, symbol, quantity)
 
 	assert.NoError(t, err)
@@ -488,7 +488,7 @@ func TestTradeService_SellStock_InsufficientQuantity(t *testing.T) {
 	mockPortRepo.On("GetPortfolioItemForUpdate", mock.Anything, userID, int64(1), symbol).
 		Return(&domain.PortfolioItem{StockSymbol: symbol, Quantity: decimal.NewFromFloat(5.0), AveragePrice: decimal.NewFromFloat(100.0)}, nil)
 
-	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
+	tradeService := service.NewTrade(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
 	_, err := tradeService.SellStock(ctx, userID, symbol, quantity)
 
 	assert.Error(t, err)
@@ -544,7 +544,7 @@ func TestTradeService_SellStock_ZeroHoldings(t *testing.T) {
 	mockPortRepo.On("GetPortfolioItemForUpdate", mock.Anything, userID, int64(1), symbol).
 		Return(nil, pgx.ErrNoRows)
 
-	tradeService := service.NewTradeService(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
+	tradeService := service.NewTrade(mockUserRepo, mockPortRepo, marketRepo, mockLadderRepo, mockTransactor)
 	_, err := tradeService.SellStock(ctx, userID, symbol, quantity)
 
 	assert.Error(t, err)
@@ -554,7 +554,7 @@ func TestTradeService_SellStock_ZeroHoldings(t *testing.T) {
 }
 
 func TestTradeService_BuyStock_InvalidQuantity(t *testing.T) {
-	tradeService := service.NewTradeService(nil, nil, nil, nil, nil)
+	tradeService := service.NewTrade(nil, nil, nil, nil, nil)
 	ctx := context.Background()
 
 	testCases := []struct {
@@ -580,7 +580,7 @@ func TestTradeService_BuyStock_InvalidQuantity(t *testing.T) {
 }
 
 func TestTradeService_SellStock_InvalidQuantity(t *testing.T) {
-	tradeService := service.NewTradeService(nil, nil, nil, nil, nil)
+	tradeService := service.NewTrade(nil, nil, nil, nil, nil)
 	ctx := context.Background()
 
 	testCases := []struct {

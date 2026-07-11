@@ -21,6 +21,17 @@ var (
 	usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9_]{3,20}$`)
 )
 
+// CreateUserParams represents parameters for creating a new user.
+type CreateUserParams struct {
+	Username      string
+	PasswordHash  string
+	FirstName     string
+	LastName      string
+	Website       string
+	IsPublic      bool
+	AgbAcceptedAt time.Time
+}
+
 // UserRepo defines the interface for user persistence.
 type UserRepo interface {
 	GetUsers(ctx context.Context) ([]*domain.User, error)
