@@ -26,7 +26,7 @@ func TestLeaderboardWorker_Start(t *testing.T) {
 	mockUserRepo.On("GetUsers", mock.Anything).Return([]*domain.User{}, nil)
 	mockLeaderboardRepo.On("SetLastUpdate", mock.Anything, int64(1), mock.Anything).Return(nil)
 
-	lbService := service.NewLeaderBoardService(
+	lbService := service.NewLeaderboard(
 		mockUserRepo,
 		mockPortRepo,
 		mockMarketRepo,

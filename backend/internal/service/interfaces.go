@@ -54,18 +54,3 @@ type PortfolioRepository interface {
 	WithTx(tx Transaction) PortfolioRepository
 }
 
-// LeaderboardScore represents a single score entry in the leaderboard.
-type LeaderboardScore struct {
-	UserID int64
-	Score  float64
-}
-
-// LeaderboardRepository defines the interface for leaderboard state storage (e.g. Valkey/Redis).
-type LeaderboardRepository interface {
-	UpdateRank(ctx context.Context, ladderID int64, userID int64, score float64) error
-	GetLeaderboard(ctx context.Context, ladderID int64, offset, limit int) ([]LeaderboardScore, error)
-	GetLastUpdate(ctx context.Context, ladderID int64) (int64, error)
-	SetLastUpdate(ctx context.Context, ladderID int64, timestamp int64) error
-	GetTotalCount(ctx context.Context, ladderID int64) (int64, error)
-	RemoveFromLeaderboard(ctx context.Context, ladderID int64, userID int64) error
-}

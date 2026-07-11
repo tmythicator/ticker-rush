@@ -25,7 +25,7 @@ type RestHandler struct {
 	userService   *service.User
 	tradeService  *service.TradeService
 	marketService *service.Market
-	leadService   *service.LeaderBoardService
+	leadService   *service.Leaderboard
 	ladderService *service.Ladder
 	jwtSecret     string
 }
@@ -35,7 +35,7 @@ func NewRestHandler(
 	userService *service.User,
 	tradeService *service.TradeService,
 	marketService *service.Market,
-	leadService *service.LeaderBoardService,
+	leadService *service.Leaderboard,
 	ladderService *service.Ladder,
 	jwtSecret string,
 ) *RestHandler {

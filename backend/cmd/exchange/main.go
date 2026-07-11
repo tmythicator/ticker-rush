@@ -52,7 +52,7 @@ type App struct {
 	userService        *service.User
 	tradeService       *service.TradeService
 	marketService      *service.Market
-	leaderboardService *service.LeaderBoardService
+	leaderboardService *service.Leaderboard
 	lifecycleWorker    *worker.LadderLifecycleWorker
 	leaderboardWorker  *worker.LeaderboardWorker
 	restHandler        *handler.RestHandler
@@ -126,7 +126,7 @@ func NewApp(ctx context.Context, cfg *config.Config) (app *App, err error) {
 	tradeService := service.NewTradeService(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
 	marketService := service.NewMarket(marketRepo, historyRepo, ladderRepo)
 	ladderService := service.NewLadder(ladderRepo)
-	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
+	leaderboardService := service.NewLeaderboard(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
 
 	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, ladderService, cfg.JWTSecret)
 

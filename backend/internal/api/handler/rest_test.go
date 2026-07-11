@@ -128,7 +128,7 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 	userService = service.NewUser(userRepo, portfolioRepo, ladderRepo)
 	tradeService = service.NewTradeService(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
 	ladderService := service.NewLadder(ladderRepo)
-	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
+	leaderboardService := service.NewLeaderboard(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
 
 	marketService = service.NewMarket(marketRepo, historyRepo, ladderRepo)
 
