@@ -5,7 +5,6 @@ package user.v1;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
-import "portfolio/v1/portfolio.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1;user";
@@ -51,9 +50,19 @@ message User {
   // Current cash balance in USD.
   double balance = 10;
   // Current stock portfolio holdings.
-  map<string, portfolio.v1.PortfolioItem> portfolio = 11;
+  map<string, PortfolioItem> portfolio = 11;
   // Whether the user is participating in the current competition.
   bool is_participating = 12;
+}
+
+// PortfolioItem represents a single stock holding in a user's portfolio.
+message PortfolioItem {
+  // The stock ticker symbol.
+  string stock_symbol = 1;
+  // The quantity of shares owned.
+  double quantity = 2;
+  // The average purchase price of the shares.
+  double average_price = 3;
 }
 
 // Request to register a new user.

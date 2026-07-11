@@ -7,7 +7,6 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Timestamp } from "../../google/protobuf/timestamp";
-import { PortfolioItem } from "../../portfolio/v1/portfolio";
 
 export const protobufPackage = "user.v1";
 
@@ -44,6 +43,16 @@ export interface User {
 export interface User_PortfolioEntry {
   key: string;
   value: PortfolioItem | undefined;
+}
+
+/** PortfolioItem represents a single stock holding in a user's portfolio. */
+export interface PortfolioItem {
+  /** The stock ticker symbol. */
+  stock_symbol: string;
+  /** The quantity of shares owned. */
+  quantity: number;
+  /** The average purchase price of the shares. */
+  average_price: number;
 }
 
 /** Request to register a new user. */
@@ -508,6 +517,106 @@ export const User_PortfolioEntry: MessageFns<User_PortfolioEntry> = {
     message.value = (object.value !== undefined && object.value !== null)
       ? PortfolioItem.fromPartial(object.value)
       : undefined;
+    return message;
+  },
+};
+
+function createBasePortfolioItem(): PortfolioItem {
+  return { stock_symbol: "", quantity: 0, average_price: 0 };
+}
+
+export const PortfolioItem: MessageFns<PortfolioItem> = {
+  encode(message: PortfolioItem, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.stock_symbol !== "") {
+      writer.uint32(10).string(message.stock_symbol);
+    }
+    if (message.quantity !== 0) {
+      writer.uint32(17).double(message.quantity);
+    }
+    if (message.average_price !== 0) {
+      writer.uint32(25).double(message.average_price);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PortfolioItem {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePortfolioItem();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.stock_symbol = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 17) {
+            break;
+          }
+
+          message.quantity = reader.double();
+          continue;
+        }
+        case 3: {
+          if (tag !== 25) {
+            break;
+          }
+
+          message.average_price = reader.double();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PortfolioItem {
+    return {
+      stock_symbol: isSet(object.stockSymbol)
+        ? globalThis.String(object.stockSymbol)
+        : isSet(object.stock_symbol)
+        ? globalThis.String(object.stock_symbol)
+        : "",
+      quantity: isSet(object.quantity) ? globalThis.Number(object.quantity) : 0,
+      average_price: isSet(object.averagePrice)
+        ? globalThis.Number(object.averagePrice)
+        : isSet(object.average_price)
+        ? globalThis.Number(object.average_price)
+        : 0,
+    };
+  },
+
+  toJSON(message: PortfolioItem): unknown {
+    const obj: any = {};
+    if (message.stock_symbol !== "") {
+      obj.stockSymbol = message.stock_symbol;
+    }
+    if (message.quantity !== 0) {
+      obj.quantity = message.quantity;
+    }
+    if (message.average_price !== 0) {
+      obj.averagePrice = message.average_price;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PortfolioItem>, I>>(base?: I): PortfolioItem {
+    return PortfolioItem.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PortfolioItem>, I>>(object: I): PortfolioItem {
+    const message = createBasePortfolioItem();
+    message.stock_symbol = object.stock_symbol ?? "";
+    message.quantity = object.quantity ?? 0;
+    message.average_price = object.average_price ?? 0;
     return message;
   },
 };

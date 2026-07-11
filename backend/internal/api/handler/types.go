@@ -7,7 +7,6 @@ import (
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1"
-	"github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
 )
 
@@ -32,7 +31,7 @@ func ToExternalUser(u *domain.User) *user.User {
 	}
 
 	if u.Portfolio != nil {
-		pUser.Portfolio = make(map[string]*portfolio.PortfolioItem)
+		pUser.Portfolio = make(map[string]*user.PortfolioItem)
 		for k, v := range u.Portfolio {
 			pUser.Portfolio[k] = ToExternalPortfolioItem(v)
 		}
@@ -42,8 +41,8 @@ func ToExternalUser(u *domain.User) *user.User {
 }
 
 // ToExternalPortfolioItem maps a domain PortfolioItem to a Protobuf PortfolioItem.
-func ToExternalPortfolioItem(item domain.PortfolioItem) *portfolio.PortfolioItem {
-	return &portfolio.PortfolioItem{
+func ToExternalPortfolioItem(item domain.PortfolioItem) *user.PortfolioItem {
+	return &user.PortfolioItem{
 		StockSymbol:  item.StockSymbol,
 		Quantity:     item.Quantity.InexactFloat64(),
 		AveragePrice: item.AveragePrice.InexactFloat64(),
