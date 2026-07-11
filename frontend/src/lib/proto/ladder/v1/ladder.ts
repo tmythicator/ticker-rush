@@ -11,34 +11,76 @@ import { User } from "../../user/v1/user";
 
 export const protobufPackage = "ladder.v1";
 
-/** Ladder represents a competition cycle. */
+/** Competition cycle or season. */
 export interface Ladder {
+  /** Unique database identifier. */
   id: string;
+  /** Name of the competition. */
   name: string;
+  /** Type of competition cycle (weekly or monthly). */
   type: string;
-  start_time: Date | undefined;
-  end_time: Date | undefined;
+  /** Start time of the competition. */
+  start_time:
+    | Date
+    | undefined;
+  /** End time of the competition. */
+  end_time:
+    | Date
+    | undefined;
+  /** Whether the ladder is currently active. */
   is_active: boolean;
-  created_at: Date | undefined;
+  /** Creation timestamp of the ladder. */
+  created_at:
+    | Date
+    | undefined;
+  /** Starting cash balance allocated to participants. */
   initial_balance: number;
+  /** List of stock tickers allowed in this competition. */
   allowed_tickers: TickerInfo[];
 }
 
+/** Configuration of an allowed stock in the ladder. */
 export interface TickerInfo {
+  /** Stock ticker symbol. */
   symbol: string;
+  /** Source provider for market data. */
   source: string;
 }
 
-/** LadderParticipant represents a user's standing in a ladder. */
+/** User standing and status in a ladder. */
 export interface LadderParticipant {
+  /** Identifier of the ladder. */
   ladder_id: string;
-  user: User | undefined;
+  /** User profile of the participant. */
+  user:
+    | User
+    | undefined;
+  /** Final rank in the ladder (set after completion). */
   final_rank: number;
+  /** Timestamp when the user joined. */
   joined_at: Date | undefined;
 }
 
+/** Request to retrieve active ladder. */
+export interface GetActiveLadderRequest {
+}
+
+/** Response containing active ladder metadata. */
 export interface GetActiveLadderResponse {
+  /** Active competition ladder. */
   ladder: Ladder | undefined;
+}
+
+/** Request to join a ladder. */
+export interface JoinLadderRequest {
+}
+
+/** Response for joining a ladder. */
+export interface JoinLadderResponse {
+  /** Whether the transaction succeeded. */
+  success: boolean;
+  /** Detailed status or error message. */
+  message: string;
 }
 
 function createBaseLadder(): Ladder {
@@ -459,6 +501,49 @@ export const LadderParticipant: MessageFns<LadderParticipant> = {
   },
 };
 
+function createBaseGetActiveLadderRequest(): GetActiveLadderRequest {
+  return {};
+}
+
+export const GetActiveLadderRequest: MessageFns<GetActiveLadderRequest> = {
+  encode(_: GetActiveLadderRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetActiveLadderRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetActiveLadderRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): GetActiveLadderRequest {
+    return {};
+  },
+
+  toJSON(_: GetActiveLadderRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetActiveLadderRequest>, I>>(base?: I): GetActiveLadderRequest {
+    return GetActiveLadderRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetActiveLadderRequest>, I>>(_: I): GetActiveLadderRequest {
+    const message = createBaseGetActiveLadderRequest();
+    return message;
+  },
+};
+
 function createBaseGetActiveLadderResponse(): GetActiveLadderResponse {
   return { ladder: undefined };
 }
@@ -515,6 +600,125 @@ export const GetActiveLadderResponse: MessageFns<GetActiveLadderResponse> = {
     message.ladder = (object.ladder !== undefined && object.ladder !== null)
       ? Ladder.fromPartial(object.ladder)
       : undefined;
+    return message;
+  },
+};
+
+function createBaseJoinLadderRequest(): JoinLadderRequest {
+  return {};
+}
+
+export const JoinLadderRequest: MessageFns<JoinLadderRequest> = {
+  encode(_: JoinLadderRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): JoinLadderRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseJoinLadderRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): JoinLadderRequest {
+    return {};
+  },
+
+  toJSON(_: JoinLadderRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<JoinLadderRequest>, I>>(base?: I): JoinLadderRequest {
+    return JoinLadderRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<JoinLadderRequest>, I>>(_: I): JoinLadderRequest {
+    const message = createBaseJoinLadderRequest();
+    return message;
+  },
+};
+
+function createBaseJoinLadderResponse(): JoinLadderResponse {
+  return { success: false, message: "" };
+}
+
+export const JoinLadderResponse: MessageFns<JoinLadderResponse> = {
+  encode(message: JoinLadderResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.success !== false) {
+      writer.uint32(8).bool(message.success);
+    }
+    if (message.message !== "") {
+      writer.uint32(18).string(message.message);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): JoinLadderResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseJoinLadderResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 8) {
+            break;
+          }
+
+          message.success = reader.bool();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): JoinLadderResponse {
+    return {
+      success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
+      message: isSet(object.message) ? globalThis.String(object.message) : "",
+    };
+  },
+
+  toJSON(message: JoinLadderResponse): unknown {
+    const obj: any = {};
+    if (message.success !== false) {
+      obj.success = message.success;
+    }
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<JoinLadderResponse>, I>>(base?: I): JoinLadderResponse {
+    return JoinLadderResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<JoinLadderResponse>, I>>(object: I): JoinLadderResponse {
+    const message = createBaseJoinLadderResponse();
+    message.success = object.success ?? false;
+    message.message = object.message ?? "";
     return message;
   },
 };

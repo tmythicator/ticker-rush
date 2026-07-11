@@ -11,18 +11,33 @@ import { PortfolioItem } from "../../portfolio/v1/portfolio";
 
 export const protobufPackage = "user.v1";
 
+/** Player account profile. */
 export interface User {
+  /** Unique database identifier. */
   id: string;
+  /** Username of the account. */
   username: string;
+  /** First name of the user. */
   first_name: string;
+  /** Last name of the user. */
   last_name: string;
+  /** Optional website URL. */
   website: string;
+  /** Whether the profile and portfolio are public. */
   is_public: boolean;
+  /** Whether the user is an admin. */
   is_admin: boolean;
+  /** Whether the user is banned. */
   is_banned: boolean;
-  created_at: Date | undefined;
+  /** Creation timestamp of the account. */
+  created_at:
+    | Date
+    | undefined;
+  /** Current cash balance in USD. */
   balance: number;
+  /** Current stock portfolio holdings. */
   portfolio: { [key: string]: PortfolioItem };
+  /** Whether the user is participating in the current competition. */
   is_participating: boolean;
 }
 
@@ -31,48 +46,89 @@ export interface User_PortfolioEntry {
   value: PortfolioItem | undefined;
 }
 
+/** Request to register a new user. */
 export interface CreateUserRequest {
+  /** Unique username (3-20 characters). */
   username: string;
+  /** Secure password (min 8 characters). */
   password: string;
+  /** First name of the user. */
   first_name: string;
+  /** Last name of the user. */
   last_name: string;
+  /** Optional website URL. */
   website: string;
+  /** Accept terms of service flag. */
   agb_accepted: boolean;
 }
 
+/** Response containing the registered user. */
 export interface CreateUserResponse {
+  /** Details of the registered user. */
   user: User | undefined;
 }
 
+/** Request to update the current profile. */
 export interface UpdateUserRequest {
+  /** Updated first name. */
   first_name: string;
+  /** Updated last name. */
   last_name: string;
+  /** Updated website URL. */
   website: string;
+  /** Sets whether the profile is public. */
   is_public: boolean;
 }
 
+/** Response containing the updated profile. */
 export interface UpdateUserResponse {
+  /** Details of the updated user. */
   user: User | undefined;
 }
 
+/** Request to authenticate a user. */
 export interface LoginRequest {
+  /** User's username. */
   username: string;
+  /** User's password. */
   password: string;
 }
 
+/** Response containing the authenticated user. */
 export interface LoginResponse {
+  /** Details of the authenticated user. */
   user: User | undefined;
 }
 
-export interface GetUserResponse {
+/** Request to logout. */
+export interface LogoutRequest {
+}
+
+/** Response for logout. */
+export interface LogoutResponse {
+  /** Status or success message. */
+  message: string;
+}
+
+/** Request to fetch the current user profile. */
+export interface GetMeRequest {
+}
+
+/** Response containing the current user profile. */
+export interface GetMeResponse {
+  /** Details of the current user. */
   user: User | undefined;
 }
 
+/** Request to fetch a public profile. */
 export interface GetPublicProfileRequest {
+  /** Username of the profile to fetch. */
   username: string;
 }
 
+/** Response containing the public profile. */
 export interface GetPublicProfileResponse {
+  /** Public details of the user. */
   user: User | undefined;
 }
 
@@ -978,22 +1034,166 @@ export const LoginResponse: MessageFns<LoginResponse> = {
   },
 };
 
-function createBaseGetUserResponse(): GetUserResponse {
+function createBaseLogoutRequest(): LogoutRequest {
+  return {};
+}
+
+export const LogoutRequest: MessageFns<LogoutRequest> = {
+  encode(_: LogoutRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): LogoutRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLogoutRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): LogoutRequest {
+    return {};
+  },
+
+  toJSON(_: LogoutRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<LogoutRequest>, I>>(base?: I): LogoutRequest {
+    return LogoutRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<LogoutRequest>, I>>(_: I): LogoutRequest {
+    const message = createBaseLogoutRequest();
+    return message;
+  },
+};
+
+function createBaseLogoutResponse(): LogoutResponse {
+  return { message: "" };
+}
+
+export const LogoutResponse: MessageFns<LogoutResponse> = {
+  encode(message: LogoutResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.message !== "") {
+      writer.uint32(10).string(message.message);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): LogoutResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLogoutResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.message = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LogoutResponse {
+    return { message: isSet(object.message) ? globalThis.String(object.message) : "" };
+  },
+
+  toJSON(message: LogoutResponse): unknown {
+    const obj: any = {};
+    if (message.message !== "") {
+      obj.message = message.message;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<LogoutResponse>, I>>(base?: I): LogoutResponse {
+    return LogoutResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<LogoutResponse>, I>>(object: I): LogoutResponse {
+    const message = createBaseLogoutResponse();
+    message.message = object.message ?? "";
+    return message;
+  },
+};
+
+function createBaseGetMeRequest(): GetMeRequest {
+  return {};
+}
+
+export const GetMeRequest: MessageFns<GetMeRequest> = {
+  encode(_: GetMeRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): GetMeRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetMeRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): GetMeRequest {
+    return {};
+  },
+
+  toJSON(_: GetMeRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetMeRequest>, I>>(base?: I): GetMeRequest {
+    return GetMeRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetMeRequest>, I>>(_: I): GetMeRequest {
+    const message = createBaseGetMeRequest();
+    return message;
+  },
+};
+
+function createBaseGetMeResponse(): GetMeResponse {
   return { user: undefined };
 }
 
-export const GetUserResponse: MessageFns<GetUserResponse> = {
-  encode(message: GetUserResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const GetMeResponse: MessageFns<GetMeResponse> = {
+  encode(message: GetMeResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.user !== undefined) {
       User.encode(message.user, writer.uint32(10).fork()).join();
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetUserResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number): GetMeResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetUserResponse();
+    const message = createBaseGetMeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1014,11 +1214,11 @@ export const GetUserResponse: MessageFns<GetUserResponse> = {
     return message;
   },
 
-  fromJSON(object: any): GetUserResponse {
+  fromJSON(object: any): GetMeResponse {
     return { user: isSet(object.user) ? User.fromJSON(object.user) : undefined };
   },
 
-  toJSON(message: GetUserResponse): unknown {
+  toJSON(message: GetMeResponse): unknown {
     const obj: any = {};
     if (message.user !== undefined) {
       obj.user = User.toJSON(message.user);
@@ -1026,11 +1226,11 @@ export const GetUserResponse: MessageFns<GetUserResponse> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetUserResponse>, I>>(base?: I): GetUserResponse {
-    return GetUserResponse.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<GetMeResponse>, I>>(base?: I): GetMeResponse {
+    return GetMeResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetUserResponse>, I>>(object: I): GetUserResponse {
-    const message = createBaseGetUserResponse();
+  fromPartial<I extends Exact<DeepPartial<GetMeResponse>, I>>(object: I): GetMeResponse {
+    const message = createBaseGetMeResponse();
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     return message;
   },

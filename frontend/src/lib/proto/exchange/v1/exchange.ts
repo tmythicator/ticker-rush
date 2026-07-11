@@ -10,52 +10,95 @@ import { LadderParticipant } from "../../ladder/v1/ladder";
 
 export const protobufPackage = "exchange.v1";
 
+/** Real-time stock price data. */
 export interface Quote {
+  /** Stock ticker symbol. */
   symbol: string;
+  /** Current price in USD. */
   price: number;
+  /** Absolute price change compared to the previous close. */
   change: number;
+  /** Percentage price change compared to the previous close. */
   change_percent: number;
+  /** Unix timestamp of the price update in seconds. */
   timestamp: string;
+  /** Price data provider source. */
   source: string;
+  /** Indicates if the market is closed for this stock. */
   is_closed: boolean;
 }
 
+/** Request to fetch a stock quote. */
 export interface GetQuoteRequest {
+  /** Stock ticker symbol. */
   symbol: string;
 }
 
+/** Response containing the stock quote. */
 export interface GetQuoteResponse {
+  /** Current stock quote. */
   quote: Quote | undefined;
 }
 
+/** Request to retrieve price history. */
 export interface GetHistoryRequest {
+  /** Stock ticker symbol. */
   symbol: string;
+  /** Maximum number of historical records to return. */
   limit: number;
 }
 
+/** Response containing historical quote records. */
 export interface GetHistoryResponse {
+  /** Historical stock quote entries. */
   history: Quote[];
 }
 
-export interface BuyStockRequest {
+/** Request to establish a real-time quote stream. */
+export interface StreamQuotesRequest {
+  /** Optional ticker symbol to filter updates. If empty, streams all tickers. */
   symbol: string;
+}
+
+/** Response payload for real-time quote stream. */
+export interface StreamQuotesResponse {
+  /** Live stock quote update. */
+  quote: Quote | undefined;
+}
+
+/** Request payload to purchase stock. */
+export interface BuyStockRequest {
+  /** Stock ticker symbol to buy. */
+  symbol: string;
+  /** Quantity of shares to buy. */
   quantity: number;
 }
 
+/** Response payload for a stock purchase. */
 export interface BuyStockResponse {
+  /** Whether the transaction succeeded. */
   success: boolean;
+  /** Status or error message. */
   message: string;
+  /** Updated standing and portfolio of the participant. */
   participant: LadderParticipant | undefined;
 }
 
+/** Request payload to sell stock. */
 export interface SellStockRequest {
+  /** Stock ticker symbol to sell. */
   symbol: string;
+  /** Quantity of shares to sell. */
   quantity: number;
 }
 
+/** Response payload for a stock sale. */
 export interface SellStockResponse {
+  /** Whether the transaction succeeded. */
   success: boolean;
+  /** Status or error message. */
   message: string;
+  /** Updated standing and portfolio of the participant. */
   participant: LadderParticipant | undefined;
 }
 
@@ -471,6 +514,122 @@ export const GetHistoryResponse: MessageFns<GetHistoryResponse> = {
   fromPartial<I extends Exact<DeepPartial<GetHistoryResponse>, I>>(object: I): GetHistoryResponse {
     const message = createBaseGetHistoryResponse();
     message.history = object.history?.map((e) => Quote.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseStreamQuotesRequest(): StreamQuotesRequest {
+  return { symbol: "" };
+}
+
+export const StreamQuotesRequest: MessageFns<StreamQuotesRequest> = {
+  encode(message: StreamQuotesRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.symbol !== "") {
+      writer.uint32(10).string(message.symbol);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): StreamQuotesRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseStreamQuotesRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.symbol = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): StreamQuotesRequest {
+    return { symbol: isSet(object.symbol) ? globalThis.String(object.symbol) : "" };
+  },
+
+  toJSON(message: StreamQuotesRequest): unknown {
+    const obj: any = {};
+    if (message.symbol !== "") {
+      obj.symbol = message.symbol;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<StreamQuotesRequest>, I>>(base?: I): StreamQuotesRequest {
+    return StreamQuotesRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<StreamQuotesRequest>, I>>(object: I): StreamQuotesRequest {
+    const message = createBaseStreamQuotesRequest();
+    message.symbol = object.symbol ?? "";
+    return message;
+  },
+};
+
+function createBaseStreamQuotesResponse(): StreamQuotesResponse {
+  return { quote: undefined };
+}
+
+export const StreamQuotesResponse: MessageFns<StreamQuotesResponse> = {
+  encode(message: StreamQuotesResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.quote !== undefined) {
+      Quote.encode(message.quote, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): StreamQuotesResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseStreamQuotesResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.quote = Quote.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): StreamQuotesResponse {
+    return { quote: isSet(object.quote) ? Quote.fromJSON(object.quote) : undefined };
+  },
+
+  toJSON(message: StreamQuotesResponse): unknown {
+    const obj: any = {};
+    if (message.quote !== undefined) {
+      obj.quote = Quote.toJSON(message.quote);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<StreamQuotesResponse>, I>>(base?: I): StreamQuotesResponse {
+    return StreamQuotesResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<StreamQuotesResponse>, I>>(object: I): StreamQuotesResponse {
+    const message = createBaseStreamQuotesResponse();
+    message.quote = (object.quote !== undefined && object.quote !== null) ? Quote.fromPartial(object.quote) : undefined;
     return message;
   },
 };

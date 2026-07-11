@@ -14,9 +14,9 @@ import { GetLeaderboardRequest, GetLeaderboardResponse } from './proto/leaderboa
 import {
   CreateUserRequest,
   CreateUserResponse,
+  GetMeResponse,
   GetPublicProfileRequest,
   GetPublicProfileResponse,
-  GetUserResponse,
   LoginRequest,
   LoginResponse,
   UpdateUserRequest,
@@ -79,7 +79,7 @@ export const getQuote = async (req: GetQuoteRequest): Promise<Quote> => {
 
 export const getUser = async (): Promise<User> => {
   const json = await api.get(`/user/me`);
-  const { user } = GetUserResponse.fromJSON(json);
+  const { user } = GetMeResponse.fromJSON(json);
   if (!user) throw new Error('User not found');
   return user;
 };

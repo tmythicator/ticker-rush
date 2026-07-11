@@ -20,6 +20,14 @@ export const Footer = () => {
           <Link to="/privacy" className="transition-colors hover:text-primary">
             Privacy Policy
           </Link>
+          <a
+            href="/api/swagger"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-primary"
+          >
+            API Docs
+          </a>
         </div>
       </div>
     </footer>

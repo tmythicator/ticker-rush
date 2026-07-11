@@ -7,7 +7,9 @@
 package leaderboard
 
 import (
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	v1 "github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -22,11 +24,15 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Single participant standing on the leaderboard.
 type LeaderboardEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	User          *v1.User               `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
-	Rank          int32                  `protobuf:"varint,2,opt,name=rank,proto3" json:"rank,omitempty"`
-	Score         float64                `protobuf:"fixed64,3,opt,name=score,proto3" json:"score,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// User profile of the participant.
+	User *v1.User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	// Current rank standing.
+	Rank int32 `protobuf:"varint,2,opt,name=rank,proto3" json:"rank,omitempty"`
+	// Current score or net worth value.
+	Score         float64 `protobuf:"fixed64,3,opt,name=score,proto3" json:"score,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -82,10 +88,13 @@ func (x *LeaderboardEntry) GetScore() float64 {
 	return 0
 }
 
+// Request to fetch the leaderboard.
 type GetLeaderboardRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Limit         int32                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
-	Offset        int32                  `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Maximum number of entries to return.
+	Limit int32 `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
+	// Pagination offset.
+	Offset        int32 `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -134,11 +143,15 @@ func (x *GetLeaderboardRequest) GetOffset() int32 {
 	return 0
 }
 
+// Response containing the leaderboard standings.
 type GetLeaderboardResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Entries       []*LeaderboardEntry    `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
-	TotalCount    int32                  `protobuf:"varint,2,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
-	LastUpdate    int64                  `protobuf:"varint,3,opt,name=last_update,json=lastUpdate,proto3" json:"last_update,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Ranked leaderboard entries.
+	Entries []*LeaderboardEntry `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
+	// Total number of participants.
+	TotalCount int32 `protobuf:"varint,2,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
+	// Unix timestamp of the last cache update in seconds.
+	LastUpdate    int64 `protobuf:"varint,3,opt,name=last_update,json=lastUpdate,proto3" json:"last_update,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -198,7 +211,7 @@ var File_leaderboard_v1_leaderboard_proto protoreflect.FileDescriptor
 
 const file_leaderboard_v1_leaderboard_proto_rawDesc = "" +
 	"\n" +
-	" leaderboard/v1/leaderboard.proto\x12\x0eleaderboard.v1\x1a\x12user/v1/user.proto\"_\n" +
+	" leaderboard/v1/leaderboard.proto\x12\x0eleaderboard.v1\x1a\x1cgoogle/api/annotations.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x12user/v1/user.proto\"_\n" +
 	"\x10LeaderboardEntry\x12!\n" +
 	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\x12\x12\n" +
 	"\x04rank\x18\x02 \x01(\x05R\x04rank\x12\x14\n" +
@@ -211,9 +224,10 @@ const file_leaderboard_v1_leaderboard_proto_rawDesc = "" +
 	"\vtotal_count\x18\x02 \x01(\x05R\n" +
 	"totalCount\x12\x1f\n" +
 	"\vlast_update\x18\x03 \x01(\x03R\n" +
-	"lastUpdate2u\n" +
-	"\x12LeaderBoardService\x12_\n" +
-	"\x0eGetLeaderboard\x12%.leaderboard.v1.GetLeaderboardRequest\x1a&.leaderboard.v1.GetLeaderboardResponseBVZTgithub.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1;leaderboardb\x06proto3"
+	"lastUpdate2\x8f\x01\n" +
+	"\x12LeaderBoardService\x12y\n" +
+	"\x0eGetLeaderboard\x12%.leaderboard.v1.GetLeaderboardRequest\x1a&.leaderboard.v1.GetLeaderboardResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/api/leaderboardB\xb5\x01\x92A\\\x12Z\n" +
+	"\x17Leaderboard Service API\x128API for retrieving paginated player standings and ranks.2\x051.0.0ZTgithub.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1;leaderboardb\x06proto3"
 
 var (
 	file_leaderboard_v1_leaderboard_proto_rawDescOnce sync.Once

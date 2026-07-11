@@ -23,7 +23,9 @@ require github.com/joho/godotenv v1.5.1
 
 require (
 	github.com/TwiN/go-away v1.8.1
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0
 	github.com/shopspring/decimal v1.4.0
+	google.golang.org/genproto/googleapis/api v0.0.0-20260414002931-afd174a4e478
 )
 
 require (
@@ -113,7 +115,7 @@ require (
 	golang.org/x/sync v0.21.0
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/text v0.38.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260226221140-a57be14db171 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260414002931-afd174a4e478 // indirect
 	google.golang.org/grpc v1.81.1
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
