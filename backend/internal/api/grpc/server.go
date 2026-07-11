@@ -58,10 +58,10 @@ func (s *ExchangeServer) CreateTrade(
 	}
 
 	var msg string
-	if req.GetAction() == exchange.TradeAction_TRADE_ACTION_BUY {
+	if req.GetAction() == exchange.TradeAction_BUY {
 		_, err = s.tradeService.BuyStock(ctx, userID, req.GetSymbol(), req.GetQuantity())
 		msg = "Stock bought successfully"
-	} else if req.GetAction() == exchange.TradeAction_TRADE_ACTION_SELL {
+	} else if req.GetAction() == exchange.TradeAction_SELL {
 		_, err = s.tradeService.SellStock(ctx, userID, req.GetSymbol(), req.GetQuantity())
 		msg = "Stock sold successfully"
 	} else {

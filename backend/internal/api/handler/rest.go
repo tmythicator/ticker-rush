@@ -251,10 +251,10 @@ func (h *RestHandler) CreateTrade(c *gin.Context) {
 	var err error
 	var msg string
 	switch req.Action {
-	case exchange.TradeAction_TRADE_ACTION_BUY:
+	case exchange.TradeAction_BUY:
 		_, err = h.tradeService.BuyStock(c.Request.Context(), userID, req.Symbol, req.Quantity)
 		msg = "Bought successfully"
-	case exchange.TradeAction_TRADE_ACTION_SELL:
+	case exchange.TradeAction_SELL:
 		_, err = h.tradeService.SellStock(c.Request.Context(), userID, req.Symbol, req.Quantity)
 		msg = "Sold successfully"
 	default:

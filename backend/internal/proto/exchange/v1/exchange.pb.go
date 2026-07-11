@@ -28,22 +28,22 @@ const (
 type TradeAction int32
 
 const (
-	TradeAction_TRADE_ACTION_UNSPECIFIED TradeAction = 0
-	TradeAction_TRADE_ACTION_BUY         TradeAction = 1
-	TradeAction_TRADE_ACTION_SELL        TradeAction = 2
+	TradeAction_UNSPECIFIED TradeAction = 0
+	TradeAction_BUY         TradeAction = 1
+	TradeAction_SELL        TradeAction = 2
 )
 
 // Enum value maps for TradeAction.
 var (
 	TradeAction_name = map[int32]string{
-		0: "TRADE_ACTION_UNSPECIFIED",
-		1: "TRADE_ACTION_BUY",
-		2: "TRADE_ACTION_SELL",
+		0: "UNSPECIFIED",
+		1: "BUY",
+		2: "SELL",
 	}
 	TradeAction_value = map[string]int32{
-		"TRADE_ACTION_UNSPECIFIED": 0,
-		"TRADE_ACTION_BUY":         1,
-		"TRADE_ACTION_SELL":        2,
+		"UNSPECIFIED": 0,
+		"BUY":         1,
+		"SELL":        2,
 	}
 )
 
@@ -520,7 +520,7 @@ func (x *CreateTradeRequest) GetAction() TradeAction {
 	if x != nil {
 		return x.Action
 	}
-	return TradeAction_TRADE_ACTION_UNSPECIFIED
+	return TradeAction_UNSPECIFIED
 }
 
 // Response payload for a trade transaction.
@@ -620,11 +620,11 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x13CreateTradeResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12>\n" +
-	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant*X\n" +
-	"\vTradeAction\x12\x1c\n" +
-	"\x18TRADE_ACTION_UNSPECIFIED\x10\x00\x12\x14\n" +
-	"\x10TRADE_ACTION_BUY\x10\x01\x12\x15\n" +
-	"\x11TRADE_ACTION_SELL\x10\x022\x97\x04\n" +
+	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant*1\n" +
+	"\vTradeAction\x12\x0f\n" +
+	"\vUNSPECIFIED\x10\x00\x12\a\n" +
+	"\x03BUY\x10\x01\x12\b\n" +
+	"\x04SELL\x10\x022\x97\x04\n" +
 	"\x0fExchangeService\x12}\n" +
 	"\bGetQuote\x12\x1c.exchange.v1.GetQuoteRequest\x1a\x1d.exchange.v1.GetQuoteResponse\"4\x92A\x12b\x10\n" +
 	"\x0e\n" +

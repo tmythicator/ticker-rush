@@ -366,11 +366,11 @@
     "v1TradeAction": {
       "type": "string",
       "enum": [
-        "TRADE_ACTION_UNSPECIFIED",
-        "TRADE_ACTION_BUY",
-        "TRADE_ACTION_SELL"
+        "UNSPECIFIED",
+        "BUY",
+        "SELL"
       ],
-      "default": "TRADE_ACTION_UNSPECIFIED",
+      "default": "UNSPECIFIED",
       "description": "Trade action type (Buy or Sell)."
     },
     "v1User": {

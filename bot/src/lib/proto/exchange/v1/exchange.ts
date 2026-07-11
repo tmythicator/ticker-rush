@@ -11,33 +11,28 @@ import { LadderParticipant } from "../../ladder/v1/ladder";
 export const protobufPackage = "exchange.v1";
 
 /** Trade action type (Buy or Sell). */
-export const TradeAction = {
-  TRADE_ACTION_UNSPECIFIED: 0,
-  TRADE_ACTION_BUY: 1,
-  TRADE_ACTION_SELL: 2,
-  UNRECOGNIZED: -1,
-} as const;
+export const TradeAction = { UNSPECIFIED: 0, BUY: 1, SELL: 2, UNRECOGNIZED: -1 } as const;
 
 export type TradeAction = typeof TradeAction[keyof typeof TradeAction];
 
 export namespace TradeAction {
-  export type TRADE_ACTION_UNSPECIFIED = typeof TradeAction.TRADE_ACTION_UNSPECIFIED;
-  export type TRADE_ACTION_BUY = typeof TradeAction.TRADE_ACTION_BUY;
-  export type TRADE_ACTION_SELL = typeof TradeAction.TRADE_ACTION_SELL;
+  export type UNSPECIFIED = typeof TradeAction.UNSPECIFIED;
+  export type BUY = typeof TradeAction.BUY;
+  export type SELL = typeof TradeAction.SELL;
   export type UNRECOGNIZED = typeof TradeAction.UNRECOGNIZED;
 }
 
 export function tradeActionFromJSON(object: any): TradeAction {
   switch (object) {
     case 0:
-    case "TRADE_ACTION_UNSPECIFIED":
-      return TradeAction.TRADE_ACTION_UNSPECIFIED;
+    case "UNSPECIFIED":
+      return TradeAction.UNSPECIFIED;
     case 1:
-    case "TRADE_ACTION_BUY":
-      return TradeAction.TRADE_ACTION_BUY;
+    case "BUY":
+      return TradeAction.BUY;
     case 2:
-    case "TRADE_ACTION_SELL":
-      return TradeAction.TRADE_ACTION_SELL;
+    case "SELL":
+      return TradeAction.SELL;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -47,12 +42,12 @@ export function tradeActionFromJSON(object: any): TradeAction {
 
 export function tradeActionToJSON(object: TradeAction): string {
   switch (object) {
-    case TradeAction.TRADE_ACTION_UNSPECIFIED:
-      return "TRADE_ACTION_UNSPECIFIED";
-    case TradeAction.TRADE_ACTION_BUY:
-      return "TRADE_ACTION_BUY";
-    case TradeAction.TRADE_ACTION_SELL:
-      return "TRADE_ACTION_SELL";
+    case TradeAction.UNSPECIFIED:
+      return "UNSPECIFIED";
+    case TradeAction.BUY:
+      return "BUY";
+    case TradeAction.SELL:
+      return "SELL";
     case TradeAction.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";

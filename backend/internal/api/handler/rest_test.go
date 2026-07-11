@@ -268,7 +268,7 @@ func TestBuyStock(t *testing.T) {
 	reqBodyObj := &exchange.CreateTradeRequest{
 		Symbol:   symbol,
 		Quantity: quantity,
-		Action:   exchange.TradeAction_TRADE_ACTION_BUY,
+		Action:   exchange.TradeAction_BUY,
 	}
 	reqBytes, _ := json.Marshal(reqBodyObj)
 	w := httptest.NewRecorder()
@@ -327,7 +327,7 @@ func TestSellStock(t *testing.T) {
 	reqBodyObj := &exchange.CreateTradeRequest{
 		Symbol:   "AAPL",
 		Quantity: mockSellQuantity,
-		Action:   exchange.TradeAction_TRADE_ACTION_SELL,
+		Action:   exchange.TradeAction_SELL,
 	}
 	reqBytes, _ := json.Marshal(reqBodyObj)
 	w := httptest.NewRecorder()
@@ -369,7 +369,7 @@ func TestInsufficientFunds(t *testing.T) {
 	reqBodyObj := &exchange.CreateTradeRequest{
 		Symbol:   "AAPL",
 		Quantity: float64(mockBuyQuantity),
-		Action:   exchange.TradeAction_TRADE_ACTION_BUY,
+		Action:   exchange.TradeAction_BUY,
 	}
 	reqBytes, _ := json.Marshal(reqBodyObj)
 	w := httptest.NewRecorder()
@@ -416,7 +416,7 @@ func TestSellAllStock(t *testing.T) {
 	reqBodyObj := &exchange.CreateTradeRequest{
 		Symbol:   symbol,
 		Quantity: mockSellQuantity,
-		Action:   exchange.TradeAction_TRADE_ACTION_SELL,
+		Action:   exchange.TradeAction_SELL,
 	}
 	reqBytes, _ := json.Marshal(reqBodyObj)
 	w := httptest.NewRecorder()

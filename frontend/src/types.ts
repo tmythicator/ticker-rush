@@ -9,8 +9,8 @@ export type { TickerInfo };
 import { TradeAction as ApiTradeAction } from './lib/proto/exchange/v1/exchange';
 
 export const TradeAction = {
-  BUY: ApiTradeAction.TRADE_ACTION_BUY,
-  SELL: ApiTradeAction.TRADE_ACTION_SELL,
+  BUY: ApiTradeAction.BUY,
+  SELL: ApiTradeAction.SELL,
 } as const;
 
 export type TradeSymbol = string;

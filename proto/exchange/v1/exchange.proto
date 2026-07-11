@@ -134,9 +134,9 @@ message StreamQuotesResponse {
 
 // Trade action type (Buy or Sell).
 enum TradeAction {
-  TRADE_ACTION_UNSPECIFIED = 0;
-  TRADE_ACTION_BUY = 1;
-  TRADE_ACTION_SELL = 2;
+  UNSPECIFIED = 0;
+  BUY = 1;
+  SELL = 2;
 }
 
 // Request payload to place a trade.
