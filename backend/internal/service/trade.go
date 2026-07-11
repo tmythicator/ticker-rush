@@ -13,17 +13,6 @@ import (
 	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 )
 
-// Transaction represents a database transaction.
-type Transaction interface {
-	Commit(ctx context.Context) error
-	Rollback(ctx context.Context) error
-}
-
-// Transactor is responsible for creating transactions.
-type Transactor interface {
-	Begin(ctx context.Context) (Transaction, error)
-}
-
 // PortfolioRepository defines the interface for portfolio persistence.
 type PortfolioRepository interface {
 	GetPortfolio(ctx context.Context, userID int64, ladderID int64) ([]*domain.PortfolioItem, error)
