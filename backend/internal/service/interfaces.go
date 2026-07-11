@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/domain"
@@ -19,19 +18,6 @@ type Transaction interface {
 // Transactor is responsible for creating transactions.
 type Transactor interface {
 	Begin(ctx context.Context) (Transaction, error)
-}
-
-// MarketRepository defines the interface for market data persistence.
-type MarketRepository interface {
-	GetQuote(ctx context.Context, symbol string) (*domain.Quote, error)
-	SaveQuote(ctx context.Context, quote *domain.Quote) error
-	SubscribeToQuotes(ctx context.Context, symbol string) *redis.PubSub
-}
-
-// HistoryRepository defines the interface for historical market data persistence.
-type HistoryRepository interface {
-	SaveQuote(ctx context.Context, quote *domain.Quote) error
-	GetHistory(ctx context.Context, symbol string, limit int) ([]*domain.Quote, error)
 }
 
 // CreateUserParams represents parameters for creating a new user.

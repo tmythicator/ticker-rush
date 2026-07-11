@@ -10,20 +10,33 @@ import (
 	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 )
 
-// MarketService handles stock market data operations.
-type MarketService struct {
+// MarketRepository defines the interface for market data persistence.
+type MarketRepository interface {
+	GetQuote(ctx context.Context, symbol string) (*domain.Quote, error)
+	SaveQuote(ctx context.Context, quote *domain.Quote) error
+	SubscribeToQuotes(ctx context.Context, symbol string) *redis.PubSub
+}
+
+// HistoryRepository defines the interface for historical market data persistence.
+type HistoryRepository interface {
+	SaveQuote(ctx context.Context, quote *domain.Quote) error
+	GetHistory(ctx context.Context, symbol string, limit int) ([]*domain.Quote, error)
+}
+
+// Market handles stock market data operations.
+type Market struct {
 	marketRepo  MarketRepository
 	historyRepo HistoryRepository
 	ladderRepo  LadderRepository
 }
 
-// NewMarketService creates a new instance of MarketService.
-func NewMarketService(
+// NewMarket creates a new instance of Market.
+func NewMarket(
 	marketRepo MarketRepository,
 	historyRepo HistoryRepository,
 	ladderRepo LadderRepository,
-) *MarketService {
-	return &MarketService{
+) *Market {
+	return &Market{
 		marketRepo:  marketRepo,
 		historyRepo: historyRepo,
 		ladderRepo:  ladderRepo,
@@ -31,7 +44,7 @@ func NewMarketService(
 }
 
 // GetQuote gets a quote for a symbol, if allowed.
-func (s *MarketService) GetQuote(ctx context.Context, symbol string) (*domain.Quote, error) {
+func (s *Market) GetQuote(ctx context.Context, symbol string) (*domain.Quote, error) {
 	allowed, err := s.isSymbolAllowed(ctx, symbol)
 	if err != nil {
 		return nil, err
@@ -44,7 +57,7 @@ func (s *MarketService) GetQuote(ctx context.Context, symbol string) (*domain.Qu
 }
 
 // SubscribeToQuotes returns a PubSub for real-time quotes, if allowed.
-func (s *MarketService) SubscribeToQuotes(
+func (s *Market) SubscribeToQuotes(
 	ctx context.Context,
 	symbol string,
 ) (*redis.PubSub, error) {
@@ -60,7 +73,7 @@ func (s *MarketService) SubscribeToQuotes(
 }
 
 // GetHistory retrieves historical quotes for a symbol.
-func (s *MarketService) GetHistory(ctx context.Context, symbol string, limit int) ([]*domain.Quote, error) {
+func (s *Market) GetHistory(ctx context.Context, symbol string, limit int) ([]*domain.Quote, error) {
 	allowed, err := s.isSymbolAllowed(ctx, symbol)
 	if err != nil {
 		return nil, err
@@ -72,7 +85,7 @@ func (s *MarketService) GetHistory(ctx context.Context, symbol string, limit int
 	return s.historyRepo.GetHistory(ctx, symbol, limit)
 }
 
-func (s *MarketService) isSymbolAllowed(ctx context.Context, symbol string) (bool, error) {
+func (s *Market) isSymbolAllowed(ctx context.Context, symbol string) (bool, error) {
 	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
 	if err != nil {
 		return false, err

@@ -48,7 +48,7 @@ var (
 	marketRepo    *redisRepo.MarketRepository
 	userService   *service.User
 	tradeService  *service.TradeService
-	marketService *service.MarketService
+	marketService *service.Market
 )
 
 func setupTestPostgres(t *testing.T) string {
@@ -130,7 +130,7 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 	ladderService := service.NewLadder(ladderRepo)
 	leaderboardService := service.NewLeaderBoardService(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
 
-	marketService = service.NewMarketService(marketRepo, historyRepo, ladderRepo)
+	marketService = service.NewMarket(marketRepo, historyRepo, ladderRepo)
 
 	cfg := &config.Config{
 		ServerPort: 8080,

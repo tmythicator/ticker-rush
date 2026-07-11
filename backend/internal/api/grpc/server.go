@@ -15,13 +15,13 @@ type ExchangeServer struct {
 	exchange.UnimplementedExchangeServiceServer
 
 	tradeService  *service.TradeService
-	marketService *service.MarketService
+	marketService *service.Market
 }
 
 // NewExchangeServer creates a new instance of ExchangeServer.
 func NewExchangeServer(
 	tradeService *service.TradeService,
-	marketService *service.MarketService,
+	marketService *service.Market,
 ) *ExchangeServer {
 	return &ExchangeServer{
 		tradeService:  tradeService,
