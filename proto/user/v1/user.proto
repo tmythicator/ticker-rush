@@ -182,7 +182,7 @@ service UserService {
 
   // GetMe returns the authenticated user's full private profile (including balance and portfolio).
   rpc GetMe(GetMeRequest) returns (GetMeResponse) {
-    option (google.api.http) = {get: "/api/user/me"};
+    option (google.api.http) = {get: "/api/profile"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       security: {
         security_requirement: {
@@ -196,7 +196,7 @@ service UserService {
   // UpdateUser modifies the profile attributes of the authenticated user.
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
     option (google.api.http) = {
-      put: "/api/user/me"
+      put: "/api/profile"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {

@@ -922,12 +922,12 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\x05GetMe\x12\x15.user.v1.GetMeRequest\x1a\x16.user.v1.GetMeResponse\")\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
-	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x0e\x12\f/api/user/me\x12s\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x0e\x12\f/api/profile\x12s\n" +
 	"\n" +
 	"UpdateUser\x12\x1a.user.v1.UpdateUserRequest\x1a\x1b.user.v1.UpdateUserResponse\",\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
-	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x11:\x01*\x1a\f/api/user/me\x12v\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x11:\x01*\x1a\f/api/profile\x12v\n" +
 	"\x10GetPublicProfile\x12 .user.v1.GetPublicProfileRequest\x1a!.user.v1.GetPublicProfileResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/api/users/{username}B\x87\x02\x92A\xbb\x01\x12d\n" +
 	"\x10User Service API\x12IAPI for managing user registration, authentication, and profile settings.2\x051.0.0ZS\n" +
 	"Q\n" +

@@ -78,7 +78,7 @@ export const getQuote = async (req: GetQuoteRequest): Promise<Quote> => {
 };
 
 export const getUser = async (): Promise<User> => {
-  const json = await api.get(`/user/me`);
+  const json = await api.get(`/profile`);
   const { user } = GetMeResponse.fromJSON(json);
   if (!user) throw new Error('User not found');
   return user;
@@ -140,7 +140,7 @@ export const getHistory = async (req: GetHistoryRequest): Promise<Quote[]> => {
 };
 
 export const updateUser = async (req: UpdateUserRequest): Promise<User> => {
-  const json = await api.put('/user/me', req);
+  const json = await api.put('/profile', req);
   const { user } = UpdateUserResponse.fromJSON(json);
   if (!user) throw new Error('Update failed');
   return user;

@@ -79,41 +79,7 @@
         ]
       }
     },
-    "/api/register": {
-      "post": {
-        "summary": "CreateUser registers a new player account.",
-        "operationId": "UserService_CreateUser",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1CreateUserResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "description": "Request to register a new user.",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1CreateUserRequest"
-            }
-          }
-        ],
-        "tags": [
-          "UserService"
-        ]
-      }
-    },
-    "/api/user/me": {
+    "/api/profile": {
       "get": {
         "summary": "GetMe returns the authenticated user's full private profile (including balance and portfolio).",
         "operationId": "UserService_GetMe",
@@ -175,6 +141,40 @@
           {
             "CookieAuth": []
           }
+        ]
+      }
+    },
+    "/api/register": {
+      "post": {
+        "summary": "CreateUser registers a new player account.",
+        "operationId": "UserService_CreateUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Request to register a new user.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
         ]
       }
     },
