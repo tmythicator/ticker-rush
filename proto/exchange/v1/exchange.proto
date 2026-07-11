@@ -48,7 +48,7 @@ message Quote {
 service ExchangeService {
   // Retrieves the current quote and metadata for a single stock.
   rpc GetQuote(GetQuoteRequest) returns (GetQuoteResponse) {
-    option (google.api.http) = {get: "/api/v1/quote"};
+    option (google.api.http) = {get: "/api/v1/quotes/{symbol}"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       security: {
         security_requirement: {
@@ -61,7 +61,7 @@ service ExchangeService {
 
   // Returns historical quote candles for a stock.
   rpc GetHistory(GetHistoryRequest) returns (GetHistoryResponse) {
-    option (google.api.http) = {get: "/api/v1/history"};
+    option (google.api.http) = {get: "/api/v1/quotes/{symbol}/history"};
   }
 
   // Opens a Server-Sent Events (SSE) stream for real-time stock quote updates.

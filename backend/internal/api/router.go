@@ -43,7 +43,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 		v1.POST("/logout", handler.Logout)
 		v1.POST("/register", handler.CreateUser)
 		v1.GET("/ladder/active", handler.GetActiveLadder)
-		v1.GET("/history", handler.GetHistory)
+		v1.GET("/quotes/:symbol/history", handler.GetHistory)
 		v1.GET("/leaderboard", handler.GetLeaderboard)
 		v1.GET("/users/:username", handler.GetPublicProfile)
 
@@ -52,7 +52,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 		{
 			protected.POST("/ladder/join", handler.JoinLadder)
 			protected.GET("/quotes/events", handler.StreamQuotes)
-			protected.GET("/quote", handler.GetQuote)
+			protected.GET("/quotes/:symbol", handler.GetQuote)
 			protected.GET("/profile", handler.GetMe)
 			protected.PUT("/profile", handler.UpdateUser)
 			protected.POST("/buy", handler.BuyStock)

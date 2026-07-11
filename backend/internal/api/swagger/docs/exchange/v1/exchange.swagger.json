@@ -56,83 +56,6 @@
         ]
       }
     },
-    "/api/v1/history": {
-      "get": {
-        "summary": "Returns historical quote candles for a stock.",
-        "operationId": "ExchangeService_GetHistory",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetHistoryResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "symbol",
-            "description": "Stock ticker symbol.",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "limit",
-            "description": "Maximum number of historical records to return.",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "tags": [
-          "ExchangeService"
-        ]
-      }
-    },
-    "/api/v1/quote": {
-      "get": {
-        "summary": "Retrieves the current quote and metadata for a single stock.",
-        "operationId": "ExchangeService_GetQuote",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetQuoteResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "symbol",
-            "description": "Stock ticker symbol.",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "ExchangeService"
-        ],
-        "security": [
-          {
-            "CookieAuth": []
-          }
-        ]
-      }
-    },
     "/api/v1/quotes/events": {
       "get": {
         "summary": "Opens a Server-Sent Events (SSE) stream for real-time stock quote updates.",
@@ -176,6 +99,83 @@
           {
             "CookieAuth": []
           }
+        ]
+      }
+    },
+    "/api/v1/quotes/{symbol}": {
+      "get": {
+        "summary": "Retrieves the current quote and metadata for a single stock.",
+        "operationId": "ExchangeService_GetQuote",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetQuoteResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "symbol",
+            "description": "Stock ticker symbol.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ExchangeService"
+        ],
+        "security": [
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/quotes/{symbol}/history": {
+      "get": {
+        "summary": "Returns historical quote candles for a stock.",
+        "operationId": "ExchangeService_GetHistory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetHistoryResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "symbol",
+            "description": "Stock ticker symbol.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "description": "Maximum number of historical records to return.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ExchangeService"
         ]
       }
     },

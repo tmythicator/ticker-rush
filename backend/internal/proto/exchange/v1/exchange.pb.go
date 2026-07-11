@@ -686,14 +686,14 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x11SellStockResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12>\n" +
-	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant2\xea\x04\n" +
-	"\x0fExchangeService\x12s\n" +
-	"\bGetQuote\x12\x1c.exchange.v1.GetQuoteRequest\x1a\x1d.exchange.v1.GetQuoteResponse\"*\x92A\x12b\x10\n" +
+	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant2\x84\x05\n" +
+	"\x0fExchangeService\x12}\n" +
+	"\bGetQuote\x12\x1c.exchange.v1.GetQuoteRequest\x1a\x1d.exchange.v1.GetQuoteResponse\"4\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
-	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x0f\x12\r/api/v1/quote\x12f\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x19\x12\x17/api/v1/quotes/{symbol}\x12v\n" +
 	"\n" +
-	"GetHistory\x12\x1e.exchange.v1.GetHistoryRequest\x1a\x1f.exchange.v1.GetHistoryResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/api/v1/history\x12\x89\x01\n" +
+	"GetHistory\x12\x1e.exchange.v1.GetHistoryRequest\x1a\x1f.exchange.v1.GetHistoryResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/api/v1/quotes/{symbol}/history\x12\x89\x01\n" +
 	"\fStreamQuotes\x12 .exchange.v1.StreamQuotesRequest\x1a!.exchange.v1.StreamQuotesResponse\"2\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +

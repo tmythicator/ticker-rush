@@ -71,7 +71,7 @@ export const api = {
 };
 
 export const getQuote = async (req: GetQuoteRequest): Promise<Quote> => {
-  const json = await api.get(`/quote?symbol=${req.symbol}`);
+  const json = await api.get(`/quotes/${req.symbol}`);
   const { quote } = GetQuoteResponse.fromJSON(json);
   if (!quote) throw new Error('Quote not found');
   return quote;
@@ -134,7 +134,7 @@ export const joinLadder = async (): Promise<void> => {
 };
 
 export const getHistory = async (req: GetHistoryRequest): Promise<Quote[]> => {
-  const json = await api.get(`/history?symbol=${req.symbol}&limit=${req.limit}`);
+  const json = await api.get(`/quotes/${req.symbol}/history?limit=${req.limit}`);
   const { history } = GetHistoryResponse.fromJSON(json);
   return history;
 };

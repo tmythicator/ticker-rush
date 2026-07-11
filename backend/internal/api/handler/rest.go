@@ -215,7 +215,7 @@ func (h *RestHandler) GetMe(c *gin.Context) {
 
 // GetQuote returns a stock quote for a given symbol.
 func (h *RestHandler) GetQuote(c *gin.Context) {
-	symbol := c.Query("symbol")
+	symbol := c.Param("symbol")
 	if symbol == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Symbol is required"})
 
@@ -468,7 +468,7 @@ func (h *RestHandler) SendHeartbeat(w io.Writer) {
 
 // GetHistory handles requests for historical market data.
 func (h *RestHandler) GetHistory(c *gin.Context) {
-	symbol := c.Query("symbol")
+	symbol := c.Param("symbol")
 	if symbol == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
 
