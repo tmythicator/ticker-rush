@@ -25,7 +25,10 @@ const (
 // LeaderBoardServiceClient is the client API for LeaderBoardService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// LeaderBoardService provides read access to the global participant standings.
 type LeaderBoardServiceClient interface {
+	// GetLeaderboard retrieves a paginated list of top players ranked by score.
 	GetLeaderboard(ctx context.Context, in *GetLeaderboardRequest, opts ...grpc.CallOption) (*GetLeaderboardResponse, error)
 }
 
@@ -50,7 +53,10 @@ func (c *leaderBoardServiceClient) GetLeaderboard(ctx context.Context, in *GetLe
 // LeaderBoardServiceServer is the server API for LeaderBoardService service.
 // All implementations must embed UnimplementedLeaderBoardServiceServer
 // for forward compatibility.
+//
+// LeaderBoardService provides read access to the global participant standings.
 type LeaderBoardServiceServer interface {
+	// GetLeaderboard retrieves a paginated list of top players ranked by score.
 	GetLeaderboard(context.Context, *GetLeaderboardRequest) (*GetLeaderboardResponse, error)
 	mustEmbedUnimplementedLeaderBoardServiceServer()
 }

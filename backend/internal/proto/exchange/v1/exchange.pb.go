@@ -7,7 +7,9 @@
 package exchange
 
 import (
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	v1 "github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -22,15 +24,23 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Real-time stock price data.
 type Quote struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
-	Price         float64                `protobuf:"fixed64,2,opt,name=price,proto3" json:"price,omitempty"`
-	Change        float64                `protobuf:"fixed64,3,opt,name=change,proto3" json:"change,omitempty"`
-	ChangePercent float64                `protobuf:"fixed64,4,opt,name=change_percent,json=changePercent,proto3" json:"change_percent,omitempty"`
-	Timestamp     int64                  `protobuf:"varint,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	Source        string                 `protobuf:"bytes,6,opt,name=source,proto3" json:"source,omitempty"`
-	IsClosed      bool                   `protobuf:"varint,7,opt,name=is_closed,json=isClosed,proto3" json:"is_closed,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Stock ticker symbol.
+	Symbol string `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	// Current price in USD.
+	Price float64 `protobuf:"fixed64,2,opt,name=price,proto3" json:"price,omitempty"`
+	// Absolute price change compared to the previous close.
+	Change float64 `protobuf:"fixed64,3,opt,name=change,proto3" json:"change,omitempty"`
+	// Percentage price change compared to the previous close.
+	ChangePercent float64 `protobuf:"fixed64,4,opt,name=change_percent,json=changePercent,proto3" json:"change_percent,omitempty"`
+	// Unix timestamp of the price update in seconds.
+	Timestamp int64 `protobuf:"varint,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// Price data provider source.
+	Source string `protobuf:"bytes,6,opt,name=source,proto3" json:"source,omitempty"`
+	// Indicates if the market is closed for this stock.
+	IsClosed      bool `protobuf:"varint,7,opt,name=is_closed,json=isClosed,proto3" json:"is_closed,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -114,9 +124,11 @@ func (x *Quote) GetIsClosed() bool {
 	return false
 }
 
+// Request to fetch a stock quote.
 type GetQuoteRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Stock ticker symbol.
+	Symbol        string `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -158,9 +170,11 @@ func (x *GetQuoteRequest) GetSymbol() string {
 	return ""
 }
 
+// Response containing the stock quote.
 type GetQuoteResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Quote         *Quote                 `protobuf:"bytes,1,opt,name=quote,proto3" json:"quote,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Current stock quote.
+	Quote         *Quote `protobuf:"bytes,1,opt,name=quote,proto3" json:"quote,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -202,10 +216,13 @@ func (x *GetQuoteResponse) GetQuote() *Quote {
 	return nil
 }
 
+// Request to retrieve price history.
 type GetHistoryRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
-	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Stock ticker symbol.
+	Symbol string `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	// Maximum number of historical records to return.
+	Limit         int32 `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -254,9 +271,11 @@ func (x *GetHistoryRequest) GetLimit() int32 {
 	return 0
 }
 
+// Response containing historical quote records.
 type GetHistoryResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	History       []*Quote               `protobuf:"bytes,1,rep,name=history,proto3" json:"history,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Historical stock quote entries.
+	History       []*Quote `protobuf:"bytes,1,rep,name=history,proto3" json:"history,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -298,17 +317,66 @@ func (x *GetHistoryResponse) GetHistory() []*Quote {
 	return nil
 }
 
+// Request to establish a real-time quote stream.
+type StreamQuotesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional ticker symbol to filter updates. If empty, streams all tickers.
+	Symbol        string `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StreamQuotesRequest) Reset() {
+	*x = StreamQuotesRequest{}
+	mi := &file_exchange_v1_exchange_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamQuotesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamQuotesRequest) ProtoMessage() {}
+
+func (x *StreamQuotesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_exchange_v1_exchange_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamQuotesRequest.ProtoReflect.Descriptor instead.
+func (*StreamQuotesRequest) Descriptor() ([]byte, []int) {
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *StreamQuotesRequest) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+// Request payload to purchase stock.
 type BuyStockRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
-	Quantity      float64                `protobuf:"fixed64,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Stock ticker symbol to buy.
+	Symbol string `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	// Quantity of shares to buy.
+	Quantity      float64 `protobuf:"fixed64,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *BuyStockRequest) Reset() {
 	*x = BuyStockRequest{}
-	mi := &file_exchange_v1_exchange_proto_msgTypes[5]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -320,7 +388,7 @@ func (x *BuyStockRequest) String() string {
 func (*BuyStockRequest) ProtoMessage() {}
 
 func (x *BuyStockRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_exchange_v1_exchange_proto_msgTypes[5]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -333,7 +401,7 @@ func (x *BuyStockRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuyStockRequest.ProtoReflect.Descriptor instead.
 func (*BuyStockRequest) Descriptor() ([]byte, []int) {
-	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{5}
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *BuyStockRequest) GetSymbol() string {
@@ -350,18 +418,22 @@ func (x *BuyStockRequest) GetQuantity() float64 {
 	return 0
 }
 
+// Response payload for a stock purchase.
 type BuyStockResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	Participant   *v1.LadderParticipant  `protobuf:"bytes,3,opt,name=participant,proto3" json:"participant,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Whether the transaction succeeded.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// Status or error message.
+	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	// Updated standing and portfolio of the participant.
+	Participant   *v1.LadderParticipant `protobuf:"bytes,3,opt,name=participant,proto3" json:"participant,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *BuyStockResponse) Reset() {
 	*x = BuyStockResponse{}
-	mi := &file_exchange_v1_exchange_proto_msgTypes[6]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -373,7 +445,7 @@ func (x *BuyStockResponse) String() string {
 func (*BuyStockResponse) ProtoMessage() {}
 
 func (x *BuyStockResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_exchange_v1_exchange_proto_msgTypes[6]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -386,7 +458,7 @@ func (x *BuyStockResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuyStockResponse.ProtoReflect.Descriptor instead.
 func (*BuyStockResponse) Descriptor() ([]byte, []int) {
-	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{6}
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *BuyStockResponse) GetSuccess() bool {
@@ -410,17 +482,20 @@ func (x *BuyStockResponse) GetParticipant() *v1.LadderParticipant {
 	return nil
 }
 
+// Request payload to sell stock.
 type SellStockRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Symbol        string                 `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
-	Quantity      float64                `protobuf:"fixed64,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Stock ticker symbol to sell.
+	Symbol string `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	// Quantity of shares to sell.
+	Quantity      float64 `protobuf:"fixed64,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SellStockRequest) Reset() {
 	*x = SellStockRequest{}
-	mi := &file_exchange_v1_exchange_proto_msgTypes[7]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -432,7 +507,7 @@ func (x *SellStockRequest) String() string {
 func (*SellStockRequest) ProtoMessage() {}
 
 func (x *SellStockRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_exchange_v1_exchange_proto_msgTypes[7]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -445,7 +520,7 @@ func (x *SellStockRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SellStockRequest.ProtoReflect.Descriptor instead.
 func (*SellStockRequest) Descriptor() ([]byte, []int) {
-	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{7}
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *SellStockRequest) GetSymbol() string {
@@ -462,18 +537,22 @@ func (x *SellStockRequest) GetQuantity() float64 {
 	return 0
 }
 
+// Response payload for a stock sale.
 type SellStockResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	Participant   *v1.LadderParticipant  `protobuf:"bytes,3,opt,name=participant,proto3" json:"participant,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Whether the transaction succeeded.
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// Status or error message.
+	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	// Updated standing and portfolio of the participant.
+	Participant   *v1.LadderParticipant `protobuf:"bytes,3,opt,name=participant,proto3" json:"participant,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SellStockResponse) Reset() {
 	*x = SellStockResponse{}
-	mi := &file_exchange_v1_exchange_proto_msgTypes[8]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -485,7 +564,7 @@ func (x *SellStockResponse) String() string {
 func (*SellStockResponse) ProtoMessage() {}
 
 func (x *SellStockResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_exchange_v1_exchange_proto_msgTypes[8]
+	mi := &file_exchange_v1_exchange_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -498,7 +577,7 @@ func (x *SellStockResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SellStockResponse.ProtoReflect.Descriptor instead.
 func (*SellStockResponse) Descriptor() ([]byte, []int) {
-	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{8}
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *SellStockResponse) GetSuccess() bool {
@@ -526,7 +605,7 @@ var File_exchange_v1_exchange_proto protoreflect.FileDescriptor
 
 const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\n" +
-	"\x1aexchange/v1/exchange.proto\x12\vexchange.v1\x1a\x16ladder/v1/ladder.proto\"\xc7\x01\n" +
+	"\x1aexchange/v1/exchange.proto\x12\vexchange.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x16ladder/v1/ladder.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\xc7\x01\n" +
 	"\x05Quote\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x14\n" +
 	"\x05price\x18\x02 \x01(\x01R\x05price\x12\x16\n" +
@@ -543,7 +622,9 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\"B\n" +
 	"\x12GetHistoryResponse\x12,\n" +
-	"\ahistory\x18\x01 \x03(\v2\x12.exchange.v1.QuoteR\ahistory\"E\n" +
+	"\ahistory\x18\x01 \x03(\v2\x12.exchange.v1.QuoteR\ahistory\"-\n" +
+	"\x13StreamQuotesRequest\x12\x16\n" +
+	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"E\n" +
 	"\x0fBuyStockRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x01R\bquantity\"\x86\x01\n" +
@@ -557,11 +638,32 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x11SellStockResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12>\n" +
-	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant2\xef\x01\n" +
-	"\x0fExchangeService\x12G\n" +
-	"\bGetQuote\x12\x1c.exchange.v1.GetQuoteRequest\x1a\x1d.exchange.v1.GetQuoteResponse\x12G\n" +
-	"\bBuyStock\x12\x1c.exchange.v1.BuyStockRequest\x1a\x1d.exchange.v1.BuyStockResponse\x12J\n" +
-	"\tSellStock\x12\x1d.exchange.v1.SellStockRequest\x1a\x1e.exchange.v1.SellStockResponseBPZNgithub.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1;exchangeb\x06proto3"
+	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant2\xcb\x04\n" +
+	"\x0fExchangeService\x12p\n" +
+	"\bGetQuote\x12\x1c.exchange.v1.GetQuoteRequest\x1a\x1d.exchange.v1.GetQuoteResponse\"'\x92A\x12b\x10\n" +
+	"\x0e\n" +
+	"\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\f\x12\n" +
+	"/api/quote\x12c\n" +
+	"\n" +
+	"GetHistory\x12\x1e.exchange.v1.GetHistoryRequest\x1a\x1f.exchange.v1.GetHistoryResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/api/history\x12w\n" +
+	"\fStreamQuotes\x12 .exchange.v1.StreamQuotesRequest\x1a\x12.exchange.v1.Quote\"/\x92A\x12b\x10\n" +
+	"\x0e\n" +
+	"\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x14\x12\x12/api/quotes/events0\x01\x12q\n" +
+	"\bBuyStock\x12\x1c.exchange.v1.BuyStockRequest\x1a\x1d.exchange.v1.BuyStockResponse\"(\x92A\x12b\x10\n" +
+	"\x0e\n" +
+	"\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\r:\x01*\"\b/api/buy\x12u\n" +
+	"\tSellStock\x12\x1d.exchange.v1.SellStockRequest\x1a\x1e.exchange.v1.SellStockResponse\")\x92A\x12b\x10\n" +
+	"\x0e\n" +
+	"\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/api/sellB\xfc\x01\x92A\xa8\x01\x12Q\n" +
+	"\x14Exchange Service API\x122API for stock quotes, market history, and trading.2\x051.0.0ZS\n" +
+	"Q\n" +
+	"\n" +
+	"CookieAuth\x12C\b\x02\x121Authentication cookie 'auth_token' containing JWT\x1a\n" +
+	"auth_token \x02ZNgithub.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1;exchangeb\x06proto3"
 
 var (
 	file_exchange_v1_exchange_proto_rawDescOnce sync.Once
@@ -575,35 +677,40 @@ func file_exchange_v1_exchange_proto_rawDescGZIP() []byte {
 	return file_exchange_v1_exchange_proto_rawDescData
 }
 
-var file_exchange_v1_exchange_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_exchange_v1_exchange_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_exchange_v1_exchange_proto_goTypes = []any{
 	(*Quote)(nil),                // 0: exchange.v1.Quote
 	(*GetQuoteRequest)(nil),      // 1: exchange.v1.GetQuoteRequest
 	(*GetQuoteResponse)(nil),     // 2: exchange.v1.GetQuoteResponse
 	(*GetHistoryRequest)(nil),    // 3: exchange.v1.GetHistoryRequest
 	(*GetHistoryResponse)(nil),   // 4: exchange.v1.GetHistoryResponse
-	(*BuyStockRequest)(nil),      // 5: exchange.v1.BuyStockRequest
-	(*BuyStockResponse)(nil),     // 6: exchange.v1.BuyStockResponse
-	(*SellStockRequest)(nil),     // 7: exchange.v1.SellStockRequest
-	(*SellStockResponse)(nil),    // 8: exchange.v1.SellStockResponse
-	(*v1.LadderParticipant)(nil), // 9: ladder.v1.LadderParticipant
+	(*StreamQuotesRequest)(nil),  // 5: exchange.v1.StreamQuotesRequest
+	(*BuyStockRequest)(nil),      // 6: exchange.v1.BuyStockRequest
+	(*BuyStockResponse)(nil),     // 7: exchange.v1.BuyStockResponse
+	(*SellStockRequest)(nil),     // 8: exchange.v1.SellStockRequest
+	(*SellStockResponse)(nil),    // 9: exchange.v1.SellStockResponse
+	(*v1.LadderParticipant)(nil), // 10: ladder.v1.LadderParticipant
 }
 var file_exchange_v1_exchange_proto_depIdxs = []int32{
-	0, // 0: exchange.v1.GetQuoteResponse.quote:type_name -> exchange.v1.Quote
-	0, // 1: exchange.v1.GetHistoryResponse.history:type_name -> exchange.v1.Quote
-	9, // 2: exchange.v1.BuyStockResponse.participant:type_name -> ladder.v1.LadderParticipant
-	9, // 3: exchange.v1.SellStockResponse.participant:type_name -> ladder.v1.LadderParticipant
-	1, // 4: exchange.v1.ExchangeService.GetQuote:input_type -> exchange.v1.GetQuoteRequest
-	5, // 5: exchange.v1.ExchangeService.BuyStock:input_type -> exchange.v1.BuyStockRequest
-	7, // 6: exchange.v1.ExchangeService.SellStock:input_type -> exchange.v1.SellStockRequest
-	2, // 7: exchange.v1.ExchangeService.GetQuote:output_type -> exchange.v1.GetQuoteResponse
-	6, // 8: exchange.v1.ExchangeService.BuyStock:output_type -> exchange.v1.BuyStockResponse
-	8, // 9: exchange.v1.ExchangeService.SellStock:output_type -> exchange.v1.SellStockResponse
-	7, // [7:10] is the sub-list for method output_type
-	4, // [4:7] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	0,  // 0: exchange.v1.GetQuoteResponse.quote:type_name -> exchange.v1.Quote
+	0,  // 1: exchange.v1.GetHistoryResponse.history:type_name -> exchange.v1.Quote
+	10, // 2: exchange.v1.BuyStockResponse.participant:type_name -> ladder.v1.LadderParticipant
+	10, // 3: exchange.v1.SellStockResponse.participant:type_name -> ladder.v1.LadderParticipant
+	1,  // 4: exchange.v1.ExchangeService.GetQuote:input_type -> exchange.v1.GetQuoteRequest
+	3,  // 5: exchange.v1.ExchangeService.GetHistory:input_type -> exchange.v1.GetHistoryRequest
+	5,  // 6: exchange.v1.ExchangeService.StreamQuotes:input_type -> exchange.v1.StreamQuotesRequest
+	6,  // 7: exchange.v1.ExchangeService.BuyStock:input_type -> exchange.v1.BuyStockRequest
+	8,  // 8: exchange.v1.ExchangeService.SellStock:input_type -> exchange.v1.SellStockRequest
+	2,  // 9: exchange.v1.ExchangeService.GetQuote:output_type -> exchange.v1.GetQuoteResponse
+	4,  // 10: exchange.v1.ExchangeService.GetHistory:output_type -> exchange.v1.GetHistoryResponse
+	0,  // 11: exchange.v1.ExchangeService.StreamQuotes:output_type -> exchange.v1.Quote
+	7,  // 12: exchange.v1.ExchangeService.BuyStock:output_type -> exchange.v1.BuyStockResponse
+	9,  // 13: exchange.v1.ExchangeService.SellStock:output_type -> exchange.v1.SellStockResponse
+	9,  // [9:14] is the sub-list for method output_type
+	4,  // [4:9] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_exchange_v1_exchange_proto_init() }
@@ -617,7 +724,7 @@ func file_exchange_v1_exchange_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_exchange_v1_exchange_proto_rawDesc), len(file_exchange_v1_exchange_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

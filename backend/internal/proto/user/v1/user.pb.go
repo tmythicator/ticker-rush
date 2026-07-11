@@ -7,9 +7,12 @@
 package user
 
 import (
+	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2/options"
 	v1 "github.com/tmythicator/ticker-rush/backend/internal/proto/portfolio/v1"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -23,20 +26,33 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Player account profile.
 type User struct {
-	state           protoimpl.MessageState       `protogen:"open.v1"`
-	Id              int64                        `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Username        string                       `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
-	FirstName       string                       `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	LastName        string                       `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	Website         string                       `protobuf:"bytes,5,opt,name=website,proto3" json:"website,omitempty"`
-	IsPublic        bool                         `protobuf:"varint,6,opt,name=is_public,json=isPublic,proto3" json:"is_public,omitempty"`
-	IsAdmin         bool                         `protobuf:"varint,7,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
-	IsBanned        bool                         `protobuf:"varint,8,opt,name=is_banned,json=isBanned,proto3" json:"is_banned,omitempty"`
-	CreatedAt       *timestamppb.Timestamp       `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	Balance         float64                      `protobuf:"fixed64,10,opt,name=balance,proto3" json:"balance,omitempty"`
-	Portfolio       map[string]*v1.PortfolioItem `protobuf:"bytes,11,rep,name=portfolio,proto3" json:"portfolio,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	IsParticipating bool                         `protobuf:"varint,12,opt,name=is_participating,json=isParticipating,proto3" json:"is_participating,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Unique database identifier.
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Username of the account.
+	Username string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	// First name of the user.
+	FirstName string `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	// Last name of the user.
+	LastName string `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	// Optional website URL.
+	Website string `protobuf:"bytes,5,opt,name=website,proto3" json:"website,omitempty"`
+	// Whether the profile and portfolio are public.
+	IsPublic bool `protobuf:"varint,6,opt,name=is_public,json=isPublic,proto3" json:"is_public,omitempty"`
+	// Whether the user is an admin.
+	IsAdmin bool `protobuf:"varint,7,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
+	// Whether the user is banned.
+	IsBanned bool `protobuf:"varint,8,opt,name=is_banned,json=isBanned,proto3" json:"is_banned,omitempty"`
+	// Creation timestamp of the account.
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	// Current cash balance in USD.
+	Balance float64 `protobuf:"fixed64,10,opt,name=balance,proto3" json:"balance,omitempty"`
+	// Current stock portfolio holdings.
+	Portfolio map[string]*v1.PortfolioItem `protobuf:"bytes,11,rep,name=portfolio,proto3" json:"portfolio,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Whether the user is participating in the current competition.
+	IsParticipating bool `protobuf:"varint,12,opt,name=is_participating,json=isParticipating,proto3" json:"is_participating,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -155,14 +171,21 @@ func (x *User) GetIsParticipating() bool {
 	return false
 }
 
+// Request to register a new user.
 type CreateUserRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	FirstName     string                 `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	LastName      string                 `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	Website       string                 `protobuf:"bytes,5,opt,name=website,proto3" json:"website,omitempty"`
-	AgbAccepted   bool                   `protobuf:"varint,6,opt,name=agb_accepted,json=agbAccepted,proto3" json:"agb_accepted,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Unique username (3-20 characters).
+	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	// Secure password (min 8 characters).
+	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	// First name of the user.
+	FirstName string `protobuf:"bytes,3,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	// Last name of the user.
+	LastName string `protobuf:"bytes,4,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	// Optional website URL.
+	Website string `protobuf:"bytes,5,opt,name=website,proto3" json:"website,omitempty"`
+	// Accept terms of service flag.
+	AgbAccepted   bool `protobuf:"varint,6,opt,name=agb_accepted,json=agbAccepted,proto3" json:"agb_accepted,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -239,9 +262,11 @@ func (x *CreateUserRequest) GetAgbAccepted() bool {
 	return false
 }
 
+// Response containing the registered user.
 type CreateUserResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Details of the registered user.
+	User          *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -283,12 +308,17 @@ func (x *CreateUserResponse) GetUser() *User {
 	return nil
 }
 
+// Request to update the current profile.
 type UpdateUserRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	FirstName     string                 `protobuf:"bytes,1,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
-	LastName      string                 `protobuf:"bytes,2,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
-	Website       string                 `protobuf:"bytes,3,opt,name=website,proto3" json:"website,omitempty"`
-	IsPublic      bool                   `protobuf:"varint,4,opt,name=is_public,json=isPublic,proto3" json:"is_public,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Updated first name.
+	FirstName string `protobuf:"bytes,1,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
+	// Updated last name.
+	LastName string `protobuf:"bytes,2,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
+	// Updated website URL.
+	Website string `protobuf:"bytes,3,opt,name=website,proto3" json:"website,omitempty"`
+	// Sets whether the profile is public.
+	IsPublic      bool `protobuf:"varint,4,opt,name=is_public,json=isPublic,proto3" json:"is_public,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -351,9 +381,11 @@ func (x *UpdateUserRequest) GetIsPublic() bool {
 	return false
 }
 
+// Response containing the updated profile.
 type UpdateUserResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Details of the updated user.
+	User          *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -395,10 +427,13 @@ func (x *UpdateUserResponse) GetUser() *User {
 	return nil
 }
 
+// Request to authenticate a user.
 type LoginRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// User's username.
+	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	// User's password.
+	Password      string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -447,9 +482,11 @@ func (x *LoginRequest) GetPassword() string {
 	return ""
 }
 
+// Response containing the authenticated user.
 type LoginResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Details of the authenticated user.
+	User          *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -491,9 +528,11 @@ func (x *LoginResponse) GetUser() *User {
 	return nil
 }
 
+// Response containing the current user profile.
 type GetUserResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Details of the current user.
+	User          *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -535,9 +574,11 @@ func (x *GetUserResponse) GetUser() *User {
 	return nil
 }
 
+// Request to fetch a public profile.
 type GetPublicProfileRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Username of the profile to fetch.
+	Username      string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -579,9 +620,11 @@ func (x *GetPublicProfileRequest) GetUsername() string {
 	return ""
 }
 
+// Response containing the public profile.
 type GetPublicProfileResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Public details of the user.
+	User          *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -627,7 +670,7 @@ var File_user_v1_user_proto protoreflect.FileDescriptor
 
 const file_user_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x12user/v1/user.proto\x12\auser.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cportfolio/v1/portfolio.proto\"\xf4\x03\n" +
+	"\x12user/v1/user.proto\x12\auser.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cportfolio/v1/portfolio.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\xf4\x03\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x1d\n" +
@@ -675,7 +718,31 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\x17GetPublicProfileRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\"=\n" +
 	"\x18GetPublicProfileResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04userBHZFgithub.com/tmythicator/ticker-rush/backend/internal/proto/user/v1;userb\x06proto3"
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user2\xf4\x04\n" +
+	"\vUserService\x12_\n" +
+	"\n" +
+	"CreateUser\x12\x1a.user.v1.CreateUserRequest\x1a\x1b.user.v1.CreateUserResponse\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/api/register\x12M\n" +
+	"\x05Login\x12\x15.user.v1.LoginRequest\x1a\x16.user.v1.LoginResponse\"\x15\x82\xd3\xe4\x93\x02\x0f:\x01*\"\n" +
+	"/api/login\x12b\n" +
+	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"(\x92A\x12b\x10\n" +
+	"\x0e\n" +
+	"\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\r\"\v/api/logout\x12d\n" +
+	"\x05GetMe\x12\x16.google.protobuf.Empty\x1a\x18.user.v1.GetUserResponse\")\x92A\x12b\x10\n" +
+	"\x0e\n" +
+	"\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x0e\x12\f/api/user/me\x12s\n" +
+	"\n" +
+	"UpdateUser\x12\x1a.user.v1.UpdateUserRequest\x1a\x1b.user.v1.UpdateUserResponse\",\x92A\x12b\x10\n" +
+	"\x0e\n" +
+	"\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x11:\x01*\x1a\f/api/user/me\x12v\n" +
+	"\x10GetPublicProfile\x12 .user.v1.GetPublicProfileRequest\x1a!.user.v1.GetPublicProfileResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/api/users/{username}B\x87\x02\x92A\xbb\x01\x12d\n" +
+	"\x10User Service API\x12IAPI for managing user registration, authentication, and profile settings.2\x051.0.0ZS\n" +
+	"Q\n" +
+	"\n" +
+	"CookieAuth\x12C\b\x02\x121Authentication cookie 'auth_token' containing JWT\x1a\n" +
+	"auth_token \x02ZFgithub.com/tmythicator/ticker-rush/backend/internal/proto/user/v1;userb\x06proto3"
 
 var (
 	file_user_v1_user_proto_rawDescOnce sync.Once
@@ -704,6 +771,7 @@ var file_user_v1_user_proto_goTypes = []any{
 	nil,                              // 10: user.v1.User.PortfolioEntry
 	(*timestamppb.Timestamp)(nil),    // 11: google.protobuf.Timestamp
 	(*v1.PortfolioItem)(nil),         // 12: portfolio.v1.PortfolioItem
+	(*emptypb.Empty)(nil),            // 13: google.protobuf.Empty
 }
 var file_user_v1_user_proto_depIdxs = []int32{
 	11, // 0: user.v1.User.created_at:type_name -> google.protobuf.Timestamp
@@ -714,8 +782,20 @@ var file_user_v1_user_proto_depIdxs = []int32{
 	0,  // 5: user.v1.GetUserResponse.user:type_name -> user.v1.User
 	0,  // 6: user.v1.GetPublicProfileResponse.user:type_name -> user.v1.User
 	12, // 7: user.v1.User.PortfolioEntry.value:type_name -> portfolio.v1.PortfolioItem
-	8,  // [8:8] is the sub-list for method output_type
-	8,  // [8:8] is the sub-list for method input_type
+	1,  // 8: user.v1.UserService.CreateUser:input_type -> user.v1.CreateUserRequest
+	5,  // 9: user.v1.UserService.Login:input_type -> user.v1.LoginRequest
+	13, // 10: user.v1.UserService.Logout:input_type -> google.protobuf.Empty
+	13, // 11: user.v1.UserService.GetMe:input_type -> google.protobuf.Empty
+	3,  // 12: user.v1.UserService.UpdateUser:input_type -> user.v1.UpdateUserRequest
+	8,  // 13: user.v1.UserService.GetPublicProfile:input_type -> user.v1.GetPublicProfileRequest
+	2,  // 14: user.v1.UserService.CreateUser:output_type -> user.v1.CreateUserResponse
+	6,  // 15: user.v1.UserService.Login:output_type -> user.v1.LoginResponse
+	13, // 16: user.v1.UserService.Logout:output_type -> google.protobuf.Empty
+	7,  // 17: user.v1.UserService.GetMe:output_type -> user.v1.GetUserResponse
+	4,  // 18: user.v1.UserService.UpdateUser:output_type -> user.v1.UpdateUserResponse
+	9,  // 19: user.v1.UserService.GetPublicProfile:output_type -> user.v1.GetPublicProfileResponse
+	14, // [14:20] is the sub-list for method output_type
+	8,  // [8:14] is the sub-list for method input_type
 	8,  // [8:8] is the sub-list for extension type_name
 	8,  // [8:8] is the sub-list for extension extendee
 	0,  // [0:8] is the sub-list for field type_name
@@ -734,7 +814,7 @@ func file_user_v1_user_proto_init() {
 			NumEnums:      0,
 			NumMessages:   11,
 			NumExtensions: 0,
-			NumServices:   0,
+			NumServices:   1,
 		},
 		GoTypes:           file_user_v1_user_proto_goTypes,
 		DependencyIndexes: file_user_v1_user_proto_depIdxs,

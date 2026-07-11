@@ -1,0 +1,445 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "User Service API",
+    "description": "API for managing user registration, authentication, and profile settings.",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "UserService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/login": {
+      "post": {
+        "summary": "Login authenticates a user and establishes an HTTP session (via Cookie).",
+        "operationId": "UserService_Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Request to authenticate a user.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1LoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/logout": {
+      "post": {
+        "summary": "Logout invalidates the active HTTP session cookie.",
+        "operationId": "UserService_Logout",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
+        ],
+        "security": [
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/register": {
+      "post": {
+        "summary": "CreateUser registers a new player account.",
+        "operationId": "UserService_CreateUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Request to register a new user.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/user/me": {
+      "get": {
+        "summary": "GetMe returns the authenticated user's full private profile (including balance and portfolio).",
+        "operationId": "UserService_GetMe",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
+        ],
+        "security": [
+          {
+            "CookieAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "UpdateUser modifies the profile attributes of the authenticated user.",
+        "operationId": "UserService_UpdateUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Request to update the current profile.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1UpdateUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ],
+        "security": [
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/users/{username}": {
+      "get": {
+        "summary": "GetPublicProfile retrieves the public information of a user profile by username.",
+        "operationId": "UserService_GetPublicProfile",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetPublicProfileResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "username",
+            "description": "Username of the profile to fetch.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CreateUserRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "Unique username (3-20 characters)."
+        },
+        "password": {
+          "type": "string",
+          "description": "Secure password (min 8 characters)."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last name of the user."
+        },
+        "website": {
+          "type": "string",
+          "description": "Optional website URL."
+        },
+        "agbAccepted": {
+          "type": "boolean",
+          "description": "Accept terms of service flag."
+        }
+      },
+      "description": "Request to register a new user."
+    },
+    "v1CreateUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User",
+          "description": "Details of the registered user."
+        }
+      },
+      "description": "Response containing the registered user."
+    },
+    "v1GetPublicProfileResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User",
+          "description": "Public details of the user."
+        }
+      },
+      "description": "Response containing the public profile."
+    },
+    "v1GetUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User",
+          "description": "Details of the current user."
+        }
+      },
+      "description": "Response containing the current user profile."
+    },
+    "v1LoginRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "User's username."
+        },
+        "password": {
+          "type": "string",
+          "description": "User's password."
+        }
+      },
+      "description": "Request to authenticate a user."
+    },
+    "v1LoginResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User",
+          "description": "Details of the authenticated user."
+        }
+      },
+      "description": "Response containing the authenticated user."
+    },
+    "v1PortfolioItem": {
+      "type": "object",
+      "properties": {
+        "stockSymbol": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "number",
+          "format": "double"
+        },
+        "averagePrice": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "v1UpdateUserRequest": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "description": "Updated first name."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Updated last name."
+        },
+        "website": {
+          "type": "string",
+          "description": "Updated website URL."
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Sets whether the profile is public."
+        }
+      },
+      "description": "Request to update the current profile."
+    },
+    "v1UpdateUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User",
+          "description": "Details of the updated user."
+        }
+      },
+      "description": "Response containing the updated profile."
+    },
+    "v1User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64",
+          "description": "Unique database identifier."
+        },
+        "username": {
+          "type": "string",
+          "description": "Username of the account."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last name of the user."
+        },
+        "website": {
+          "type": "string",
+          "description": "Optional website URL."
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Whether the profile and portfolio are public."
+        },
+        "isAdmin": {
+          "type": "boolean",
+          "description": "Whether the user is an admin."
+        },
+        "isBanned": {
+          "type": "boolean",
+          "description": "Whether the user is banned."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp of the account."
+        },
+        "balance": {
+          "type": "number",
+          "format": "double",
+          "description": "Current cash balance in USD."
+        },
+        "portfolio": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1PortfolioItem"
+          },
+          "description": "Current stock portfolio holdings."
+        },
+        "isParticipating": {
+          "type": "boolean",
+          "description": "Whether the user is participating in the current competition."
+        }
+      },
+      "description": "Player account profile."
+    }
+  },
+  "securityDefinitions": {
+    "CookieAuth": {
+      "type": "apiKey",
+      "description": "Authentication cookie 'auth_token' containing JWT",
+      "name": "auth_token",
+      "in": "header"
+    }
+  }
+}

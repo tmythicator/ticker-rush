@@ -11,18 +11,33 @@ import { PortfolioItem } from "../../portfolio/v1/portfolio";
 
 export const protobufPackage = "user.v1";
 
+/** Player account profile. */
 export interface User {
+  /** Unique database identifier. */
   id: string;
+  /** Username of the account. */
   username: string;
+  /** First name of the user. */
   first_name: string;
+  /** Last name of the user. */
   last_name: string;
+  /** Optional website URL. */
   website: string;
+  /** Whether the profile and portfolio are public. */
   is_public: boolean;
+  /** Whether the user is an admin. */
   is_admin: boolean;
+  /** Whether the user is banned. */
   is_banned: boolean;
-  created_at: Date | undefined;
+  /** Creation timestamp of the account. */
+  created_at:
+    | Date
+    | undefined;
+  /** Current cash balance in USD. */
   balance: number;
+  /** Current stock portfolio holdings. */
   portfolio: { [key: string]: PortfolioItem };
+  /** Whether the user is participating in the current competition. */
   is_participating: boolean;
 }
 
@@ -31,48 +46,75 @@ export interface User_PortfolioEntry {
   value: PortfolioItem | undefined;
 }
 
+/** Request to register a new user. */
 export interface CreateUserRequest {
+  /** Unique username (3-20 characters). */
   username: string;
+  /** Secure password (min 8 characters). */
   password: string;
+  /** First name of the user. */
   first_name: string;
+  /** Last name of the user. */
   last_name: string;
+  /** Optional website URL. */
   website: string;
+  /** Accept terms of service flag. */
   agb_accepted: boolean;
 }
 
+/** Response containing the registered user. */
 export interface CreateUserResponse {
+  /** Details of the registered user. */
   user: User | undefined;
 }
 
+/** Request to update the current profile. */
 export interface UpdateUserRequest {
+  /** Updated first name. */
   first_name: string;
+  /** Updated last name. */
   last_name: string;
+  /** Updated website URL. */
   website: string;
+  /** Sets whether the profile is public. */
   is_public: boolean;
 }
 
+/** Response containing the updated profile. */
 export interface UpdateUserResponse {
+  /** Details of the updated user. */
   user: User | undefined;
 }
 
+/** Request to authenticate a user. */
 export interface LoginRequest {
+  /** User's username. */
   username: string;
+  /** User's password. */
   password: string;
 }
 
+/** Response containing the authenticated user. */
 export interface LoginResponse {
+  /** Details of the authenticated user. */
   user: User | undefined;
 }
 
+/** Response containing the current user profile. */
 export interface GetUserResponse {
+  /** Details of the current user. */
   user: User | undefined;
 }
 
+/** Request to fetch a public profile. */
 export interface GetPublicProfileRequest {
+  /** Username of the profile to fetch. */
   username: string;
 }
 
+/** Response containing the public profile. */
 export interface GetPublicProfileResponse {
+  /** Public details of the user. */
   user: User | undefined;
 }
 

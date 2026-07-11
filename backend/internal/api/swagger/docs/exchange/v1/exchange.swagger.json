@@ -1,0 +1,489 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Exchange Service API",
+    "description": "API for stock quotes, market history, and trading.",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "ExchangeService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/buy": {
+      "post": {
+        "summary": "Purchases stock shares for the authenticated user.",
+        "operationId": "ExchangeService_BuyStock",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1BuyStockResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Request payload to purchase stock.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1BuyStockRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ExchangeService"
+        ],
+        "security": [
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/history": {
+      "get": {
+        "summary": "Returns historical quote candles for a stock.",
+        "operationId": "ExchangeService_GetHistory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetHistoryResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "symbol",
+            "description": "Stock ticker symbol.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "description": "Maximum number of historical records to return.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ExchangeService"
+        ]
+      }
+    },
+    "/api/quote": {
+      "get": {
+        "summary": "Retrieves the current quote and metadata for a single stock.",
+        "operationId": "ExchangeService_GetQuote",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetQuoteResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "symbol",
+            "description": "Stock ticker symbol.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ExchangeService"
+        ],
+        "security": [
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/quotes/events": {
+      "get": {
+        "summary": "Opens a Server-Sent Events (SSE) stream for real-time stock quote updates.",
+        "operationId": "ExchangeService_StreamQuotes",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/v1Quote"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of v1Quote"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "symbol",
+            "description": "Optional ticker symbol to filter updates. If empty, streams all tickers.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ExchangeService"
+        ],
+        "security": [
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    },
+    "/api/sell": {
+      "post": {
+        "summary": "Sells stock shares owned by the authenticated user.",
+        "operationId": "ExchangeService_SellStock",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1SellStockResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Request payload to sell stock.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1SellStockRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ExchangeService"
+        ],
+        "security": [
+          {
+            "CookieAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1BuyStockRequest": {
+      "type": "object",
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "description": "Stock ticker symbol to buy."
+        },
+        "quantity": {
+          "type": "number",
+          "format": "double",
+          "description": "Quantity of shares to buy."
+        }
+      },
+      "description": "Request payload to purchase stock."
+    },
+    "v1BuyStockResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "Whether the transaction succeeded."
+        },
+        "message": {
+          "type": "string",
+          "description": "Status or error message."
+        },
+        "participant": {
+          "$ref": "#/definitions/v1LadderParticipant",
+          "description": "Updated standing and portfolio of the participant."
+        }
+      },
+      "description": "Response payload for a stock purchase."
+    },
+    "v1GetHistoryResponse": {
+      "type": "object",
+      "properties": {
+        "history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Quote"
+          },
+          "description": "Historical stock quote entries."
+        }
+      },
+      "description": "Response containing historical quote records."
+    },
+    "v1GetQuoteResponse": {
+      "type": "object",
+      "properties": {
+        "quote": {
+          "$ref": "#/definitions/v1Quote",
+          "description": "Current stock quote."
+        }
+      },
+      "description": "Response containing the stock quote."
+    },
+    "v1LadderParticipant": {
+      "type": "object",
+      "properties": {
+        "ladderId": {
+          "type": "string",
+          "format": "int64",
+          "description": "Identifier of the ladder."
+        },
+        "user": {
+          "$ref": "#/definitions/v1User",
+          "description": "User profile of the participant."
+        },
+        "finalRank": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Final rank in the ladder (set after completion)."
+        },
+        "joinedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the user joined."
+        }
+      },
+      "description": "User standing and status in a ladder."
+    },
+    "v1PortfolioItem": {
+      "type": "object",
+      "properties": {
+        "stockSymbol": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "number",
+          "format": "double"
+        },
+        "averagePrice": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "v1Quote": {
+      "type": "object",
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "description": "Stock ticker symbol."
+        },
+        "price": {
+          "type": "number",
+          "format": "double",
+          "description": "Current price in USD."
+        },
+        "change": {
+          "type": "number",
+          "format": "double",
+          "description": "Absolute price change compared to the previous close."
+        },
+        "changePercent": {
+          "type": "number",
+          "format": "double",
+          "description": "Percentage price change compared to the previous close."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "int64",
+          "description": "Unix timestamp of the price update in seconds."
+        },
+        "source": {
+          "type": "string",
+          "description": "Price data provider source."
+        },
+        "isClosed": {
+          "type": "boolean",
+          "description": "Indicates if the market is closed for this stock."
+        }
+      },
+      "description": "Real-time stock price data."
+    },
+    "v1SellStockRequest": {
+      "type": "object",
+      "properties": {
+        "symbol": {
+          "type": "string",
+          "description": "Stock ticker symbol to sell."
+        },
+        "quantity": {
+          "type": "number",
+          "format": "double",
+          "description": "Quantity of shares to sell."
+        }
+      },
+      "description": "Request payload to sell stock."
+    },
+    "v1SellStockResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "Whether the transaction succeeded."
+        },
+        "message": {
+          "type": "string",
+          "description": "Status or error message."
+        },
+        "participant": {
+          "$ref": "#/definitions/v1LadderParticipant",
+          "description": "Updated standing and portfolio of the participant."
+        }
+      },
+      "description": "Response payload for a stock sale."
+    },
+    "v1User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64",
+          "description": "Unique database identifier."
+        },
+        "username": {
+          "type": "string",
+          "description": "Username of the account."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last name of the user."
+        },
+        "website": {
+          "type": "string",
+          "description": "Optional website URL."
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Whether the profile and portfolio are public."
+        },
+        "isAdmin": {
+          "type": "boolean",
+          "description": "Whether the user is an admin."
+        },
+        "isBanned": {
+          "type": "boolean",
+          "description": "Whether the user is banned."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp of the account."
+        },
+        "balance": {
+          "type": "number",
+          "format": "double",
+          "description": "Current cash balance in USD."
+        },
+        "portfolio": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1PortfolioItem"
+          },
+          "description": "Current stock portfolio holdings."
+        },
+        "isParticipating": {
+          "type": "boolean",
+          "description": "Whether the user is participating in the current competition."
+        }
+      },
+      "description": "Player account profile."
+    }
+  },
+  "securityDefinitions": {
+    "CookieAuth": {
+      "type": "apiKey",
+      "description": "Authentication cookie 'auth_token' containing JWT",
+      "name": "auth_token",
+      "in": "header"
+    }
+  }
+}

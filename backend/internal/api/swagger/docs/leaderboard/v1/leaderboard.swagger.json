@@ -1,0 +1,212 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Leaderboard Service API",
+    "description": "API for retrieving paginated player standings and ranks.",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "LeaderBoardService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/leaderboard": {
+      "get": {
+        "summary": "GetLeaderboard retrieves a paginated list of top players ranked by score.",
+        "operationId": "LeaderBoardService_GetLeaderboard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetLeaderboardResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "description": "Maximum number of entries to return.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "description": "Pagination offset.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "LeaderBoardService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1GetLeaderboardResponse": {
+      "type": "object",
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1LeaderboardEntry"
+          },
+          "description": "Ranked leaderboard entries."
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total number of participants."
+        },
+        "lastUpdate": {
+          "type": "string",
+          "format": "int64",
+          "description": "Unix timestamp of the last cache update in seconds."
+        }
+      },
+      "description": "Response containing the leaderboard standings."
+    },
+    "v1LeaderboardEntry": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User",
+          "description": "User profile of the participant."
+        },
+        "rank": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Current rank standing."
+        },
+        "score": {
+          "type": "number",
+          "format": "double",
+          "description": "Current score or net worth value."
+        }
+      },
+      "description": "Single participant standing on the leaderboard."
+    },
+    "v1PortfolioItem": {
+      "type": "object",
+      "properties": {
+        "stockSymbol": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "number",
+          "format": "double"
+        },
+        "averagePrice": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "v1User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64",
+          "description": "Unique database identifier."
+        },
+        "username": {
+          "type": "string",
+          "description": "Username of the account."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last name of the user."
+        },
+        "website": {
+          "type": "string",
+          "description": "Optional website URL."
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Whether the profile and portfolio are public."
+        },
+        "isAdmin": {
+          "type": "boolean",
+          "description": "Whether the user is an admin."
+        },
+        "isBanned": {
+          "type": "boolean",
+          "description": "Whether the user is banned."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp of the account."
+        },
+        "balance": {
+          "type": "number",
+          "format": "double",
+          "description": "Current cash balance in USD."
+        },
+        "portfolio": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1PortfolioItem"
+          },
+          "description": "Current stock portfolio holdings."
+        },
+        "isParticipating": {
+          "type": "boolean",
+          "description": "Whether the user is participating in the current competition."
+        }
+      },
+      "description": "Player account profile."
+    }
+  }
+}

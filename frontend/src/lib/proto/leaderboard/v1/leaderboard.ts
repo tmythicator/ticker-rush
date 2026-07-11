@@ -10,20 +10,33 @@ import { User } from "../../user/v1/user";
 
 export const protobufPackage = "leaderboard.v1";
 
+/** Single participant standing on the leaderboard. */
 export interface LeaderboardEntry {
-  user: User | undefined;
+  /** User profile of the participant. */
+  user:
+    | User
+    | undefined;
+  /** Current rank standing. */
   rank: number;
+  /** Current score or net worth value. */
   score: number;
 }
 
+/** Request to fetch the leaderboard. */
 export interface GetLeaderboardRequest {
+  /** Maximum number of entries to return. */
   limit: number;
+  /** Pagination offset. */
   offset: number;
 }
 
+/** Response containing the leaderboard standings. */
 export interface GetLeaderboardResponse {
+  /** Ranked leaderboard entries. */
   entries: LeaderboardEntry[];
+  /** Total number of participants. */
   total_count: number;
+  /** Unix timestamp of the last cache update in seconds. */
   last_update: string;
 }
 
