@@ -8,9 +8,9 @@
 
   outputs =
     {
-      self,
       nixpkgs,
       flake-utils,
+      ...
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
@@ -30,10 +30,11 @@
           gopls
           delve
           golangci-lint
+          govulncheck
         ];
         frontend-tools = with pkgs; [
           nodejs_24
-          nodePackages.pnpm
+          pnpm
         ];
         bot-tools = with pkgs; [
           bun
