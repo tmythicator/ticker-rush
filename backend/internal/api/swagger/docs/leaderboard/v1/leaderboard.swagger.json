@@ -136,17 +136,21 @@
       "type": "object",
       "properties": {
         "stockSymbol": {
-          "type": "string"
+          "type": "string",
+          "description": "The stock ticker symbol."
         },
         "quantity": {
           "type": "number",
-          "format": "double"
+          "format": "double",
+          "description": "The quantity of shares owned."
         },
         "averagePrice": {
           "type": "number",
-          "format": "double"
+          "format": "double",
+          "description": "The average purchase price of the shares."
         }
-      }
+      },
+      "description": "PortfolioItem represents a single stock holding in a user's portfolio."
     },
     "v1User": {
       "type": "object",
