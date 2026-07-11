@@ -24,6 +24,56 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Trade action type (Buy or Sell).
+type TradeAction int32
+
+const (
+	TradeAction_TRADE_ACTION_UNSPECIFIED TradeAction = 0
+	TradeAction_TRADE_ACTION_BUY         TradeAction = 1
+	TradeAction_TRADE_ACTION_SELL        TradeAction = 2
+)
+
+// Enum value maps for TradeAction.
+var (
+	TradeAction_name = map[int32]string{
+		0: "TRADE_ACTION_UNSPECIFIED",
+		1: "TRADE_ACTION_BUY",
+		2: "TRADE_ACTION_SELL",
+	}
+	TradeAction_value = map[string]int32{
+		"TRADE_ACTION_UNSPECIFIED": 0,
+		"TRADE_ACTION_BUY":         1,
+		"TRADE_ACTION_SELL":        2,
+	}
+)
+
+func (x TradeAction) Enum() *TradeAction {
+	p := new(TradeAction)
+	*p = x
+	return p
+}
+
+func (x TradeAction) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TradeAction) Descriptor() protoreflect.EnumDescriptor {
+	return file_exchange_v1_exchange_proto_enumTypes[0].Descriptor()
+}
+
+func (TradeAction) Type() protoreflect.EnumType {
+	return &file_exchange_v1_exchange_proto_enumTypes[0]
+}
+
+func (x TradeAction) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TradeAction.Descriptor instead.
+func (TradeAction) EnumDescriptor() ([]byte, []int) {
+	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{0}
+}
+
 // Real-time stock price data.
 type Quote struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -409,31 +459,33 @@ func (x *StreamQuotesResponse) GetQuote() *Quote {
 	return nil
 }
 
-// Request payload to purchase stock.
-type BuyStockRequest struct {
+// Request payload to place a trade.
+type CreateTradeRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Stock ticker symbol to buy.
+	// Stock ticker symbol to trade.
 	Symbol string `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
-	// Quantity of shares to buy.
-	Quantity      float64 `protobuf:"fixed64,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	// Quantity of shares to trade.
+	Quantity float64 `protobuf:"fixed64,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	// Action to perform (Buy or Sell).
+	Action        TradeAction `protobuf:"varint,3,opt,name=action,proto3,enum=exchange.v1.TradeAction" json:"action,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *BuyStockRequest) Reset() {
-	*x = BuyStockRequest{}
+func (x *CreateTradeRequest) Reset() {
+	*x = CreateTradeRequest{}
 	mi := &file_exchange_v1_exchange_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *BuyStockRequest) String() string {
+func (x *CreateTradeRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*BuyStockRequest) ProtoMessage() {}
+func (*CreateTradeRequest) ProtoMessage() {}
 
-func (x *BuyStockRequest) ProtoReflect() protoreflect.Message {
+func (x *CreateTradeRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_exchange_v1_exchange_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -445,27 +497,34 @@ func (x *BuyStockRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BuyStockRequest.ProtoReflect.Descriptor instead.
-func (*BuyStockRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use CreateTradeRequest.ProtoReflect.Descriptor instead.
+func (*CreateTradeRequest) Descriptor() ([]byte, []int) {
 	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *BuyStockRequest) GetSymbol() string {
+func (x *CreateTradeRequest) GetSymbol() string {
 	if x != nil {
 		return x.Symbol
 	}
 	return ""
 }
 
-func (x *BuyStockRequest) GetQuantity() float64 {
+func (x *CreateTradeRequest) GetQuantity() float64 {
 	if x != nil {
 		return x.Quantity
 	}
 	return 0
 }
 
-// Response payload for a stock purchase.
-type BuyStockResponse struct {
+func (x *CreateTradeRequest) GetAction() TradeAction {
+	if x != nil {
+		return x.Action
+	}
+	return TradeAction_TRADE_ACTION_UNSPECIFIED
+}
+
+// Response payload for a trade transaction.
+type CreateTradeResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Whether the transaction succeeded.
 	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
@@ -477,20 +536,20 @@ type BuyStockResponse struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *BuyStockResponse) Reset() {
-	*x = BuyStockResponse{}
+func (x *CreateTradeResponse) Reset() {
+	*x = CreateTradeResponse{}
 	mi := &file_exchange_v1_exchange_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *BuyStockResponse) String() string {
+func (x *CreateTradeResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*BuyStockResponse) ProtoMessage() {}
+func (*CreateTradeResponse) ProtoMessage() {}
 
-func (x *BuyStockResponse) ProtoReflect() protoreflect.Message {
+func (x *CreateTradeResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_exchange_v1_exchange_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -502,145 +561,26 @@ func (x *BuyStockResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BuyStockResponse.ProtoReflect.Descriptor instead.
-func (*BuyStockResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use CreateTradeResponse.ProtoReflect.Descriptor instead.
+func (*CreateTradeResponse) Descriptor() ([]byte, []int) {
 	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *BuyStockResponse) GetSuccess() bool {
+func (x *CreateTradeResponse) GetSuccess() bool {
 	if x != nil {
 		return x.Success
 	}
 	return false
 }
 
-func (x *BuyStockResponse) GetMessage() string {
+func (x *CreateTradeResponse) GetMessage() string {
 	if x != nil {
 		return x.Message
 	}
 	return ""
 }
 
-func (x *BuyStockResponse) GetParticipant() *v1.LadderParticipant {
-	if x != nil {
-		return x.Participant
-	}
-	return nil
-}
-
-// Request payload to sell stock.
-type SellStockRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Stock ticker symbol to sell.
-	Symbol string `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty"`
-	// Quantity of shares to sell.
-	Quantity      float64 `protobuf:"fixed64,2,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *SellStockRequest) Reset() {
-	*x = SellStockRequest{}
-	mi := &file_exchange_v1_exchange_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SellStockRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SellStockRequest) ProtoMessage() {}
-
-func (x *SellStockRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_exchange_v1_exchange_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SellStockRequest.ProtoReflect.Descriptor instead.
-func (*SellStockRequest) Descriptor() ([]byte, []int) {
-	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *SellStockRequest) GetSymbol() string {
-	if x != nil {
-		return x.Symbol
-	}
-	return ""
-}
-
-func (x *SellStockRequest) GetQuantity() float64 {
-	if x != nil {
-		return x.Quantity
-	}
-	return 0
-}
-
-// Response payload for a stock sale.
-type SellStockResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Whether the transaction succeeded.
-	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	// Status or error message.
-	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	// Updated standing and portfolio of the participant.
-	Participant   *v1.LadderParticipant `protobuf:"bytes,3,opt,name=participant,proto3" json:"participant,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *SellStockResponse) Reset() {
-	*x = SellStockResponse{}
-	mi := &file_exchange_v1_exchange_proto_msgTypes[10]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SellStockResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SellStockResponse) ProtoMessage() {}
-
-func (x *SellStockResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_exchange_v1_exchange_proto_msgTypes[10]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SellStockResponse.ProtoReflect.Descriptor instead.
-func (*SellStockResponse) Descriptor() ([]byte, []int) {
-	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *SellStockResponse) GetSuccess() bool {
-	if x != nil {
-		return x.Success
-	}
-	return false
-}
-
-func (x *SellStockResponse) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
-func (x *SellStockResponse) GetParticipant() *v1.LadderParticipant {
+func (x *CreateTradeResponse) GetParticipant() *v1.LadderParticipant {
 	if x != nil {
 		return x.Participant
 	}
@@ -672,21 +612,19 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x13StreamQuotesRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"@\n" +
 	"\x14StreamQuotesResponse\x12(\n" +
-	"\x05quote\x18\x01 \x01(\v2\x12.exchange.v1.QuoteR\x05quote\"E\n" +
-	"\x0fBuyStockRequest\x12\x16\n" +
+	"\x05quote\x18\x01 \x01(\v2\x12.exchange.v1.QuoteR\x05quote\"z\n" +
+	"\x12CreateTradeRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x01R\bquantity\"\x86\x01\n" +
-	"\x10BuyStockResponse\x12\x18\n" +
+	"\bquantity\x18\x02 \x01(\x01R\bquantity\x120\n" +
+	"\x06action\x18\x03 \x01(\x0e2\x18.exchange.v1.TradeActionR\x06action\"\x89\x01\n" +
+	"\x13CreateTradeResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12>\n" +
-	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant\"F\n" +
-	"\x10SellStockRequest\x12\x16\n" +
-	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x01R\bquantity\"\x87\x01\n" +
-	"\x11SellStockResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12>\n" +
-	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant2\x84\x05\n" +
+	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant*X\n" +
+	"\vTradeAction\x12\x1c\n" +
+	"\x18TRADE_ACTION_UNSPECIFIED\x10\x00\x12\x14\n" +
+	"\x10TRADE_ACTION_BUY\x10\x01\x12\x15\n" +
+	"\x11TRADE_ACTION_SELL\x10\x022\x97\x04\n" +
 	"\x0fExchangeService\x12}\n" +
 	"\bGetQuote\x12\x1c.exchange.v1.GetQuoteRequest\x1a\x1d.exchange.v1.GetQuoteResponse\"4\x92A\x12b\x10\n" +
 	"\x0e\n" +
@@ -697,15 +635,11 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\fStreamQuotes\x12 .exchange.v1.StreamQuotesRequest\x1a!.exchange.v1.StreamQuotesResponse\"2\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
-	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x17\x12\x15/api/v1/quotes/events0\x01\x12t\n" +
-	"\bBuyStock\x12\x1c.exchange.v1.BuyStockRequest\x1a\x1d.exchange.v1.BuyStockResponse\"+\x92A\x12b\x10\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x17\x12\x15/api/v1/quotes/events0\x01\x12\x80\x01\n" +
+	"\vCreateTrade\x12\x1f.exchange.v1.CreateTradeRequest\x1a .exchange.v1.CreateTradeResponse\".\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
-	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x10:\x01*\"\v/api/v1/buy\x12x\n" +
-	"\tSellStock\x12\x1d.exchange.v1.SellStockRequest\x1a\x1e.exchange.v1.SellStockResponse\",\x92A\x12b\x10\n" +
-	"\x0e\n" +
-	"\n" +
-	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/api/v1/sellB\xfc\x01\x92A\xa8\x01\x12Q\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/api/v1/tradesB\xfc\x01\x92A\xa8\x01\x12Q\n" +
 	"\x14Exchange Service API\x122API for stock quotes, market history, and trading.2\x051.0.0ZS\n" +
 	"Q\n" +
 	"\n" +
@@ -724,39 +658,37 @@ func file_exchange_v1_exchange_proto_rawDescGZIP() []byte {
 	return file_exchange_v1_exchange_proto_rawDescData
 }
 
-var file_exchange_v1_exchange_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_exchange_v1_exchange_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_exchange_v1_exchange_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_exchange_v1_exchange_proto_goTypes = []any{
-	(*Quote)(nil),                // 0: exchange.v1.Quote
-	(*GetQuoteRequest)(nil),      // 1: exchange.v1.GetQuoteRequest
-	(*GetQuoteResponse)(nil),     // 2: exchange.v1.GetQuoteResponse
-	(*GetHistoryRequest)(nil),    // 3: exchange.v1.GetHistoryRequest
-	(*GetHistoryResponse)(nil),   // 4: exchange.v1.GetHistoryResponse
-	(*StreamQuotesRequest)(nil),  // 5: exchange.v1.StreamQuotesRequest
-	(*StreamQuotesResponse)(nil), // 6: exchange.v1.StreamQuotesResponse
-	(*BuyStockRequest)(nil),      // 7: exchange.v1.BuyStockRequest
-	(*BuyStockResponse)(nil),     // 8: exchange.v1.BuyStockResponse
-	(*SellStockRequest)(nil),     // 9: exchange.v1.SellStockRequest
-	(*SellStockResponse)(nil),    // 10: exchange.v1.SellStockResponse
-	(*v1.LadderParticipant)(nil), // 11: ladder.v1.LadderParticipant
+	(TradeAction)(0),             // 0: exchange.v1.TradeAction
+	(*Quote)(nil),                // 1: exchange.v1.Quote
+	(*GetQuoteRequest)(nil),      // 2: exchange.v1.GetQuoteRequest
+	(*GetQuoteResponse)(nil),     // 3: exchange.v1.GetQuoteResponse
+	(*GetHistoryRequest)(nil),    // 4: exchange.v1.GetHistoryRequest
+	(*GetHistoryResponse)(nil),   // 5: exchange.v1.GetHistoryResponse
+	(*StreamQuotesRequest)(nil),  // 6: exchange.v1.StreamQuotesRequest
+	(*StreamQuotesResponse)(nil), // 7: exchange.v1.StreamQuotesResponse
+	(*CreateTradeRequest)(nil),   // 8: exchange.v1.CreateTradeRequest
+	(*CreateTradeResponse)(nil),  // 9: exchange.v1.CreateTradeResponse
+	(*v1.LadderParticipant)(nil), // 10: ladder.v1.LadderParticipant
 }
 var file_exchange_v1_exchange_proto_depIdxs = []int32{
-	0,  // 0: exchange.v1.GetQuoteResponse.quote:type_name -> exchange.v1.Quote
-	0,  // 1: exchange.v1.GetHistoryResponse.history:type_name -> exchange.v1.Quote
-	0,  // 2: exchange.v1.StreamQuotesResponse.quote:type_name -> exchange.v1.Quote
-	11, // 3: exchange.v1.BuyStockResponse.participant:type_name -> ladder.v1.LadderParticipant
-	11, // 4: exchange.v1.SellStockResponse.participant:type_name -> ladder.v1.LadderParticipant
-	1,  // 5: exchange.v1.ExchangeService.GetQuote:input_type -> exchange.v1.GetQuoteRequest
-	3,  // 6: exchange.v1.ExchangeService.GetHistory:input_type -> exchange.v1.GetHistoryRequest
-	5,  // 7: exchange.v1.ExchangeService.StreamQuotes:input_type -> exchange.v1.StreamQuotesRequest
-	7,  // 8: exchange.v1.ExchangeService.BuyStock:input_type -> exchange.v1.BuyStockRequest
-	9,  // 9: exchange.v1.ExchangeService.SellStock:input_type -> exchange.v1.SellStockRequest
-	2,  // 10: exchange.v1.ExchangeService.GetQuote:output_type -> exchange.v1.GetQuoteResponse
-	4,  // 11: exchange.v1.ExchangeService.GetHistory:output_type -> exchange.v1.GetHistoryResponse
-	6,  // 12: exchange.v1.ExchangeService.StreamQuotes:output_type -> exchange.v1.StreamQuotesResponse
-	8,  // 13: exchange.v1.ExchangeService.BuyStock:output_type -> exchange.v1.BuyStockResponse
-	10, // 14: exchange.v1.ExchangeService.SellStock:output_type -> exchange.v1.SellStockResponse
-	10, // [10:15] is the sub-list for method output_type
-	5,  // [5:10] is the sub-list for method input_type
+	1,  // 0: exchange.v1.GetQuoteResponse.quote:type_name -> exchange.v1.Quote
+	1,  // 1: exchange.v1.GetHistoryResponse.history:type_name -> exchange.v1.Quote
+	1,  // 2: exchange.v1.StreamQuotesResponse.quote:type_name -> exchange.v1.Quote
+	0,  // 3: exchange.v1.CreateTradeRequest.action:type_name -> exchange.v1.TradeAction
+	10, // 4: exchange.v1.CreateTradeResponse.participant:type_name -> ladder.v1.LadderParticipant
+	2,  // 5: exchange.v1.ExchangeService.GetQuote:input_type -> exchange.v1.GetQuoteRequest
+	4,  // 6: exchange.v1.ExchangeService.GetHistory:input_type -> exchange.v1.GetHistoryRequest
+	6,  // 7: exchange.v1.ExchangeService.StreamQuotes:input_type -> exchange.v1.StreamQuotesRequest
+	8,  // 8: exchange.v1.ExchangeService.CreateTrade:input_type -> exchange.v1.CreateTradeRequest
+	3,  // 9: exchange.v1.ExchangeService.GetQuote:output_type -> exchange.v1.GetQuoteResponse
+	5,  // 10: exchange.v1.ExchangeService.GetHistory:output_type -> exchange.v1.GetHistoryResponse
+	7,  // 11: exchange.v1.ExchangeService.StreamQuotes:output_type -> exchange.v1.StreamQuotesResponse
+	9,  // 12: exchange.v1.ExchangeService.CreateTrade:output_type -> exchange.v1.CreateTradeResponse
+	9,  // [9:13] is the sub-list for method output_type
+	5,  // [5:9] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name
 	5,  // [5:5] is the sub-list for extension extendee
 	0,  // [0:5] is the sub-list for field type_name
@@ -772,13 +704,14 @@ func file_exchange_v1_exchange_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_exchange_v1_exchange_proto_rawDesc), len(file_exchange_v1_exchange_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   11,
+			NumEnums:      1,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_exchange_v1_exchange_proto_goTypes,
 		DependencyIndexes: file_exchange_v1_exchange_proto_depIdxs,
+		EnumInfos:         file_exchange_v1_exchange_proto_enumTypes,
 		MessageInfos:      file_exchange_v1_exchange_proto_msgTypes,
 	}.Build()
 	File_exchange_v1_exchange_proto = out.File

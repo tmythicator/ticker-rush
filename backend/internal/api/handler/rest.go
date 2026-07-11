@@ -247,21 +247,35 @@ func (h *RestHandler) GetQuote(c *gin.Context) {
 	c.JSON(http.StatusOK, &exchange.GetQuoteResponse{Quote: ToExternalQuote(quote)})
 }
 
-// BuyStock handles stock purchase requests.
-func (h *RestHandler) BuyStock(c *gin.Context) {
+// CreateTrade handles stock buy or sell requests.
+func (h *RestHandler) CreateTrade(c *gin.Context) {
 	userID, ok := h.getUserID(c)
 	if !ok {
 		return
 	}
 
-	var req exchange.BuyStockRequest
+	var req exchange.CreateTradeRequest
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 
 		return
 	}
 
-	_, err := h.tradeService.BuyStock(c.Request.Context(), userID, req.Symbol, req.Quantity)
+	var err error
+	var msg string
+	switch req.Action {
+	case exchange.TradeAction_TRADE_ACTION_BUY:
+		_, err = h.tradeService.BuyStock(c.Request.Context(), userID, req.Symbol, req.Quantity)
+		msg = "Bought successfully"
+	case exchange.TradeAction_TRADE_ACTION_SELL:
+		_, err = h.tradeService.SellStock(c.Request.Context(), userID, req.Symbol, req.Quantity)
+		msg = "Sold successfully"
+	default:
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid trade action"})
+
+		return
+	}
+
 	if err != nil {
 		if errors.Is(err, apperrors.ErrInsufficientFunds) {
 			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
@@ -305,70 +319,9 @@ func (h *RestHandler) BuyStock(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &exchange.BuyStockResponse{
+	c.JSON(http.StatusOK, &exchange.CreateTradeResponse{
 		Success: true,
-		Message: "Bought successfully",
-		Participant: &ladder.LadderParticipant{
-			User: ToExternalUser(fullUser),
-		},
-	})
-}
-
-// SellStock handles stock sale requests.
-func (h *RestHandler) SellStock(c *gin.Context) {
-	userID, ok := h.getUserID(c)
-	if !ok {
-		return
-	}
-
-	var req exchange.SellStockRequest
-	if err := c.BindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
-
-		return
-	}
-
-	_, err := h.tradeService.SellStock(c.Request.Context(), userID, req.Symbol, req.Quantity)
-	if err != nil {
-		if errors.Is(err, apperrors.ErrInsufficientQuantity) {
-			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
-
-			return
-		}
-
-		if errors.Is(err, apperrors.ErrInsufficientFunds) {
-			c.JSON(http.StatusPaymentRequired, gin.H{"error": err.Error()})
-
-			return
-		}
-
-		if errors.Is(err, apperrors.ErrMarketClosed) {
-			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
-
-			return
-		}
-
-		if errors.Is(err, apperrors.ErrInvalidQuantity) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-
-			return
-		}
-
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
-
-		return
-	}
-
-	fullUser, err := h.userService.GetUserWithPortfolio(c.Request.Context(), userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Service Error"})
-
-		return
-	}
-
-	c.JSON(http.StatusOK, &exchange.SellStockResponse{
-		Success: true,
-		Message: "Sold successfully",
+		Message: msg,
 		Participant: &ladder.LadderParticipant{
 			User: ToExternalUser(fullUser),
 		},

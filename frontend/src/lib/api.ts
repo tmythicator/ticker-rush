@@ -1,12 +1,10 @@
 import {
-  BuyStockRequest,
-  BuyStockResponse,
+  CreateTradeRequest,
+  CreateTradeResponse,
   GetHistoryRequest,
   GetHistoryResponse,
   GetQuoteRequest,
   GetQuoteResponse,
-  SellStockRequest,
-  SellStockResponse,
   type Quote,
 } from './proto/exchange/v1/exchange';
 import { GetActiveLadderResponse, Ladder } from './proto/ladder/v1/ladder';
@@ -84,16 +82,9 @@ export const getUser = async (): Promise<User> => {
   return user;
 };
 
-export const buyStock = async (req: BuyStockRequest): Promise<User> => {
-  const json = await api.post('/buy', req);
-  const { participant } = BuyStockResponse.fromJSON(json);
-  if (!participant?.user) throw new Error('Update failed');
-  return participant.user;
-};
-
-export const sellStock = async (req: SellStockRequest): Promise<User> => {
-  const json = await api.post('/sell', req);
-  const { participant } = SellStockResponse.fromJSON(json);
+export const createTrade = async (req: CreateTradeRequest): Promise<User> => {
+  const json = await api.post('/trades', req);
+  const { participant } = CreateTradeResponse.fromJSON(json);
   if (!participant?.user) throw new Error('Update failed');
   return participant.user;
 };

@@ -259,9 +259,14 @@ func TestBuyStock(t *testing.T) {
 	user, token, activeLadderID := setupJoinedUser(ctx, t, router, balance)
 
 	// Perform Buy
-	reqBody := fmt.Sprintf(`{"symbol": "%s", "quantity": %f}`, symbol, quantity)
+	reqBodyObj := &exchange.CreateTradeRequest{
+		Symbol:   symbol,
+		Quantity: quantity,
+		Action:   exchange.TradeAction_TRADE_ACTION_BUY,
+	}
+	reqBytes, _ := json.Marshal(reqBodyObj)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/buy", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/trades", bytes.NewReader(reqBytes))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
@@ -313,9 +318,14 @@ func TestSellStock(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Perform Sell
-	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "quantity": %f}`, mockSellQuantity)
+	reqBodyObj := &exchange.CreateTradeRequest{
+		Symbol:   "AAPL",
+		Quantity: mockSellQuantity,
+		Action:   exchange.TradeAction_TRADE_ACTION_SELL,
+	}
+	reqBytes, _ := json.Marshal(reqBodyObj)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/sell", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/trades", bytes.NewReader(reqBytes))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
@@ -350,9 +360,14 @@ func TestInsufficientFunds(t *testing.T) {
 	_, token, _ := setupJoinedUser(ctx, t, router, mockStartBalance)
 
 	// balance < cost
-	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "quantity": %d}`, mockBuyQuantity)
+	reqBodyObj := &exchange.CreateTradeRequest{
+		Symbol:   "AAPL",
+		Quantity: float64(mockBuyQuantity),
+		Action:   exchange.TradeAction_TRADE_ACTION_BUY,
+	}
+	reqBytes, _ := json.Marshal(reqBodyObj)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/buy", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/trades", bytes.NewReader(reqBytes))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
@@ -387,9 +402,14 @@ func TestSellAllStock(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Perform Sell All
-	reqBody := fmt.Sprintf(`{"symbol": "%s", "quantity": %f}`, symbol, mockSellQuantity)
+	reqBodyObj := &exchange.CreateTradeRequest{
+		Symbol:   symbol,
+		Quantity: mockSellQuantity,
+		Action:   exchange.TradeAction_TRADE_ACTION_SELL,
+	}
+	reqBytes, _ := json.Marshal(reqBodyObj)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/v1/sell", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/trades", bytes.NewReader(reqBytes))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 

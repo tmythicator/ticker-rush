@@ -47,38 +47,30 @@ func (s *ExchangeServer) GetQuote(
 	return &exchange.GetQuoteResponse{Quote: handler.ToExternalQuote(quote)}, nil
 }
 
-// BuyStock executes a buy order.
-func (s *ExchangeServer) BuyStock(
+// CreateTrade executes a buy or sell order.
+func (s *ExchangeServer) CreateTrade(
 	ctx context.Context,
-	req *exchange.BuyStockRequest,
-) (*exchange.BuyStockResponse, error) {
+	req *exchange.CreateTradeRequest,
+) (*exchange.CreateTradeResponse, error) {
 	userID, err := middleware.GetRequiredUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = s.tradeService.BuyStock(ctx, userID, req.GetSymbol(), req.GetQuantity())
-	if err != nil {
-		return &exchange.BuyStockResponse{Success: false, Message: err.Error()}, nil
+	var msg string
+	if req.GetAction() == exchange.TradeAction_TRADE_ACTION_BUY {
+		_, err = s.tradeService.BuyStock(ctx, userID, req.GetSymbol(), req.GetQuantity())
+		msg = "Stock bought successfully"
+	} else if req.GetAction() == exchange.TradeAction_TRADE_ACTION_SELL {
+		_, err = s.tradeService.SellStock(ctx, userID, req.GetSymbol(), req.GetQuantity())
+		msg = "Stock sold successfully"
+	} else {
+		return &exchange.CreateTradeResponse{Success: false, Message: "Invalid trade action"}, nil
 	}
 
-	return &exchange.BuyStockResponse{Success: true, Message: "Stock bought successfully"}, nil
-}
-
-// SellStock executes a sell order.
-func (s *ExchangeServer) SellStock(
-	ctx context.Context,
-	req *exchange.SellStockRequest,
-) (*exchange.SellStockResponse, error) {
-	userID, err := middleware.GetRequiredUserID(ctx)
 	if err != nil {
-		return nil, err
+		return &exchange.CreateTradeResponse{Success: false, Message: err.Error()}, nil
 	}
 
-	_, err = s.tradeService.SellStock(ctx, userID, req.GetSymbol(), req.GetQuantity())
-	if err != nil {
-		return &exchange.SellStockResponse{Success: false, Message: err.Error()}, nil
-	}
-
-	return &exchange.SellStockResponse{Success: true, Message: "Stock sold successfully"}, nil
+	return &exchange.CreateTradeResponse{Success: true, Message: msg}, nil
 }

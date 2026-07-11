@@ -55,8 +55,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 			protected.GET("/quotes/:symbol", handler.GetQuote)
 			protected.GET("/profile", handler.GetMe)
 			protected.PUT("/profile", handler.UpdateUser)
-			protected.POST("/buy", handler.BuyStock)
-			protected.POST("/sell", handler.SellStock)
+			protected.POST("/trades", handler.CreateTrade)
 		}
 	}
 

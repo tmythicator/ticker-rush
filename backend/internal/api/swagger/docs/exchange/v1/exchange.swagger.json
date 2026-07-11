@@ -17,45 +17,6 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/buy": {
-      "post": {
-        "summary": "Purchases stock shares for the authenticated user.",
-        "operationId": "ExchangeService_BuyStock",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1BuyStockResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "description": "Request payload to purchase stock.",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1BuyStockRequest"
-            }
-          }
-        ],
-        "tags": [
-          "ExchangeService"
-        ],
-        "security": [
-          {
-            "CookieAuth": []
-          }
-        ]
-      }
-    },
     "/api/v1/quotes/events": {
       "get": {
         "summary": "Opens a Server-Sent Events (SSE) stream for real-time stock quote updates.",
@@ -179,15 +140,15 @@
         ]
       }
     },
-    "/api/v1/sell": {
+    "/api/v1/trades": {
       "post": {
-        "summary": "Sells stock shares owned by the authenticated user.",
-        "operationId": "ExchangeService_SellStock",
+        "summary": "Places a trade (Buy/Sell) for a stock.",
+        "operationId": "ExchangeService_CreateTrade",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1SellStockResponse"
+              "$ref": "#/definitions/v1CreateTradeResponse"
             }
           },
           "default": {
@@ -200,11 +161,11 @@
         "parameters": [
           {
             "name": "body",
-            "description": "Request payload to sell stock.",
+            "description": "Request payload to place a trade.",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1SellStockRequest"
+              "$ref": "#/definitions/v1CreateTradeRequest"
             }
           }
         ],
@@ -248,22 +209,26 @@
         }
       }
     },
-    "v1BuyStockRequest": {
+    "v1CreateTradeRequest": {
       "type": "object",
       "properties": {
         "symbol": {
           "type": "string",
-          "description": "Stock ticker symbol to buy."
+          "description": "Stock ticker symbol to trade."
         },
         "quantity": {
           "type": "number",
           "format": "double",
-          "description": "Quantity of shares to buy."
+          "description": "Quantity of shares to trade."
+        },
+        "action": {
+          "$ref": "#/definitions/v1TradeAction",
+          "description": "Action to perform (Buy or Sell)."
         }
       },
-      "description": "Request payload to purchase stock."
+      "description": "Request payload to place a trade."
     },
-    "v1BuyStockResponse": {
+    "v1CreateTradeResponse": {
       "type": "object",
       "properties": {
         "success": {
@@ -279,7 +244,7 @@
           "description": "Updated standing and portfolio of the participant."
         }
       },
-      "description": "Response payload for a stock purchase."
+      "description": "Response payload for a trade transaction."
     },
     "v1GetHistoryResponse": {
       "type": "object",
@@ -388,39 +353,6 @@
       },
       "description": "Real-time stock price data."
     },
-    "v1SellStockRequest": {
-      "type": "object",
-      "properties": {
-        "symbol": {
-          "type": "string",
-          "description": "Stock ticker symbol to sell."
-        },
-        "quantity": {
-          "type": "number",
-          "format": "double",
-          "description": "Quantity of shares to sell."
-        }
-      },
-      "description": "Request payload to sell stock."
-    },
-    "v1SellStockResponse": {
-      "type": "object",
-      "properties": {
-        "success": {
-          "type": "boolean",
-          "description": "Whether the transaction succeeded."
-        },
-        "message": {
-          "type": "string",
-          "description": "Status or error message."
-        },
-        "participant": {
-          "$ref": "#/definitions/v1LadderParticipant",
-          "description": "Updated standing and portfolio of the participant."
-        }
-      },
-      "description": "Response payload for a stock sale."
-    },
     "v1StreamQuotesResponse": {
       "type": "object",
       "properties": {
@@ -430,6 +362,16 @@
         }
       },
       "description": "Response payload for real-time quote stream."
+    },
+    "v1TradeAction": {
+      "type": "string",
+      "enum": [
+        "TRADE_ACTION_UNSPECIFIED",
+        "TRADE_ACTION_BUY",
+        "TRADE_ACTION_SELL"
+      ],
+      "default": "TRADE_ACTION_UNSPECIFIED",
+      "description": "Trade action type (Buy or Sell)."
     },
     "v1User": {
       "type": "object",
