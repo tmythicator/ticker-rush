@@ -17,7 +17,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/leaderboard": {
+    "/api/v1/leaderboard": {
       "get": {
         "summary": "GetLeaderboard retrieves a paginated list of top players ranked by score.",
         "operationId": "LeaderBoardService_GetLeaderboard",

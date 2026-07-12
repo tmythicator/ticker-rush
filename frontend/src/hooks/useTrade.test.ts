@@ -1,15 +1,14 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useTrade } from './useTrade';
-import { buyStock, sellStock } from '@/lib/api';
+import { createTrade } from '@/lib/api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { TradeAction } from '@/types';
 import { mockUserParticipating } from '@/test/mocks';
 
 vi.mock('@/lib/api', () => ({
-  buyStock: vi.fn(),
-  sellStock: vi.fn(),
+  createTrade: vi.fn(),
 }));
 
 describe('useTrade', () => {
@@ -29,9 +28,9 @@ describe('useTrade', () => {
   const wrapper = ({ children }: { children: React.ReactNode }) =>
     React.createElement(QueryClientProvider, { client: queryClient }, children);
 
-  it('submits buyStock mutation and calls options.onSuccess', async () => {
+  it('submits createTrade buy mutation and calls options.onSuccess', async () => {
     const successSpy = vi.fn();
-    (buyStock as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockUserParticipating);
+    (createTrade as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockUserParticipating);
 
     const { result } = renderHook(() => useTrade({ symbol: 'AAPL', onSuccess: successSpy }), {
       wrapper,
@@ -45,12 +44,16 @@ describe('useTrade', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(buyStock).toHaveBeenCalledWith({ symbol: 'AAPL', quantity: 10 });
+    expect(createTrade).toHaveBeenCalledWith({
+      symbol: 'AAPL',
+      quantity: 10,
+      action: TradeAction.BUY,
+    });
     expect(successSpy).toHaveBeenCalled();
   });
 
-  it('submits sellStock mutation', async () => {
-    (sellStock as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockUserParticipating);
+  it('submits createTrade sell mutation', async () => {
+    (createTrade as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockUserParticipating);
 
     const { result } = renderHook(() => useTrade({ symbol: 'AAPL' }), { wrapper });
 
@@ -62,7 +65,11 @@ describe('useTrade', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(sellStock).toHaveBeenCalledWith({ symbol: 'AAPL', quantity: 5 });
+    expect(createTrade).toHaveBeenCalledWith({
+      symbol: 'AAPL',
+      quantity: 5,
+      action: TradeAction.SELL,
+    });
   });
 
   it('throws error for negative or zero quantities', async () => {

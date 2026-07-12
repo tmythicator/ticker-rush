@@ -17,7 +17,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/ladder/active": {
+    "/api/v1/ladder/active": {
       "get": {
         "summary": "GetActiveLadder retrieves full metadata for the currently active ladder.",
         "operationId": "LadderService_GetActiveLadder",
@@ -40,7 +40,7 @@
         ]
       }
     },
-    "/api/ladder/join": {
+    "/api/v1/ladder/participants": {
       "post": {
         "summary": "JoinLadder enrolls the authenticated user into the active ladder competition.",
         "operationId": "LadderService_JoinLadder",

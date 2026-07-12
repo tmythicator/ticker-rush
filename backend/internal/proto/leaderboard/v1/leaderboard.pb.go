@@ -224,9 +224,9 @@ const file_leaderboard_v1_leaderboard_proto_rawDesc = "" +
 	"\vtotal_count\x18\x02 \x01(\x05R\n" +
 	"totalCount\x12\x1f\n" +
 	"\vlast_update\x18\x03 \x01(\x03R\n" +
-	"lastUpdate2\x8f\x01\n" +
-	"\x12LeaderBoardService\x12y\n" +
-	"\x0eGetLeaderboard\x12%.leaderboard.v1.GetLeaderboardRequest\x1a&.leaderboard.v1.GetLeaderboardResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/api/leaderboardB\xb5\x01\x92A\\\x12Z\n" +
+	"lastUpdate2\x92\x01\n" +
+	"\x12LeaderBoardService\x12|\n" +
+	"\x0eGetLeaderboard\x12%.leaderboard.v1.GetLeaderboardRequest\x1a&.leaderboard.v1.GetLeaderboardResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/leaderboardB\xb5\x01\x92A\\\x12Z\n" +
 	"\x17Leaderboard Service API\x128API for retrieving paginated player standings and ranks.2\x051.0.0ZTgithub.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1;leaderboardb\x06proto3"
 
 var (

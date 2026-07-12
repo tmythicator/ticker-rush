@@ -31,36 +31,35 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 
 	engine.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{fmt.Sprintf("http://localhost:%d", cfg.ClientPort)},
-		AllowMethods:     []string{"GET", "POST"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
 
-	api := engine.Group("/api")
+	v1 := engine.Group("/api/v1")
 	{
-		api.POST("/login", handler.Login)
-		api.POST("/logout", handler.Logout)
-		api.POST("/register", handler.CreateUser)
-		api.GET("/ladder/active", handler.GetActiveLadder)
-		api.GET("/history", handler.GetHistory)
-		api.GET("/leaderboard", handler.GetLeaderboard)
-		api.GET("/users/:username", handler.GetPublicProfile)
+		v1.POST("/sessions", handler.Login)
+		v1.DELETE("/sessions", handler.Logout)
+		v1.POST("/users", handler.CreateUser)
+		v1.GET("/ladder/active", handler.GetActiveLadder)
+		v1.GET("/quotes/:symbol/history", handler.GetHistory)
+		v1.GET("/leaderboard", handler.GetLeaderboard)
+		v1.GET("/users/:username", handler.GetPublicProfile)
 
-		protected := api.Group("/")
+		protected := v1.Group("/")
 		protected.Use(middleware.AuthMiddleware(cfg.JWTSecret))
 		{
-			protected.POST("/ladder/join", handler.JoinLadder)
+			protected.POST("/ladder/participants", handler.JoinLadder)
 			protected.GET("/quotes/events", handler.StreamQuotes)
-			protected.GET("/quote", handler.GetQuote)
+			protected.GET("/quotes/:symbol", handler.GetQuote)
 			protected.GET("/profile", handler.GetMe)
 			protected.PUT("/profile", handler.UpdateUser)
-			protected.POST("/buy", handler.BuyStock)
-			protected.POST("/sell", handler.SellStock)
+			protected.POST("/trades", handler.CreateTrade)
 		}
 	}
 
-	swagger.RegisterRoutes(api)
+	swagger.RegisterRoutes(engine.Group("/api"))
 
 	return &Router{engine: engine}, nil
 }

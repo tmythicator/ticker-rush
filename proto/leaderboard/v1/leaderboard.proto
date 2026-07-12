@@ -47,6 +47,6 @@ message GetLeaderboardResponse {
 service LeaderBoardService {
   // GetLeaderboard retrieves a paginated list of top players ranked by score.
   rpc GetLeaderboard(GetLeaderboardRequest) returns (GetLeaderboardResponse) {
-    option (google.api.http) = {get: "/api/leaderboard"};
+    option (google.api.http) = {get: "/api/v1/leaderboard"};
   }
 }

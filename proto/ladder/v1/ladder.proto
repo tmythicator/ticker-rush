@@ -94,12 +94,12 @@ message JoinLadderResponse {
 service LadderService {
   // GetActiveLadder retrieves full metadata for the currently active ladder.
   rpc GetActiveLadder(GetActiveLadderRequest) returns (GetActiveLadderResponse) {
-    option (google.api.http) = {get: "/api/ladder/active"};
+    option (google.api.http) = {get: "/api/v1/ladder/active"};
   }
 
   // JoinLadder enrolls the authenticated user into the active ladder competition.
   rpc JoinLadder(JoinLadderRequest) returns (JoinLadderResponse) {
-    option (google.api.http) = {post: "/api/ladder/join"};
+    option (google.api.http) = {post: "/api/v1/ladder/participants"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       security: {
         security_requirement: {

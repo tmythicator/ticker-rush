@@ -1,4 +1,4 @@
-import { buyStock, sellStock } from '@/lib/api';
+import { createTrade } from '@/lib/api';
 import { queryKeys } from '@/lib/queryKeys';
 import { TradeAction } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -19,9 +19,7 @@ export const useTrade = (options: UseTradeOptions) => {
     mutationFn: ({ action, quantity }: TradeMutation) => {
       if (quantity <= 0) throw new Error('Quantity must be positive');
 
-      return action === TradeAction.BUY
-        ? buyStock({ symbol: options.symbol, quantity })
-        : sellStock({ symbol: options.symbol, quantity });
+      return createTrade({ symbol: options.symbol, quantity, action });
     },
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(queryKeys.user.me, updatedUser);

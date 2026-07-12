@@ -22,8 +22,7 @@ const (
 	ExchangeService_GetQuote_FullMethodName     = "/exchange.v1.ExchangeService/GetQuote"
 	ExchangeService_GetHistory_FullMethodName   = "/exchange.v1.ExchangeService/GetHistory"
 	ExchangeService_StreamQuotes_FullMethodName = "/exchange.v1.ExchangeService/StreamQuotes"
-	ExchangeService_BuyStock_FullMethodName     = "/exchange.v1.ExchangeService/BuyStock"
-	ExchangeService_SellStock_FullMethodName    = "/exchange.v1.ExchangeService/SellStock"
+	ExchangeService_CreateTrade_FullMethodName  = "/exchange.v1.ExchangeService/CreateTrade"
 )
 
 // ExchangeServiceClient is the client API for ExchangeService service.
@@ -38,10 +37,8 @@ type ExchangeServiceClient interface {
 	GetHistory(ctx context.Context, in *GetHistoryRequest, opts ...grpc.CallOption) (*GetHistoryResponse, error)
 	// Opens a Server-Sent Events (SSE) stream for real-time stock quote updates.
 	StreamQuotes(ctx context.Context, in *StreamQuotesRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamQuotesResponse], error)
-	// Purchases stock shares for the authenticated user.
-	BuyStock(ctx context.Context, in *BuyStockRequest, opts ...grpc.CallOption) (*BuyStockResponse, error)
-	// Sells stock shares owned by the authenticated user.
-	SellStock(ctx context.Context, in *SellStockRequest, opts ...grpc.CallOption) (*SellStockResponse, error)
+	// Places a trade (Buy/Sell) for a stock.
+	CreateTrade(ctx context.Context, in *CreateTradeRequest, opts ...grpc.CallOption) (*CreateTradeResponse, error)
 }
 
 type exchangeServiceClient struct {
@@ -91,20 +88,10 @@ func (c *exchangeServiceClient) StreamQuotes(ctx context.Context, in *StreamQuot
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type ExchangeService_StreamQuotesClient = grpc.ServerStreamingClient[StreamQuotesResponse]
 
-func (c *exchangeServiceClient) BuyStock(ctx context.Context, in *BuyStockRequest, opts ...grpc.CallOption) (*BuyStockResponse, error) {
+func (c *exchangeServiceClient) CreateTrade(ctx context.Context, in *CreateTradeRequest, opts ...grpc.CallOption) (*CreateTradeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(BuyStockResponse)
-	err := c.cc.Invoke(ctx, ExchangeService_BuyStock_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *exchangeServiceClient) SellStock(ctx context.Context, in *SellStockRequest, opts ...grpc.CallOption) (*SellStockResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SellStockResponse)
-	err := c.cc.Invoke(ctx, ExchangeService_SellStock_FullMethodName, in, out, cOpts...)
+	out := new(CreateTradeResponse)
+	err := c.cc.Invoke(ctx, ExchangeService_CreateTrade_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -123,10 +110,8 @@ type ExchangeServiceServer interface {
 	GetHistory(context.Context, *GetHistoryRequest) (*GetHistoryResponse, error)
 	// Opens a Server-Sent Events (SSE) stream for real-time stock quote updates.
 	StreamQuotes(*StreamQuotesRequest, grpc.ServerStreamingServer[StreamQuotesResponse]) error
-	// Purchases stock shares for the authenticated user.
-	BuyStock(context.Context, *BuyStockRequest) (*BuyStockResponse, error)
-	// Sells stock shares owned by the authenticated user.
-	SellStock(context.Context, *SellStockRequest) (*SellStockResponse, error)
+	// Places a trade (Buy/Sell) for a stock.
+	CreateTrade(context.Context, *CreateTradeRequest) (*CreateTradeResponse, error)
 	mustEmbedUnimplementedExchangeServiceServer()
 }
 
@@ -146,11 +131,8 @@ func (UnimplementedExchangeServiceServer) GetHistory(context.Context, *GetHistor
 func (UnimplementedExchangeServiceServer) StreamQuotes(*StreamQuotesRequest, grpc.ServerStreamingServer[StreamQuotesResponse]) error {
 	return status.Error(codes.Unimplemented, "method StreamQuotes not implemented")
 }
-func (UnimplementedExchangeServiceServer) BuyStock(context.Context, *BuyStockRequest) (*BuyStockResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method BuyStock not implemented")
-}
-func (UnimplementedExchangeServiceServer) SellStock(context.Context, *SellStockRequest) (*SellStockResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method SellStock not implemented")
+func (UnimplementedExchangeServiceServer) CreateTrade(context.Context, *CreateTradeRequest) (*CreateTradeResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateTrade not implemented")
 }
 func (UnimplementedExchangeServiceServer) mustEmbedUnimplementedExchangeServiceServer() {}
 func (UnimplementedExchangeServiceServer) testEmbeddedByValue()                         {}
@@ -220,38 +202,20 @@ func _ExchangeService_StreamQuotes_Handler(srv interface{}, stream grpc.ServerSt
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type ExchangeService_StreamQuotesServer = grpc.ServerStreamingServer[StreamQuotesResponse]
 
-func _ExchangeService_BuyStock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BuyStockRequest)
+func _ExchangeService_CreateTrade_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTradeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ExchangeServiceServer).BuyStock(ctx, in)
+		return srv.(ExchangeServiceServer).CreateTrade(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ExchangeService_BuyStock_FullMethodName,
+		FullMethod: ExchangeService_CreateTrade_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExchangeServiceServer).BuyStock(ctx, req.(*BuyStockRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ExchangeService_SellStock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SellStockRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ExchangeServiceServer).SellStock(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ExchangeService_SellStock_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExchangeServiceServer).SellStock(ctx, req.(*SellStockRequest))
+		return srv.(ExchangeServiceServer).CreateTrade(ctx, req.(*CreateTradeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -272,12 +236,8 @@ var ExchangeService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ExchangeService_GetHistory_Handler,
 		},
 		{
-			MethodName: "BuyStock",
-			Handler:    _ExchangeService_BuyStock_Handler,
-		},
-		{
-			MethodName: "SellStock",
-			Handler:    _ExchangeService_SellStock_Handler,
+			MethodName: "CreateTrade",
+			Handler:    _ExchangeService_CreateTrade_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

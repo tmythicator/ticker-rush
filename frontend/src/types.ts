@@ -6,9 +6,11 @@ export type { PortfolioItem, UpdateUserRequest, User } from './lib/proto/user/v1
 export type { Ladder } from './lib/proto/ladder/v1/ladder';
 export type { TickerInfo };
 
+import { TradeAction as ApiTradeAction } from './lib/proto/exchange/v1/exchange';
+
 export const TradeAction = {
-  BUY: 'BUY',
-  SELL: 'SELL',
+  BUY: ApiTradeAction.BUY,
+  SELL: ApiTradeAction.SELL,
 } as const;
 
 export type TradeSymbol = string;

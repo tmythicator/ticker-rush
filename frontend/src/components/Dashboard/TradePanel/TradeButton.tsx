@@ -18,7 +18,7 @@ export const TradeButton = ({ type, onClick, disabled }: TradeButtonProps) => {
       size="lg"
       className="w-full"
     >
-      {type}
+      {isBuy ? 'Buy' : 'Sell'}
     </Button>
   );
 };

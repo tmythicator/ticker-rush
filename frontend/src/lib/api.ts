@@ -1,12 +1,10 @@
 import {
-  BuyStockRequest,
-  BuyStockResponse,
+  CreateTradeRequest,
+  CreateTradeResponse,
   GetHistoryRequest,
   GetHistoryResponse,
   GetQuoteRequest,
   GetQuoteResponse,
-  SellStockRequest,
-  SellStockResponse,
   type Quote,
 } from './proto/exchange/v1/exchange';
 import { GetActiveLadderResponse, Ladder } from './proto/ladder/v1/ladder';
@@ -23,21 +21,30 @@ import {
   UpdateUserResponse,
   type User,
 } from './proto/user/v1/user';
+import { ApiError, type InvalidParam, parseProblemDetails } from './errors';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = `${import.meta.env.VITE_API_URL}/v1`;
 
-class ApiError extends Error {
-  status: number;
-  constructor(message: string, status: number) {
-    super(message);
-    this.status = status;
+export { ApiError, type InvalidParam };
+
+const handleResponseError = async (res: Response): Promise<never> => {
+  const contentType = res.headers.get('Content-Type') || '';
+  if (
+    contentType.includes('application/problem+json') ||
+    contentType.includes('application/json')
+  ) {
+    const data = await res.json().catch(() => ({}));
+    throw parseProblemDetails(data, res.status);
   }
-}
+  throw new ApiError(`Error: ${res.status}`, res.status);
+};
 
 export const api = {
   get: async <T>(endpoint: string): Promise<T> => {
     const res = await fetch(`${API_URL}${endpoint}`);
-    if (!res.ok) throw new ApiError(`Error: ${res.status}`, res.status);
+    if (!res.ok) {
+      await handleResponseError(res);
+    }
     return res.json();
   },
   post: async <T>(endpoint: string, body: unknown): Promise<T> => {
@@ -49,8 +56,7 @@ export const api = {
       body: JSON.stringify(body),
     });
     if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new ApiError(errorData.error || `Error: ${res.status}`, res.status);
+      await handleResponseError(res);
     }
     return res.json();
   },
@@ -63,15 +69,24 @@ export const api = {
       body: JSON.stringify(body),
     });
     if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new ApiError(errorData.error || `Error: ${res.status}`, res.status);
+      await handleResponseError(res);
     }
     return res.json();
+  },
+  delete: async <T = void>(endpoint: string): Promise<T> => {
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      await handleResponseError(res);
+    }
+    if (res.status === 204) return {} as T;
+    return res.json().catch(() => ({}));
   },
 };
 
 export const getQuote = async (req: GetQuoteRequest): Promise<Quote> => {
-  const json = await api.get(`/quote?symbol=${req.symbol}`);
+  const json = await api.get(`/quotes/${req.symbol}`);
   const { quote } = GetQuoteResponse.fromJSON(json);
   if (!quote) throw new Error('Quote not found');
   return quote;
@@ -84,29 +99,22 @@ export const getUser = async (): Promise<User> => {
   return user;
 };
 
-export const buyStock = async (req: BuyStockRequest): Promise<User> => {
-  const json = await api.post('/buy', req);
-  const { participant } = BuyStockResponse.fromJSON(json);
-  if (!participant?.user) throw new Error('Update failed');
-  return participant.user;
-};
-
-export const sellStock = async (req: SellStockRequest): Promise<User> => {
-  const json = await api.post('/sell', req);
-  const { participant } = SellStockResponse.fromJSON(json);
+export const createTrade = async (req: CreateTradeRequest): Promise<User> => {
+  const json = await api.post('/trades', req);
+  const { participant } = CreateTradeResponse.fromJSON(json);
   if (!participant?.user) throw new Error('Update failed');
   return participant.user;
 };
 
 export const login = async (req: LoginRequest): Promise<User> => {
-  const json = await api.post('/login', req);
+  const json = await api.post('/sessions', req);
   const { user } = LoginResponse.fromJSON(json);
   if (!user) throw new Error('Login failed');
   return user;
 };
 
 export const logout = async (): Promise<void> => {
-  return api.post('/logout', {});
+  return api.delete('/sessions');
 };
 
 export const getLeaderboard = async (
@@ -117,7 +125,7 @@ export const getLeaderboard = async (
 };
 
 export const register = async (req: CreateUserRequest): Promise<User> => {
-  const json = await api.post('/register', req);
+  const json = await api.post('/users', req);
   const { user } = CreateUserResponse.fromJSON(json);
   if (!user) throw new Error('Registration failed');
   return user;
@@ -130,11 +138,11 @@ export const getActiveLadder = async (): Promise<Ladder | undefined> => {
 };
 
 export const joinLadder = async (): Promise<void> => {
-  await api.post('/ladder/join', {});
+  await api.post('/ladder/participants', {});
 };
 
 export const getHistory = async (req: GetHistoryRequest): Promise<Quote[]> => {
-  const json = await api.get(`/history?symbol=${req.symbol}&limit=${req.limit}`);
+  const json = await api.get(`/quotes/${req.symbol}/history?limit=${req.limit}`);
   const { history } = GetHistoryResponse.fromJSON(json);
   return history;
 };

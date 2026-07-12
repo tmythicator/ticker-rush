@@ -159,7 +159,7 @@ func TestCreateUser(t *testing.T) {
 		testUsername,
 	)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/register", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/users", bytes.NewBufferString(reqBody))
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -181,10 +181,16 @@ func TestCreateUser_AgbNotAccepted(t *testing.T) {
 
 	reqBody := `{"username": "test_user_2", "password": "password123", "first_name": "Test", "last_name": "User", "agb_accepted": false}`
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/register", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/users", bytes.NewBufferString(reqBody))
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, "application/problem+json", w.Header().Get("Content-Type"))
+	var prob apperrors.ProblemDetails
+	err := json.Unmarshal(w.Body.Bytes(), &prob)
+	assert.NoError(t, err)
+	assert.Equal(t, apperrors.TypeValidation, prob.Type)
+	assert.Equal(t, apperrors.ErrAGBNotAccepted.Error(), prob.Detail)
 }
 
 func TestLogin(t *testing.T) {
@@ -208,7 +214,7 @@ func TestLogin(t *testing.T) {
 	// Perform Login
 	reqBody := fmt.Sprintf(`{"username": "%s", "password": "password123"}`, testUsername)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/login", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/sessions", bytes.NewBufferString(reqBody))
 	router.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -259,9 +265,14 @@ func TestBuyStock(t *testing.T) {
 	user, token, activeLadderID := setupJoinedUser(ctx, t, router, balance)
 
 	// Perform Buy
-	reqBody := fmt.Sprintf(`{"symbol": "%s", "quantity": %f}`, symbol, quantity)
+	reqBodyObj := &exchange.CreateTradeRequest{
+		Symbol:   symbol,
+		Quantity: quantity,
+		Action:   exchange.TradeAction_BUY,
+	}
+	reqBytes, _ := json.Marshal(reqBodyObj)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/buy", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/trades", bytes.NewReader(reqBytes))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
@@ -313,9 +324,14 @@ func TestSellStock(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Perform Sell
-	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "quantity": %f}`, mockSellQuantity)
+	reqBodyObj := &exchange.CreateTradeRequest{
+		Symbol:   "AAPL",
+		Quantity: mockSellQuantity,
+		Action:   exchange.TradeAction_SELL,
+	}
+	reqBytes, _ := json.Marshal(reqBodyObj)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/sell", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/trades", bytes.NewReader(reqBytes))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
@@ -350,14 +366,24 @@ func TestInsufficientFunds(t *testing.T) {
 	_, token, _ := setupJoinedUser(ctx, t, router, mockStartBalance)
 
 	// balance < cost
-	reqBody := fmt.Sprintf(`{"symbol": "AAPL", "quantity": %d}`, mockBuyQuantity)
+	reqBodyObj := &exchange.CreateTradeRequest{
+		Symbol:   "AAPL",
+		Quantity: float64(mockBuyQuantity),
+		Action:   exchange.TradeAction_BUY,
+	}
+	reqBytes, _ := json.Marshal(reqBodyObj)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/buy", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/trades", bytes.NewReader(reqBytes))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusPaymentRequired, w.Code)
-	assert.Error(t, apperrors.ErrInsufficientFunds)
+	assert.Equal(t, "application/problem+json", w.Header().Get("Content-Type"))
+	var prob apperrors.ProblemDetails
+	err := json.Unmarshal(w.Body.Bytes(), &prob)
+	assert.NoError(t, err)
+	assert.Equal(t, apperrors.TypeInsufficientFunds, prob.Type)
+	assert.Equal(t, apperrors.ErrInsufficientFunds.Error(), prob.Detail)
 }
 
 func TestSellAllStock(t *testing.T) {
@@ -387,9 +413,14 @@ func TestSellAllStock(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Perform Sell All
-	reqBody := fmt.Sprintf(`{"symbol": "%s", "quantity": %f}`, symbol, mockSellQuantity)
+	reqBodyObj := &exchange.CreateTradeRequest{
+		Symbol:   symbol,
+		Quantity: mockSellQuantity,
+		Action:   exchange.TradeAction_SELL,
+	}
+	reqBytes, _ := json.Marshal(reqBodyObj)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/api/sell", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/trades", bytes.NewReader(reqBytes))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
@@ -437,7 +468,7 @@ func TestGetPublicProfile(t *testing.T) {
 
 	t.Run("Get Public Profile - Success", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest(http.MethodGet, "/api/users/"+publicUsername, nil)
+		req, _ := http.NewRequest(http.MethodGet, "/api/v1/users/"+publicUsername, nil)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
@@ -450,18 +481,30 @@ func TestGetPublicProfile(t *testing.T) {
 
 	t.Run("Get Private Profile - Forbidden/NotFound", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest(http.MethodGet, "/api/users/"+privateUsername, nil)
+		req, _ := http.NewRequest(http.MethodGet, "/api/v1/users/"+privateUsername, nil)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
+		assert.Equal(t, "application/problem+json", w.Header().Get("Content-Type"))
+		var prob apperrors.ProblemDetails
+		err := json.Unmarshal(w.Body.Bytes(), &prob)
+		assert.NoError(t, err)
+		assert.Equal(t, apperrors.TypeNotFound, prob.Type)
+		assert.Equal(t, "User not found or profile is private", prob.Detail)
 	})
 
 	t.Run("Get Non-Existent Profile - NotFound", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest(http.MethodGet, "/api/users/non_existent", nil)
+		req, _ := http.NewRequest(http.MethodGet, "/api/v1/users/non_existent", nil)
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
+		assert.Equal(t, "application/problem+json", w.Header().Get("Content-Type"))
+		var prob apperrors.ProblemDetails
+		err := json.Unmarshal(w.Body.Bytes(), &prob)
+		assert.NoError(t, err)
+		assert.Equal(t, apperrors.TypeNotFound, prob.Type)
+		assert.Equal(t, "User not found or profile is private", prob.Detail)
 	})
 }
 
@@ -489,7 +532,7 @@ func TestUpdateUser_Privacy(t *testing.T) {
 	// 3. Update to Public
 	reqBody := `{"first_name": "Privacy", "last_name": "Tester", "website": "", "is_public": true}`
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/profile", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile", bytes.NewBufferString(reqBody))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
@@ -503,7 +546,7 @@ func TestUpdateUser_Privacy(t *testing.T) {
 	// 4. Update back to Private
 	reqBody = `{"first_name": "Privacy", "last_name": "Tester", "website": "", "is_public": false}`
 	w = httptest.NewRecorder()
-	req, _ = http.NewRequest(http.MethodPut, "/api/profile", bytes.NewBufferString(reqBody))
+	req, _ = http.NewRequest(http.MethodPut, "/api/v1/profile", bytes.NewBufferString(reqBody))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
@@ -538,7 +581,7 @@ func setupJoinedUser(ctx context.Context, t *testing.T, r *api.Router, balance f
 
 	// Join Ladder
 	wJoin := httptest.NewRecorder()
-	reqJoin, _ := http.NewRequest(http.MethodPost, "/api/ladder/join", nil)
+	reqJoin, _ := http.NewRequest(http.MethodPost, "/api/v1/ladder/participants", nil)
 	reqJoin.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	r.ServeHTTP(wJoin, reqJoin)
 	if wJoin.Code != http.StatusOK {

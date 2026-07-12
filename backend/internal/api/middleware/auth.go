@@ -18,20 +18,23 @@ func AuthMiddleware(jwtSecret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := c.Cookie("auth_token")
 		if err != nil {
-			_ = c.AbortWithError(http.StatusUnauthorized, apperrors.ErrAuthRequired)
+			respondWithProblemDirectly(c, http.StatusUnauthorized, apperrors.TypeAuthRequired, apperrors.ErrAuthRequired.Error())
+			c.Abort()
 
 			return
 		}
 
 		if token == "" {
-			_ = c.AbortWithError(http.StatusUnauthorized, apperrors.ErrInvalidToken)
+			respondWithProblemDirectly(c, http.StatusUnauthorized, apperrors.TypeAuthRequired, apperrors.ErrInvalidToken.Error())
+			c.Abort()
 
 			return
 		}
 
 		claims, err := service.ValidateToken(token, jwtSecret)
 		if err != nil {
-			_ = c.AbortWithError(http.StatusUnauthorized, apperrors.ErrInvalidToken)
+			respondWithProblemDirectly(c, http.StatusUnauthorized, apperrors.TypeAuthRequired, apperrors.ErrInvalidToken.Error())
+			c.Abort()
 
 			return
 		}
@@ -39,6 +42,17 @@ func AuthMiddleware(jwtSecret string) gin.HandlerFunc {
 		c.Set(UserIDKey, claims.UserID)
 		c.Next()
 	}
+}
+
+func respondWithProblemDirectly(c *gin.Context, status int, errType string, detail string) {
+	c.Header("Content-Type", "application/problem+json")
+	c.JSON(status, apperrors.ProblemDetails{
+		Type:     errType,
+		Title:    apperrors.MappedTitle(errType),
+		Status:   status,
+		Detail:   detail,
+		Instance: c.Request.URL.Path,
+	})
 }
 
 // GetUserID retrieves the authenticated user's ID from the context.

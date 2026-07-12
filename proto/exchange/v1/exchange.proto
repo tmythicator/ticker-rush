@@ -48,7 +48,7 @@ message Quote {
 service ExchangeService {
   // Retrieves the current quote and metadata for a single stock.
   rpc GetQuote(GetQuoteRequest) returns (GetQuoteResponse) {
-    option (google.api.http) = {get: "/api/quote"};
+    option (google.api.http) = {get: "/api/v1/quotes/{symbol}"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       security: {
         security_requirement: {
@@ -61,12 +61,12 @@ service ExchangeService {
 
   // Returns historical quote candles for a stock.
   rpc GetHistory(GetHistoryRequest) returns (GetHistoryResponse) {
-    option (google.api.http) = {get: "/api/history"};
+    option (google.api.http) = {get: "/api/v1/quotes/{symbol}/history"};
   }
 
   // Opens a Server-Sent Events (SSE) stream for real-time stock quote updates.
   rpc StreamQuotes(StreamQuotesRequest) returns (stream StreamQuotesResponse) {
-    option (google.api.http) = {get: "/api/quotes/events"};
+    option (google.api.http) = {get: "/api/v1/quotes/events"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       security: {
         security_requirement: {
@@ -77,26 +77,10 @@ service ExchangeService {
     };
   }
 
-  // Purchases stock shares for the authenticated user.
-  rpc BuyStock(BuyStockRequest) returns (BuyStockResponse) {
+  // Places a trade (Buy/Sell) for a stock.
+  rpc CreateTrade(CreateTradeRequest) returns (CreateTradeResponse) {
     option (google.api.http) = {
-      post: "/api/buy"
-      body: "*"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      security: {
-        security_requirement: {
-          key: "CookieAuth"
-          value: {}
-        }
-      }
-    };
-  }
-
-  // Sells stock shares owned by the authenticated user.
-  rpc SellStock(SellStockRequest) returns (SellStockResponse) {
-    option (google.api.http) = {
-      post: "/api/sell"
+      post: "/api/v1/trades"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -148,34 +132,25 @@ message StreamQuotesResponse {
   Quote quote = 1;
 }
 
-// Request payload to purchase stock.
-message BuyStockRequest {
-  // Stock ticker symbol to buy.
+// Trade action type (Buy or Sell).
+enum TradeAction {
+  UNSPECIFIED = 0;
+  BUY = 1;
+  SELL = 2;
+}
+
+// Request payload to place a trade.
+message CreateTradeRequest {
+  // Stock ticker symbol to trade.
   string symbol = 1;
-  // Quantity of shares to buy.
+  // Quantity of shares to trade.
   double quantity = 2;
+  // Action to perform (Buy or Sell).
+  TradeAction action = 3;
 }
 
-// Response payload for a stock purchase.
-message BuyStockResponse {
-  // Whether the transaction succeeded.
-  bool success = 1;
-  // Status or error message.
-  string message = 2;
-  // Updated standing and portfolio of the participant.
-  ladder.v1.LadderParticipant participant = 3;
-}
-
-// Request payload to sell stock.
-message SellStockRequest {
-  // Stock ticker symbol to sell.
-  string symbol = 1;
-  // Quantity of shares to sell.
-  double quantity = 2;
-}
-
-// Response payload for a stock sale.
-message SellStockResponse {
+// Response payload for a trade transaction.
+message CreateTradeResponse {
   // Whether the transaction succeeded.
   bool success = 1;
   // Status or error message.

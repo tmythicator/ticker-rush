@@ -95,7 +95,7 @@ describe('useQuotesSSE', () => {
 
     expect(MockEventSource.instances).toHaveLength(1);
     const instance = MockEventSource.instances[0];
-    expect(instance.url).toContain('/quotes/events?symbol=AAPL');
+    expect(instance.url).toContain('/v1/quotes/events?symbol=AAPL');
 
     expect(result.current.quote).toEqual(mockActiveQuote);
     expect(result.current.error).toBeNull();
