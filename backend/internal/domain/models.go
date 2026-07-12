@@ -92,4 +92,3 @@ const MarketStalenessThreshold = 30 * time.Minute
 func CalculateIsClosed(originalClosed bool, timestamp time.Time) bool {
 	return originalClosed || time.Since(timestamp) > MarketStalenessThreshold
 }
-
