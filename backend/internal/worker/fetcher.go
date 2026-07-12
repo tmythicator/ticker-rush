@@ -158,10 +158,12 @@ func (w *MarketFetcher) processTicker(
 
 	quote.Price = math.Round(quote.GetPrice()*100) / 100
 
+	isClosed := domain.CalculateIsClosed(quote.IsClosed, time.Unix(quote.Timestamp, 0))
+
 	span.SetAttributes(
 		attribute.Float64("fetcher.price", quote.Price),
 		attribute.Int64("fetcher.timestamp", quote.Timestamp),
-		attribute.Bool("fetcher.is_closed", quote.IsClosed),
+		attribute.Bool("fetcher.is_closed", isClosed),
 	)
 
 	if lastQuote != nil && quote.GetPrice() == lastQuote.GetPrice() &&
@@ -176,7 +178,7 @@ func (w *MarketFetcher) processTicker(
 		Price:     decimal.NewFromFloat(quote.Price),
 		Timestamp: time.Unix(quote.Timestamp, 0),
 		Source:    quote.Source,
-		IsClosed:  quote.IsClosed,
+		IsClosed:  isClosed,
 	}
 
 	if err := w.currentRepo.SaveQuote(ctx, domainQuote); err != nil {
