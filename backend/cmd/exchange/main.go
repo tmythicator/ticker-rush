@@ -151,8 +151,10 @@ func NewApp(ctx context.Context, cfg *config.Config) (app *App, err error) {
 func (a *App) Run(ctx context.Context) error {
 	g, ctx := errgroup.WithContext(ctx)
 
+	rlRepo := valkey.NewRateLimitter(a.valkeyClient)
+
 	// HTTP Server
-	router, err := api.NewRouter(a.restHandler, a.cfg)
+	router, err := api.NewRouter(a.restHandler, a.cfg, rlRepo)
 	if err != nil {
 		return fmt.Errorf("failed to create router: %w", err)
 	}

@@ -64,6 +64,7 @@ func (rl *RateLimitter) Limit() gin.HandlerFunc {
 		c.Header("X-RateLimit-Reset", fmt.Sprintf("%d", resetTime))
 
 		if rateVal > int64(rl.limit) {
+			log.Printf("[RateLimitter] rate limit exceeded for client %s (requests: %d/%d)", idKey, rateVal, rl.limit)
 			retryAfter := resetTime - time.Now().Unix()
 			c.Header("Retry-After", fmt.Sprintf("%d", retryAfter))
 			respondWithProblemDirectly(c,
