@@ -5,6 +5,7 @@ import { useRef, useMemo } from 'react';
 import type { TradeSymbol } from '@/types';
 import { getHistory } from '@/lib/api';
 import { queryKeys } from '@/lib/queryKeys';
+import { queryConfig } from '@/lib/queryConfig';
 
 export const HomeChart = ({ symbol }: { symbol: TradeSymbol }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -13,7 +14,7 @@ export const HomeChart = ({ symbol }: { symbol: TradeSymbol }) => {
     queryKey: queryKeys.quotes.history(symbol),
     queryFn: () => getHistory({ symbol, limit: 100 }),
     enabled: !!symbol,
-    staleTime: 1000 * 60 * 3,
+    ...queryConfig.homeChart,
   });
 
   const latestPrice = history && history.length > 0 ? history[history.length - 1].price : null;
