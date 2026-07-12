@@ -29,8 +29,7 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 
 // Player account profile.
 message User {
-  // Unique database identifier.
-  int64 id = 1;
+  reserved 1;
   // Username of the account.
   string username = 2;
   // First name of the user.

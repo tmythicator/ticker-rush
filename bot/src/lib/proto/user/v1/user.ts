@@ -12,8 +12,6 @@ export const protobufPackage = "user.v1";
 
 /** Player account profile. */
 export interface User {
-  /** Unique database identifier. */
-  id: string;
   /** Username of the account. */
   username: string;
   /** First name of the user. */
@@ -143,7 +141,6 @@ export interface GetPublicProfileResponse {
 
 function createBaseUser(): User {
   return {
-    id: "0",
     username: "",
     first_name: "",
     last_name: "",
@@ -160,9 +157,6 @@ function createBaseUser(): User {
 
 export const User: MessageFns<User> = {
   encode(message: User, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.id !== "0") {
-      writer.uint32(8).int64(message.id);
-    }
     if (message.username !== "") {
       writer.uint32(18).string(message.username);
     }
@@ -206,14 +200,6 @@ export const User: MessageFns<User> = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 8) {
-            break;
-          }
-
-          message.id = reader.int64().toString();
-          continue;
-        }
         case 2: {
           if (tag !== 18) {
             break;
@@ -316,7 +302,6 @@ export const User: MessageFns<User> = {
 
   fromJSON(object: any): User {
     return {
-      id: isSet(object.id) ? globalThis.String(object.id) : "0",
       username: isSet(object.username) ? globalThis.String(object.username) : "",
       first_name: isSet(object.firstName)
         ? globalThis.String(object.firstName)
@@ -369,9 +354,6 @@ export const User: MessageFns<User> = {
 
   toJSON(message: User): unknown {
     const obj: any = {};
-    if (message.id !== "0") {
-      obj.id = message.id;
-    }
     if (message.username !== "") {
       obj.username = message.username;
     }
@@ -419,7 +401,6 @@ export const User: MessageFns<User> = {
   },
   fromPartial<I extends Exact<DeepPartial<User>, I>>(object: I): User {
     const message = createBaseUser();
-    message.id = object.id ?? "0";
     message.username = object.username ?? "";
     message.first_name = object.first_name ?? "";
     message.last_name = object.last_name ?? "";
