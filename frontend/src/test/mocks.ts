@@ -1,7 +1,6 @@
 import type { User, Quote, PortfolioItem } from '@/types';
 
 export const mockUserParticipating: User = {
-  id: '1',
   username: 'testuser',
   first_name: 'Test',
   last_name: 'User',
