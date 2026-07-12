@@ -8,6 +8,9 @@ import (
 	"time"
 
 	"github.com/shopspring/decimal"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
@@ -133,18 +136,38 @@ func (w *MarketFetcher) processTicker(
 	lastQuote *exchange.Quote,
 	lastHistorySave map[string]time.Time,
 ) (*exchange.Quote, error) {
+	tracer := otel.Tracer("market-fetcher")
+	ctx, span := tracer.Start(ctx, "MarketFetcher.processTicker")
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("fetcher.source", w.source),
+		attribute.String("fetcher.symbol", symbol),
+	)
+
 	fetchCtx, cancel := context.WithTimeout(ctx, w.cfg.RequestTimeout)
 	defer cancel()
 
 	quote, err := w.client.GetQuote(fetchCtx, symbol)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
+
 		return nil, err
 	}
 
 	quote.Price = math.Round(quote.GetPrice()*100) / 100
 
+	span.SetAttributes(
+		attribute.Float64("fetcher.price", quote.Price),
+		attribute.Int64("fetcher.timestamp", quote.Timestamp),
+		attribute.Bool("fetcher.is_closed", quote.IsClosed),
+	)
+
 	if lastQuote != nil && quote.GetPrice() == lastQuote.GetPrice() &&
 		quote.GetTimestamp() == lastQuote.GetTimestamp() {
+		span.SetAttributes(attribute.Bool("fetcher.skipped_save", true))
+
 		return lastQuote, nil
 	}
 
@@ -157,6 +180,8 @@ func (w *MarketFetcher) processTicker(
 	}
 
 	if err := w.currentRepo.SaveQuote(ctx, domainQuote); err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
 		log.Printf("[%s] Current Save Error: %v", quote.Symbol, err)
 
 		return nil, err
@@ -164,6 +189,7 @@ func (w *MarketFetcher) processTicker(
 
 	// Only save to history if a minute has passed to aggregate fast writes
 	if time.Since(lastHistorySave[symbol]) >= time.Minute {
+		span.SetAttributes(attribute.Bool("fetcher.saved_history", true))
 		saveCtx, historyCancel := context.WithTimeout(context.Background(), 5*time.Second)
 		if err := w.historyRepo.SaveQuote(saveCtx, domainQuote); err != nil {
 			log.Printf("[%s] History Save Error: %v", quote.Symbol, err)

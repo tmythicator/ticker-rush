@@ -36,6 +36,7 @@ import (
 	"github.com/tmythicator/ticker-rush/backend/internal/config"
 	"github.com/tmythicator/ticker-rush/backend/internal/repository/postgres"
 	"github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
+	"github.com/tmythicator/ticker-rush/backend/internal/telemetry"
 	"github.com/tmythicator/ticker-rush/backend/internal/worker"
 )
 
@@ -51,6 +52,13 @@ func main() {
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+
+	// Initialize OpenTelemetry
+	shutdownTelemetry, err := telemetry.InitTelemetry(ctx, cfg)
+	if err != nil {
+		log.Fatalf("Failed to initialize telemetry: %v", err)
+	}
+	defer shutdownTelemetry()
 
 	// Initialize Redis Client
 	rdb := go_redis.NewClient(&go_redis.Options{

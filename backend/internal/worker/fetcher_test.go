@@ -54,7 +54,7 @@ func TestMarketFetcher_ProcessTicker(t *testing.T) {
 		}
 
 		mockClient.On("GetQuote", mock.Anything, symbol).Return(fetchedQuote, nil)
-		mockMarketRepo.On("SaveQuote", ctx, mock.MatchedBy(func(q *domain.Quote) bool {
+		mockMarketRepo.On("SaveQuote", mock.Anything, mock.MatchedBy(func(q *domain.Quote) bool {
 			return q.Symbol == symbol && q.Price.InexactFloat64() == 150.26 && q.Source == source
 		})).Return(nil)
 		mockHistoryRepo.On("SaveQuote", mock.Anything, mock.MatchedBy(func(q *domain.Quote) bool {
@@ -128,7 +128,7 @@ func TestMarketFetcher_ProcessTicker(t *testing.T) {
 		}
 
 		mockClient.On("GetQuote", mock.Anything, symbol).Return(fetchedQuote, nil)
-		mockMarketRepo.On("SaveQuote", ctx, mock.Anything).Return(nil)
+		mockMarketRepo.On("SaveQuote", mock.Anything, mock.Anything).Return(nil)
 
 		w := NewMarketFetcher(source, mockClient, mockMarketRepo, mockHistoryRepo, mockLadderRepo, cfg)
 		lastHistorySave := map[string]time.Time{
