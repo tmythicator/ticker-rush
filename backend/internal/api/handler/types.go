@@ -17,7 +17,6 @@ func ToExternalUser(u *domain.User) *user.User {
 	}
 
 	pUser := &user.User{
-		Id:              u.ID,
 		Username:        u.Username,
 		FirstName:       u.FirstName,
 		LastName:        u.LastName,

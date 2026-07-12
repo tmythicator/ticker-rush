@@ -28,8 +28,6 @@ const (
 // Player account profile.
 type User struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Unique database identifier.
-	Id int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Username of the account.
 	Username string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	// First name of the user.
@@ -84,13 +82,6 @@ func (x *User) ProtoReflect() protoreflect.Message {
 // Deprecated: Use User.ProtoReflect.Descriptor instead.
 func (*User) Descriptor() ([]byte, []int) {
 	return file_user_v1_user_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *User) GetId() int64 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
 }
 
 func (x *User) GetUsername() string {
@@ -853,9 +844,8 @@ var File_user_v1_user_proto protoreflect.FileDescriptor
 
 const file_user_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x12user/v1/user.proto\x12\auser.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\xef\x03\n" +
-	"\x04User\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
+	"\x12user/v1/user.proto\x12\auser.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\xe5\x03\n" +
+	"\x04User\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x1d\n" +
 	"\n" +
 	"first_name\x18\x03 \x01(\tR\tfirstName\x12\x1b\n" +
@@ -872,7 +862,7 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\x10is_participating\x18\f \x01(\bR\x0fisParticipating\x1aT\n" +
 	"\x0ePortfolioEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
-	"\x05value\x18\x02 \x01(\v2\x16.user.v1.PortfolioItemR\x05value:\x028\x01\"s\n" +
+	"\x05value\x18\x02 \x01(\v2\x16.user.v1.PortfolioItemR\x05value:\x028\x01J\x04\b\x01\x10\x02\"s\n" +
 	"\rPortfolioItem\x12!\n" +
 	"\fstock_symbol\x18\x01 \x01(\tR\vstockSymbol\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x01R\bquantity\x12#\n" +

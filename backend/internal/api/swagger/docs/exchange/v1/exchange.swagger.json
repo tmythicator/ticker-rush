@@ -376,11 +376,6 @@
     "v1User": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64",
-          "description": "Unique database identifier."
-        },
         "username": {
           "type": "string",
           "description": "Username of the account."
