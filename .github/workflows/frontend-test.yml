@@ -33,6 +33,19 @@ jobs:
       - name: Install Nix
         uses: cachix/install-nix-action@v31
 
+      - name: Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@v14
+
+      - name: Cache pnpm store & node_modules
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.local/share/pnpm/store
+            frontend/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('frontend/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
       - name: Install Dependencies
         run: nix develop --command task frontend:deps
 
@@ -44,4 +57,3 @@ jobs:
 
       - name: Run Nginx Config Integration Tests
         run: nix develop --command task infra:test-nginx
-
