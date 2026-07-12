@@ -32,6 +32,9 @@ type Config struct {
 	JWTSecret                    string        `env:"JWT_SECRET" envDefault:"secret"`
 	AdminUsername                string        `env:"ADMIN_USERNAME"`
 	AdminPasswordHash            string        `env:"ADMIN_PASSWORD_HASH"`
+	OtelEndpoint                 string        `env:"OTEL_EXPORTER_OTLP_ENDPOINT"`
+	OtelHeaders                  string        `env:"OTEL_EXPORTER_OTLP_HEADERS"`
+	OtelServiceName              string        `env:"OTEL_SERVICE_NAME" envDefault:"ticker-rush-backend"`
 }
 
 // LoadConfig loads the configuration from environment variables.
@@ -65,6 +68,9 @@ func LoadConfig() (*Config, error) {
 	log.Printf("  JWT_SECRET: %s", maskString(cfg.JWTSecret))
 	log.Printf("  ADMIN_USERNAME: %s", cfg.AdminUsername)
 	log.Printf("  ADMIN_PASSWORD_HASH: %s", maskString(cfg.AdminPasswordHash))
+	log.Printf("  OTEL_EXPORTER_OTLP_ENDPOINT: %s", cfg.OtelEndpoint)
+	log.Printf("  OTEL_EXPORTER_OTLP_HEADERS: %s", maskString(cfg.OtelHeaders))
+	log.Printf("  OTEL_SERVICE_NAME: %s", cfg.OtelServiceName)
 
 	return cfg, nil
 }
