@@ -124,6 +124,7 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 	leaderboardRepo := redisRepo.NewLeaderboardRepository(valkeyClient)
 	transactor := postgreRepo.NewPgxTransactor(dbPool)
 	historyRepo := &MockHistoryRepository{}
+	rlRepo := redisRepo.NewRateLimitter(valkeyClient)
 
 	userService = service.NewUser(userRepo, portfolioRepo, ladderRepo)
 	tradeService = service.NewTrade(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
@@ -141,7 +142,7 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, ladderService, testSecret)
 
 	// Initialize Router
-	router, err := api.NewRouter(restHandler, cfg)
+	router, err := api.NewRouter(restHandler, cfg, rlRepo)
 	if err != nil {
 		t.Fatalf("Failed to create router: %v", err)
 	}

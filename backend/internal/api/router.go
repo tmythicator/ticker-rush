@@ -21,8 +21,10 @@ type Router struct {
 }
 
 // NewRouter creates a new API router.
-func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error) {
+func NewRouter(handler *handler.RestHandler, cfg *config.Config, rateLimitRepo middleware.RateLimit) (*Router, error) {
 	engine := gin.Default()
+	globalLimiter := middleware.NewRateLimitter(rateLimitRepo, 100, time.Minute)
+	strictLimiter := middleware.NewRateLimitter(rateLimitRepo, 30, time.Minute)
 
 	err := engine.SetTrustedProxies(nil)
 	if err != nil {
@@ -33,11 +35,13 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 		AllowOrigins:     []string{fmt.Sprintf("http://localhost:%d", cfg.ClientPort)},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset", "Retry-After"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
 
 	v1 := engine.Group("/api/v1")
+	v1.Use(globalLimiter.Limit())
 	{
 		v1.POST("/sessions", handler.Login)
 		v1.DELETE("/sessions", handler.Logout)
@@ -49,6 +53,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config) (*Router, error
 
 		protected := v1.Group("/")
 		protected.Use(middleware.AuthMiddleware(cfg.JWTSecret))
+		protected.Use(strictLimiter.Limit())
 		{
 			protected.POST("/ladder/participants", handler.JoinLadder)
 			protected.GET("/quotes/events", handler.StreamQuotes)

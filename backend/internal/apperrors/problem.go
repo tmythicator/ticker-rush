@@ -33,6 +33,7 @@ const (
 	TypeForbidden         = TypePrefix + "forbidden"
 	TypeNotFound          = TypePrefix + "not-found"
 	TypeInternalError     = TypePrefix + "internal-error"
+	TypeRateLimitExceeded = TypePrefix + "rate-limit-exceeded"
 )
 
 // MappedTitle returns a human-readable title for standard problem types.
@@ -52,6 +53,8 @@ func MappedTitle(errType string) string {
 		return "Access Forbidden"
 	case TypeNotFound:
 		return "Resource Not Found"
+	case TypeRateLimitExceeded:
+		return "Rate Limit Exceeded"
 	default:
 		return "API Error"
 	}
