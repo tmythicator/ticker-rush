@@ -60,11 +60,7 @@ func (r *MarketRepository) GetQuote(ctx context.Context, symbol string) (*domain
 		return nil, err
 	}
 
-	// Check if market is closed (data older than 30 minutes)
-	isClosed := vq.IsClosed
-	if time.Since(time.Unix(vq.Timestamp, 0)) > 30*time.Minute {
-		isClosed = true
-	}
+	isClosed := domain.CalculateIsClosed(vq.IsClosed, time.Unix(vq.Timestamp, 0))
 
 	return &domain.Quote{
 		Symbol:        vq.Symbol,
@@ -79,6 +75,7 @@ func (r *MarketRepository) GetQuote(ctx context.Context, symbol string) (*domain
 
 // SaveQuote saves a quote to Redis and publishes it to the channel.
 func (r *MarketRepository) SaveQuote(ctx context.Context, quote *domain.Quote) error {
+	isClosed := domain.CalculateIsClosed(quote.IsClosed, quote.Timestamp)
 	vq := valkeyQuote{
 		Symbol:        quote.Symbol,
 		Price:         quote.Price.InexactFloat64(),
@@ -86,7 +83,7 @@ func (r *MarketRepository) SaveQuote(ctx context.Context, quote *domain.Quote) e
 		ChangePercent: quote.ChangePercent.InexactFloat64(),
 		Timestamp:     quote.Timestamp.Unix(),
 		Source:        quote.Source,
-		IsClosed:      quote.IsClosed,
+		IsClosed:      isClosed,
 	}
 
 	data, err := json.Marshal(vq)

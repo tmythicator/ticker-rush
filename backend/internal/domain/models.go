@@ -83,3 +83,13 @@ type LeaderboardResponse struct {
 	TotalCount int32
 	LastUpdate int64
 }
+
+// MarketStalenessThreshold defines the maximum time allowed since the last update
+// before the market data is considered closed or stale.
+const MarketStalenessThreshold = 30 * time.Minute
+
+// CalculateIsClosed determines if a market is closed based on a timestamp and previous status.
+func CalculateIsClosed(originalClosed bool, timestamp time.Time) bool {
+	return originalClosed || time.Since(timestamp) > MarketStalenessThreshold
+}
+
