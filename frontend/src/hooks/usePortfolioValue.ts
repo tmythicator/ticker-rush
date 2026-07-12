@@ -1,18 +1,20 @@
 import { getQuote } from '@/lib/api';
 import { queryKeys } from '@/lib/queryKeys';
+import { queryConfig } from '@/lib/queryConfig';
 import { type PortfolioItem } from '@/types';
 import { useQueries } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import type { TradeSymbol } from '@/types';
 
 export const usePortfolioValue = (portfolio: Record<string, PortfolioItem> | undefined) => {
   const symbols = useMemo(() => Object.keys(portfolio || {}), [portfolio]);
 
   const results = useQueries({
     queries: symbols.map((symbol) => ({
-      queryKey: queryKeys.quotes.detail(symbol),
-      queryFn: () => getQuote({ symbol }),
-      staleTime: 1000 * 30,
+      queryKey: queryKeys.quotes.detail(symbol as TradeSymbol),
+      queryFn: () => getQuote({ symbol: symbol as TradeSymbol }),
       retry: false,
+      ...queryConfig.quotes,
     })),
   });
 

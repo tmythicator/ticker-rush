@@ -1,5 +1,6 @@
 import { getHistory } from '@/lib/api';
 import { queryKeys } from '@/lib/queryKeys';
+import { queryConfig } from '@/lib/queryConfig';
 import { type TradeSymbol } from '@/types';
 import { useQuery } from '@tanstack/react-query';
 import { type ISeriesApi, type Time } from 'lightweight-charts';
@@ -13,7 +14,7 @@ export const useChartHistory = (
     queryKey: queryKeys.quotes.history(symbol || ''),
     queryFn: () => getHistory({ symbol: symbol!, limit: 1000 }),
     enabled: !!symbol,
-    staleTime: 1000 * 60 * 5,
+    ...queryConfig.history,
     select: (data) => {
       return data.map((q) => ({
         time: parseInt(q.timestamp, 10) as Time,
