@@ -14,7 +14,7 @@ export const LeaderboardTable = ({ entries }: LeaderboardTableProps) => {
         <LeaderboardHeader />
         <tbody className="divide-y divide-border">
           {entries.map((entry) => (
-            <LeaderboardRow key={entry.user?.id} entry={entry} />
+            <LeaderboardRow key={entry.rank} entry={entry} />
           ))}
           {entries.length === 0 && <LeaderboardEmptyState />}
         </tbody>
