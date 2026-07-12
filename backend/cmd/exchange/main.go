@@ -44,6 +44,7 @@ import (
 	"github.com/tmythicator/ticker-rush/backend/internal/repository/postgres"
 	valkey "github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
+	"github.com/tmythicator/ticker-rush/backend/internal/telemetry"
 	"github.com/tmythicator/ticker-rush/backend/internal/worker"
 )
 
@@ -69,6 +70,13 @@ func main() {
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+
+	// Initialize OpenTelemetry
+	shutdownTelemetry, err := telemetry.InitTelemetry(ctx, cfg)
+	if err != nil {
+		log.Fatalf("Failed to initialize telemetry: %v", err)
+	}
+	defer shutdownTelemetry()
 
 	app, err := NewApp(ctx, cfg)
 	if err != nil {

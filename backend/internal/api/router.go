@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/api/handler"
 	"github.com/tmythicator/ticker-rush/backend/internal/api/middleware"
@@ -23,6 +24,11 @@ type Router struct {
 // NewRouter creates a new API router.
 func NewRouter(handler *handler.RestHandler, cfg *config.Config, rateLimitRepo middleware.RateLimit) (*Router, error) {
 	engine := gin.Default()
+
+	if cfg.OtelEndpoint != "" {
+		engine.Use(otelgin.Middleware(cfg.OtelServiceName))
+	}
+
 	globalLimiter := middleware.NewRateLimitter(rateLimitRepo, 100, time.Minute)
 	strictLimiter := middleware.NewRateLimitter(rateLimitRepo, 30, time.Minute)
 
