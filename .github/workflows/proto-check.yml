@@ -41,6 +41,21 @@ jobs:
       - name: Install Nix
         uses: cachix/install-nix-action@v31
 
+      - name: Magic Nix Cache
+        uses: determinate-systems/magic-nix-cache-action@v14
+
+      - name: Cache Go modules & pnpm store
+        uses: actions/cache@v6
+        with:
+          path: |
+            .data/go
+            ~/.cache/go-build
+            ~/.local/share/pnpm/store
+            frontend/node_modules
+          key: ${{ runner.os }}-deps-${{ hashFiles('backend/go.sum', 'frontend/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
       - name: Install All Dependencies
         run: nix develop --command task deps
 

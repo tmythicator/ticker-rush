@@ -170,6 +170,8 @@ tasks:
     cmds:
       - task: backend:check-mod
       - golangci-lint run
+      - cmd: govulncheck ./...
+        ignore_error: true
       - task: backend:test
 
   backend:lint:
