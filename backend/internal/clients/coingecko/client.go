@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 )
 
@@ -80,7 +82,7 @@ func (c *Client) GetQuote(ctx context.Context, symbol string) (*exchange.Quote, 
 	return &exchange.Quote{
 		Symbol:    id,
 		Price:     data.USD,
-		Timestamp: timestamp,
+		Timestamp: timestamppb.New(time.Unix(timestamp, 0)),
 		Source:    "CG",
 	}, nil
 }

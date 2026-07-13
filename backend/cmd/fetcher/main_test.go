@@ -10,6 +10,7 @@ import (
 	go_redis "github.com/redis/go-redis/v9"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/clients/finnhub"
 	"github.com/tmythicator/ticker-rush/backend/internal/domain"
@@ -27,7 +28,7 @@ func (m *MockFinnhubClient) GetQuote(ctx context.Context, symbol string) (*excha
 	return &exchange.Quote{
 		Symbol:    symbol,
 		Price:     m.FinnhubQuote.CurrentPrice,
-		Timestamp: m.FinnhubQuote.Timestamp,
+		Timestamp: timestamppb.New(time.Unix(m.FinnhubQuote.Timestamp, 0)),
 	}, nil
 }
 
@@ -147,11 +148,11 @@ func TestMarketFetcher(t *testing.T) {
 	val, err := rdb.Get(ctx, "market:AAPL").Result()
 	assert.NoError(t, err)
 
-	var quote exchange.Quote
+	var quote redis.ValkeyQuote
 
 	err = json.Unmarshal([]byte(val), &quote)
 	assert.NoError(t, err)
 
-	assert.Equal(t, 150.0, quote.GetPrice())
-	assert.Equal(t, "AAPL", quote.GetSymbol())
+	assert.Equal(t, 150.0, quote.Price)
+	assert.Equal(t, "AAPL", quote.Symbol)
 }

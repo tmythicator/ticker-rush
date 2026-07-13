@@ -158,16 +158,17 @@ func (w *MarketFetcher) processTicker(
 
 	quote.Price = math.Round(quote.GetPrice()*100) / 100
 
-	isClosed := domain.CalculateIsClosed(quote.IsClosed, time.Unix(quote.Timestamp, 0))
+	isClosed := domain.CalculateIsClosed(quote.IsClosed, quote.GetTimestamp().AsTime())
 
 	span.SetAttributes(
 		attribute.Float64("fetcher.price", quote.Price),
-		attribute.Int64("fetcher.timestamp", quote.Timestamp),
+		attribute.Int64("fetcher.timestamp", quote.GetTimestamp().GetSeconds()),
 		attribute.Bool("fetcher.is_closed", isClosed),
 	)
 
 	if lastQuote != nil && quote.GetPrice() == lastQuote.GetPrice() &&
-		quote.GetTimestamp() == lastQuote.GetTimestamp() {
+		quote.GetTimestamp().GetSeconds() == lastQuote.GetTimestamp().GetSeconds() &&
+		quote.GetTimestamp().GetNanos() == lastQuote.GetTimestamp().GetNanos() {
 		span.SetAttributes(attribute.Bool("fetcher.skipped_save", true))
 
 		return lastQuote, nil
@@ -176,7 +177,7 @@ func (w *MarketFetcher) processTicker(
 	domainQuote := &domain.Quote{
 		Symbol:    quote.Symbol,
 		Price:     decimal.NewFromFloat(quote.Price),
-		Timestamp: time.Unix(quote.Timestamp, 0),
+		Timestamp: quote.GetTimestamp().AsTime(),
 		Source:    quote.Source,
 		IsClosed:  isClosed,
 	}
@@ -205,7 +206,7 @@ func (w *MarketFetcher) processTicker(
 		"[%s] Updated: $%.2f (ts: %d)",
 		quote.GetSymbol(),
 		quote.GetPrice(),
-		quote.GetTimestamp(),
+		quote.GetTimestamp().GetSeconds(),
 	)
 
 	return quote, nil

@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
@@ -48,7 +49,7 @@ func TestMarketFetcher_ProcessTicker(t *testing.T) {
 		fetchedQuote := &exchange.Quote{
 			Symbol:    symbol,
 			Price:     150.256, // Will be rounded to 150.26
-			Timestamp: time.Now().Unix(),
+			Timestamp: timestamppb.New(time.Now()),
 			Source:    source,
 			IsClosed:  false,
 		}
@@ -80,17 +81,17 @@ func TestMarketFetcher_ProcessTicker(t *testing.T) {
 		mockHistoryRepo := new(mocks.MockHistoryRepository)
 		mockLadderRepo := new(mocks.MockLadderRepository)
 
-		timestamp := time.Now().Unix()
+		timestamp := time.Now()
 		fetchedQuote := &exchange.Quote{
 			Symbol:    symbol,
 			Price:     150.26,
-			Timestamp: timestamp,
+			Timestamp: timestamppb.New(timestamp),
 			Source:    source,
 		}
 		lastQuote := &exchange.Quote{
 			Symbol:    symbol,
 			Price:     150.26,
-			Timestamp: timestamp,
+			Timestamp: timestamppb.New(timestamp),
 			Source:    source,
 		}
 
@@ -117,13 +118,13 @@ func TestMarketFetcher_ProcessTicker(t *testing.T) {
 		fetchedQuote := &exchange.Quote{
 			Symbol:    symbol,
 			Price:     151.0,
-			Timestamp: time.Now().Unix(),
+			Timestamp: timestamppb.New(time.Now()),
 			Source:    source,
 		}
 		lastQuote := &exchange.Quote{
 			Symbol:    symbol,
 			Price:     150.0,
-			Timestamp: time.Now().Unix() - 10,
+			Timestamp: timestamppb.New(time.Now().Add(-10 * time.Second)),
 			Source:    source,
 		}
 
