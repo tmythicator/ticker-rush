@@ -11,6 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/jackc/pgx/v5"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"

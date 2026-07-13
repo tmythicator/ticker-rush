@@ -237,7 +237,9 @@ func (r *User) AnonymizeUser(ctx context.Context, id int64) error {
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
 			continue
 		}
+
 		return err
 	}
+
 	return err
 }

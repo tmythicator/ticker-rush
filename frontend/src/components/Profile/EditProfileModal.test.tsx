@@ -2,7 +2,11 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { EditProfileModal } from './EditProfileModal';
-import { updateUser as apiUpdateUser, getUser as apiGetUser, deleteUser as apiDeleteUser } from '@/lib/api';
+import {
+  updateUser as apiUpdateUser,
+  getUser as apiGetUser,
+  deleteUser as apiDeleteUser,
+} from '@/lib/api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { mockUserParticipating } from '@/test/mocks';
 
