@@ -146,8 +146,8 @@ func ToExternalLeaderboardEntry(entry domain.LeaderboardEntry) *leaderboard.Lead
 	}
 }
 
-// ToExternalLeaderboardResponse maps a domain LeaderboardResponse to a Protobuf GetLeaderboardResponse.
-func ToExternalLeaderboardResponse(lr *domain.LeaderboardResponse) *leaderboard.GetLeaderboardResponse {
+// ToExternalLeaderboardResponse maps a domain Leaderboard to a Protobuf GetLeaderboardResponse.
+func ToExternalLeaderboardResponse(lr *domain.Leaderboard) *leaderboard.GetLeaderboardResponse {
 	if lr == nil {
 		return nil
 	}

@@ -77,8 +77,8 @@ type LeaderboardEntry struct {
 	Score float64
 }
 
-// LeaderboardResponse represents a paginated leaderboard response.
-type LeaderboardResponse struct {
+// Leaderboard represents a player ranking overview.
+type Leaderboard struct {
 	Entries    []LeaderboardEntry
 	TotalCount int32
 	LastUpdate int64
