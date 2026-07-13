@@ -129,3 +129,71 @@ func TestUpdateUser_Privacy(t *testing.T) {
 	assert.NoError(t, err)
 	assert.False(t, updatedUser.IsPublic, "User should be private after second update")
 }
+
+func TestDeleteUser(t *testing.T) {
+	env := setupTestEnv(t)
+	defer env.MiniRedis.Close()
+	defer env.DB.Close()
+
+	username := "delete_tester"
+	createdUser, err := env.UserRepo.CreateUser(ctx, service.CreateUserParams{
+		Username:      username,
+		PasswordHash:  "pass",
+		FirstName:     "Delete",
+		LastName:      "Tester",
+		Website:       "",
+		IsPublic:      true,
+		AgbAcceptedAt: time.Now(),
+	})
+	assert.NoError(t, err)
+
+	token, _ := service.GenerateToken(createdUser, testSecret)
+
+	t.Run("Delete Profile - Success", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodDelete, "/api/v1/profile", nil)
+		req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
+		env.Router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		// Check cookie was cleared
+		cookies := w.Result().Cookies()
+		found := false
+		for _, c := range cookies {
+			if c.Name == "auth_token" {
+				found = true
+				assert.Equal(t, "", c.Value)
+				assert.True(t, c.MaxAge < 0)
+			}
+		}
+		assert.True(t, found, "auth_token cookie should be cleared")
+
+		// Verify database state
+		dbUser, _, err := env.UserRepo.GetUserByUsername(ctx, "deleted_1") // fallback will trigger anyway since it is non-deterministic
+		if err != nil {
+			// fallback by ID
+			dbUser, err = env.UserRepo.GetUser(ctx, createdUser.ID)
+		}
+		assert.NoError(t, err)
+		assert.Contains(t, dbUser.Username, "deleted_")
+		assert.Equal(t, "Deleted", dbUser.FirstName)
+		assert.Equal(t, "User", dbUser.LastName)
+		assert.Equal(t, "", dbUser.Website)
+		assert.False(t, dbUser.IsPublic)
+	})
+
+	t.Run("Register with Blocked Username Prefix - Failure", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		reqBody := `{"username": "deleted_new", "password": "secure_password", "first_name": "Test", "last_name": "User", "agb_accepted": true}`
+		req, _ := http.NewRequest(http.MethodPost, "/api/v1/users", bytes.NewBufferString(reqBody))
+		env.Router.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		var prob apperrors.ProblemDetails
+		err := json.Unmarshal(w.Body.Bytes(), &prob)
+		assert.NoError(t, err)
+		assert.Equal(t, apperrors.TypeValidation, prob.Type)
+		assert.Equal(t, apperrors.ErrUsernameNotAllowed.Error(), prob.Detail)
+	})
+}
