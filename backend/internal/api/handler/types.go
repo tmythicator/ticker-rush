@@ -124,6 +124,7 @@ func ToExternalPublicProfile(u *domain.User) *user.PublicProfile {
 		LastName:  u.LastName,
 		Website:   u.Website,
 		Balance:   u.Balance.InexactFloat64(),
+		IsPublic:  u.IsPublic,
 	}
 
 	if u.Portfolio != nil {
@@ -139,7 +140,7 @@ func ToExternalPublicProfile(u *domain.User) *user.PublicProfile {
 // ToExternalLeaderboardEntry maps a domain LeaderboardEntry to a Protobuf LeaderboardEntry.
 func ToExternalLeaderboardEntry(entry domain.LeaderboardEntry) *leaderboard.LeaderboardEntry {
 	return &leaderboard.LeaderboardEntry{
-		User:  ToExternalUser(&entry.User),
+		User:  ToExternalPublicProfile(&entry.User),
 		Rank:  entry.Rank,
 		Score: entry.Score,
 	}
