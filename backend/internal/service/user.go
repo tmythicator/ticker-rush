@@ -135,26 +135,18 @@ func (s *User) UpdateUser(
 	lastName string,
 	website string,
 	isPublic bool,
+	paths []string,
 ) (*domain.User, error) {
-	// Validate Names
-	if len(firstName) == 0 || len(lastName) == 0 {
-		return nil, apperrors.ErrNameRequired
-	}
-
-	// Profanity Check
-	if goaway.IsProfane(firstName) || goaway.IsProfane(lastName) {
-		return nil, apperrors.ErrProfanityDetected
-	}
-
-	// Website Check
-	if website != "" {
-		if len(website) > 200 {
-			return nil, apperrors.ErrInvalidWebsiteFormat
+	hasPath := func(p string) bool {
+		if len(paths) == 0 {
+			return true
 		}
-		u, err := url.ParseRequestURI(website)
-		if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
-			return nil, apperrors.ErrInvalidWebsiteFormat
+		for _, path := range paths {
+			if path == p {
+				return true
+			}
 		}
+		return false
 	}
 
 	// Get existing user to preserve other fields
@@ -163,11 +155,43 @@ func (s *User) UpdateUser(
 		return nil, err
 	}
 
-	// Update fields
-	existingUser.FirstName = firstName
-	existingUser.LastName = lastName
-	existingUser.Website = website
-	existingUser.IsPublic = isPublic
+	// Validate & Update fields
+	if hasPath("first_name") {
+		if len(firstName) == 0 {
+			return nil, apperrors.ErrNameRequired
+		}
+		if goaway.IsProfane(firstName) {
+			return nil, apperrors.ErrProfanityDetected
+		}
+		existingUser.FirstName = firstName
+	}
+
+	if hasPath("last_name") {
+		if len(lastName) == 0 {
+			return nil, apperrors.ErrNameRequired
+		}
+		if goaway.IsProfane(lastName) {
+			return nil, apperrors.ErrProfanityDetected
+		}
+		existingUser.LastName = lastName
+	}
+
+	if hasPath("website") {
+		if website != "" {
+			if len(website) > 200 {
+				return nil, apperrors.ErrInvalidWebsiteFormat
+			}
+			u, err := url.ParseRequestURI(website)
+			if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+				return nil, apperrors.ErrInvalidWebsiteFormat
+			}
+		}
+		existingUser.Website = website
+	}
+
+	if hasPath("is_public") {
+		existingUser.IsPublic = isPublic
+	}
 
 	if err := s.userRepo.UpdateUserProfile(ctx, existingUser); err != nil {
 		return nil, err

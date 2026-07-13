@@ -258,7 +258,7 @@ func TestBuyStock(t *testing.T) {
 	defer pool.Close()
 
 	// Setup Market Data
-	quote := &exchange.Quote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
+	quote := &redisRepo.ValkeyQuote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
 	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
 
@@ -306,7 +306,7 @@ func TestSellStock(t *testing.T) {
 	)
 
 	// Setup Market Data
-	quote := &exchange.Quote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
+	quote := &redisRepo.ValkeyQuote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
 	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
 
@@ -359,7 +359,7 @@ func TestInsufficientFunds(t *testing.T) {
 		mockBuyQuantity  = 1
 	)
 
-	quote := &exchange.Quote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
+	quote := &redisRepo.ValkeyQuote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
 	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
 
@@ -402,7 +402,7 @@ func TestSellAllStock(t *testing.T) {
 	defer pool.Close()
 
 	// Setup Market Data
-	quote := &exchange.Quote{Symbol: symbol, Price: mockPrice, Timestamp: time.Now().Unix()}
+	quote := &redisRepo.ValkeyQuote{Symbol: symbol, Price: mockPrice, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
 	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
 
@@ -477,7 +477,7 @@ func TestGetPublicProfile(t *testing.T) {
 		var resp user.GetPublicProfileResponse
 		err := json.Unmarshal(w.Body.Bytes(), &resp)
 		assert.NoError(t, err)
-		assert.Equal(t, publicUsername, resp.GetUser().GetUsername())
+		assert.Equal(t, publicUsername, resp.GetProfile().GetUsername())
 	})
 
 	t.Run("Get Private Profile - Forbidden/NotFound", func(t *testing.T) {

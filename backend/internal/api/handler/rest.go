@@ -2,6 +2,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"errors"
 	"io"
 	"log"
@@ -17,6 +18,7 @@ import (
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	redisRepo "github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
@@ -138,6 +140,22 @@ func (h *RestHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
+	var paths []string
+	if req.UpdateMask != nil {
+		for _, p := range req.UpdateMask.Paths {
+			switch p {
+			case "firstName", "first_name":
+				paths = append(paths, "first_name")
+			case "lastName", "last_name":
+				paths = append(paths, "last_name")
+			case "website":
+				paths = append(paths, "website")
+			case "isPublic", "is_public":
+				paths = append(paths, "is_public")
+			}
+		}
+	}
+
 	updatedUser, err := h.userService.UpdateUser(
 		c.Request.Context(),
 		userID,
@@ -145,6 +163,7 @@ func (h *RestHandler) UpdateUser(c *gin.Context) {
 		req.LastName,
 		req.Website,
 		req.IsPublic,
+		paths,
 	)
 
 	if err != nil {
@@ -181,7 +200,7 @@ func (h *RestHandler) GetPublicProfile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &user.GetPublicProfileResponse{User: ToExternalUser(publicProfile)})
+	c.JSON(http.StatusOK, &user.GetPublicProfileResponse{Profile: ToExternalPublicProfile(publicProfile)})
 }
 
 // GetMe returns the current user's profile.
@@ -249,14 +268,11 @@ func (h *RestHandler) CreateTrade(c *gin.Context) {
 	}
 
 	var err error
-	var msg string
 	switch req.Action {
 	case exchange.TradeAction_BUY:
 		_, err = h.tradeService.BuyStock(c.Request.Context(), userID, req.Symbol, req.Quantity)
-		msg = "Bought successfully"
 	case exchange.TradeAction_SELL:
 		_, err = h.tradeService.SellStock(c.Request.Context(), userID, req.Symbol, req.Quantity)
-		msg = "Sold successfully"
 	default:
 		RespondWithProblem(c, http.StatusBadRequest, apperrors.TypeValidation, "Invalid trade action", nil)
 
@@ -279,8 +295,6 @@ func (h *RestHandler) CreateTrade(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, &exchange.CreateTradeResponse{
-		Success: true,
-		Message: msg,
 		Participant: &ladder.LadderParticipant{
 			User: ToExternalUser(fullUser),
 		},
@@ -359,7 +373,19 @@ func (h *RestHandler) StreamQuotes(c *gin.Context) {
 
 			return true
 		case msg := <-ch:
-			c.SSEvent("quote", msg.Payload)
+			var vq redisRepo.ValkeyQuote
+			if err := json.Unmarshal([]byte(msg.Payload), &vq); err == nil {
+				eq := ToExternalQuoteFromValkey(&vq)
+				if payloadBytes, marshalErr := json.Marshal(eq); marshalErr == nil {
+					c.SSEvent("quote", string(payloadBytes))
+				} else {
+					log.Printf("[StreamQuotes] Failed to marshal quote: %v", marshalErr)
+					c.SSEvent("quote", msg.Payload)
+				}
+			} else {
+				log.Printf("[StreamQuotes] Failed to unmarshal message: %v", err)
+				c.SSEvent("quote", msg.Payload)
+			}
 			// Flush the response to ensure it's sent immediately
 			if f, ok := w.(http.Flusher); ok {
 				f.Flush()
@@ -429,7 +455,7 @@ func (h *RestHandler) JoinLadder(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Joined ladder successfully"})
+	c.JSON(http.StatusOK, &ladder.JoinLadderResponse{})
 }
 
 // GetUserID retrieves the authenticated user ID from context and aborts with a 500 status if missing.

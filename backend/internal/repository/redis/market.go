@@ -26,8 +26,8 @@ func marketQuoteChannel(symbol string) string {
 	return fmt.Sprintf("%s:%s", marketChannelPrefix, symbol)
 }
 
-// valkeyQuote is used for backward-compatible JSON serialization in Redis.
-type valkeyQuote struct {
+// ValkeyQuote is used for backward-compatible JSON serialization in Redis.
+type ValkeyQuote struct {
 	Symbol        string  `json:"symbol,omitempty"`
 	Price         float64 `json:"price,omitempty"`
 	Change        float64 `json:"change,omitempty"`
@@ -55,7 +55,7 @@ func (r *MarketRepository) GetQuote(ctx context.Context, symbol string) (*domain
 		return nil, err
 	}
 
-	var vq valkeyQuote
+	var vq ValkeyQuote
 	if err := json.Unmarshal([]byte(val), &vq); err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (r *MarketRepository) GetQuote(ctx context.Context, symbol string) (*domain
 // SaveQuote saves a quote to Redis and publishes it to the channel.
 func (r *MarketRepository) SaveQuote(ctx context.Context, quote *domain.Quote) error {
 	isClosed := domain.CalculateIsClosed(quote.IsClosed, quote.Timestamp)
-	vq := valkeyQuote{
+	vq := ValkeyQuote{
 		Symbol:        quote.Symbol,
 		Price:         quote.Price.InexactFloat64(),
 		Change:        quote.Change.InexactFloat64(),
