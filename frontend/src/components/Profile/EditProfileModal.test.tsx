@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { EditProfileModal } from './EditProfileModal';
-import { updateUser as apiUpdateUser, getUser as apiGetUser } from '@/lib/api';
+import { updateUser as apiUpdateUser, getUser as apiGetUser, deleteUser as apiDeleteUser } from '@/lib/api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { mockUserParticipating } from '@/test/mocks';
 
@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 vi.mock('@/lib/api', () => ({
   updateUser: vi.fn(),
   getUser: vi.fn(),
+  deleteUser: vi.fn(),
 }));
 
 vi.mock('@/hooks/useAuth', () => ({
@@ -33,6 +34,7 @@ describe('EditProfileModal', () => {
     (useAuth as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       user: mockUserParticipating,
       setUser: vi.fn(),
+      login: vi.fn(),
     });
   });
 
@@ -162,6 +164,76 @@ describe('EditProfileModal', () => {
       expect(screen.getByTestId('field-error')).toHaveTextContent(
         'Website must be at most 200 characters long',
       );
+    });
+  });
+
+  it('calls deleteUser and logs out user on deletion confirmation', async () => {
+    const user = userEvent.setup();
+    const mockLogin = vi.fn();
+    (useAuth as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+      user: mockUserParticipating,
+      setUser: vi.fn(),
+      login: mockLogin,
+    });
+    (apiDeleteUser as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+
+    renderModal();
+
+    const deleteBtn = screen.getByTestId('delete-profile-button');
+    await user.click(deleteBtn);
+
+    // Verify custom modal is opened via its confirm button
+    const confirmBtn = screen.getByTestId('delete-profile-confirm-submit');
+    expect(confirmBtn).toBeInTheDocument();
+    await user.click(confirmBtn);
+
+    await waitFor(() => {
+      expect(apiDeleteUser).toHaveBeenCalled();
+      expect(mockLogin).toHaveBeenCalledWith(null);
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+  });
+
+  it('does not call deleteUser if deletion is not confirmed', async () => {
+    const user = userEvent.setup();
+    (apiDeleteUser as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+
+    renderModal();
+
+    const deleteBtn = screen.getByTestId('delete-profile-button');
+    await user.click(deleteBtn);
+
+    // Verify custom modal is opened via its cancel button
+    const cancelBtn = screen.getByTestId('delete-profile-confirm-cancel');
+    expect(cancelBtn).toBeInTheDocument();
+    await user.click(cancelBtn);
+
+    // Verify custom modal is closed
+    await waitFor(() => {
+      expect(screen.queryByTestId('delete-profile-confirm-cancel')).not.toBeInTheDocument();
+    });
+
+    expect(apiDeleteUser).not.toHaveBeenCalled();
+  });
+
+  it('renders delete error message when deletion fails', async () => {
+    const user = userEvent.setup();
+    (apiDeleteUser as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(
+      new Error('Failed to delete profile'),
+    );
+
+    renderModal();
+
+    const deleteBtn = screen.getByTestId('delete-profile-button');
+    await user.click(deleteBtn);
+
+    const confirmBtn = screen.getByTestId('delete-profile-confirm-submit');
+    await user.click(confirmBtn);
+
+    await waitFor(() => {
+      const errorAlert = screen.getByTestId('error-message');
+      expect(errorAlert).toBeInTheDocument();
+      expect(errorAlert).toHaveTextContent('Failed to delete profile');
     });
   });
 });

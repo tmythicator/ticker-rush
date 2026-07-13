@@ -174,3 +174,7 @@ export const getPublicProfile = async (req: GetPublicProfileRequest): Promise<Pu
   if (!profile) throw new Error('Profile not found');
   return profile;
 };
+
+export const deleteUser = async (): Promise<void> => {
+  await api.delete('/profile');
+};
