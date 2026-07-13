@@ -86,7 +86,7 @@ func MatchError(err error) (int, string, string) {
 		errors.Is(err, ErrLadderNotActive):
 		return http.StatusForbidden, TypeForbidden, err.Error()
 
-	case errors.Is(err, ErrUserNotFound),
+	case errors.Is(err, ErrPublicProfileNotFoundOrPrivate),
 		errors.Is(err, ErrSymbolNotAllowed):
 		return http.StatusNotFound, TypeNotFound, err.Error()
 

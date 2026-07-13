@@ -177,6 +177,25 @@ func (h *RestHandler) UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, &user.UpdateUserResponse{User: ToExternalUser(updatedUser)})
 }
 
+// DeleteUser anonymizes the current user's profile and invalidates the session.
+func (h *RestHandler) DeleteUser(c *gin.Context) {
+	userID, ok := h.getUserID(c)
+	if !ok {
+		return
+	}
+
+	err := h.userService.AnonymizeUser(c.Request.Context(), userID)
+	if err != nil {
+		status, errType, detail := apperrors.MatchError(err)
+		RespondWithProblem(c, status, errType, detail, nil)
+
+		return
+	}
+
+	c.SetCookie("auth_token", "", -1, "/", "", false, true)
+	c.JSON(http.StatusOK, &emptypb.Empty{})
+}
+
 // GetPublicProfile handles retrieving a user's public profile.
 func (h *RestHandler) GetPublicProfile(c *gin.Context) {
 	username := c.Param("username")

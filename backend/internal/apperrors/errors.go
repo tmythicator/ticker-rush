@@ -26,8 +26,6 @@ var (
 	ErrNameRequired = errors.New("first name and last name are required")
 	// ErrProfanityDetected is returned when profanity is found in user input.
 	ErrProfanityDetected = errors.New("profanity detected in username or name")
-	// ErrUserNotFound is returned when a user is not found.
-	ErrUserNotFound = errors.New("user not found")
 	// ErrUsernameNotAllowed is returned when a username is in the blocklist.
 	ErrUsernameNotAllowed = errors.New("username is not allowed")
 	// ErrAGBNotAccepted is returned when the user has not accepted the terms and conditions.
@@ -42,4 +40,6 @@ var (
 	ErrInvalidWebsiteFormat = errors.New("website must be a valid URL starting with http:// or https://")
 	// ErrInvalidQuantity is returned when a trade quantity is invalid.
 	ErrInvalidQuantity = errors.New("quantity must be between 0.00000001 and 1,000,000,000")
+	// ErrPublicProfileNotFoundOrPrivate is returned when a public profile is requested but not found or is private.
+	ErrPublicProfileNotFoundOrPrivate = errors.New("User not found or profile is private")
 )

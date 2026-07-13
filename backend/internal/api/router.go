@@ -66,6 +66,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config, rateLimitRepo m
 			protected.GET("/quotes/:symbol", handler.GetQuote)
 			protected.GET("/profile", handler.GetMe)
 			protected.PATCH("/profile", handler.UpdateUser)
+			protected.DELETE("/profile", handler.DeleteUser)
 			protected.POST("/trades", handler.CreateTrade)
 		}
 	}

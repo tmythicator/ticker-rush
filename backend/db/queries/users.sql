@@ -64,3 +64,13 @@ LEFT JOIN ladders al ON al.is_active = true
 LEFT JOIN ladder_participants lp ON u.id = lp.user_id AND lp.ladder_id = al.id
 LEFT JOIN ladder_portfolio_items lpi ON u.id = lpi.user_id AND lpi.ladder_id = al.id
 WHERE u.id = $1;
+
+-- name: AnonymizeUser :exec
+UPDATE users
+SET username = 'deleted_' || substring(md5(random()::text) from 1 for 12),
+    password_hash = 'DELETED',
+    first_name = 'Deleted',
+    last_name = 'User',
+    website = '',
+    is_public = false
+WHERE id = $1;

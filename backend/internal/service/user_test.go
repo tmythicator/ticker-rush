@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/tmythicator/ticker-rush/backend/internal/apperrors"
 	"github.com/tmythicator/ticker-rush/backend/internal/domain"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
@@ -251,17 +252,18 @@ func TestUserService_GetPublicProfile(t *testing.T) {
 		_, err := userService.GetPublicProfile(ctx, username)
 
 		assert.Error(t, err)
-		assert.Equal(t, "user not found", err.Error())
+		assert.Equal(t, apperrors.ErrPublicProfileNotFoundOrPrivate.Error(), err.Error())
 	})
 
 	t.Run("User Not Found", func(t *testing.T) {
 		username := "unknownUser"
 
-		mockUserRepo.On("GetUserByUsername", ctx, username).Return(nil, "", assert.AnError).Once()
+		mockUserRepo.On("GetUserByUsername", ctx, username).Return(nil, "", pgx.ErrNoRows).Once()
 
 		_, err := userService.GetPublicProfile(ctx, username)
 
 		assert.Error(t, err)
+		assert.Equal(t, apperrors.ErrPublicProfileNotFoundOrPrivate.Error(), err.Error())
 	})
 }
 
