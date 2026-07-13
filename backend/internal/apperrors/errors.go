@@ -41,5 +41,32 @@ var (
 	// ErrInvalidQuantity is returned when a trade quantity is invalid.
 	ErrInvalidQuantity = errors.New("quantity must be between 0.00000001 and 1,000,000,000")
 	// ErrPublicProfileNotFoundOrPrivate is returned when a public profile is requested but not found or is private.
-	ErrPublicProfileNotFoundOrPrivate = errors.New("User not found or profile is private")
+	ErrPublicProfileNotFoundOrPrivate = errors.New("user not found or profile is private")
+
+	// ErrInvalidRequestBody is returned when JSON binding fails.
+	ErrInvalidRequestBody = errors.New("invalid request body")
+	// ErrFailedToFetchProfileAfterCreation is returned when profile fetch fails after creation.
+	ErrFailedToFetchProfileAfterCreation = errors.New("failed to fetch user profile after creation")
+	// ErrInvalidCredentials is returned when login credentials do not match.
+	ErrInvalidCredentials = errors.New("invalid username or password")
+	// ErrFailedToFetchProfile is returned when profile fetch fails.
+	ErrFailedToFetchProfile = errors.New("failed to fetch user profile")
+	// ErrFailedToGenerateToken is returned when JWT generation fails.
+	ErrFailedToGenerateToken = errors.New("failed to generate token")
+	// ErrUsernameRequired is returned when username is missing from a request.
+	ErrUsernameRequired = errors.New("username is required")
+	// ErrInternalServiceError is returned for internal errors.
+	ErrInternalServiceError = errors.New("internal service error")
+	// ErrSymbolRequired is returned when the ticker symbol is missing.
+	ErrSymbolRequired = errors.New("symbol is required")
+	// ErrInvalidTradeAction is returned when trade action is not buy or sell.
+	ErrInvalidTradeAction = errors.New("invalid trade action")
+	// ErrFailedToFetchLeaderboard is returned when leaderboard fetch fails.
+	ErrFailedToFetchLeaderboard = errors.New("failed to fetch leaderboard")
+	// ErrFailedToFetchActiveLadder is returned when active ladder fetch fails.
+	ErrFailedToFetchActiveLadder = errors.New("failed to fetch active ladder")
+	// ErrMarketDataWarmingUp is returned when Redis has no quote cache yet.
+	ErrMarketDataWarmingUp = errors.New("market data warming up, please retry")
+	// ErrInternalAuthConfigurationError is returned when user ID context missing.
+	ErrInternalAuthConfigurationError = errors.New("internal authentication configuration error")
 )

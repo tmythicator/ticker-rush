@@ -68,7 +68,7 @@ func TestGetPublicProfile(t *testing.T) {
 		err := json.Unmarshal(w.Body.Bytes(), &prob)
 		assert.NoError(t, err)
 		assert.Equal(t, apperrors.TypeNotFound, prob.Type)
-		assert.Equal(t, "User not found or profile is private", prob.Detail)
+		assert.Equal(t, apperrors.ErrPublicProfileNotFoundOrPrivate.Error(), prob.Detail)
 	})
 
 	t.Run("Get Non-Existent Profile - NotFound", func(t *testing.T) {
@@ -82,7 +82,7 @@ func TestGetPublicProfile(t *testing.T) {
 		err := json.Unmarshal(w.Body.Bytes(), &prob)
 		assert.NoError(t, err)
 		assert.Equal(t, apperrors.TypeNotFound, prob.Type)
-		assert.Equal(t, "User not found or profile is private", prob.Detail)
+		assert.Equal(t, apperrors.ErrPublicProfileNotFoundOrPrivate.Error(), prob.Detail)
 	})
 }
 
