@@ -394,11 +394,7 @@ func (*JoinLadderRequest) Descriptor() ([]byte, []int) {
 
 // Response for joining a ladder.
 type JoinLadderResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Whether the transaction succeeded.
-	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	// Detailed status or error message.
-	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -433,20 +429,6 @@ func (*JoinLadderResponse) Descriptor() ([]byte, []int) {
 	return file_ladder_v1_ladder_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *JoinLadderResponse) GetSuccess() bool {
-	if x != nil {
-		return x.Success
-	}
-	return false
-}
-
-func (x *JoinLadderResponse) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
 var File_ladder_v1_ladder_proto protoreflect.FileDescriptor
 
 const file_ladder_v1_ladder_proto_rawDesc = "" +
@@ -477,10 +459,8 @@ const file_ladder_v1_ladder_proto_rawDesc = "" +
 	"\x16GetActiveLadderRequest\"D\n" +
 	"\x17GetActiveLadderResponse\x12)\n" +
 	"\x06ladder\x18\x01 \x01(\v2\x11.ladder.v1.LadderR\x06ladder\"\x13\n" +
-	"\x11JoinLadderRequest\"H\n" +
-	"\x12JoinLadderResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\x8e\x02\n" +
+	"\x11JoinLadderRequest\"\x14\n" +
+	"\x12JoinLadderResponse2\x8e\x02\n" +
 	"\rLadderService\x12w\n" +
 	"\x0fGetActiveLadder\x12!.ladder.v1.GetActiveLadderRequest\x1a\".ladder.v1.GetActiveLadderResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/api/v1/ladder/active\x12\x83\x01\n" +
 	"\n" +

@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
-import { type Quote } from '@/types';
+import { Quote } from '@/lib/proto/exchange/v1/exchange';
 import { queryKeys } from '@/lib/queryKeys';
 import { useQuoteQuery } from '@/hooks/useQuoteQuery';
 
@@ -15,7 +15,9 @@ export const useQuotesSSE = (symbol: string | null) => {
   const updateCache = useCallback(
     (newData: Quote) => {
       queryClient.setQueryData(queryKeys.quotes.detail(newData.symbol), (oldData: Quote | null) => {
-        if (!oldData || newData.timestamp > oldData.timestamp) {
+        if (!oldData) return newData;
+        if (!newData.timestamp) return oldData;
+        if (!oldData.timestamp || newData.timestamp.getTime() > oldData.timestamp.getTime()) {
           return newData;
         }
         return oldData;
@@ -43,7 +45,8 @@ export const useQuotesSSE = (symbol: string | null) => {
 
     eventSource.addEventListener('quote', (event: MessageEvent) => {
       try {
-        const data = JSON.parse(event.data) as Quote;
+        const raw = JSON.parse(event.data);
+        const data = Quote.fromJSON(raw);
         updateCache(data);
       } catch (err) {
         console.error('SSE: Parse Error', err);

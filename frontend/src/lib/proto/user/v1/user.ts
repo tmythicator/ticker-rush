@@ -6,6 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { FieldMask } from "../../google/protobuf/field_mask";
 import { Timestamp } from "../../google/protobuf/timestamp";
 
 export const protobufPackage = "user.v1";
@@ -39,6 +40,27 @@ export interface User {
 }
 
 export interface User_PortfolioEntry {
+  key: string;
+  value: PortfolioItem | undefined;
+}
+
+/** Public representation of a user profile. */
+export interface PublicProfile {
+  /** Username of the account. */
+  username: string;
+  /** First name of the user. */
+  first_name: string;
+  /** Last name of the user. */
+  last_name: string;
+  /** Optional website URL. */
+  website: string;
+  /** Current cash balance in USD. */
+  balance: number;
+  /** Current stock portfolio holdings. */
+  portfolio: { [key: string]: PortfolioItem };
+}
+
+export interface PublicProfile_PortfolioEntry {
   key: string;
   value: PortfolioItem | undefined;
 }
@@ -85,6 +107,8 @@ export interface UpdateUserRequest {
   website: string;
   /** Sets whether the profile is public. */
   is_public: boolean;
+  /** Field mask to specify which fields should be updated. */
+  update_mask: string[] | undefined;
 }
 
 /** Response containing the updated profile. */
@@ -136,7 +160,7 @@ export interface GetPublicProfileRequest {
 /** Response containing the public profile. */
 export interface GetPublicProfileResponse {
   /** Public details of the user. */
-  user: User | undefined;
+  profile: PublicProfile | undefined;
 }
 
 function createBaseUser(): User {
@@ -502,6 +526,257 @@ export const User_PortfolioEntry: MessageFns<User_PortfolioEntry> = {
   },
 };
 
+function createBasePublicProfile(): PublicProfile {
+  return { username: "", first_name: "", last_name: "", website: "", balance: 0, portfolio: {} };
+}
+
+export const PublicProfile: MessageFns<PublicProfile> = {
+  encode(message: PublicProfile, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.username !== "") {
+      writer.uint32(10).string(message.username);
+    }
+    if (message.first_name !== "") {
+      writer.uint32(18).string(message.first_name);
+    }
+    if (message.last_name !== "") {
+      writer.uint32(26).string(message.last_name);
+    }
+    if (message.website !== "") {
+      writer.uint32(34).string(message.website);
+    }
+    if (message.balance !== 0) {
+      writer.uint32(41).double(message.balance);
+    }
+    globalThis.Object.entries(message.portfolio).forEach(([key, value]: [string, PortfolioItem]) => {
+      PublicProfile_PortfolioEntry.encode({ key: key as any, value }, writer.uint32(50).fork()).join();
+    });
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PublicProfile {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePublicProfile();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.username = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.first_name = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.last_name = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.website = reader.string();
+          continue;
+        }
+        case 5: {
+          if (tag !== 41) {
+            break;
+          }
+
+          message.balance = reader.double();
+          continue;
+        }
+        case 6: {
+          if (tag !== 50) {
+            break;
+          }
+
+          const entry6 = PublicProfile_PortfolioEntry.decode(reader, reader.uint32());
+          if (entry6.value !== undefined) {
+            message.portfolio[entry6.key] = entry6.value;
+          }
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PublicProfile {
+    return {
+      username: isSet(object.username) ? globalThis.String(object.username) : "",
+      first_name: isSet(object.firstName)
+        ? globalThis.String(object.firstName)
+        : isSet(object.first_name)
+        ? globalThis.String(object.first_name)
+        : "",
+      last_name: isSet(object.lastName)
+        ? globalThis.String(object.lastName)
+        : isSet(object.last_name)
+        ? globalThis.String(object.last_name)
+        : "",
+      website: isSet(object.website) ? globalThis.String(object.website) : "",
+      balance: isSet(object.balance) ? globalThis.Number(object.balance) : 0,
+      portfolio: isObject(object.portfolio)
+        ? (globalThis.Object.entries(object.portfolio) as [string, any][]).reduce(
+          (acc: { [key: string]: PortfolioItem }, [key, value]: [string, any]) => {
+            acc[key] = PortfolioItem.fromJSON(value);
+            return acc;
+          },
+          {},
+        )
+        : {},
+    };
+  },
+
+  toJSON(message: PublicProfile): unknown {
+    const obj: any = {};
+    if (message.username !== "") {
+      obj.username = message.username;
+    }
+    if (message.first_name !== "") {
+      obj.firstName = message.first_name;
+    }
+    if (message.last_name !== "") {
+      obj.lastName = message.last_name;
+    }
+    if (message.website !== "") {
+      obj.website = message.website;
+    }
+    if (message.balance !== 0) {
+      obj.balance = message.balance;
+    }
+    if (message.portfolio) {
+      const entries = globalThis.Object.entries(message.portfolio) as [string, PortfolioItem][];
+      if (entries.length > 0) {
+        obj.portfolio = {};
+        entries.forEach(([k, v]) => {
+          obj.portfolio[k] = PortfolioItem.toJSON(v);
+        });
+      }
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PublicProfile>, I>>(base?: I): PublicProfile {
+    return PublicProfile.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PublicProfile>, I>>(object: I): PublicProfile {
+    const message = createBasePublicProfile();
+    message.username = object.username ?? "";
+    message.first_name = object.first_name ?? "";
+    message.last_name = object.last_name ?? "";
+    message.website = object.website ?? "";
+    message.balance = object.balance ?? 0;
+    message.portfolio = (globalThis.Object.entries(object.portfolio ?? {}) as [string, PortfolioItem][]).reduce(
+      (acc: { [key: string]: PortfolioItem }, [key, value]: [string, PortfolioItem]) => {
+        if (value !== undefined) {
+          acc[key] = PortfolioItem.fromPartial(value);
+        }
+        return acc;
+      },
+      {},
+    );
+    return message;
+  },
+};
+
+function createBasePublicProfile_PortfolioEntry(): PublicProfile_PortfolioEntry {
+  return { key: "", value: undefined };
+}
+
+export const PublicProfile_PortfolioEntry: MessageFns<PublicProfile_PortfolioEntry> = {
+  encode(message: PublicProfile_PortfolioEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== undefined) {
+      PortfolioItem.encode(message.value, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): PublicProfile_PortfolioEntry {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePublicProfile_PortfolioEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.key = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.value = PortfolioItem.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): PublicProfile_PortfolioEntry {
+    return {
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? PortfolioItem.fromJSON(object.value) : undefined,
+    };
+  },
+
+  toJSON(message: PublicProfile_PortfolioEntry): unknown {
+    const obj: any = {};
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== undefined) {
+      obj.value = PortfolioItem.toJSON(message.value);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<PublicProfile_PortfolioEntry>, I>>(base?: I): PublicProfile_PortfolioEntry {
+    return PublicProfile_PortfolioEntry.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<PublicProfile_PortfolioEntry>, I>>(object: I): PublicProfile_PortfolioEntry {
+    const message = createBasePublicProfile_PortfolioEntry();
+    message.key = object.key ?? "";
+    message.value = (object.value !== undefined && object.value !== null)
+      ? PortfolioItem.fromPartial(object.value)
+      : undefined;
+    return message;
+  },
+};
+
 function createBasePortfolioItem(): PortfolioItem {
   return { stock_symbol: "", quantity: 0, average_price: 0 };
 }
@@ -813,7 +1088,7 @@ export const CreateUserResponse: MessageFns<CreateUserResponse> = {
 };
 
 function createBaseUpdateUserRequest(): UpdateUserRequest {
-  return { first_name: "", last_name: "", website: "", is_public: false };
+  return { first_name: "", last_name: "", website: "", is_public: false, update_mask: undefined };
 }
 
 export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
@@ -829,6 +1104,9 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
     }
     if (message.is_public !== false) {
       writer.uint32(32).bool(message.is_public);
+    }
+    if (message.update_mask !== undefined) {
+      FieldMask.encode(FieldMask.wrap(message.update_mask), writer.uint32(42).fork()).join();
     }
     return writer;
   },
@@ -872,6 +1150,14 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
           message.is_public = reader.bool();
           continue;
         }
+        case 5: {
+          if (tag !== 42) {
+            break;
+          }
+
+          message.update_mask = FieldMask.unwrap(FieldMask.decode(reader, reader.uint32()));
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -899,6 +1185,11 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
         : isSet(object.is_public)
         ? globalThis.Boolean(object.is_public)
         : false,
+      update_mask: isSet(object.updateMask)
+        ? FieldMask.unwrap(FieldMask.fromJSON(object.updateMask))
+        : isSet(object.update_mask)
+        ? FieldMask.unwrap(FieldMask.fromJSON(object.update_mask))
+        : undefined,
     };
   },
 
@@ -916,6 +1207,9 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
     if (message.is_public !== false) {
       obj.isPublic = message.is_public;
     }
+    if (message.update_mask !== undefined) {
+      obj.updateMask = FieldMask.toJSON(FieldMask.wrap(message.update_mask));
+    }
     return obj;
   },
 
@@ -928,6 +1222,7 @@ export const UpdateUserRequest: MessageFns<UpdateUserRequest> = {
     message.last_name = object.last_name ?? "";
     message.website = object.website ?? "";
     message.is_public = object.is_public ?? false;
+    message.update_mask = object.update_mask ?? undefined;
     return message;
   },
 };
@@ -1385,13 +1680,13 @@ export const GetPublicProfileRequest: MessageFns<GetPublicProfileRequest> = {
 };
 
 function createBaseGetPublicProfileResponse(): GetPublicProfileResponse {
-  return { user: undefined };
+  return { profile: undefined };
 }
 
 export const GetPublicProfileResponse: MessageFns<GetPublicProfileResponse> = {
   encode(message: GetPublicProfileResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.user !== undefined) {
-      User.encode(message.user, writer.uint32(10).fork()).join();
+    if (message.profile !== undefined) {
+      PublicProfile.encode(message.profile, writer.uint32(10).fork()).join();
     }
     return writer;
   },
@@ -1408,7 +1703,7 @@ export const GetPublicProfileResponse: MessageFns<GetPublicProfileResponse> = {
             break;
           }
 
-          message.user = User.decode(reader, reader.uint32());
+          message.profile = PublicProfile.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -1421,13 +1716,13 @@ export const GetPublicProfileResponse: MessageFns<GetPublicProfileResponse> = {
   },
 
   fromJSON(object: any): GetPublicProfileResponse {
-    return { user: isSet(object.user) ? User.fromJSON(object.user) : undefined };
+    return { profile: isSet(object.profile) ? PublicProfile.fromJSON(object.profile) : undefined };
   },
 
   toJSON(message: GetPublicProfileResponse): unknown {
     const obj: any = {};
-    if (message.user !== undefined) {
-      obj.user = User.toJSON(message.user);
+    if (message.profile !== undefined) {
+      obj.profile = PublicProfile.toJSON(message.profile);
     }
     return obj;
   },
@@ -1437,7 +1732,9 @@ export const GetPublicProfileResponse: MessageFns<GetPublicProfileResponse> = {
   },
   fromPartial<I extends Exact<DeepPartial<GetPublicProfileResponse>, I>>(object: I): GetPublicProfileResponse {
     const message = createBaseGetPublicProfileResponse();
-    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.profile = (object.profile !== undefined && object.profile !== null)
+      ? PublicProfile.fromPartial(object.profile)
+      : undefined;
     return message;
   },
 };

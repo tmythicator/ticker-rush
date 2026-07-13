@@ -20,6 +20,7 @@ import {
   UpdateUserRequest,
   UpdateUserResponse,
   type User,
+  type PublicProfile,
 } from './proto/user/v1/user';
 import { ApiError, type InvalidParam, parseProblemDetails } from './errors';
 
@@ -63,6 +64,19 @@ export const api = {
   put: async <T>(endpoint: string, body: unknown): Promise<T> => {
     const res = await fetch(`${API_URL}${endpoint}`, {
       method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      await handleResponseError(res);
+    }
+    return res.json();
+  },
+  patch: async <T>(endpoint: string, body: unknown): Promise<T> => {
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -148,15 +162,15 @@ export const getHistory = async (req: GetHistoryRequest): Promise<Quote[]> => {
 };
 
 export const updateUser = async (req: UpdateUserRequest): Promise<User> => {
-  const json = await api.put('/profile', req);
+  const json = await api.patch('/profile', req);
   const { user } = UpdateUserResponse.fromJSON(json);
   if (!user) throw new Error('Update failed');
   return user;
 };
 
-export const getPublicProfile = async (req: GetPublicProfileRequest): Promise<User> => {
+export const getPublicProfile = async (req: GetPublicProfileRequest): Promise<PublicProfile> => {
   const json = await api.get(`/users/${req.username}`);
-  const { user } = GetPublicProfileResponse.fromJSON(json);
-  if (!user) throw new Error('Profile not found');
-  return user;
+  const { profile } = GetPublicProfileResponse.fromJSON(json);
+  if (!profile) throw new Error('Profile not found');
+  return profile;
 };

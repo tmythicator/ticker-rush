@@ -110,16 +110,6 @@
     },
     "v1JoinLadderResponse": {
       "type": "object",
-      "properties": {
-        "success": {
-          "type": "boolean",
-          "description": "Whether the transaction succeeded."
-        },
-        "message": {
-          "type": "string",
-          "description": "Detailed status or error message."
-        }
-      },
       "description": "Response for joining a ladder."
     },
     "v1Ladder": {

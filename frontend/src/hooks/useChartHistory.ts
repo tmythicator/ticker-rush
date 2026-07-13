@@ -17,7 +17,7 @@ export const useChartHistory = (
     ...queryConfig.history,
     select: (data) => {
       return data.map((q) => ({
-        time: parseInt(q.timestamp, 10) as Time,
+        time: (q.timestamp ? Math.floor(q.timestamp.getTime() / 1000) : 0) as Time,
         value: q.price,
       }));
     },

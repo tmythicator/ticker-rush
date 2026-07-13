@@ -199,7 +199,7 @@ func (a *App) Run(ctx context.Context) error {
 	grpcServer := googlegrpc.NewServer(
 		googlegrpc.UnaryInterceptor(middleware.GrpcAuthInterceptor(a.cfg.JWTSecret)),
 	)
-	exchangeServer := grpcapi.NewExchangeServer(a.tradeService, a.marketService)
+	exchangeServer := grpcapi.NewExchangeServer(a.tradeService, a.marketService, a.userService)
 	exchange.RegisterExchangeServiceServer(grpcServer, exchangeServer)
 
 	g.Go(func() error {

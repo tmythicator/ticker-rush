@@ -109,6 +109,7 @@ describe('EditProfileModal', () => {
         last_name: 'User',
         website: 'https://example.com',
         is_public: true,
+        update_mask: { paths: ['first_name'] },
       });
       expect(mockOnClose).toHaveBeenCalled();
     });

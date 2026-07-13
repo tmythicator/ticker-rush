@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"time"
+
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/tmythicator/ticker-rush/backend/internal/domain"
@@ -8,7 +10,25 @@ import (
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/leaderboard/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/user/v1"
+	redis "github.com/tmythicator/ticker-rush/backend/internal/repository/redis"
 )
+
+// ToExternalQuoteFromValkey maps a ValkeyQuote to a Protobuf Quote.
+func ToExternalQuoteFromValkey(vq *redis.ValkeyQuote) *exchange.Quote {
+	if vq == nil {
+		return nil
+	}
+
+	return &exchange.Quote{
+		Symbol:        vq.Symbol,
+		Price:         vq.Price,
+		Change:        vq.Change,
+		ChangePercent: vq.ChangePercent,
+		Timestamp:     timestamppb.New(time.Unix(vq.Timestamp, 0)),
+		Source:        vq.Source,
+		IsClosed:      vq.IsClosed,
+	}
+}
 
 // ToExternalUser maps a domain User to a Protobuf User.
 func ToExternalUser(u *domain.User) *user.User {
@@ -86,10 +106,34 @@ func ToExternalQuote(q *domain.Quote) *exchange.Quote {
 		Price:         q.Price.InexactFloat64(),
 		Change:        q.Change.InexactFloat64(),
 		ChangePercent: q.ChangePercent.InexactFloat64(),
-		Timestamp:     q.Timestamp.Unix(),
+		Timestamp:     timestamppb.New(q.Timestamp),
 		Source:        q.Source,
 		IsClosed:      q.IsClosed,
 	}
+}
+
+// ToExternalPublicProfile maps a domain User to a Protobuf PublicProfile.
+func ToExternalPublicProfile(u *domain.User) *user.PublicProfile {
+	if u == nil {
+		return nil
+	}
+
+	pProfile := &user.PublicProfile{
+		Username:  u.Username,
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		Website:   u.Website,
+		Balance:   u.Balance.InexactFloat64(),
+	}
+
+	if u.Portfolio != nil {
+		pProfile.Portfolio = make(map[string]*user.PortfolioItem)
+		for k, v := range u.Portfolio {
+			pProfile.Portfolio[k] = ToExternalPortfolioItem(v)
+		}
+	}
+
+	return pProfile
 }
 
 // ToExternalLeaderboardEntry maps a domain LeaderboardEntry to a Protobuf LeaderboardEntry.

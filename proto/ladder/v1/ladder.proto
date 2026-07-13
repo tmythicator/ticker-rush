@@ -83,12 +83,7 @@ message GetActiveLadderResponse {
 message JoinLadderRequest {}
 
 // Response for joining a ladder.
-message JoinLadderResponse {
-  // Whether the transaction succeeded.
-  bool success = 1;
-  // Detailed status or error message.
-  string message = 2;
-}
+message JoinLadderResponse {}
 
 // LadderService manages active competition cycles and handles user enrollment.
 service LadderService {
