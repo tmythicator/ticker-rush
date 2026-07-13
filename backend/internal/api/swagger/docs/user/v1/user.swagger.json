@@ -51,8 +51,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "type": "object",
-              "properties": {}
+              "$ref": "#/definitions/v1DeleteUserResponse"
             }
           },
           "default": {
@@ -311,6 +310,10 @@
         }
       },
       "description": "Response containing the registered user."
+    },
+    "v1DeleteUserResponse": {
+      "type": "object",
+      "description": "Response for DeleteUser."
     },
     "v1GetMeResponse": {
       "type": "object",

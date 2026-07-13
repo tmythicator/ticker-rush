@@ -14,7 +14,7 @@ import (
 
 const anonymizeUser = `-- name: AnonymizeUser :exec
 UPDATE users
-SET username = 'deleted_user_' || substring(md5(random()::text) from 1 for 7),
+SET username = 'deleted_' || substring(md5(random()::text) from 1 for 12),
     password_hash = 'DELETED',
     first_name = 'Deleted',
     last_name = 'User',
