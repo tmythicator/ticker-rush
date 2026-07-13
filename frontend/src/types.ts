@@ -2,7 +2,12 @@ import type { TickerInfo } from './lib/proto/ladder/v1/ladder';
 export type { Quote } from './lib/proto/exchange/v1/exchange';
 export { GetLeaderboardResponse } from './lib/proto/leaderboard/v1/leaderboard';
 export type { LeaderboardEntry } from './lib/proto/leaderboard/v1/leaderboard';
-export type { PortfolioItem, UpdateUserRequest, User, PublicProfile } from './lib/proto/user/v1/user';
+export type {
+  PortfolioItem,
+  UpdateUserRequest,
+  User,
+  PublicProfile,
+} from './lib/proto/user/v1/user';
 export type { Ladder } from './lib/proto/ladder/v1/ladder';
 export type { TickerInfo };
 

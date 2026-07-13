@@ -40,7 +40,7 @@ export const useEditProfile = (onClose: () => void) => {
         last_name: data.lastName,
         website: data.website || '',
         is_public: data.isPublic,
-        update_mask: (paths.length > 0 ? { paths } : undefined) as any,
+        update_mask: (paths.length > 0 ? { paths } : undefined) as unknown as string[],
       });
     },
     onSuccess: (updatedUser) => {

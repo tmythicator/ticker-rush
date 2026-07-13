@@ -13,11 +13,7 @@ export const StatsGrid = ({ balance, portfolio = {} }: StatsGridProps) => {
   const portfolioItems = Object.values(portfolio);
   const investedCapital = calculateInvestedCapital(portfolio);
 
-  const {
-    totalValue: currentPortfolioValue,
-    isLoading,
-    isError,
-  } = usePortfolioValue(portfolio);
+  const { totalValue: currentPortfolioValue, isLoading, isError } = usePortfolioValue(portfolio);
 
   const hasItems = portfolioItems.length > 0;
   const isValueSuspect = currentPortfolioValue === 0 && hasItems;
