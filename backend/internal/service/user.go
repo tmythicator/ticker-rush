@@ -248,6 +248,7 @@ func isDeletedUsername(username string) bool {
 // isBlockedUsername returns true if the username is a reserved/blocked system name.
 func isBlockedUsername(username string) bool {
 	blockedNames := []string{"admin", "administrator", "system", "mod", "moderator", "support", "help"}
+
 	return slices.Contains(blockedNames, strings.ToLower(username))
 }
 
