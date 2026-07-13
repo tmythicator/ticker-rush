@@ -12,6 +12,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -85,8 +86,8 @@ type Quote struct {
 	Change float64 `protobuf:"fixed64,3,opt,name=change,proto3" json:"change,omitempty"`
 	// Percentage price change compared to the previous close.
 	ChangePercent float64 `protobuf:"fixed64,4,opt,name=change_percent,json=changePercent,proto3" json:"change_percent,omitempty"`
-	// Unix timestamp of the price update in seconds.
-	Timestamp int64 `protobuf:"varint,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// Timestamp of the price update.
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	// Price data provider source.
 	Source string `protobuf:"bytes,6,opt,name=source,proto3" json:"source,omitempty"`
 	// Indicates if the market is closed for this stock.
@@ -153,11 +154,11 @@ func (x *Quote) GetChangePercent() float64 {
 	return 0
 }
 
-func (x *Quote) GetTimestamp() int64 {
+func (x *Quote) GetTimestamp() *timestamppb.Timestamp {
 	if x != nil {
 		return x.Timestamp
 	}
-	return 0
+	return nil
 }
 
 func (x *Quote) GetSource() string {
@@ -526,12 +527,8 @@ func (x *CreateTradeRequest) GetAction() TradeAction {
 // Response payload for a trade transaction.
 type CreateTradeResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Whether the transaction succeeded.
-	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	// Status or error message.
-	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	// Updated standing and portfolio of the participant.
-	Participant   *v1.LadderParticipant `protobuf:"bytes,3,opt,name=participant,proto3" json:"participant,omitempty"`
+	Participant   *v1.LadderParticipant `protobuf:"bytes,1,opt,name=participant,proto3" json:"participant,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -566,20 +563,6 @@ func (*CreateTradeResponse) Descriptor() ([]byte, []int) {
 	return file_exchange_v1_exchange_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *CreateTradeResponse) GetSuccess() bool {
-	if x != nil {
-		return x.Success
-	}
-	return false
-}
-
-func (x *CreateTradeResponse) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
 func (x *CreateTradeResponse) GetParticipant() *v1.LadderParticipant {
 	if x != nil {
 		return x.Participant
@@ -591,13 +574,13 @@ var File_exchange_v1_exchange_proto protoreflect.FileDescriptor
 
 const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\n" +
-	"\x1aexchange/v1/exchange.proto\x12\vexchange.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x16ladder/v1/ladder.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\xc7\x01\n" +
+	"\x1aexchange/v1/exchange.proto\x12\vexchange.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16ladder/v1/ladder.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\xe3\x01\n" +
 	"\x05Quote\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x14\n" +
 	"\x05price\x18\x02 \x01(\x01R\x05price\x12\x16\n" +
 	"\x06change\x18\x03 \x01(\x01R\x06change\x12%\n" +
-	"\x0echange_percent\x18\x04 \x01(\x01R\rchangePercent\x12\x1c\n" +
-	"\ttimestamp\x18\x05 \x01(\x03R\ttimestamp\x12\x16\n" +
+	"\x0echange_percent\x18\x04 \x01(\x01R\rchangePercent\x128\n" +
+	"\ttimestamp\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12\x16\n" +
 	"\x06source\x18\x06 \x01(\tR\x06source\x12\x1b\n" +
 	"\tis_closed\x18\a \x01(\bR\bisClosed\")\n" +
 	"\x0fGetQuoteRequest\x12\x16\n" +
@@ -616,11 +599,9 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x12CreateTradeRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x01R\bquantity\x120\n" +
-	"\x06action\x18\x03 \x01(\x0e2\x18.exchange.v1.TradeActionR\x06action\"\x89\x01\n" +
-	"\x13CreateTradeResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12>\n" +
-	"\vparticipant\x18\x03 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant*1\n" +
+	"\x06action\x18\x03 \x01(\x0e2\x18.exchange.v1.TradeActionR\x06action\"U\n" +
+	"\x13CreateTradeResponse\x12>\n" +
+	"\vparticipant\x18\x01 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant*1\n" +
 	"\vTradeAction\x12\x0f\n" +
 	"\vUNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03BUY\x10\x01\x12\b\n" +
@@ -661,37 +642,39 @@ func file_exchange_v1_exchange_proto_rawDescGZIP() []byte {
 var file_exchange_v1_exchange_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_exchange_v1_exchange_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_exchange_v1_exchange_proto_goTypes = []any{
-	(TradeAction)(0),             // 0: exchange.v1.TradeAction
-	(*Quote)(nil),                // 1: exchange.v1.Quote
-	(*GetQuoteRequest)(nil),      // 2: exchange.v1.GetQuoteRequest
-	(*GetQuoteResponse)(nil),     // 3: exchange.v1.GetQuoteResponse
-	(*GetHistoryRequest)(nil),    // 4: exchange.v1.GetHistoryRequest
-	(*GetHistoryResponse)(nil),   // 5: exchange.v1.GetHistoryResponse
-	(*StreamQuotesRequest)(nil),  // 6: exchange.v1.StreamQuotesRequest
-	(*StreamQuotesResponse)(nil), // 7: exchange.v1.StreamQuotesResponse
-	(*CreateTradeRequest)(nil),   // 8: exchange.v1.CreateTradeRequest
-	(*CreateTradeResponse)(nil),  // 9: exchange.v1.CreateTradeResponse
-	(*v1.LadderParticipant)(nil), // 10: ladder.v1.LadderParticipant
+	(TradeAction)(0),              // 0: exchange.v1.TradeAction
+	(*Quote)(nil),                 // 1: exchange.v1.Quote
+	(*GetQuoteRequest)(nil),       // 2: exchange.v1.GetQuoteRequest
+	(*GetQuoteResponse)(nil),      // 3: exchange.v1.GetQuoteResponse
+	(*GetHistoryRequest)(nil),     // 4: exchange.v1.GetHistoryRequest
+	(*GetHistoryResponse)(nil),    // 5: exchange.v1.GetHistoryResponse
+	(*StreamQuotesRequest)(nil),   // 6: exchange.v1.StreamQuotesRequest
+	(*StreamQuotesResponse)(nil),  // 7: exchange.v1.StreamQuotesResponse
+	(*CreateTradeRequest)(nil),    // 8: exchange.v1.CreateTradeRequest
+	(*CreateTradeResponse)(nil),   // 9: exchange.v1.CreateTradeResponse
+	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
+	(*v1.LadderParticipant)(nil),  // 11: ladder.v1.LadderParticipant
 }
 var file_exchange_v1_exchange_proto_depIdxs = []int32{
-	1,  // 0: exchange.v1.GetQuoteResponse.quote:type_name -> exchange.v1.Quote
-	1,  // 1: exchange.v1.GetHistoryResponse.history:type_name -> exchange.v1.Quote
-	1,  // 2: exchange.v1.StreamQuotesResponse.quote:type_name -> exchange.v1.Quote
-	0,  // 3: exchange.v1.CreateTradeRequest.action:type_name -> exchange.v1.TradeAction
-	10, // 4: exchange.v1.CreateTradeResponse.participant:type_name -> ladder.v1.LadderParticipant
-	2,  // 5: exchange.v1.ExchangeService.GetQuote:input_type -> exchange.v1.GetQuoteRequest
-	4,  // 6: exchange.v1.ExchangeService.GetHistory:input_type -> exchange.v1.GetHistoryRequest
-	6,  // 7: exchange.v1.ExchangeService.StreamQuotes:input_type -> exchange.v1.StreamQuotesRequest
-	8,  // 8: exchange.v1.ExchangeService.CreateTrade:input_type -> exchange.v1.CreateTradeRequest
-	3,  // 9: exchange.v1.ExchangeService.GetQuote:output_type -> exchange.v1.GetQuoteResponse
-	5,  // 10: exchange.v1.ExchangeService.GetHistory:output_type -> exchange.v1.GetHistoryResponse
-	7,  // 11: exchange.v1.ExchangeService.StreamQuotes:output_type -> exchange.v1.StreamQuotesResponse
-	9,  // 12: exchange.v1.ExchangeService.CreateTrade:output_type -> exchange.v1.CreateTradeResponse
-	9,  // [9:13] is the sub-list for method output_type
-	5,  // [5:9] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	10, // 0: exchange.v1.Quote.timestamp:type_name -> google.protobuf.Timestamp
+	1,  // 1: exchange.v1.GetQuoteResponse.quote:type_name -> exchange.v1.Quote
+	1,  // 2: exchange.v1.GetHistoryResponse.history:type_name -> exchange.v1.Quote
+	1,  // 3: exchange.v1.StreamQuotesResponse.quote:type_name -> exchange.v1.Quote
+	0,  // 4: exchange.v1.CreateTradeRequest.action:type_name -> exchange.v1.TradeAction
+	11, // 5: exchange.v1.CreateTradeResponse.participant:type_name -> ladder.v1.LadderParticipant
+	2,  // 6: exchange.v1.ExchangeService.GetQuote:input_type -> exchange.v1.GetQuoteRequest
+	4,  // 7: exchange.v1.ExchangeService.GetHistory:input_type -> exchange.v1.GetHistoryRequest
+	6,  // 8: exchange.v1.ExchangeService.StreamQuotes:input_type -> exchange.v1.StreamQuotesRequest
+	8,  // 9: exchange.v1.ExchangeService.CreateTrade:input_type -> exchange.v1.CreateTradeRequest
+	3,  // 10: exchange.v1.ExchangeService.GetQuote:output_type -> exchange.v1.GetQuoteResponse
+	5,  // 11: exchange.v1.ExchangeService.GetHistory:output_type -> exchange.v1.GetHistoryResponse
+	7,  // 12: exchange.v1.ExchangeService.StreamQuotes:output_type -> exchange.v1.StreamQuotesResponse
+	9,  // 13: exchange.v1.ExchangeService.CreateTrade:output_type -> exchange.v1.CreateTradeResponse
+	10, // [10:14] is the sub-list for method output_type
+	6,  // [6:10] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_exchange_v1_exchange_proto_init() }

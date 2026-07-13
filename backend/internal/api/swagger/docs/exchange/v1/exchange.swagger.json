@@ -231,14 +231,6 @@
     "v1CreateTradeResponse": {
       "type": "object",
       "properties": {
-        "success": {
-          "type": "boolean",
-          "description": "Whether the transaction succeeded."
-        },
-        "message": {
-          "type": "string",
-          "description": "Status or error message."
-        },
         "participant": {
           "$ref": "#/definitions/v1LadderParticipant",
           "description": "Updated standing and portfolio of the participant."
@@ -339,8 +331,8 @@
         },
         "timestamp": {
           "type": "string",
-          "format": "int64",
-          "description": "Unix timestamp of the price update in seconds."
+          "format": "date-time",
+          "description": "Timestamp of the price update."
         },
         "source": {
           "type": "string",

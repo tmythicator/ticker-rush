@@ -291,8 +291,8 @@
     "v1GetPublicProfileResponse": {
       "type": "object",
       "properties": {
-        "user": {
-          "$ref": "#/definitions/v1User",
+        "profile": {
+          "$ref": "#/definitions/v1PublicProfile",
           "description": "Public details of the user."
         }
       },
@@ -352,6 +352,40 @@
       },
       "description": "PortfolioItem represents a single stock holding in a user's portfolio."
     },
+    "v1PublicProfile": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "Username of the account."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last name of the user."
+        },
+        "website": {
+          "type": "string",
+          "description": "Optional website URL."
+        },
+        "balance": {
+          "type": "number",
+          "format": "double",
+          "description": "Current cash balance in USD."
+        },
+        "portfolio": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1PortfolioItem"
+          },
+          "description": "Current stock portfolio holdings."
+        }
+      },
+      "description": "Public representation of a user profile."
+    },
     "v1UpdateUserRequest": {
       "type": "object",
       "properties": {
@@ -370,6 +404,10 @@
         "isPublic": {
           "type": "boolean",
           "description": "Sets whether the profile is public."
+        },
+        "updateMask": {
+          "type": "string",
+          "description": "Field mask to specify which fields should be updated."
         }
       },
       "description": "Request to update the current profile."

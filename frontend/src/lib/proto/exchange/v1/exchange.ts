@@ -6,6 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+import { Timestamp } from "../../google/protobuf/timestamp";
 import { LadderParticipant } from "../../ladder/v1/ladder";
 
 export const protobufPackage = "exchange.v1";
@@ -64,8 +65,10 @@ export interface Quote {
   change: number;
   /** Percentage price change compared to the previous close. */
   change_percent: number;
-  /** Unix timestamp of the price update in seconds. */
-  timestamp: string;
+  /** Timestamp of the price update. */
+  timestamp:
+    | Date
+    | undefined;
   /** Price data provider source. */
   source: string;
   /** Indicates if the market is closed for this stock. */
@@ -122,16 +125,12 @@ export interface CreateTradeRequest {
 
 /** Response payload for a trade transaction. */
 export interface CreateTradeResponse {
-  /** Whether the transaction succeeded. */
-  success: boolean;
-  /** Status or error message. */
-  message: string;
   /** Updated standing and portfolio of the participant. */
   participant: LadderParticipant | undefined;
 }
 
 function createBaseQuote(): Quote {
-  return { symbol: "", price: 0, change: 0, change_percent: 0, timestamp: "0", source: "", is_closed: false };
+  return { symbol: "", price: 0, change: 0, change_percent: 0, timestamp: undefined, source: "", is_closed: false };
 }
 
 export const Quote: MessageFns<Quote> = {
@@ -148,8 +147,8 @@ export const Quote: MessageFns<Quote> = {
     if (message.change_percent !== 0) {
       writer.uint32(33).double(message.change_percent);
     }
-    if (message.timestamp !== "0") {
-      writer.uint32(40).int64(message.timestamp);
+    if (message.timestamp !== undefined) {
+      Timestamp.encode(toTimestamp(message.timestamp), writer.uint32(42).fork()).join();
     }
     if (message.source !== "") {
       writer.uint32(50).string(message.source);
@@ -200,11 +199,11 @@ export const Quote: MessageFns<Quote> = {
           continue;
         }
         case 5: {
-          if (tag !== 40) {
+          if (tag !== 42) {
             break;
           }
 
-          message.timestamp = reader.int64().toString();
+          message.timestamp = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           continue;
         }
         case 6: {
@@ -242,7 +241,7 @@ export const Quote: MessageFns<Quote> = {
         : isSet(object.change_percent)
         ? globalThis.Number(object.change_percent)
         : 0,
-      timestamp: isSet(object.timestamp) ? globalThis.String(object.timestamp) : "0",
+      timestamp: isSet(object.timestamp) ? fromJsonTimestamp(object.timestamp) : undefined,
       source: isSet(object.source) ? globalThis.String(object.source) : "",
       is_closed: isSet(object.isClosed)
         ? globalThis.Boolean(object.isClosed)
@@ -266,8 +265,8 @@ export const Quote: MessageFns<Quote> = {
     if (message.change_percent !== 0) {
       obj.changePercent = message.change_percent;
     }
-    if (message.timestamp !== "0") {
-      obj.timestamp = message.timestamp;
+    if (message.timestamp !== undefined) {
+      obj.timestamp = message.timestamp.toISOString();
     }
     if (message.source !== "") {
       obj.source = message.source;
@@ -287,7 +286,7 @@ export const Quote: MessageFns<Quote> = {
     message.price = object.price ?? 0;
     message.change = object.change ?? 0;
     message.change_percent = object.change_percent ?? 0;
-    message.timestamp = object.timestamp ?? "0";
+    message.timestamp = object.timestamp ?? undefined;
     message.source = object.source ?? "";
     message.is_closed = object.is_closed ?? false;
     return message;
@@ -755,19 +754,13 @@ export const CreateTradeRequest: MessageFns<CreateTradeRequest> = {
 };
 
 function createBaseCreateTradeResponse(): CreateTradeResponse {
-  return { success: false, message: "", participant: undefined };
+  return { participant: undefined };
 }
 
 export const CreateTradeResponse: MessageFns<CreateTradeResponse> = {
   encode(message: CreateTradeResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.success !== false) {
-      writer.uint32(8).bool(message.success);
-    }
-    if (message.message !== "") {
-      writer.uint32(18).string(message.message);
-    }
     if (message.participant !== undefined) {
-      LadderParticipant.encode(message.participant, writer.uint32(26).fork()).join();
+      LadderParticipant.encode(message.participant, writer.uint32(10).fork()).join();
     }
     return writer;
   },
@@ -780,23 +773,7 @@ export const CreateTradeResponse: MessageFns<CreateTradeResponse> = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1: {
-          if (tag !== 8) {
-            break;
-          }
-
-          message.success = reader.bool();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.message = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
+          if (tag !== 10) {
             break;
           }
 
@@ -813,21 +790,11 @@ export const CreateTradeResponse: MessageFns<CreateTradeResponse> = {
   },
 
   fromJSON(object: any): CreateTradeResponse {
-    return {
-      success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
-      message: isSet(object.message) ? globalThis.String(object.message) : "",
-      participant: isSet(object.participant) ? LadderParticipant.fromJSON(object.participant) : undefined,
-    };
+    return { participant: isSet(object.participant) ? LadderParticipant.fromJSON(object.participant) : undefined };
   },
 
   toJSON(message: CreateTradeResponse): unknown {
     const obj: any = {};
-    if (message.success !== false) {
-      obj.success = message.success;
-    }
-    if (message.message !== "") {
-      obj.message = message.message;
-    }
     if (message.participant !== undefined) {
       obj.participant = LadderParticipant.toJSON(message.participant);
     }
@@ -839,8 +806,6 @@ export const CreateTradeResponse: MessageFns<CreateTradeResponse> = {
   },
   fromPartial<I extends Exact<DeepPartial<CreateTradeResponse>, I>>(object: I): CreateTradeResponse {
     const message = createBaseCreateTradeResponse();
-    message.success = object.success ?? false;
-    message.message = object.message ?? "";
     message.participant = (object.participant !== undefined && object.participant !== null)
       ? LadderParticipant.fromPartial(object.participant)
       : undefined;
@@ -859,6 +824,28 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = Math.trunc(date.getTime() / 1_000).toString();
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = (globalThis.Number(t.seconds) || 0) * 1_000;
+  millis += (t.nanos || 0) / 1_000_000;
+  return new globalThis.Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof globalThis.Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new globalThis.Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

@@ -77,10 +77,6 @@ export interface JoinLadderRequest {
 
 /** Response for joining a ladder. */
 export interface JoinLadderResponse {
-  /** Whether the transaction succeeded. */
-  success: boolean;
-  /** Detailed status or error message. */
-  message: string;
 }
 
 function createBaseLadder(): Ladder {
@@ -648,17 +644,11 @@ export const JoinLadderRequest: MessageFns<JoinLadderRequest> = {
 };
 
 function createBaseJoinLadderResponse(): JoinLadderResponse {
-  return { success: false, message: "" };
+  return {};
 }
 
 export const JoinLadderResponse: MessageFns<JoinLadderResponse> = {
-  encode(message: JoinLadderResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.success !== false) {
-      writer.uint32(8).bool(message.success);
-    }
-    if (message.message !== "") {
-      writer.uint32(18).string(message.message);
-    }
+  encode(_: JoinLadderResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     return writer;
   },
 
@@ -669,22 +659,6 @@ export const JoinLadderResponse: MessageFns<JoinLadderResponse> = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 8) {
-            break;
-          }
-
-          message.success = reader.bool();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.message = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -694,31 +668,20 @@ export const JoinLadderResponse: MessageFns<JoinLadderResponse> = {
     return message;
   },
 
-  fromJSON(object: any): JoinLadderResponse {
-    return {
-      success: isSet(object.success) ? globalThis.Boolean(object.success) : false,
-      message: isSet(object.message) ? globalThis.String(object.message) : "",
-    };
+  fromJSON(_: any): JoinLadderResponse {
+    return {};
   },
 
-  toJSON(message: JoinLadderResponse): unknown {
+  toJSON(_: JoinLadderResponse): unknown {
     const obj: any = {};
-    if (message.success !== false) {
-      obj.success = message.success;
-    }
-    if (message.message !== "") {
-      obj.message = message.message;
-    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<JoinLadderResponse>, I>>(base?: I): JoinLadderResponse {
     return JoinLadderResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<JoinLadderResponse>, I>>(object: I): JoinLadderResponse {
+  fromPartial<I extends Exact<DeepPartial<JoinLadderResponse>, I>>(_: I): JoinLadderResponse {
     const message = createBaseJoinLadderResponse();
-    message.success = object.success ?? false;
-    message.message = object.message ?? "";
     return message;
   },
 };
