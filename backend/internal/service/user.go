@@ -137,18 +137,6 @@ func (s *User) UpdateUser(
 	isPublic bool,
 	paths []string,
 ) (*domain.User, error) {
-	hasPath := func(p string) bool {
-		if len(paths) == 0 {
-			return true
-		}
-		for _, path := range paths {
-			if path == p {
-				return true
-			}
-		}
-		return false
-	}
-
 	// Get existing user to preserve other fields
 	existingUser, err := s.userRepo.GetUser(ctx, id)
 	if err != nil {
@@ -156,40 +144,28 @@ func (s *User) UpdateUser(
 	}
 
 	// Validate & Update fields
-	if hasPath("first_name") {
-		if len(firstName) == 0 {
-			return nil, apperrors.ErrNameRequired
-		}
-		if goaway.IsProfane(firstName) {
-			return nil, apperrors.ErrProfanityDetected
+	if hasFieldPath(paths, "first_name") {
+		if err := validateName(firstName); err != nil {
+			return nil, err
 		}
 		existingUser.FirstName = firstName
 	}
 
-	if hasPath("last_name") {
-		if len(lastName) == 0 {
-			return nil, apperrors.ErrNameRequired
-		}
-		if goaway.IsProfane(lastName) {
-			return nil, apperrors.ErrProfanityDetected
+	if hasFieldPath(paths, "last_name") {
+		if err := validateName(lastName); err != nil {
+			return nil, err
 		}
 		existingUser.LastName = lastName
 	}
 
-	if hasPath("website") {
-		if website != "" {
-			if len(website) > 200 {
-				return nil, apperrors.ErrInvalidWebsiteFormat
-			}
-			u, err := url.ParseRequestURI(website)
-			if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
-				return nil, apperrors.ErrInvalidWebsiteFormat
-			}
+	if hasFieldPath(paths, "website") {
+		if err := validateWebsite(website); err != nil {
+			return nil, err
 		}
 		existingUser.Website = website
 	}
 
-	if hasPath("is_public") {
+	if hasFieldPath(paths, "is_public") {
 		existingUser.IsPublic = isPublic
 	}
 
@@ -198,6 +174,45 @@ func (s *User) UpdateUser(
 	}
 
 	return existingUser, nil
+}
+
+func hasFieldPath(paths []string, p string) bool {
+	if len(paths) == 0 {
+		return true
+	}
+	for _, path := range paths {
+		if path == p {
+			return true
+		}
+	}
+
+	return false
+}
+
+func validateName(name string) error {
+	if len(name) == 0 {
+		return apperrors.ErrNameRequired
+	}
+	if goaway.IsProfane(name) {
+		return apperrors.ErrProfanityDetected
+	}
+
+	return nil
+}
+
+func validateWebsite(website string) error {
+	if website == "" {
+		return nil
+	}
+	if len(website) > 200 {
+		return apperrors.ErrInvalidWebsiteFormat
+	}
+	u, err := url.ParseRequestURI(website)
+	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+		return apperrors.ErrInvalidWebsiteFormat
+	}
+
+	return nil
 }
 
 // GetPublicProfile retrieves a user's public profile if enabled, for the active ladder.
