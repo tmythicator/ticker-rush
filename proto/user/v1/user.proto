@@ -4,6 +4,7 @@ package user.v1;
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
@@ -54,6 +55,22 @@ message User {
   bool is_participating = 12;
 }
 
+// Public representation of a user profile.
+message PublicProfile {
+  // Username of the account.
+  string username = 1;
+  // First name of the user.
+  string first_name = 2;
+  // Last name of the user.
+  string last_name = 3;
+  // Optional website URL.
+  string website = 4;
+  // Current cash balance in USD.
+  double balance = 5;
+  // Current stock portfolio holdings.
+  map<string, PortfolioItem> portfolio = 6;
+}
+
 // PortfolioItem represents a single stock holding in a user's portfolio.
 message PortfolioItem {
   // The stock ticker symbol.
@@ -96,6 +113,8 @@ message UpdateUserRequest {
   string website = 3;
   // Sets whether the profile is public.
   bool is_public = 4;
+  // Field mask to specify which fields should be updated.
+  google.protobuf.FieldMask update_mask = 5;
 }
 
 // Response containing the updated profile.
@@ -145,7 +164,7 @@ message GetPublicProfileRequest {
 // Response containing the public profile.
 message GetPublicProfileResponse {
   // Public details of the user.
-  User user = 1;
+  PublicProfile profile = 1;
 }
 
 // UserService manages account registration, authentication, logout, and profile updates.

@@ -3,6 +3,7 @@ syntax = "proto3";
 package exchange.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 import "ladder/v1/ladder.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
@@ -36,8 +37,8 @@ message Quote {
   double change = 3;
   // Percentage price change compared to the previous close.
   double change_percent = 4;
-  // Unix timestamp of the price update in seconds.
-  int64 timestamp = 5;
+  // Timestamp of the price update.
+  google.protobuf.Timestamp timestamp = 5;
   // Price data provider source.
   string source = 6;
   // Indicates if the market is closed for this stock.
@@ -151,10 +152,6 @@ message CreateTradeRequest {
 
 // Response payload for a trade transaction.
 message CreateTradeResponse {
-  // Whether the transaction succeeded.
-  bool success = 1;
-  // Status or error message.
-  string message = 2;
   // Updated standing and portfolio of the participant.
-  ladder.v1.LadderParticipant participant = 3;
+  ladder.v1.LadderParticipant participant = 1;
 }
