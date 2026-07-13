@@ -6,7 +6,7 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { User } from "../../user/v1/user";
+import { PublicProfile } from "../../user/v1/user";
 
 export const protobufPackage = "leaderboard.v1";
 
@@ -14,7 +14,7 @@ export const protobufPackage = "leaderboard.v1";
 export interface LeaderboardEntry {
   /** User profile of the participant. */
   user:
-    | User
+    | PublicProfile
     | undefined;
   /** Current rank standing. */
   rank: number;
@@ -47,7 +47,7 @@ function createBaseLeaderboardEntry(): LeaderboardEntry {
 export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
   encode(message: LeaderboardEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.user !== undefined) {
-      User.encode(message.user, writer.uint32(10).fork()).join();
+      PublicProfile.encode(message.user, writer.uint32(10).fork()).join();
     }
     if (message.rank !== 0) {
       writer.uint32(16).int32(message.rank);
@@ -70,7 +70,7 @@ export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
             break;
           }
 
-          message.user = User.decode(reader, reader.uint32());
+          message.user = PublicProfile.decode(reader, reader.uint32());
           continue;
         }
         case 2: {
@@ -100,7 +100,7 @@ export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
 
   fromJSON(object: any): LeaderboardEntry {
     return {
-      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
+      user: isSet(object.user) ? PublicProfile.fromJSON(object.user) : undefined,
       rank: isSet(object.rank) ? globalThis.Number(object.rank) : 0,
       score: isSet(object.score) ? globalThis.Number(object.score) : 0,
     };
@@ -109,7 +109,7 @@ export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
   toJSON(message: LeaderboardEntry): unknown {
     const obj: any = {};
     if (message.user !== undefined) {
-      obj.user = User.toJSON(message.user);
+      obj.user = PublicProfile.toJSON(message.user);
     }
     if (message.rank !== 0) {
       obj.rank = Math.round(message.rank);
@@ -125,7 +125,9 @@ export const LeaderboardEntry: MessageFns<LeaderboardEntry> = {
   },
   fromPartial<I extends Exact<DeepPartial<LeaderboardEntry>, I>>(object: I): LeaderboardEntry {
     const message = createBaseLeaderboardEntry();
-    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.user = (object.user !== undefined && object.user !== null)
+      ? PublicProfile.fromPartial(object.user)
+      : undefined;
     message.rank = object.rank ?? 0;
     message.score = object.score ?? 0;
     return message;

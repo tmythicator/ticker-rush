@@ -58,6 +58,8 @@ export interface PublicProfile {
   balance: number;
   /** Current stock portfolio holdings. */
   portfolio: { [key: string]: PortfolioItem };
+  /** Whether the profile is public. */
+  is_public: boolean;
 }
 
 export interface PublicProfile_PortfolioEntry {
@@ -527,7 +529,7 @@ export const User_PortfolioEntry: MessageFns<User_PortfolioEntry> = {
 };
 
 function createBasePublicProfile(): PublicProfile {
-  return { username: "", first_name: "", last_name: "", website: "", balance: 0, portfolio: {} };
+  return { username: "", first_name: "", last_name: "", website: "", balance: 0, portfolio: {}, is_public: false };
 }
 
 export const PublicProfile: MessageFns<PublicProfile> = {
@@ -550,6 +552,9 @@ export const PublicProfile: MessageFns<PublicProfile> = {
     globalThis.Object.entries(message.portfolio).forEach(([key, value]: [string, PortfolioItem]) => {
       PublicProfile_PortfolioEntry.encode({ key: key as any, value }, writer.uint32(50).fork()).join();
     });
+    if (message.is_public !== false) {
+      writer.uint32(56).bool(message.is_public);
+    }
     return writer;
   },
 
@@ -611,6 +616,14 @@ export const PublicProfile: MessageFns<PublicProfile> = {
           }
           continue;
         }
+        case 7: {
+          if (tag !== 56) {
+            break;
+          }
+
+          message.is_public = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -644,6 +657,11 @@ export const PublicProfile: MessageFns<PublicProfile> = {
           {},
         )
         : {},
+      is_public: isSet(object.isPublic)
+        ? globalThis.Boolean(object.isPublic)
+        : isSet(object.is_public)
+        ? globalThis.Boolean(object.is_public)
+        : false,
     };
   },
 
@@ -673,6 +691,9 @@ export const PublicProfile: MessageFns<PublicProfile> = {
         });
       }
     }
+    if (message.is_public !== false) {
+      obj.isPublic = message.is_public;
+    }
     return obj;
   },
 
@@ -695,6 +716,7 @@ export const PublicProfile: MessageFns<PublicProfile> = {
       },
       {},
     );
+    message.is_public = object.is_public ?? false;
     return message;
   },
 };

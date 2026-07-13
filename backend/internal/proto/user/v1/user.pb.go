@@ -176,7 +176,9 @@ type PublicProfile struct {
 	// Current cash balance in USD.
 	Balance float64 `protobuf:"fixed64,5,opt,name=balance,proto3" json:"balance,omitempty"`
 	// Current stock portfolio holdings.
-	Portfolio     map[string]*PortfolioItem `protobuf:"bytes,6,rep,name=portfolio,proto3" json:"portfolio,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Portfolio map[string]*PortfolioItem `protobuf:"bytes,6,rep,name=portfolio,proto3" json:"portfolio,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Whether the profile is public.
+	IsPublic      bool `protobuf:"varint,7,opt,name=is_public,json=isPublic,proto3" json:"is_public,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -251,6 +253,13 @@ func (x *PublicProfile) GetPortfolio() map[string]*PortfolioItem {
 		return x.Portfolio
 	}
 	return nil
+}
+
+func (x *PublicProfile) GetIsPublic() bool {
+	if x != nil {
+		return x.IsPublic
+	}
+	return false
 }
 
 // PortfolioItem represents a single stock holding in a user's portfolio.
@@ -945,7 +954,7 @@ var File_user_v1_user_proto protoreflect.FileDescriptor
 
 const file_user_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x12user/v1/user.proto\x12\auser.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\xe5\x03\n" +
+	"\x12user/v1/user.proto\x12\auser.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\xe5\x03\n" +
 	"\x04User\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x1d\n" +
 	"\n" +
@@ -963,7 +972,7 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\x10is_participating\x18\f \x01(\bR\x0fisParticipating\x1aT\n" +
 	"\x0ePortfolioEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
-	"\x05value\x18\x02 \x01(\v2\x16.user.v1.PortfolioItemR\x05value:\x028\x01J\x04\b\x01\x10\x02\"\xb6\x02\n" +
+	"\x05value\x18\x02 \x01(\v2\x16.user.v1.PortfolioItemR\x05value:\x028\x01J\x04\b\x01\x10\x02\"\xd3\x02\n" +
 	"\rPublicProfile\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1d\n" +
 	"\n" +
@@ -971,37 +980,39 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\tlast_name\x18\x03 \x01(\tR\blastName\x12\x18\n" +
 	"\awebsite\x18\x04 \x01(\tR\awebsite\x12\x18\n" +
 	"\abalance\x18\x05 \x01(\x01R\abalance\x12C\n" +
-	"\tportfolio\x18\x06 \x03(\v2%.user.v1.PublicProfile.PortfolioEntryR\tportfolio\x1aT\n" +
+	"\tportfolio\x18\x06 \x03(\v2%.user.v1.PublicProfile.PortfolioEntryR\tportfolio\x12\x1b\n" +
+	"\tis_public\x18\a \x01(\bR\bisPublic\x1aT\n" +
 	"\x0ePortfolioEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
 	"\x05value\x18\x02 \x01(\v2\x16.user.v1.PortfolioItemR\x05value:\x028\x01\"s\n" +
 	"\rPortfolioItem\x12!\n" +
 	"\fstock_symbol\x18\x01 \x01(\tR\vstockSymbol\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x01R\bquantity\x12#\n" +
-	"\raverage_price\x18\x03 \x01(\x01R\faveragePrice\"\xc4\x01\n" +
-	"\x11CreateUserRequest\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1d\n" +
+	"\raverage_price\x18\x03 \x01(\x01R\faveragePrice\"\xdd\x01\n" +
+	"\x11CreateUserRequest\x12\x1f\n" +
+	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
+	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x02R\bpassword\x12\"\n" +
 	"\n" +
-	"first_name\x18\x03 \x01(\tR\tfirstName\x12\x1b\n" +
-	"\tlast_name\x18\x04 \x01(\tR\blastName\x12\x18\n" +
-	"\awebsite\x18\x05 \x01(\tR\awebsite\x12!\n" +
-	"\fagb_accepted\x18\x06 \x01(\bR\vagbAccepted\"7\n" +
+	"first_name\x18\x03 \x01(\tB\x03\xe0A\x02R\tfirstName\x12 \n" +
+	"\tlast_name\x18\x04 \x01(\tB\x03\xe0A\x02R\blastName\x12\x18\n" +
+	"\awebsite\x18\x05 \x01(\tR\awebsite\x12&\n" +
+	"\fagb_accepted\x18\x06 \x01(\bB\x03\xe0A\x02R\vagbAccepted\"7\n" +
 	"\x12CreateUserResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"\xc3\x01\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"\xe0\x04\n" +
 	"\x11UpdateUserRequest\x12\x1d\n" +
 	"\n" +
 	"first_name\x18\x01 \x01(\tR\tfirstName\x12\x1b\n" +
 	"\tlast_name\x18\x02 \x01(\tR\blastName\x12\x18\n" +
 	"\awebsite\x18\x03 \x01(\tR\awebsite\x12\x1b\n" +
-	"\tis_public\x18\x04 \x01(\bR\bisPublic\x12;\n" +
-	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"7\n" +
+	"\tis_public\x18\x04 \x01(\bR\bisPublic\x12\xac\x01\n" +
+	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskBo\x92Al2OField mask indicating which fields to update (e.g. { \"paths\": [\"first_name\"] })J\x19{\"paths\": [\"first_name\"]}R\n" +
+	"updateMask:\xa8\x02\x92A\xa4\x02\n" +
+	"\x88\x01*\x11UpdateUserRequest2sRequest payload for updating the user profile. Only the fields specified in the update_mask paths will be modified.2\x96\x01{\"first_name\": \"John\", \"last_name\": \"Doe\", \"website\": \"https://example.com\", \"is_public\": true, \"update_mask\": {\"paths\": [\"first_name\", \"last_name\"]}}\"7\n" +
 	"\x12UpdateUserResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"F\n" +
-	"\fLoginRequest\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"2\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"P\n" +
+	"\fLoginRequest\x12\x1f\n" +
+	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
+	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x02R\bpassword\"2\n" +
 	"\rLoginResponse\x12!\n" +
 	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"\x0f\n" +
 	"\rLogoutRequest\"*\n" +
@@ -1009,9 +1020,9 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\amessage\x18\x01 \x01(\tR\amessage\"\x0e\n" +
 	"\fGetMeRequest\"2\n" +
 	"\rGetMeResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"5\n" +
-	"\x17GetPublicProfileRequest\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\"L\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\":\n" +
+	"\x17GetPublicProfileRequest\x12\x1f\n" +
+	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\"L\n" +
 	"\x18GetPublicProfileResponse\x120\n" +
 	"\aprofile\x18\x01 \x01(\v2\x16.user.v1.PublicProfileR\aprofile2\x86\x05\n" +
 	"\vUserService\x12_\n" +
