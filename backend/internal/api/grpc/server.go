@@ -4,9 +4,13 @@ package grpc
 import (
 	"context"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"github.com/tmythicator/ticker-rush/backend/internal/api/handler"
 	"github.com/tmythicator/ticker-rush/backend/internal/api/middleware"
 	"github.com/tmythicator/ticker-rush/backend/internal/proto/exchange/v1"
+	"github.com/tmythicator/ticker-rush/backend/internal/proto/ladder/v1"
 	"github.com/tmythicator/ticker-rush/backend/internal/service"
 )
 
@@ -16,16 +20,19 @@ type ExchangeServer struct {
 
 	tradeService  *service.Trade
 	marketService *service.Market
+	userService   *service.User
 }
 
 // NewExchangeServer creates a new instance of ExchangeServer.
 func NewExchangeServer(
 	tradeService *service.Trade,
 	marketService *service.Market,
+	userService *service.User,
 ) *ExchangeServer {
 	return &ExchangeServer{
 		tradeService:  tradeService,
 		marketService: marketService,
+		userService:   userService,
 	}
 }
 
@@ -57,20 +64,27 @@ func (s *ExchangeServer) CreateTrade(
 		return nil, err
 	}
 
-	var msg string
-	if req.GetAction() == exchange.TradeAction_BUY {
+	switch req.GetAction() {
+	case exchange.TradeAction_BUY:
 		_, err = s.tradeService.BuyStock(ctx, userID, req.GetSymbol(), req.GetQuantity())
-		msg = "Stock bought successfully"
-	} else if req.GetAction() == exchange.TradeAction_SELL {
+	case exchange.TradeAction_SELL:
 		_, err = s.tradeService.SellStock(ctx, userID, req.GetSymbol(), req.GetQuantity())
-		msg = "Stock sold successfully"
-	} else {
-		return &exchange.CreateTradeResponse{Success: false, Message: "Invalid trade action"}, nil
+	default:
+		return nil, status.Error(codes.InvalidArgument, "Invalid trade action")
 	}
 
 	if err != nil {
-		return &exchange.CreateTradeResponse{Success: false, Message: err.Error()}, nil
+		return nil, err
 	}
 
-	return &exchange.CreateTradeResponse{Success: true, Message: msg}, nil
+	fullUser, err := s.userService.GetUserWithPortfolio(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &exchange.CreateTradeResponse{
+		Participant: &ladder.LadderParticipant{
+			User: handler.ToExternalUser(fullUser),
+		},
+	}, nil
 }
