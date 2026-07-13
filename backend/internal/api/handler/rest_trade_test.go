@@ -25,15 +25,15 @@ func TestBuyStock(t *testing.T) {
 		expectedBalance float64 = balance - price*quantity
 	)
 
-	router, mr, pool := setupTestRouter(t)
-	defer mr.Close()
-	defer pool.Close()
+	env := setupTestEnv(t)
+	defer env.MiniRedis.Close()
+	defer env.DB.Close()
 
 	quote := &redisRepo.ValkeyQuote{Symbol: symbol, Price: price, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
-	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
+	env.ValkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
 
-	user, token, activeLadderID := setupJoinedUser(ctx, t, router, balance)
+	user, token, activeLadderID := env.setupJoinedUser(t, balance)
 
 	reqBodyObj := &exchange.CreateTradeRequest{
 		Symbol:   symbol,
@@ -44,7 +44,7 @@ func TestBuyStock(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/trades", bytes.NewReader(reqBytes))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
-	router.ServeHTTP(w, req)
+	env.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -61,20 +61,20 @@ func TestBuyStock(t *testing.T) {
 	assert.Equal(t, expectedBalance, userMap["balance"])
 	assertPublicProfilePrivacy(t, userMap)
 
-	updatedUser, _ := userRepo.GetUser(ctx, user.ID)
+	updatedUser, _ := env.UserRepo.GetUser(ctx, user.ID)
 	assert.Equal(t, testUsername, updatedUser.Username)
-	balanceVal, _ := userRepo.GetUserBalance(ctx, user.ID, activeLadderID)
+	balanceVal, _ := env.UserRepo.GetUserBalance(ctx, user.ID, activeLadderID)
 	assert.Equal(t, expectedBalance, balanceVal.InexactFloat64())
 
-	item, err := portfolioRepo.GetPortfolioItem(ctx, user.ID, activeLadderID, symbol)
+	item, err := env.PortfolioRepo.GetPortfolioItem(ctx, user.ID, activeLadderID, symbol)
 	assert.NoError(t, err)
 	assert.Equal(t, quantity, item.Quantity.InexactFloat64())
 }
 
 func TestSellStock(t *testing.T) {
-	router, mr, pool := setupTestRouter(t)
-	defer mr.Close()
-	defer pool.Close()
+	env := setupTestEnv(t)
+	defer env.MiniRedis.Close()
+	defer env.DB.Close()
 
 	const (
 		mockPrice                 float64 = 150.0
@@ -87,11 +87,11 @@ func TestSellStock(t *testing.T) {
 
 	quote := &redisRepo.ValkeyQuote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
-	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
+	env.ValkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
 
-	user, token, activeLadderID := setupJoinedUser(ctx, t, router, mockStartBalance)
+	user, token, activeLadderID := env.setupJoinedUser(t, mockStartBalance)
 
-	err := portfolioRepo.SetPortfolioItem(
+	err := env.PortfolioRepo.SetPortfolioItem(
 		ctx,
 		user.ID,
 		activeLadderID,
@@ -110,7 +110,7 @@ func TestSellStock(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/trades", bytes.NewReader(reqBytes))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
-	router.ServeHTTP(w, req)
+	env.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -127,18 +127,18 @@ func TestSellStock(t *testing.T) {
 	assert.Equal(t, expectedBalance, userMap["balance"])
 	assertPublicProfilePrivacy(t, userMap)
 
-	balanceVal, _ := userRepo.GetUserBalance(ctx, user.ID, activeLadderID)
+	balanceVal, _ := env.UserRepo.GetUserBalance(ctx, user.ID, activeLadderID)
 	assert.Equal(t, expectedBalance, balanceVal.InexactFloat64())
 
-	item, err := portfolioRepo.GetPortfolioItem(ctx, user.ID, activeLadderID, "AAPL")
+	item, err := env.PortfolioRepo.GetPortfolioItem(ctx, user.ID, activeLadderID, "AAPL")
 	assert.NoError(t, err)
 	assert.Equal(t, expectedPortfolioQuantity, item.Quantity.InexactFloat64())
 }
 
 func TestInsufficientFunds(t *testing.T) {
-	router, mr, pool := setupTestRouter(t)
-	defer mr.Close()
-	defer pool.Close()
+	env := setupTestEnv(t)
+	defer env.MiniRedis.Close()
+	defer env.DB.Close()
 
 	const (
 		mockPrice        = 151.0
@@ -148,9 +148,9 @@ func TestInsufficientFunds(t *testing.T) {
 
 	quote := &redisRepo.ValkeyQuote{Symbol: "AAPL", Price: mockPrice, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
-	valkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
+	env.ValkeyClient.Set(ctx, "market:AAPL", quoteBytes, 0)
 
-	_, token, _ := setupJoinedUser(ctx, t, router, mockStartBalance)
+	_, token, _ := env.setupJoinedUser(t, mockStartBalance)
 
 	reqBodyObj := &exchange.CreateTradeRequest{
 		Symbol:   "AAPL",
@@ -161,7 +161,7 @@ func TestInsufficientFunds(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/trades", bytes.NewReader(reqBytes))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
-	router.ServeHTTP(w, req)
+	env.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusPaymentRequired, w.Code)
 	assert.Equal(t, "application/problem+json", w.Header().Get("Content-Type"))
@@ -182,17 +182,17 @@ func TestSellAllStock(t *testing.T) {
 		mockExpectedBalance float64 = mockStartBalance + mockSellQuantity*mockPrice
 	)
 
-	router, mr, pool := setupTestRouter(t)
-	defer mr.Close()
-	defer pool.Close()
+	env := setupTestEnv(t)
+	defer env.MiniRedis.Close()
+	defer env.DB.Close()
 
 	quote := &redisRepo.ValkeyQuote{Symbol: symbol, Price: mockPrice, Timestamp: time.Now().Unix()}
 	quoteBytes, _ := json.Marshal(quote)
-	valkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
+	env.ValkeyClient.Set(ctx, "market:"+symbol, quoteBytes, 0)
 
-	user, token, activeLadderID := setupJoinedUser(ctx, t, router, mockStartBalance)
+	user, token, activeLadderID := env.setupJoinedUser(t, mockStartBalance)
 
-	err := portfolioRepo.SetPortfolioItem(ctx, user.ID, activeLadderID, symbol, decimal.NewFromFloat(mockQuantity), decimal.NewFromFloat(mockPrice))
+	err := env.PortfolioRepo.SetPortfolioItem(ctx, user.ID, activeLadderID, symbol, decimal.NewFromFloat(mockQuantity), decimal.NewFromFloat(mockPrice))
 	assert.NoError(t, err)
 
 	reqBodyObj := &exchange.CreateTradeRequest{
@@ -204,13 +204,13 @@ func TestSellAllStock(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/trades", bytes.NewReader(reqBytes))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
-	router.ServeHTTP(w, req)
+	env.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	balanceVal, _ := userRepo.GetUserBalance(ctx, user.ID, activeLadderID)
+	balanceVal, _ := env.UserRepo.GetUserBalance(ctx, user.ID, activeLadderID)
 	assert.Equal(t, mockExpectedBalance, balanceVal.InexactFloat64())
 
-	_, err = portfolioRepo.GetPortfolioItem(ctx, user.ID, activeLadderID, symbol)
+	_, err = env.PortfolioRepo.GetPortfolioItem(ctx, user.ID, activeLadderID, symbol)
 	assert.Error(t, err)
 }

@@ -18,9 +18,9 @@ import (
 )
 
 func TestCreateUser(t *testing.T) {
-	router, mr, pool := setupTestRouter(t)
-	defer mr.Close()
-	defer pool.Close()
+	env := setupTestEnv(t)
+	defer env.MiniRedis.Close()
+	defer env.DB.Close()
 
 	reqBody := fmt.Sprintf(
 		`{"username": "%s", "password": "password123", "first_name": "Test", "last_name": "User", "agb_accepted": true}`,
@@ -28,7 +28,7 @@ func TestCreateUser(t *testing.T) {
 	)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/users", bytes.NewBufferString(reqBody))
-	router.ServeHTTP(w, req)
+	env.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -37,20 +37,20 @@ func TestCreateUser(t *testing.T) {
 	err := json.Unmarshal(w.Body.Bytes(), &resp)
 	assert.NoError(t, err)
 
-	userObj, _, err := userRepo.GetUserByUsername(ctx, resp.GetUser().GetUsername())
+	userObj, _, err := env.UserRepo.GetUserByUsername(ctx, resp.GetUser().GetUsername())
 	assert.NoError(t, err)
 	assert.Equal(t, testUsername, userObj.Username)
 }
 
 func TestCreateUser_AgbNotAccepted(t *testing.T) {
-	router, mr, pool := setupTestRouter(t)
-	defer mr.Close()
-	defer pool.Close()
+	env := setupTestEnv(t)
+	defer env.MiniRedis.Close()
+	defer env.DB.Close()
 
 	reqBody := `{"username": "test_user_2", "password": "password123", "first_name": "Test", "last_name": "User", "agb_accepted": false}`
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/users", bytes.NewBufferString(reqBody))
-	router.ServeHTTP(w, req)
+	env.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	assert.Equal(t, "application/problem+json", w.Header().Get("Content-Type"))
@@ -62,12 +62,12 @@ func TestCreateUser_AgbNotAccepted(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
-	router, mr, pool := setupTestRouter(t)
-	defer mr.Close()
-	defer pool.Close()
+	env := setupTestEnv(t)
+	defer env.MiniRedis.Close()
+	defer env.DB.Close()
 
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
-	_, err := userRepo.CreateUser(ctx, service.CreateUserParams{
+	_, err := env.UserRepo.CreateUser(ctx, service.CreateUserParams{
 		Username:      testUsername,
 		PasswordHash:  string(hashedPassword),
 		FirstName:     "Test",
@@ -81,7 +81,7 @@ func TestLogin(t *testing.T) {
 	reqBody := fmt.Sprintf(`{"username": "%s", "password": "password123"}`, testUsername)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/sessions", bytes.NewBufferString(reqBody))
-	router.ServeHTTP(w, req)
+	env.Router.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	cookies := w.Result().Cookies()
@@ -108,16 +108,16 @@ func TestLogin(t *testing.T) {
 }
 
 func TestLogout(t *testing.T) {
-	router, mr, pool := setupTestRouter(t)
-	defer mr.Close()
-	defer pool.Close()
+	env := setupTestEnv(t)
+	defer env.MiniRedis.Close()
+	defer env.DB.Close()
 
-	_, token, _ := setupJoinedUser(ctx, t, router, 10000.0)
+	_, token, _ := env.setupJoinedUser(t, 10000.0)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodDelete, "/api/v1/sessions", nil)
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
-	router.ServeHTTP(w, req)
+	env.Router.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	cookies := w.Result().Cookies()
