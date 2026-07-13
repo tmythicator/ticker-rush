@@ -39,7 +39,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config, rateLimitRepo m
 
 	engine.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{fmt.Sprintf("http://localhost:%d", cfg.ClientPort)},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset", "Retry-After"},
 		AllowCredentials: true,
@@ -65,7 +65,7 @@ func NewRouter(handler *handler.RestHandler, cfg *config.Config, rateLimitRepo m
 			protected.GET("/quotes/events", handler.StreamQuotes)
 			protected.GET("/quotes/:symbol", handler.GetQuote)
 			protected.GET("/profile", handler.GetMe)
-			protected.PUT("/profile", handler.UpdateUser)
+			protected.PATCH("/profile", handler.UpdateUser)
 			protected.POST("/trades", handler.CreateTrade)
 		}
 	}

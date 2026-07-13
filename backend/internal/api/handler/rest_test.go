@@ -533,7 +533,7 @@ func TestUpdateUser_Privacy(t *testing.T) {
 	// 3. Update to Public
 	reqBody := `{"first_name": "Privacy", "last_name": "Tester", "website": "", "is_public": true}`
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/api/v1/profile", bytes.NewBufferString(reqBody))
+	req, _ := http.NewRequest(http.MethodPatch, "/api/v1/profile", bytes.NewBufferString(reqBody))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 
@@ -547,7 +547,7 @@ func TestUpdateUser_Privacy(t *testing.T) {
 	// 4. Update back to Private
 	reqBody = `{"first_name": "Privacy", "last_name": "Tester", "website": "", "is_public": false}`
 	w = httptest.NewRecorder()
-	req, _ = http.NewRequest(http.MethodPut, "/api/v1/profile", bytes.NewBufferString(reqBody))
+	req, _ = http.NewRequest(http.MethodPatch, "/api/v1/profile", bytes.NewBufferString(reqBody))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
 	router.ServeHTTP(w, req)
 

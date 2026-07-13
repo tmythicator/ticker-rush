@@ -74,6 +74,19 @@ export const api = {
     }
     return res.json();
   },
+  patch: async <T>(endpoint: string, body: unknown): Promise<T> => {
+    const res = await fetch(`${API_URL}${endpoint}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      await handleResponseError(res);
+    }
+    return res.json();
+  },
   delete: async <T = void>(endpoint: string): Promise<T> => {
     const res = await fetch(`${API_URL}${endpoint}`, {
       method: 'DELETE',
@@ -149,7 +162,7 @@ export const getHistory = async (req: GetHistoryRequest): Promise<Quote[]> => {
 };
 
 export const updateUser = async (req: UpdateUserRequest): Promise<User> => {
-  const json = await api.put('/profile', req);
+  const json = await api.patch('/profile', req);
   const { user } = UpdateUserResponse.fromJSON(json);
   if (!user) throw new Error('Update failed');
   return user;

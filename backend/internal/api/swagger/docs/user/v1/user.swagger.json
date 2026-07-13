@@ -44,7 +44,7 @@
           }
         ]
       },
-      "put": {
+      "patch": {
         "summary": "UpdateUser modifies the profile attributes of the authenticated user.",
         "operationId": "UserService_UpdateUser",
         "responses": {

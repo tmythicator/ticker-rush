@@ -1030,7 +1030,7 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"UpdateUser\x12\x1a.user.v1.UpdateUserRequest\x1a\x1b.user.v1.UpdateUserResponse\"/\x92A\x12b\x10\n" +
 	"\x0e\n" +
 	"\n" +
-	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x14:\x01*\x1a\x0f/api/v1/profile\x12y\n" +
+	"CookieAuth\x12\x00\x82\xd3\xe4\x93\x02\x14:\x01*2\x0f/api/v1/profile\x12y\n" +
 	"\x10GetPublicProfile\x12 .user.v1.GetPublicProfileRequest\x1a!.user.v1.GetPublicProfileResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/api/v1/users/{username}B\x87\x02\x92A\xbb\x01\x12d\n" +
 	"\x10User Service API\x12IAPI for managing user registration, authentication, and profile settings.2\x051.0.0ZS\n" +
 	"Q\n" +
