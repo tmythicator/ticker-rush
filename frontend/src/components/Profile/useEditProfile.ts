@@ -14,7 +14,7 @@ export const useEditProfile = (onClose: () => void) => {
     handleSubmit,
     setValue,
     control,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = useForm<UpdateUserFormData>({
     resolver: zodResolver(updateUserSchema),
     defaultValues: {
@@ -28,13 +28,21 @@ export const useEditProfile = (onClose: () => void) => {
   const isPublic = useWatch({ control, name: 'isPublic' });
 
   const mutation = useMutation({
-    mutationFn: (data: UpdateUserFormData) =>
-      updateUser({
+    mutationFn: (data: UpdateUserFormData) => {
+      const paths: string[] = [];
+      if (dirtyFields.firstName) paths.push('first_name');
+      if (dirtyFields.lastName) paths.push('last_name');
+      if (dirtyFields.website) paths.push('website');
+      if (dirtyFields.isPublic) paths.push('is_public');
+
+      return updateUser({
         first_name: data.firstName,
         last_name: data.lastName,
         website: data.website || '',
         is_public: data.isPublic,
-      }),
+        update_mask: (paths.length > 0 ? { paths } : undefined) as any,
+      });
+    },
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(['user'], updatedUser);
       queryClient.invalidateQueries({ queryKey: ['user'] });

@@ -26,7 +26,7 @@ export const mockActiveQuote: Quote = {
   price: 150.0,
   change: 1.5,
   change_percent: 1.0,
-  timestamp: new Date().toISOString(),
+  timestamp: new Date(),
   source: 'Finnhub',
   is_closed: false,
 };

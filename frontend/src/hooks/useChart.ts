@@ -161,7 +161,8 @@ export const useChart = ({ chartContainerRef, quote, symbol, options }: UseChart
   useEffect(() => {
     if (quote && seriesRef.current && symbol) {
       try {
-        const parsedTime = parseInt(quote.timestamp, 10) as UTCTimestamp;
+        if (!quote.timestamp) return;
+        const parsedTime = Math.floor(quote.timestamp.getTime() / 1000) as UTCTimestamp;
         seriesRef.current.update({
           time: parsedTime,
           value: quote.price,
