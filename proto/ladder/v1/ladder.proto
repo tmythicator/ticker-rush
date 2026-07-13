@@ -3,6 +3,7 @@ syntax = "proto3";
 package ladder.v1;
 
 import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
@@ -31,43 +32,43 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 // Competition cycle or season.
 message Ladder {
   // Unique database identifier.
-  int64 id = 1;
+  int64 id = 1 [(google.api.field_behavior) = REQUIRED];
   // Name of the competition.
-  string name = 2;
+  string name = 2 [(google.api.field_behavior) = REQUIRED];
   // Type of competition cycle (weekly or monthly).
-  string type = 3;
+  string type = 3 [(google.api.field_behavior) = REQUIRED];
   // Start time of the competition.
-  google.protobuf.Timestamp start_time = 4;
+  google.protobuf.Timestamp start_time = 4 [(google.api.field_behavior) = REQUIRED];
   // End time of the competition.
-  google.protobuf.Timestamp end_time = 5;
+  google.protobuf.Timestamp end_time = 5 [(google.api.field_behavior) = REQUIRED];
   // Whether the ladder is currently active.
-  bool is_active = 6;
+  bool is_active = 6 [(google.api.field_behavior) = REQUIRED];
   // Creation timestamp of the ladder.
-  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp created_at = 7 [(google.api.field_behavior) = REQUIRED];
   // Starting cash balance allocated to participants.
-  double initial_balance = 8;
+  double initial_balance = 8 [(google.api.field_behavior) = REQUIRED];
   // List of stock tickers allowed in this competition.
-  repeated TickerInfo allowed_tickers = 9;
+  repeated TickerInfo allowed_tickers = 9 [(google.api.field_behavior) = REQUIRED];
 }
 
 // Configuration of an allowed stock in the ladder.
 message TickerInfo {
   // Stock ticker symbol.
-  string symbol = 1;
+  string symbol = 1 [(google.api.field_behavior) = REQUIRED];
   // Source provider for market data.
-  string source = 2;
+  string source = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // User standing and status in a ladder.
 message LadderParticipant {
   // Identifier of the ladder.
-  int64 ladder_id = 1;
+  int64 ladder_id = 1 [(google.api.field_behavior) = REQUIRED];
   // User profile of the participant.
-  user.v1.User user = 2;
+  user.v1.PublicProfile user = 2 [(google.api.field_behavior) = REQUIRED];
   // Final rank in the ladder (set after completion).
   int32 final_rank = 3;
   // Timestamp when the user joined.
-  google.protobuf.Timestamp joined_at = 4;
+  google.protobuf.Timestamp joined_at = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
 // Request to retrieve active ladder.

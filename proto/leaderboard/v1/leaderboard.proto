@@ -3,6 +3,7 @@ syntax = "proto3";
 package leaderboard.v1;
 
 import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "user/v1/user.proto";
 
@@ -18,11 +19,11 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 // Single participant standing on the leaderboard.
 message LeaderboardEntry {
   // User profile of the participant.
-  user.v1.User user = 1;
+  user.v1.PublicProfile user = 1 [(google.api.field_behavior) = REQUIRED];
   // Current rank standing.
-  int32 rank = 2;
+  int32 rank = 2 [(google.api.field_behavior) = REQUIRED];
   // Current score or net worth value.
-  double score = 3;
+  double score = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // Request to fetch the leaderboard.
@@ -36,11 +37,11 @@ message GetLeaderboardRequest {
 // Response containing the leaderboard standings.
 message GetLeaderboardResponse {
   // Ranked leaderboard entries.
-  repeated LeaderboardEntry entries = 1;
+  repeated LeaderboardEntry entries = 1 [(google.api.field_behavior) = REQUIRED];
   // Total number of participants.
-  int32 total_count = 2;
+  int32 total_count = 2 [(google.api.field_behavior) = REQUIRED];
   // Unix timestamp of the last cache update in seconds.
-  int64 last_update = 3;
+  int64 last_update = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // LeaderBoardService provides read access to the global participant standings.

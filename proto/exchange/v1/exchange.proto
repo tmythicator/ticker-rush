@@ -3,6 +3,7 @@ syntax = "proto3";
 package exchange.v1;
 
 import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
 import "google/protobuf/timestamp.proto";
 import "ladder/v1/ladder.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
@@ -98,7 +99,7 @@ service ExchangeService {
 // Request to fetch a stock quote.
 message GetQuoteRequest {
   // Stock ticker symbol.
-  string symbol = 1;
+  string symbol = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 // Response containing the stock quote.
@@ -110,7 +111,7 @@ message GetQuoteResponse {
 // Request to retrieve price history.
 message GetHistoryRequest {
   // Stock ticker symbol.
-  string symbol = 1;
+  string symbol = 1 [(google.api.field_behavior) = REQUIRED];
   // Maximum number of historical records to return.
   int32 limit = 2;
 }
@@ -143,11 +144,11 @@ enum TradeAction {
 // Request payload to place a trade.
 message CreateTradeRequest {
   // Stock ticker symbol to trade.
-  string symbol = 1;
+  string symbol = 1 [(google.api.field_behavior) = REQUIRED];
   // Quantity of shares to trade.
-  double quantity = 2;
+  double quantity = 2 [(google.api.field_behavior) = REQUIRED];
   // Action to perform (Buy or Sell).
-  TradeAction action = 3;
+  TradeAction action = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // Response payload for a trade transaction.
