@@ -125,12 +125,10 @@ message UpdateUserRequest {
   // Sets whether the profile is public.
   bool is_public = 4;
   // Field mask to specify which fields should be updated.
-  google.protobuf.FieldMask update_mask = 5 [
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      description: "Field mask indicating which fields to update (e.g. { \"paths\": [\"first_name\"] })",
-      example: "{\"paths\": [\"first_name\"]}"
-    }
-  ];
+  google.protobuf.FieldMask update_mask = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+    description: "Field mask indicating which fields to update (e.g. { \"paths\": [\"first_name\"] })"
+    example: "{\"paths\": [\"first_name\"]}"
+  }];
 }
 
 // Response containing the updated profile.
