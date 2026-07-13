@@ -44,6 +44,32 @@
           }
         ]
       },
+      "delete": {
+        "summary": "DeleteUser permanently deletes (anonymizes) the authenticated user's account.",
+        "operationId": "UserService_DeleteUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
+        ],
+        "security": [
+          {
+            "CookieAuth": []
+          }
+        ]
+      },
       "patch": {
         "summary": "UpdateUser modifies the profile attributes of the authenticated user.",
         "operationId": "UserService_UpdateUser",
@@ -284,6 +310,10 @@
         }
       },
       "description": "Response containing the registered user."
+    },
+    "v1DeleteUserResponse": {
+      "type": "object",
+      "description": "Response for DeleteUser."
     },
     "v1GetMeResponse": {
       "type": "object",

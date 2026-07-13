@@ -12,6 +12,22 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+const anonymizeUser = `-- name: AnonymizeUser :exec
+UPDATE users
+SET username = 'deleted_' || substring(md5(random()::text) from 1 for 12),
+    password_hash = 'DELETED',
+    first_name = 'Deleted',
+    last_name = 'User',
+    website = '',
+    is_public = false
+WHERE id = $1
+`
+
+func (q *Queries) AnonymizeUser(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, anonymizeUser, id)
+	return err
+}
+
 const banUser = `-- name: BanUser :exec
 UPDATE users
 SET is_banned = TRUE

@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"regexp"
 	"slices"
+	"strings"
 	"time"
 
 	goaway "github.com/TwiN/go-away"
@@ -47,6 +48,7 @@ type UserRepo interface {
 	UpdateUserBalance(ctx context.Context, userID int64, ladderID int64, balance decimal.Decimal) error
 	GetUserBalance(ctx context.Context, userID int64, ladderID int64) (decimal.Decimal, error)
 	GetUserWithPortfolioForActiveLadder(ctx context.Context, id int64) (*domain.User, error)
+	AnonymizeUser(ctx context.Context, id int64) error
 	WithTx(tx Transaction) UserRepo
 }
 
@@ -220,20 +222,41 @@ func (s *User) GetPublicProfile(ctx context.Context, username string) (*domain.U
 	targetUser, _, err := s.userRepo.GetUserByUsername(ctx, username)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, apperrors.ErrUserNotFound
+			return nil, apperrors.ErrPublicProfileNotFoundOrPrivate
 		}
 
 		return nil, err
 	}
 
 	if !targetUser.IsPublic {
-		return nil, apperrors.ErrUserNotFound
+		return nil, apperrors.ErrPublicProfileNotFoundOrPrivate
 	}
 
 	return s.GetUserWithPortfolio(ctx, targetUser.ID)
 }
 
+// AnonymizeUser scrubs user personal data for account deletion.
+func (s *User) AnonymizeUser(ctx context.Context, id int64) error {
+	return s.userRepo.AnonymizeUser(ctx, id)
+}
+
+// isDeletedUsername returns true if the username indicates an anonymized/deleted account.
+func isDeletedUsername(username string) bool {
+	return strings.HasPrefix(strings.ToLower(username), "deleted")
+}
+
+// isBlockedUsername returns true if the username is a reserved/blocked system name.
+func isBlockedUsername(username string) bool {
+	blockedNames := []string{"admin", "administrator", "system", "mod", "moderator", "support", "help"}
+
+	return slices.Contains(blockedNames, strings.ToLower(username))
+}
+
 func validateUserParams(username, password, firstName, lastName string, agbAccepted bool) error {
+	if isDeletedUsername(username) || isBlockedUsername(username) {
+		return apperrors.ErrUsernameNotAllowed
+	}
+
 	if !agbAccepted {
 		return apperrors.ErrAGBNotAccepted
 	}
@@ -255,11 +278,6 @@ func validateUserParams(username, password, firstName, lastName string, agbAccep
 
 	if goaway.IsProfane(username) || goaway.IsProfane(firstName) || goaway.IsProfane(lastName) {
 		return apperrors.ErrProfanityDetected
-	}
-
-	blockedNames := []string{"admin", "administrator", "system", "mod", "moderator", "support", "help"}
-	if slices.Contains(blockedNames, username) {
-		return apperrors.ErrUsernameNotAllowed
 	}
 
 	return nil

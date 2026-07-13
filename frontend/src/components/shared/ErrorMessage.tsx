@@ -13,8 +13,12 @@ export const ErrorMessage = ({
   variant = 'sm',
   ...props
 }: ErrorMessageProps) => {
-  const content = message || children;
+  let content = message || children;
   if (!content) return null;
+
+  if (typeof content === 'string' && content.length > 0) {
+    content = content.charAt(0).toUpperCase() + content.slice(1);
+  }
 
   return (
     <div

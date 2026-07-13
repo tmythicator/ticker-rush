@@ -2,9 +2,11 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/shopspring/decimal"
@@ -220,4 +222,24 @@ func (r *User) GetUserWithPortfolioForActiveLadder(ctx context.Context, userID i
 	}
 
 	return fetchedUser, nil
+}
+
+// AnonymizeUser scrubs user personal data for account deletion.
+func (r *User) AnonymizeUser(ctx context.Context, id int64) error {
+	var err error
+	// Five tries for random username generation (if collision occurs)
+	for i := 0; i < 5; i++ {
+		err = r.queries.AnonymizeUser(ctx, id)
+		if err == nil {
+			return nil
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			continue
+		}
+
+		return err
+	}
+
+	return err
 }

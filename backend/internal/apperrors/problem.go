@@ -75,18 +75,23 @@ func MatchError(err error) (int, string, string) {
 		errors.Is(err, ErrUsernameNotAllowed),
 		errors.Is(err, ErrInvalidWebsiteFormat),
 		errors.Is(err, ErrInvalidQuantity),
-		errors.Is(err, ErrAlreadyJoinedLadder):
+		errors.Is(err, ErrAlreadyJoinedLadder),
+		errors.Is(err, ErrInvalidRequestBody),
+		errors.Is(err, ErrUsernameRequired),
+		errors.Is(err, ErrSymbolRequired),
+		errors.Is(err, ErrInvalidTradeAction):
 		return http.StatusBadRequest, TypeValidation, err.Error()
 
 	case errors.Is(err, ErrAuthRequired),
-		errors.Is(err, ErrInvalidToken):
+		errors.Is(err, ErrInvalidToken),
+		errors.Is(err, ErrInvalidCredentials):
 		return http.StatusUnauthorized, TypeAuthRequired, err.Error()
 
 	case errors.Is(err, ErrNotJoinedLadder),
 		errors.Is(err, ErrLadderNotActive):
 		return http.StatusForbidden, TypeForbidden, err.Error()
 
-	case errors.Is(err, ErrUserNotFound),
+	case errors.Is(err, ErrPublicProfileNotFoundOrPrivate),
 		errors.Is(err, ErrSymbolNotAllowed):
 		return http.StatusNotFound, TypeNotFound, err.Error()
 
@@ -98,6 +103,12 @@ func MatchError(err error) (int, string, string) {
 
 	case errors.Is(err, ErrMarketClosed):
 		return http.StatusForbidden, TypeMarketClosed, err.Error()
+
+	case errors.Is(err, ErrMarketDataWarmingUp):
+		return http.StatusServiceUnavailable, TypeInternalError, err.Error()
+
+	case errors.Is(err, ErrInternalAuthConfigurationError):
+		return http.StatusInternalServerError, TypeInternalError, err.Error()
 
 	default:
 		return http.StatusInternalServerError, TypeInternalError, err.Error()

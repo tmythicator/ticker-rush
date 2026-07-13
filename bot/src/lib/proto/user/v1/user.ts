@@ -165,6 +165,14 @@ export interface GetPublicProfileResponse {
   profile: PublicProfile | undefined;
 }
 
+/** Request to delete (anonymize) the user's own profile. */
+export interface DeleteUserRequest {
+}
+
+/** Response for DeleteUser. */
+export interface DeleteUserResponse {
+}
+
 function createBaseUser(): User {
   return {
     username: "",
@@ -1757,6 +1765,92 @@ export const GetPublicProfileResponse: MessageFns<GetPublicProfileResponse> = {
     message.profile = (object.profile !== undefined && object.profile !== null)
       ? PublicProfile.fromPartial(object.profile)
       : undefined;
+    return message;
+  },
+};
+
+function createBaseDeleteUserRequest(): DeleteUserRequest {
+  return {};
+}
+
+export const DeleteUserRequest: MessageFns<DeleteUserRequest> = {
+  encode(_: DeleteUserRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteUserRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteUserRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): DeleteUserRequest {
+    return {};
+  },
+
+  toJSON(_: DeleteUserRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DeleteUserRequest>, I>>(base?: I): DeleteUserRequest {
+    return DeleteUserRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DeleteUserRequest>, I>>(_: I): DeleteUserRequest {
+    const message = createBaseDeleteUserRequest();
+    return message;
+  },
+};
+
+function createBaseDeleteUserResponse(): DeleteUserResponse {
+  return {};
+}
+
+export const DeleteUserResponse: MessageFns<DeleteUserResponse> = {
+  encode(_: DeleteUserResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): DeleteUserResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteUserResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): DeleteUserResponse {
+    return {};
+  },
+
+  toJSON(_: DeleteUserResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DeleteUserResponse>, I>>(base?: I): DeleteUserResponse {
+    return DeleteUserResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DeleteUserResponse>, I>>(_: I): DeleteUserResponse {
+    const message = createBaseDeleteUserResponse();
     return message;
   },
 };

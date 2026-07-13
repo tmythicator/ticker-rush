@@ -12,6 +12,7 @@ import { FormInput } from '@/components/shared/FormInput';
 import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { useEditProfile } from './useEditProfile';
 import { ProfileVisibilityToggle } from './ProfileVisibilityToggle';
+import { DeleteProfileSection } from './DeleteProfileSection';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -75,6 +76,8 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
                 checkboxProps={register('isPublic')}
               />
             </div>
+
+            <DeleteProfileSection onSuccess={onClose} />
 
             {isError && (
               <ErrorMessage

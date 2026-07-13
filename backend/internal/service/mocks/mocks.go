@@ -137,6 +137,13 @@ func (m *MockUserRepository) WithTx(tx service.Transaction) service.UserRepo {
 	return args.Get(0).(service.UserRepo)
 }
 
+// AnonymizeUser mocks scrubbing user profile data.
+func (m *MockUserRepository) AnonymizeUser(ctx context.Context, id int64) error {
+	args := m.Called(ctx, id)
+
+	return args.Error(0)
+}
+
 // MockPortfolioRepository is a mock implementation of PortfolioRepository.
 type MockPortfolioRepository struct {
 	mock.Mock
