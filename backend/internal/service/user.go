@@ -240,8 +240,19 @@ func (s *User) AnonymizeUser(ctx context.Context, id int64) error {
 	return s.userRepo.AnonymizeUser(ctx, id)
 }
 
+// isDeletedUsername returns true if the username indicates an anonymized/deleted account.
+func isDeletedUsername(username string) bool {
+	return strings.HasPrefix(strings.ToLower(username), "deleted")
+}
+
+// isBlockedUsername returns true if the username is a reserved/blocked system name.
+func isBlockedUsername(username string) bool {
+	blockedNames := []string{"admin", "administrator", "system", "mod", "moderator", "support", "help"}
+	return slices.Contains(blockedNames, strings.ToLower(username))
+}
+
 func validateUserParams(username, password, firstName, lastName string, agbAccepted bool) error {
-	if strings.HasPrefix(strings.ToLower(username), "deleted") {
+	if isDeletedUsername(username) || isBlockedUsername(username) {
 		return apperrors.ErrUsernameNotAllowed
 	}
 
@@ -266,11 +277,6 @@ func validateUserParams(username, password, firstName, lastName string, agbAccep
 
 	if goaway.IsProfane(username) || goaway.IsProfane(firstName) || goaway.IsProfane(lastName) {
 		return apperrors.ErrProfanityDetected
-	}
-
-	blockedNames := []string{"admin", "administrator", "system", "mod", "moderator", "support", "help"}
-	if slices.Contains(blockedNames, username) || strings.HasPrefix(strings.ToLower(username), "deleted_user") {
-		return apperrors.ErrUsernameNotAllowed
 	}
 
 	return nil
