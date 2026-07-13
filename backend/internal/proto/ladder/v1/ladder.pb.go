@@ -205,7 +205,7 @@ type LadderParticipant struct {
 	// Identifier of the ladder.
 	LadderId int64 `protobuf:"varint,1,opt,name=ladder_id,json=ladderId,proto3" json:"ladder_id,omitempty"`
 	// User profile of the participant.
-	User *v1.User `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
+	User *v1.PublicProfile `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
 	// Final rank in the ladder (set after completion).
 	FinalRank int32 `protobuf:"varint,3,opt,name=final_rank,json=finalRank,proto3" json:"final_rank,omitempty"`
 	// Timestamp when the user joined.
@@ -251,7 +251,7 @@ func (x *LadderParticipant) GetLadderId() int64 {
 	return 0
 }
 
-func (x *LadderParticipant) GetUser() *v1.User {
+func (x *LadderParticipant) GetUser() *v1.PublicProfile {
 	if x != nil {
 		return x.User
 	}
@@ -433,29 +433,29 @@ var File_ladder_v1_ladder_proto protoreflect.FileDescriptor
 
 const file_ladder_v1_ladder_proto_rawDesc = "" +
 	"\n" +
-	"\x16ladder/v1/ladder.proto\x12\tladder.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x12user/v1/user.proto\"\xf3\x02\n" +
-	"\x06Ladder\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
-	"\x04type\x18\x03 \x01(\tR\x04type\x129\n" +
+	"\x16ladder/v1/ladder.proto\x12\tladder.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x12user/v1/user.proto\"\xa0\x03\n" +
+	"\x06Ladder\x12\x13\n" +
+	"\x02id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x02id\x12\x17\n" +
+	"\x04name\x18\x02 \x01(\tB\x03\xe0A\x02R\x04name\x12\x17\n" +
+	"\x04type\x18\x03 \x01(\tB\x03\xe0A\x02R\x04type\x12>\n" +
 	"\n" +
-	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12\x1b\n" +
-	"\tis_active\x18\x06 \x01(\bR\bisActive\x129\n" +
+	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime\x12:\n" +
+	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\aendTime\x12 \n" +
+	"\tis_active\x18\x06 \x01(\bB\x03\xe0A\x02R\bisActive\x12>\n" +
 	"\n" +
-	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12'\n" +
-	"\x0finitial_balance\x18\b \x01(\x01R\x0einitialBalance\x12>\n" +
-	"\x0fallowed_tickers\x18\t \x03(\v2\x15.ladder.v1.TickerInfoR\x0eallowedTickers\"<\n" +
+	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tcreatedAt\x12,\n" +
+	"\x0finitial_balance\x18\b \x01(\x01B\x03\xe0A\x02R\x0einitialBalance\x12C\n" +
+	"\x0fallowed_tickers\x18\t \x03(\v2\x15.ladder.v1.TickerInfoB\x03\xe0A\x02R\x0eallowedTickers\"F\n" +
 	"\n" +
-	"TickerInfo\x12\x16\n" +
-	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x16\n" +
-	"\x06source\x18\x02 \x01(\tR\x06source\"\xab\x01\n" +
-	"\x11LadderParticipant\x12\x1b\n" +
-	"\tladder_id\x18\x01 \x01(\x03R\bladderId\x12!\n" +
-	"\x04user\x18\x02 \x01(\v2\r.user.v1.UserR\x04user\x12\x1d\n" +
+	"TickerInfo\x12\x1b\n" +
+	"\x06symbol\x18\x01 \x01(\tB\x03\xe0A\x02R\x06symbol\x12\x1b\n" +
+	"\x06source\x18\x02 \x01(\tB\x03\xe0A\x02R\x06source\"\xc3\x01\n" +
+	"\x11LadderParticipant\x12 \n" +
+	"\tladder_id\x18\x01 \x01(\x03B\x03\xe0A\x02R\bladderId\x12/\n" +
+	"\x04user\x18\x02 \x01(\v2\x16.user.v1.PublicProfileB\x03\xe0A\x02R\x04user\x12\x1d\n" +
 	"\n" +
-	"final_rank\x18\x03 \x01(\x05R\tfinalRank\x127\n" +
-	"\tjoined_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\bjoinedAt\"\x18\n" +
+	"final_rank\x18\x03 \x01(\x05R\tfinalRank\x12<\n" +
+	"\tjoined_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\bjoinedAt\"\x18\n" +
 	"\x16GetActiveLadderRequest\"D\n" +
 	"\x17GetActiveLadderResponse\x12)\n" +
 	"\x06ladder\x18\x01 \x01(\v2\x11.ladder.v1.LadderR\x06ladder\"\x13\n" +
@@ -496,14 +496,14 @@ var file_ladder_v1_ladder_proto_goTypes = []any{
 	(*JoinLadderRequest)(nil),       // 5: ladder.v1.JoinLadderRequest
 	(*JoinLadderResponse)(nil),      // 6: ladder.v1.JoinLadderResponse
 	(*timestamppb.Timestamp)(nil),   // 7: google.protobuf.Timestamp
-	(*v1.User)(nil),                 // 8: user.v1.User
+	(*v1.PublicProfile)(nil),        // 8: user.v1.PublicProfile
 }
 var file_ladder_v1_ladder_proto_depIdxs = []int32{
 	7, // 0: ladder.v1.Ladder.start_time:type_name -> google.protobuf.Timestamp
 	7, // 1: ladder.v1.Ladder.end_time:type_name -> google.protobuf.Timestamp
 	7, // 2: ladder.v1.Ladder.created_at:type_name -> google.protobuf.Timestamp
 	1, // 3: ladder.v1.Ladder.allowed_tickers:type_name -> ladder.v1.TickerInfo
-	8, // 4: ladder.v1.LadderParticipant.user:type_name -> user.v1.User
+	8, // 4: ladder.v1.LadderParticipant.user:type_name -> user.v1.PublicProfile
 	7, // 5: ladder.v1.LadderParticipant.joined_at:type_name -> google.protobuf.Timestamp
 	0, // 6: ladder.v1.GetActiveLadderResponse.ladder:type_name -> ladder.v1.Ladder
 	3, // 7: ladder.v1.LadderService.GetActiveLadder:input_type -> ladder.v1.GetActiveLadderRequest

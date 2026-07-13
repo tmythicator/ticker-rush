@@ -226,7 +226,12 @@
           "description": "Action to perform (Buy or Sell)."
         }
       },
-      "description": "Request payload to place a trade."
+      "description": "Request payload to place a trade.",
+      "required": [
+        "symbol",
+        "quantity",
+        "action"
+      ]
     },
     "v1CreateTradeResponse": {
       "type": "object",
@@ -271,7 +276,7 @@
           "description": "Identifier of the ladder."
         },
         "user": {
-          "$ref": "#/definitions/v1User",
+          "$ref": "#/definitions/v1PublicProfile",
           "description": "User profile of the participant."
         },
         "finalRank": {
@@ -285,7 +290,12 @@
           "description": "Timestamp when the user joined."
         }
       },
-      "description": "User standing and status in a ladder."
+      "description": "User standing and status in a ladder.",
+      "required": [
+        "ladderId",
+        "user",
+        "joinedAt"
+      ]
     },
     "v1PortfolioItem": {
       "type": "object",
@@ -306,6 +316,44 @@
         }
       },
       "description": "PortfolioItem represents a single stock holding in a user's portfolio."
+    },
+    "v1PublicProfile": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "Username of the account."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "Last name of the user."
+        },
+        "website": {
+          "type": "string",
+          "description": "Optional website URL."
+        },
+        "balance": {
+          "type": "number",
+          "format": "double",
+          "description": "Current cash balance in USD."
+        },
+        "portfolio": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1PortfolioItem"
+          },
+          "description": "Current stock portfolio holdings."
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Whether the profile is public."
+        }
+      },
+      "description": "Public representation of a user profile."
     },
     "v1Quote": {
       "type": "object",
@@ -364,61 +412,6 @@
       ],
       "default": "UNSPECIFIED",
       "description": "Trade action type (Buy or Sell)."
-    },
-    "v1User": {
-      "type": "object",
-      "properties": {
-        "username": {
-          "type": "string",
-          "description": "Username of the account."
-        },
-        "firstName": {
-          "type": "string",
-          "description": "First name of the user."
-        },
-        "lastName": {
-          "type": "string",
-          "description": "Last name of the user."
-        },
-        "website": {
-          "type": "string",
-          "description": "Optional website URL."
-        },
-        "isPublic": {
-          "type": "boolean",
-          "description": "Whether the profile and portfolio are public."
-        },
-        "isAdmin": {
-          "type": "boolean",
-          "description": "Whether the user is an admin."
-        },
-        "isBanned": {
-          "type": "boolean",
-          "description": "Whether the user is banned."
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Creation timestamp of the account."
-        },
-        "balance": {
-          "type": "number",
-          "format": "double",
-          "description": "Current cash balance in USD."
-        },
-        "portfolio": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/v1PortfolioItem"
-          },
-          "description": "Current stock portfolio holdings."
-        },
-        "isParticipating": {
-          "type": "boolean",
-          "description": "Whether the user is participating in the current competition."
-        }
-      },
-      "description": "Player account profile."
     }
   },
   "securityDefinitions": {

@@ -1,6 +1,7 @@
 import { createTrade } from '@/lib/api';
 import { queryKeys } from '@/lib/queryKeys';
 import { TradeAction } from '@/types';
+import type { User } from '@/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UseTradeOptions {
@@ -21,8 +22,15 @@ export const useTrade = (options: UseTradeOptions) => {
 
       return createTrade({ symbol: options.symbol, quantity, action });
     },
-    onSuccess: (updatedUser) => {
-      queryClient.setQueryData(queryKeys.user.me, updatedUser);
+    onSuccess: (updatedProfile) => {
+      queryClient.setQueryData<User>(queryKeys.user.me, (oldUser) => {
+        if (!oldUser) return undefined;
+        return {
+          ...oldUser,
+          balance: updatedProfile.balance,
+          portfolio: updatedProfile.portfolio,
+        };
+      });
       options.onSuccess?.();
     },
   });

@@ -296,7 +296,7 @@ func (h *RestHandler) CreateTrade(c *gin.Context) {
 
 	c.JSON(http.StatusOK, &exchange.CreateTradeResponse{
 		Participant: &ladder.LadderParticipant{
-			User: ToExternalUser(fullUser),
+			User: ToExternalPublicProfile(fullUser),
 		},
 	})
 }

@@ -28,7 +28,7 @@ const (
 type LeaderboardEntry struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// User profile of the participant.
-	User *v1.User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	User *v1.PublicProfile `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	// Current rank standing.
 	Rank int32 `protobuf:"varint,2,opt,name=rank,proto3" json:"rank,omitempty"`
 	// Current score or net worth value.
@@ -67,7 +67,7 @@ func (*LeaderboardEntry) Descriptor() ([]byte, []int) {
 	return file_leaderboard_v1_leaderboard_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *LeaderboardEntry) GetUser() *v1.User {
+func (x *LeaderboardEntry) GetUser() *v1.PublicProfile {
 	if x != nil {
 		return x.User
 	}
@@ -211,19 +211,19 @@ var File_leaderboard_v1_leaderboard_proto protoreflect.FileDescriptor
 
 const file_leaderboard_v1_leaderboard_proto_rawDesc = "" +
 	"\n" +
-	" leaderboard/v1/leaderboard.proto\x12\x0eleaderboard.v1\x1a\x1cgoogle/api/annotations.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x12user/v1/user.proto\"_\n" +
-	"\x10LeaderboardEntry\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\x12\x12\n" +
-	"\x04rank\x18\x02 \x01(\x05R\x04rank\x12\x14\n" +
-	"\x05score\x18\x03 \x01(\x01R\x05score\"E\n" +
+	" leaderboard/v1/leaderboard.proto\x12\x0eleaderboard.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\x1a\x12user/v1/user.proto\"w\n" +
+	"\x10LeaderboardEntry\x12/\n" +
+	"\x04user\x18\x01 \x01(\v2\x16.user.v1.PublicProfileB\x03\xe0A\x02R\x04user\x12\x17\n" +
+	"\x04rank\x18\x02 \x01(\x05B\x03\xe0A\x02R\x04rank\x12\x19\n" +
+	"\x05score\x18\x03 \x01(\x01B\x03\xe0A\x02R\x05score\"E\n" +
 	"\x15GetLeaderboardRequest\x12\x14\n" +
 	"\x05limit\x18\x01 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x02 \x01(\x05R\x06offset\"\x96\x01\n" +
-	"\x16GetLeaderboardResponse\x12:\n" +
-	"\aentries\x18\x01 \x03(\v2 .leaderboard.v1.LeaderboardEntryR\aentries\x12\x1f\n" +
-	"\vtotal_count\x18\x02 \x01(\x05R\n" +
-	"totalCount\x12\x1f\n" +
-	"\vlast_update\x18\x03 \x01(\x03R\n" +
+	"\x06offset\x18\x02 \x01(\x05R\x06offset\"\xa5\x01\n" +
+	"\x16GetLeaderboardResponse\x12?\n" +
+	"\aentries\x18\x01 \x03(\v2 .leaderboard.v1.LeaderboardEntryB\x03\xe0A\x02R\aentries\x12$\n" +
+	"\vtotal_count\x18\x02 \x01(\x05B\x03\xe0A\x02R\n" +
+	"totalCount\x12$\n" +
+	"\vlast_update\x18\x03 \x01(\x03B\x03\xe0A\x02R\n" +
 	"lastUpdate2\x92\x01\n" +
 	"\x12LeaderBoardService\x12|\n" +
 	"\x0eGetLeaderboard\x12%.leaderboard.v1.GetLeaderboardRequest\x1a&.leaderboard.v1.GetLeaderboardResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/leaderboardB\xb5\x01\x92A\\\x12Z\n" +
@@ -246,10 +246,10 @@ var file_leaderboard_v1_leaderboard_proto_goTypes = []any{
 	(*LeaderboardEntry)(nil),       // 0: leaderboard.v1.LeaderboardEntry
 	(*GetLeaderboardRequest)(nil),  // 1: leaderboard.v1.GetLeaderboardRequest
 	(*GetLeaderboardResponse)(nil), // 2: leaderboard.v1.GetLeaderboardResponse
-	(*v1.User)(nil),                // 3: user.v1.User
+	(*v1.PublicProfile)(nil),       // 3: user.v1.PublicProfile
 }
 var file_leaderboard_v1_leaderboard_proto_depIdxs = []int32{
-	3, // 0: leaderboard.v1.LeaderboardEntry.user:type_name -> user.v1.User
+	3, // 0: leaderboard.v1.LeaderboardEntry.user:type_name -> user.v1.PublicProfile
 	0, // 1: leaderboard.v1.GetLeaderboardResponse.entries:type_name -> leaderboard.v1.LeaderboardEntry
 	1, // 2: leaderboard.v1.LeaderBoardService.GetLeaderboard:input_type -> leaderboard.v1.GetLeaderboardRequest
 	2, // 3: leaderboard.v1.LeaderBoardService.GetLeaderboard:output_type -> leaderboard.v1.GetLeaderboardResponse

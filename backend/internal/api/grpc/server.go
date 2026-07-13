@@ -84,7 +84,7 @@ func (s *ExchangeServer) CreateTrade(
 
 	return &exchange.CreateTradeResponse{
 		Participant: &ladder.LadderParticipant{
-			User: handler.ToExternalUser(fullUser),
+			User: handler.ToExternalPublicProfile(fullUser),
 		},
 	}, nil
 }

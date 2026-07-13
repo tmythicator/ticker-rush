@@ -64,7 +64,7 @@
         "parameters": [
           {
             "name": "body",
-            "description": "Request to update the current profile.",
+            "description": "Request payload for updating the user profile. Only the fields specified in the update_mask paths will be modified.",
             "in": "body",
             "required": true,
             "schema": {
@@ -266,7 +266,14 @@
           "description": "Accept terms of service flag."
         }
       },
-      "description": "Request to register a new user."
+      "description": "Request to register a new user.",
+      "required": [
+        "username",
+        "password",
+        "firstName",
+        "lastName",
+        "agbAccepted"
+      ]
     },
     "v1CreateUserResponse": {
       "type": "object",
@@ -310,7 +317,11 @@
           "description": "User's password."
         }
       },
-      "description": "Request to authenticate a user."
+      "description": "Request to authenticate a user.",
+      "required": [
+        "username",
+        "password"
+      ]
     },
     "v1LoginResponse": {
       "type": "object",
@@ -382,12 +393,28 @@
             "$ref": "#/definitions/v1PortfolioItem"
           },
           "description": "Current stock portfolio holdings."
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Whether the profile is public."
         }
       },
       "description": "Public representation of a user profile."
     },
     "v1UpdateUserRequest": {
       "type": "object",
+      "example": {
+        "first_name": "John",
+        "last_name": "Doe",
+        "website": "https://example.com",
+        "is_public": true,
+        "update_mask": {
+          "paths": [
+            "first_name",
+            "last_name"
+          ]
+        }
+      },
       "properties": {
         "firstName": {
           "type": "string",
@@ -407,10 +434,16 @@
         },
         "updateMask": {
           "type": "string",
-          "description": "Field mask to specify which fields should be updated."
+          "example": {
+            "paths": [
+              "first_name"
+            ]
+          },
+          "description": "Field mask indicating which fields to update (e.g. { \"paths\": [\"first_name\"] })"
         }
       },
-      "description": "Request to update the current profile."
+      "description": "Request payload for updating the user profile. Only the fields specified in the update_mask paths will be modified.",
+      "title": "UpdateUserRequest"
     },
     "v1UpdateUserResponse": {
       "type": "object",

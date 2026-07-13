@@ -99,7 +99,7 @@ func (s *Leaderboard) UpdateLeaderboard(ctx context.Context) error {
 }
 
 // GetLeaderboard retrieves a paginated list of top performing users from Redis/Valkey for the active ladder.
-func (s *Leaderboard) GetLeaderboard(ctx context.Context, offset, limit int) (*domain.LeaderboardResponse, error) {
+func (s *Leaderboard) GetLeaderboard(ctx context.Context, offset, limit int) (*domain.Leaderboard, error) {
 	ladderID, err := s.ladderRepo.GetActiveLadder(ctx)
 	if err != nil {
 		return nil, err
@@ -116,7 +116,7 @@ func (s *Leaderboard) GetLeaderboard(ctx context.Context, offset, limit int) (*d
 	}
 
 	if totalCount == 0 {
-		return &domain.LeaderboardResponse{
+		return &domain.Leaderboard{
 			Entries:    []domain.LeaderboardEntry{},
 			TotalCount: 0,
 			LastUpdate: lastUpdate,
@@ -147,7 +147,7 @@ func (s *Leaderboard) GetLeaderboard(ctx context.Context, offset, limit int) (*d
 		entries = append(entries, leadEntry)
 	}
 
-	return &domain.LeaderboardResponse{
+	return &domain.Leaderboard{
 		Entries:    entries,
 		TotalCount: int32(totalCount),
 		LastUpdate: lastUpdate,

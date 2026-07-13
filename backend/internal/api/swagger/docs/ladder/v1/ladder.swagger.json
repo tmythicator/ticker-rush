@@ -161,7 +161,18 @@
           "description": "List of stock tickers allowed in this competition."
         }
       },
-      "description": "Competition cycle or season."
+      "description": "Competition cycle or season.",
+      "required": [
+        "id",
+        "name",
+        "type",
+        "startTime",
+        "endTime",
+        "isActive",
+        "createdAt",
+        "initialBalance",
+        "allowedTickers"
+      ]
     },
     "v1TickerInfo": {
       "type": "object",
@@ -175,7 +186,11 @@
           "description": "Source provider for market data."
         }
       },
-      "description": "Configuration of an allowed stock in the ladder."
+      "description": "Configuration of an allowed stock in the ladder.",
+      "required": [
+        "symbol",
+        "source"
+      ]
     }
   },
   "securityDefinitions": {

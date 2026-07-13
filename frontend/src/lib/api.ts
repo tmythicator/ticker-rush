@@ -113,7 +113,7 @@ export const getUser = async (): Promise<User> => {
   return user;
 };
 
-export const createTrade = async (req: CreateTradeRequest): Promise<User> => {
+export const createTrade = async (req: CreateTradeRequest): Promise<PublicProfile> => {
   const json = await api.post('/trades', req);
   const { participant } = CreateTradeResponse.fromJSON(json);
   if (!participant?.user) throw new Error('Update failed');

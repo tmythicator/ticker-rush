@@ -574,7 +574,7 @@ var File_exchange_v1_exchange_proto protoreflect.FileDescriptor
 
 const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\n" +
-	"\x1aexchange/v1/exchange.proto\x12\vexchange.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16ladder/v1/ladder.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\xe3\x01\n" +
+	"\x1aexchange/v1/exchange.proto\x12\vexchange.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16ladder/v1/ladder.proto\x1a.protoc-gen-openapiv2/options/annotations.proto\"\xe3\x01\n" +
 	"\x05Quote\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x14\n" +
 	"\x05price\x18\x02 \x01(\x01R\x05price\x12\x16\n" +
@@ -582,24 +582,24 @@ const file_exchange_v1_exchange_proto_rawDesc = "" +
 	"\x0echange_percent\x18\x04 \x01(\x01R\rchangePercent\x128\n" +
 	"\ttimestamp\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12\x16\n" +
 	"\x06source\x18\x06 \x01(\tR\x06source\x12\x1b\n" +
-	"\tis_closed\x18\a \x01(\bR\bisClosed\")\n" +
-	"\x0fGetQuoteRequest\x12\x16\n" +
-	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"<\n" +
+	"\tis_closed\x18\a \x01(\bR\bisClosed\".\n" +
+	"\x0fGetQuoteRequest\x12\x1b\n" +
+	"\x06symbol\x18\x01 \x01(\tB\x03\xe0A\x02R\x06symbol\"<\n" +
 	"\x10GetQuoteResponse\x12(\n" +
-	"\x05quote\x18\x01 \x01(\v2\x12.exchange.v1.QuoteR\x05quote\"A\n" +
-	"\x11GetHistoryRequest\x12\x16\n" +
-	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x14\n" +
+	"\x05quote\x18\x01 \x01(\v2\x12.exchange.v1.QuoteR\x05quote\"F\n" +
+	"\x11GetHistoryRequest\x12\x1b\n" +
+	"\x06symbol\x18\x01 \x01(\tB\x03\xe0A\x02R\x06symbol\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\"B\n" +
 	"\x12GetHistoryResponse\x12,\n" +
 	"\ahistory\x18\x01 \x03(\v2\x12.exchange.v1.QuoteR\ahistory\"-\n" +
 	"\x13StreamQuotesRequest\x12\x16\n" +
 	"\x06symbol\x18\x01 \x01(\tR\x06symbol\"@\n" +
 	"\x14StreamQuotesResponse\x12(\n" +
-	"\x05quote\x18\x01 \x01(\v2\x12.exchange.v1.QuoteR\x05quote\"z\n" +
-	"\x12CreateTradeRequest\x12\x16\n" +
-	"\x06symbol\x18\x01 \x01(\tR\x06symbol\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\x01R\bquantity\x120\n" +
-	"\x06action\x18\x03 \x01(\x0e2\x18.exchange.v1.TradeActionR\x06action\"U\n" +
+	"\x05quote\x18\x01 \x01(\v2\x12.exchange.v1.QuoteR\x05quote\"\x89\x01\n" +
+	"\x12CreateTradeRequest\x12\x1b\n" +
+	"\x06symbol\x18\x01 \x01(\tB\x03\xe0A\x02R\x06symbol\x12\x1f\n" +
+	"\bquantity\x18\x02 \x01(\x01B\x03\xe0A\x02R\bquantity\x125\n" +
+	"\x06action\x18\x03 \x01(\x0e2\x18.exchange.v1.TradeActionB\x03\xe0A\x02R\x06action\"U\n" +
 	"\x13CreateTradeResponse\x12>\n" +
 	"\vparticipant\x18\x01 \x01(\v2\x1c.ladder.v1.LadderParticipantR\vparticipant*1\n" +
 	"\vTradeAction\x12\x0f\n" +

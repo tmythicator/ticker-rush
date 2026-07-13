@@ -7,7 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Timestamp } from "../../google/protobuf/timestamp";
-import { User } from "../../user/v1/user";
+import { PublicProfile } from "../../user/v1/user";
 
 export const protobufPackage = "ladder.v1";
 
@@ -53,7 +53,7 @@ export interface LadderParticipant {
   ladder_id: string;
   /** User profile of the participant. */
   user:
-    | User
+    | PublicProfile
     | undefined;
   /** Final rank in the ladder (set after completion). */
   final_rank: number;
@@ -387,7 +387,7 @@ export const LadderParticipant: MessageFns<LadderParticipant> = {
       writer.uint32(8).int64(message.ladder_id);
     }
     if (message.user !== undefined) {
-      User.encode(message.user, writer.uint32(18).fork()).join();
+      PublicProfile.encode(message.user, writer.uint32(18).fork()).join();
     }
     if (message.final_rank !== 0) {
       writer.uint32(24).int32(message.final_rank);
@@ -418,7 +418,7 @@ export const LadderParticipant: MessageFns<LadderParticipant> = {
             break;
           }
 
-          message.user = User.decode(reader, reader.uint32());
+          message.user = PublicProfile.decode(reader, reader.uint32());
           continue;
         }
         case 3: {
@@ -453,7 +453,7 @@ export const LadderParticipant: MessageFns<LadderParticipant> = {
         : isSet(object.ladder_id)
         ? globalThis.String(object.ladder_id)
         : "0",
-      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
+      user: isSet(object.user) ? PublicProfile.fromJSON(object.user) : undefined,
       final_rank: isSet(object.finalRank)
         ? globalThis.Number(object.finalRank)
         : isSet(object.final_rank)
@@ -473,7 +473,7 @@ export const LadderParticipant: MessageFns<LadderParticipant> = {
       obj.ladderId = message.ladder_id;
     }
     if (message.user !== undefined) {
-      obj.user = User.toJSON(message.user);
+      obj.user = PublicProfile.toJSON(message.user);
     }
     if (message.final_rank !== 0) {
       obj.finalRank = Math.round(message.final_rank);
@@ -490,7 +490,9 @@ export const LadderParticipant: MessageFns<LadderParticipant> = {
   fromPartial<I extends Exact<DeepPartial<LadderParticipant>, I>>(object: I): LadderParticipant {
     const message = createBaseLadderParticipant();
     message.ladder_id = object.ladder_id ?? "0";
-    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.user = (object.user !== undefined && object.user !== null)
+      ? PublicProfile.fromPartial(object.user)
+      : undefined;
     message.final_rank = object.final_rank ?? 0;
     message.joined_at = object.joined_at ?? undefined;
     return message;

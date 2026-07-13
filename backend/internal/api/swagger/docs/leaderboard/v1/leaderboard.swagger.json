@@ -110,13 +110,18 @@
           "description": "Unix timestamp of the last cache update in seconds."
         }
       },
-      "description": "Response containing the leaderboard standings."
+      "description": "Response containing the leaderboard standings.",
+      "required": [
+        "entries",
+        "totalCount",
+        "lastUpdate"
+      ]
     },
     "v1LeaderboardEntry": {
       "type": "object",
       "properties": {
         "user": {
-          "$ref": "#/definitions/v1User",
+          "$ref": "#/definitions/v1PublicProfile",
           "description": "User profile of the participant."
         },
         "rank": {
@@ -130,7 +135,12 @@
           "description": "Current score or net worth value."
         }
       },
-      "description": "Single participant standing on the leaderboard."
+      "description": "Single participant standing on the leaderboard.",
+      "required": [
+        "user",
+        "rank",
+        "score"
+      ]
     },
     "v1PortfolioItem": {
       "type": "object",
@@ -152,7 +162,7 @@
       },
       "description": "PortfolioItem represents a single stock holding in a user's portfolio."
     },
-    "v1User": {
+    "v1PublicProfile": {
       "type": "object",
       "properties": {
         "username": {
@@ -171,23 +181,6 @@
           "type": "string",
           "description": "Optional website URL."
         },
-        "isPublic": {
-          "type": "boolean",
-          "description": "Whether the profile and portfolio are public."
-        },
-        "isAdmin": {
-          "type": "boolean",
-          "description": "Whether the user is an admin."
-        },
-        "isBanned": {
-          "type": "boolean",
-          "description": "Whether the user is banned."
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Creation timestamp of the account."
-        },
         "balance": {
           "type": "number",
           "format": "double",
@@ -200,12 +193,12 @@
           },
           "description": "Current stock portfolio holdings."
         },
-        "isParticipating": {
+        "isPublic": {
           "type": "boolean",
-          "description": "Whether the user is participating in the current competition."
+          "description": "Whether the profile is public."
         }
       },
-      "description": "Player account profile."
+      "description": "Public representation of a user profile."
     }
   }
 }
