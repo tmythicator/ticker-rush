@@ -2,8 +2,11 @@ package handler_test
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
 
@@ -32,20 +35,11 @@ const (
 )
 
 var (
-	ctx                = context.Background()
-	valkeyClient       *redis.Client
-	dbPool             *pgxpool.Pool
-	ladderRepo         *postgreRepo.LadderRepository
-	userRepo           *postgreRepo.User
-	portfolioRepo      *postgreRepo.PortfolioRepository
-	marketRepo         *redisRepo.MarketRepository
-	userService        *service.User
-	tradeService       *service.Trade
-	marketService      *service.Market
-	leaderboardService *service.Leaderboard
+	ctx           = context.Background()
+	sharedConnStr string
 )
 
-func setupTestPostgres(t *testing.T) string {
+func TestMain(m *testing.M) {
 	dbName := "test_db"
 	dbUser := "test_user"
 	dbPassword := "test_password"
@@ -61,27 +55,48 @@ func setupTestPostgres(t *testing.T) string {
 				WithStartupTimeout(30*time.Second)),
 	)
 	if err != nil {
-		t.Fatalf("failed to start postgres container: %s", err)
+		log.Fatalf("failed to start postgres container: %s", err)
 	}
-
-	t.Cleanup(func() {
-		termErr := postgresContainer.Terminate(ctx)
-		if termErr != nil {
-			t.Fatalf("failed to terminate postgres container: %s", termErr)
-		}
-	})
 
 	connStr, err := postgresContainer.ConnectionString(ctx, "sslmode=disable")
 	if err != nil {
-		t.Fatalf("failed to get connection string: %s", err)
+		if termErr := postgresContainer.Terminate(ctx); termErr != nil {
+			log.Printf("failed to terminate postgres container: %s", termErr)
+		}
+		log.Fatalf("failed to get connection string: %s", err)
 	}
 
 	// Run Migrations (Embedded)
 	if err := db.Migrate(connStr, "", ""); err != nil {
-		t.Fatalf("failed to run migrations: %s", err)
+		if termErr := postgresContainer.Terminate(ctx); termErr != nil {
+			log.Printf("failed to terminate postgres container: %s", termErr)
+		}
+		log.Fatalf("failed to run migrations: %s", err)
 	}
 
-	return connStr
+	sharedConnStr = connStr
+
+	code := m.Run()
+
+	if termErr := postgresContainer.Terminate(ctx); termErr != nil {
+		log.Printf("failed to terminate postgres container: %s", termErr)
+	}
+	os.Exit(code)
+}
+
+type testEnv struct {
+	Router             *api.Router
+	MiniRedis          *miniredis.Miniredis
+	DB                 *pgxpool.Pool
+	ValkeyClient       *redis.Client
+	LadderRepo         *postgreRepo.LadderRepository
+	UserRepo           *postgreRepo.User
+	PortfolioRepo      *postgreRepo.PortfolioRepository
+	MarketRepo         *redisRepo.MarketRepository
+	UserService        *service.User
+	TradeService       *service.Trade
+	MarketService      *service.Market
+	LeaderboardService *service.Leaderboard
 }
 
 // MockHistoryRepository mocks the history storage.
@@ -92,40 +107,38 @@ func (m *MockHistoryRepository) SaveQuote(ctx context.Context, quote *domain.Quo
 }
 
 func (m *MockHistoryRepository) GetHistory(ctx context.Context, symbol string, limit int) ([]*domain.Quote, error) {
-	return nil, nil // Return empty history for tests
+	return nil, nil
 }
 
-func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.Pool) {
+func setupTestEnv(t *testing.T) *testEnv {
 	mr, _ := miniredis.Run()
-	valkeyClient = redis.NewClient(&redis.Options{
+	valkeyClient := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
 	})
 
-	connStr := setupTestPostgres(t)
-
-	var err error
-
-	dbPool, err = pgxpool.New(ctx, connStr)
+	dbPool, err := pgxpool.New(ctx, sharedConnStr)
 	if err != nil {
 		t.Fatalf("failed to connect to test db: %v", err)
 	}
 
+	// Truncate all tables to isolate test data
+	truncateTables(t, dbPool)
+
 	// Initialize Layers
-	ladderRepo = postgreRepo.NewLadderRepository(dbPool)
-	userRepo = postgreRepo.NewUser(dbPool)
-	portfolioRepo = postgreRepo.NewPortfolioRepository(dbPool)
-	marketRepo = redisRepo.NewMarketRepository(valkeyClient)
+	ladderRepo := postgreRepo.NewLadderRepository(dbPool)
+	userRepo := postgreRepo.NewUser(dbPool)
+	portfolioRepo := postgreRepo.NewPortfolioRepository(dbPool)
+	marketRepo := redisRepo.NewMarketRepository(valkeyClient)
 	leaderboardRepo := redisRepo.NewLeaderboardRepository(valkeyClient)
 	transactor := postgreRepo.NewPgxTransactor(dbPool)
 	historyRepo := &MockHistoryRepository{}
 	rlRepo := redisRepo.NewRateLimitter(valkeyClient)
 
-	userService = service.NewUser(userRepo, portfolioRepo, ladderRepo)
-	tradeService = service.NewTrade(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
+	userService := service.NewUser(userRepo, portfolioRepo, ladderRepo)
+	tradeService := service.NewTrade(userRepo, portfolioRepo, marketRepo, ladderRepo, transactor)
 	ladderService := service.NewLadder(ladderRepo)
-	leaderboardService = service.NewLeaderboard(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
-
-	marketService = service.NewMarket(marketRepo, historyRepo, ladderRepo)
+	leaderboardService := service.NewLeaderboard(userRepo, portfolioRepo, marketRepo, ladderRepo, leaderboardRepo)
+	marketService := service.NewMarket(marketRepo, historyRepo, ladderRepo)
 
 	cfg := &config.Config{
 		ServerPort: 8080,
@@ -135,18 +148,40 @@ func setupTestRouter(t *testing.T) (*api.Router, *miniredis.Miniredis, *pgxpool.
 
 	restHandler := handler.NewRestHandler(userService, tradeService, marketService, leaderboardService, ladderService, testSecret)
 
-	// Initialize Router
 	router, err := api.NewRouter(restHandler, cfg, rlRepo)
 	if err != nil {
 		t.Fatalf("Failed to create router: %v", err)
 	}
 
-	return router, mr, dbPool
+	return &testEnv{
+		Router:             router,
+		MiniRedis:          mr,
+		DB:                 dbPool,
+		ValkeyClient:       valkeyClient,
+		LadderRepo:         ladderRepo,
+		UserRepo:           userRepo,
+		PortfolioRepo:      portfolioRepo,
+		MarketRepo:         marketRepo,
+		UserService:        userService,
+		TradeService:       tradeService,
+		MarketService:      marketService,
+		LeaderboardService: leaderboardService,
+	}
+}
+
+func truncateTables(t *testing.T, db *pgxpool.Pool) {
+	tables := []string{"users"}
+	for _, table := range tables {
+		_, err := db.Exec(ctx, fmt.Sprintf("TRUNCATE TABLE %s CASCADE", table))
+		if err != nil {
+			t.Fatalf("failed to truncate table %s: %v", table, err)
+		}
+	}
 }
 
 // Helper to setup a user and join them to a ladder with a specific balance
-func setupJoinedUser(ctx context.Context, t *testing.T, r *api.Router, balance float64) (*domain.User, string, int64) {
-	createdUser, err := userRepo.CreateUser(ctx, service.CreateUserParams{
+func (env *testEnv) setupJoinedUser(t *testing.T, balance float64) (*domain.User, string, int64) {
+	createdUser, err := env.UserRepo.CreateUser(ctx, service.CreateUserParams{
 		Username:      testUsername,
 		PasswordHash:  "password123",
 		FirstName:     "Test",
@@ -159,26 +194,24 @@ func setupJoinedUser(ctx context.Context, t *testing.T, r *api.Router, balance f
 		t.Fatalf("Failed to create user: %v", err)
 	}
 
-	u, err := userRepo.GetUser(ctx, createdUser.ID)
+	u, err := env.UserRepo.GetUser(ctx, createdUser.ID)
 	if err != nil {
 		t.Fatalf("Failed to get user: %v", err)
 	}
 	token, _ := service.GenerateToken(u, testSecret)
 
-	// Join Ladder
 	wJoin := httptest.NewRecorder()
 	reqJoin, _ := http.NewRequest(http.MethodPost, "/api/v1/ladder/participants", nil)
 	reqJoin.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
-	r.ServeHTTP(wJoin, reqJoin)
+	env.Router.ServeHTTP(wJoin, reqJoin)
 	if wJoin.Code != http.StatusOK {
 		t.Fatalf("Failed to join ladder: %d %s", wJoin.Code, wJoin.Body.String())
 	}
 
-	activeLadderID, _ := ladderRepo.GetActiveLadder(ctx)
+	activeLadderID, _ := env.LadderRepo.GetActiveLadder(ctx)
 
-	// Override balance if needed
 	if balance != 10000.0 {
-		err = userRepo.UpdateUserBalance(ctx, u.ID, activeLadderID, decimal.NewFromFloat(balance))
+		err = env.UserRepo.UpdateUserBalance(ctx, u.ID, activeLadderID, decimal.NewFromFloat(balance))
 		if err != nil {
 			t.Fatalf("Failed to override balance: %v", err)
 		}

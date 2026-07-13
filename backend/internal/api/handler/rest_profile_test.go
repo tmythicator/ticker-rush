@@ -16,12 +16,12 @@ import (
 )
 
 func TestGetPublicProfile(t *testing.T) {
-	router, mr, pool := setupTestRouter(t)
-	defer mr.Close()
-	defer pool.Close()
+	env := setupTestEnv(t)
+	defer env.MiniRedis.Close()
+	defer env.DB.Close()
 
 	publicUsername := "public_user"
-	_, err := userRepo.CreateUser(ctx, service.CreateUserParams{
+	_, err := env.UserRepo.CreateUser(ctx, service.CreateUserParams{
 		Username:      publicUsername,
 		PasswordHash:  "pass",
 		FirstName:     "Public",
@@ -33,7 +33,7 @@ func TestGetPublicProfile(t *testing.T) {
 	assert.NoError(t, err)
 
 	privateUsername := "private_user"
-	_, err = userRepo.CreateUser(ctx, service.CreateUserParams{
+	_, err = env.UserRepo.CreateUser(ctx, service.CreateUserParams{
 		Username:      privateUsername,
 		PasswordHash:  "pass",
 		FirstName:     "Private",
@@ -47,7 +47,7 @@ func TestGetPublicProfile(t *testing.T) {
 	t.Run("Get Public Profile - Success", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodGet, "/api/v1/users/"+publicUsername, nil)
-		router.ServeHTTP(w, req)
+		env.Router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
 
@@ -60,7 +60,7 @@ func TestGetPublicProfile(t *testing.T) {
 	t.Run("Get Private Profile - Forbidden/NotFound", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodGet, "/api/v1/users/"+privateUsername, nil)
-		router.ServeHTTP(w, req)
+		env.Router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
 		assert.Equal(t, "application/problem+json", w.Header().Get("Content-Type"))
@@ -74,7 +74,7 @@ func TestGetPublicProfile(t *testing.T) {
 	t.Run("Get Non-Existent Profile - NotFound", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest(http.MethodGet, "/api/v1/users/non_existent", nil)
-		router.ServeHTTP(w, req)
+		env.Router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusNotFound, w.Code)
 		assert.Equal(t, "application/problem+json", w.Header().Get("Content-Type"))
@@ -87,12 +87,12 @@ func TestGetPublicProfile(t *testing.T) {
 }
 
 func TestUpdateUser_Privacy(t *testing.T) {
-	router, mr, pool := setupTestRouter(t)
-	defer mr.Close()
-	defer pool.Close()
+	env := setupTestEnv(t)
+	defer env.MiniRedis.Close()
+	defer env.DB.Close()
 
 	username := "privacy_tester"
-	createdUser, err := userRepo.CreateUser(ctx, service.CreateUserParams{
+	createdUser, err := env.UserRepo.CreateUser(ctx, service.CreateUserParams{
 		Username:      username,
 		PasswordHash:  "pass",
 		FirstName:     "Privacy",
@@ -109,11 +109,11 @@ func TestUpdateUser_Privacy(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodPatch, "/api/v1/profile", bytes.NewBufferString(reqBody))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
-	router.ServeHTTP(w, req)
+	env.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	updatedUser, err := userRepo.GetUser(ctx, createdUser.ID)
+	updatedUser, err := env.UserRepo.GetUser(ctx, createdUser.ID)
 	assert.NoError(t, err)
 	assert.True(t, updatedUser.IsPublic, "User should be public after update")
 
@@ -121,11 +121,11 @@ func TestUpdateUser_Privacy(t *testing.T) {
 	w = httptest.NewRecorder()
 	req, _ = http.NewRequest(http.MethodPatch, "/api/v1/profile", bytes.NewBufferString(reqBody))
 	req.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
-	router.ServeHTTP(w, req)
+	env.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	updatedUser, err = userRepo.GetUser(ctx, createdUser.ID)
+	updatedUser, err = env.UserRepo.GetUser(ctx, createdUser.ID)
 	assert.NoError(t, err)
 	assert.False(t, updatedUser.IsPublic, "User should be private after second update")
 }

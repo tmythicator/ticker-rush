@@ -11,17 +11,18 @@ import (
 )
 
 func TestGetLeaderboard(t *testing.T) {
-	router, mr, pool := setupTestRouter(t)
-	defer mr.Close()
-	defer pool.Close()
+	env := setupTestEnv(t)
+	defer env.MiniRedis.Close()
+	defer env.DB.Close()
 
-	_, token, _ := setupJoinedUser(ctx, t, router, 10000.0)
+	_, token, _ := env.setupJoinedUser(t, 10000.0)
 
-	err := leaderboardService.UpdateLeaderboard(ctx)
+	err := env.LeaderboardService.UpdateLeaderboard(ctx)
 	assert.NoError(t, err)
+
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest(http.MethodGet, "/api/v1/leaderboard", nil)
-	router.ServeHTTP(w, req)
+	env.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -47,17 +48,17 @@ func TestGetLeaderboard(t *testing.T) {
 	wPatch := httptest.NewRecorder()
 	reqPatch, _ := http.NewRequest(http.MethodPatch, "/api/v1/profile", bytes.NewBufferString(reqBody))
 	reqPatch.AddCookie(&http.Cookie{Name: "auth_token", Value: token})
-	router.ServeHTTP(wPatch, reqPatch)
+	env.Router.ServeHTTP(wPatch, reqPatch)
 	assert.Equal(t, http.StatusOK, wPatch.Code)
 
 	// Trigger leaderboard recalculation
-	err = leaderboardService.UpdateLeaderboard(ctx)
+	err = env.LeaderboardService.UpdateLeaderboard(ctx)
 	assert.NoError(t, err)
 
 	// Request Leaderboard
 	w = httptest.NewRecorder()
 	req, _ = http.NewRequest(http.MethodGet, "/api/v1/leaderboard", nil)
-	router.ServeHTTP(w, req)
+	env.Router.ServeHTTP(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	err = json.Unmarshal(w.Body.Bytes(), &rawResp)
