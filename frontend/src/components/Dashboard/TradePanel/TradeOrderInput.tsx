@@ -30,10 +30,8 @@ export const TradeOrderInput = ({ asset, form, onTrade }: TradeOrderInputProps) 
   const { symbol, source, price, positionQuantity, buyingPower } = asset;
   const { quantity, setQuantity, error, disabled } = form;
 
-  const containerClass = `${styles.formContainer} ${disabled ? styles.disabled : ''}`;
-
   return (
-    <div className={containerClass}>
+    <div className={styles.formContainer} data-disabled={disabled}>
       {error && <ErrorMessage variant="xs" message={error} />}
 
       <SymbolField symbol={symbol} source={source} />

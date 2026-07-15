@@ -1,17 +1,17 @@
 import { NavLink } from 'react-router-dom';
 import { IconBarChart, IconTrophy, IconUser } from '@/components/icons/CustomIcons';
+import styles from './Header.module.css';
 
 interface NavigationProps {
-  getLinkStyle: (isActive: boolean) => string;
   onItemClick?: () => void;
   className?: string;
 }
 
-export const Navigation = ({ getLinkStyle, onItemClick, className }: NavigationProps) => (
+export const Navigation = ({ onItemClick, className }: NavigationProps) => (
   <nav className={className}>
     <NavLink
       to="/leaderboard"
-      className={(params) => getLinkStyle(params.isActive)}
+      className={styles.navLink}
       onClick={onItemClick}
     >
       <IconTrophy />
@@ -19,7 +19,7 @@ export const Navigation = ({ getLinkStyle, onItemClick, className }: NavigationP
     </NavLink>
     <NavLink
       to="/profile"
-      className={(params) => getLinkStyle(params.isActive)}
+      className={styles.navLink}
       onClick={onItemClick}
     >
       <IconUser />
@@ -27,7 +27,7 @@ export const Navigation = ({ getLinkStyle, onItemClick, className }: NavigationP
     </NavLink>
     <NavLink
       to="/trade"
-      className={(params) => getLinkStyle(params.isActive)}
+      className={styles.navLink}
       onClick={onItemClick}
     >
       <IconBarChart />

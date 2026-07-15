@@ -194,7 +194,9 @@
   border-radius: var(--radius);
   font-size: 0.875rem;
   font-weight: 700;
-  border: 2px solid var(--border);
+  border: 2px solid transparent;
+  background-color: transparent;
+  color: var(--muted-foreground);
   transition: all 0.1s ease-in-out;
   height: 2.5rem;
   padding: 0.5rem 1rem;
@@ -206,32 +208,30 @@
     height: 1rem;
     flex-shrink: 0;
   }
-}
-
-.navLinkActive {
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-  box-shadow: var(--shadow-brutalist-sm);
-
-  &:hover {
-    transform: translate(2px, 2px);
-    box-shadow: none;
-  }
-
-  &:active {
-    transform: translate(4px, 4px);
-  }
-}
-
-.navLinkInactive {
-  border-color: transparent;
-  background-color: transparent;
-  color: var(--muted-foreground);
 
   &:hover {
     background-color: var(--accent);
     color: var(--accent-foreground);
     border-color: var(--border);
+  }
+
+  &:global(.active) {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--border);
+    box-shadow: var(--shadow-brutalist-sm);
+
+    &:hover {
+      transform: translate(2px, 2px);
+      box-shadow: none;
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      border-color: var(--border);
+    }
+
+    &:active {
+      transform: translate(4px, 4px);
+    }
   }
 }
 

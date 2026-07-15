@@ -14,10 +14,10 @@
   height: 2rem;
   width: 2rem;
   color: color-mix(in srgb, var(--secondary) 50%, transparent);
-}
 
-.iconPrimary {
-  color: var(--primary);
+  &[data-variant="primary"] {
+    color: var(--primary);
+  }
 }
 
 .title {

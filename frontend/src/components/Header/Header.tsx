@@ -26,17 +26,13 @@ export const Header = () => {
 
   const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
-  const getLinkStyle = (isActive: boolean): string => {
-    return `${styles.navLink} ${isActive ? styles.navLinkActive : styles.navLinkInactive}`;
-  };
-
   return (
     <>
       <header data-testid="app-header" className={styles.header}>
         <div className={styles.leftCol}>
           <Logo />
           {isAuthenticated && (
-            <Navigation getLinkStyle={getLinkStyle} className={styles.desktopNav} />
+            <Navigation className={styles.desktopNav} />
           )}
         </div>
 
@@ -86,7 +82,6 @@ export const Header = () => {
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         onLogout={handleLogout}
-        getLinkStyle={getLinkStyle}
       />
     </>
   );

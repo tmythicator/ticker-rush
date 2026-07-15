@@ -8,17 +8,15 @@ interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   onLogout: () => void;
-  getLinkStyle: (isActive: boolean) => string;
 }
 
-export const MobileMenu = ({ isOpen, onClose, onLogout, getLinkStyle }: MobileMenuProps) => {
+export const MobileMenu = ({ isOpen, onClose, onLogout }: MobileMenuProps) => {
   if (!isOpen) return null;
 
   return (
     <div data-testid="mobile-menu" className={styles.mobileOverlay}>
       <div className={styles.mobilePanel}>
         <Navigation
-          getLinkStyle={getLinkStyle}
           onItemClick={onClose}
           className={styles.mobileNav}
         />

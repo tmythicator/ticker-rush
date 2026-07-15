@@ -28,7 +28,7 @@ export const MarketStatusGuard = ({ user, quote, children }: MarketStatusGuardPr
   if (quote?.is_closed) {
     return (
       <Card data-testid="market-closed-guard" className={styles.guardCard}>
-        <IconMoon className={`${styles.icon} ${styles.iconPrimary}`} />
+        <IconMoon className={styles.icon} data-variant="primary" />
         <h3 className={styles.title}>Market Closed</h3>
         <p className={styles.description}>
           Trading is currently unavailable.
