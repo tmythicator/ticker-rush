@@ -22,11 +22,11 @@
   color: var(--muted-foreground);
   border-bottom: 2px solid var(--border);
 
-  &[data-align="right"] {
+  &[data-align='right'] {
     text-align: right;
   }
 
-  &[data-align="center"] {
+  &[data-align='center'] {
     text-align: center;
   }
 }
@@ -45,13 +45,13 @@
   font-size: 0.875rem;
   vertical-align: middle;
 
-  &[data-align="right"] {
+  &[data-align='right'] {
     text-align: right;
     font-family: var(--font-mono);
     font-weight: 700;
   }
 
-  &[data-align="center"] {
+  &[data-align='center'] {
     text-align: center;
   }
 }

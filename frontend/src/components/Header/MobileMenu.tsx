@@ -16,10 +16,7 @@ export const MobileMenu = ({ isOpen, onClose, onLogout }: MobileMenuProps) => {
   return (
     <div data-testid="mobile-menu" className={styles.mobileOverlay}>
       <div className={styles.mobilePanel}>
-        <Navigation
-          onItemClick={onClose}
-          className={styles.mobileNav}
-        />
+        <Navigation onItemClick={onClose} className={styles.mobileNav} />
         <div className={styles.mobileFooter}>
           <Button onClick={onLogout} variant="ghostDestructive" className={styles.mobileLogoutBtn}>
             <IconLogOut />

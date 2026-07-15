@@ -31,9 +31,7 @@ export const Header = () => {
       <header data-testid="app-header" className={styles.header}>
         <div className={styles.leftCol}>
           <Logo />
-          {isAuthenticated && (
-            <Navigation className={styles.desktopNav} />
-          )}
+          {isAuthenticated && <Navigation className={styles.desktopNav} />}
         </div>
 
         <div className={styles.rightCol}>

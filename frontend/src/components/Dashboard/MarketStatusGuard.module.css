@@ -15,7 +15,7 @@
   width: 2rem;
   color: color-mix(in srgb, var(--secondary) 50%, transparent);
 
-  &[data-variant="primary"] {
+  &[data-variant='primary'] {
     color: var(--primary);
   }
 }

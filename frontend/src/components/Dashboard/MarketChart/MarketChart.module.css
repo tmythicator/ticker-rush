@@ -86,11 +86,11 @@
   transition: color 0.3s;
   color: var(--foreground);
 
-  &[data-trend="up"] {
+  &[data-trend='up'] {
     color: var(--up-trend);
   }
 
-  &[data-trend="down"] {
+  &[data-trend='down'] {
     color: var(--down-trend);
   }
 }

@@ -43,7 +43,7 @@
   flex-direction: column;
   gap: 1.25rem;
 
-  &[data-disabled="true"] {
+  &[data-disabled='true'] {
     pointer-events: none;
     opacity: 0.5;
   }
