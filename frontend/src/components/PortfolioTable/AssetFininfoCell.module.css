@@ -1,8 +1,17 @@
 .cell {
   padding: var(--space-md) var(--space-lg);
-  text-align: right;
   font-family: var(--font-mono);
-  font-size: 0.9375rem;
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.alignRight {
+  text-align: right;
+}
+
+.alignCenter {
+  text-align: center;
 }
 
 .variantDefault {

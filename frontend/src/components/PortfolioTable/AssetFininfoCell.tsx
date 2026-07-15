@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styles from './AssetFininfoCell.module.css';
 import { cva, type VariantProps } from 'class-variance-authority';
+import clsx from 'clsx';
 
 const cellVariants = cva(styles.cell, {
   variants: {
@@ -10,6 +11,10 @@ const cellVariants = cva(styles.cell, {
       medium: styles.variantMedium,
       bold: styles.variantBold,
     },
+    align: {
+      center: styles.alignCenter,
+      right: styles.alignRight,
+    },
     trend: {
       up: styles.trendUp,
       down: styles.trendDown,
@@ -18,14 +23,24 @@ const cellVariants = cva(styles.cell, {
   },
   defaultVariants: {
     variant: 'default',
+    align: 'center',
+    trend: 'neutral',
   },
 });
 
 export interface AssetFininfoCellProps
-  extends React.TdHTMLAttributes<HTMLTableCellElement>, VariantProps<typeof cellVariants> {}
+  extends
+    Omit<React.TdHTMLAttributes<HTMLTableCellElement>, 'align'>,
+    VariantProps<typeof cellVariants> {}
 
 export const AssetFininfoCell = React.forwardRef<HTMLTableCellElement, AssetFininfoCellProps>(
-  ({ className, variant, trend, ...props }, ref) => {
-    return <td ref={ref} className={cellVariants({ variant, trend, className })} {...props} />;
+  ({ className, variant, trend, align, ...props }, ref) => {
+    return (
+      <td
+        ref={ref}
+        className={clsx(cellVariants({ variant, trend, align }), className)}
+        {...props}
+      />
+    );
   },
 );
