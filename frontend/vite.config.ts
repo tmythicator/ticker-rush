@@ -68,6 +68,13 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    css: {
+      modules: {
+        localsConvention: 'camelCaseOnly',
+        generateScopedName:
+          mode === 'development' ? '[name]__[local]--[hash:base64:5]' : '[hash:base64:5]',
+      },
+    },
     plugins: [
       visualizer({
         emitFile: true,
