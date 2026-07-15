@@ -31,8 +31,8 @@ export const PublicProfilePage = () => {
 
   return (
     <div className={styles.pageWrapper}>
-      <div className={styles.glow1} />
-      <div className={styles.glow2} />
+      <div className={styles.ambientOrbPrimary} />
+      <div className={styles.ambientOrbSecondary} />
 
       <div className={styles.container}>
         <div className={styles.headerGroup}>

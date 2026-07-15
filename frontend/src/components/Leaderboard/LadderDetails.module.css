@@ -7,7 +7,7 @@
   }
 }
 
-.innerLayout {
+.ladderMetaRow {
   margin-bottom: var(--space-xl);
   display: flex;
   flex-direction: column;

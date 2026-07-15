@@ -31,7 +31,7 @@
   background-color: color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
-.contentWrapper {
+.joinCardBody {
   position: relative;
   z-index: 10;
   display: flex;
@@ -46,7 +46,7 @@
   }
 }
 
-.iconContainer {
+.joinIcon {
   display: flex;
   height: 4rem;
   width: 4rem;
@@ -59,11 +59,11 @@
   transition: transform 0.3s ease-in-out;
 }
 
-.card:hover .iconContainer {
+.card:hover .joinIcon {
   transform: scale(1.1);
 }
 
-.iconContainer svg {
+.joinIcon svg {
   height: 2rem;
   width: 2rem;
 }
@@ -141,14 +141,14 @@
   color: var(--secondary);
 }
 
-.privacyGroup {
+.privacyBadge {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
   color: color-mix(in srgb, var(--primary) 80%, transparent);
 }
 
-.privacyDot {
+.privacyBadgeDot {
   height: var(--space-xxs);
   width: var(--space-xxs);
   border-radius: 9999px;

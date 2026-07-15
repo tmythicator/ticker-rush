@@ -11,8 +11,8 @@ export const JoinLadderButton = () => {
     <div className={styles.card}>
       <div className={styles.glow} />
 
-      <div className={styles.contentWrapper}>
-        <div className={styles.iconContainer}>
+      <div className={styles.joinCardBody}>
+        <div className={styles.joinIcon}>
           <IconTrophy />
         </div>
 

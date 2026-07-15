@@ -67,7 +67,7 @@ export const HomeChart = ({ symbol }: { symbol: TradeSymbol }) => {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.textOverlay}>
+      <div className={styles.chartLegend}>
         <div className={styles.titleRow}>
           <h3 className={styles.title}>Bitcoin</h3>
           <span className={styles.symbol}>BTC</span>

@@ -4,7 +4,7 @@
   height: 2.25rem;
   flex-shrink: 0;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-xxs);
   border: 2px solid var(--border);
   border-radius: var(--radius);
   background-color: var(--muted);
@@ -34,7 +34,7 @@
   width: 2rem;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease-in-out;
+  transition: var(--transition-normal);
   border-radius: calc(var(--radius) - 2px);
   cursor: pointer;
 
