@@ -1,8 +1,9 @@
 import { IconMoon } from '@/components/icons/CustomIcons';
-import { Card } from '@/components/shared/Card';
 import type { Quote, User } from '@/types';
+import clsx from 'clsx';
 import type { ReactNode } from 'react';
-import styles from './MarketStatusGuard.module.css';
+import { GuardState } from './GuardState';
+import styles from './Guard.module.css';
 
 interface MarketStatusGuardProps {
   user: User | null;
@@ -15,37 +16,40 @@ export const MarketStatusGuard = ({ user, quote, children }: MarketStatusGuardPr
 
   if (!user.is_participating) {
     return (
-      <Card data-testid="participation-required-guard" className={styles.guardCard}>
-        <IconMoon className={styles.icon} />
-        <h3 className={styles.title}>Participation Required</h3>
-        <p className={styles.description}>
-          Join the active ladder to unlock trading features and track your performance.
-        </p>
-      </Card>
-    );
-  }
-
-  if (quote?.is_closed) {
-    return (
-      <Card data-testid="market-closed-guard" className={styles.guardCard}>
-        <IconMoon className={styles.icon} data-variant="primary" />
-        <h3 className={styles.title}>Market Closed</h3>
-        <p className={styles.description}>
-          Trading is currently unavailable.
-          <br />
-          Please come back during market hours.
-        </p>
-      </Card>
+      <GuardState
+        testId="participation-required-guard"
+        icon={<IconMoon className={styles.icon} />}
+        title="Participation Required"
+        description="Join the active ladder to unlock trading features and track your performance."
+      />
     );
   }
 
   if (!quote) {
     return (
-      <Card data-testid="loading-market-guard" className={styles.guardCard}>
-        <div className={styles.spinner} />
-        <h3 className={styles.title}>Loading Market Data</h3>
-        <p className={styles.description}>Fetching the latest quotes...</p>
-      </Card>
+      <GuardState
+        testId="loading-market-guard"
+        icon={<div className={styles.spinner} />}
+        title="Loading Market Data"
+        description="Fetching the latest quotes..."
+      />
+    );
+  }
+
+  if (quote.is_closed) {
+    return (
+      <GuardState
+        testId="market-closed-guard"
+        icon={<IconMoon className={clsx(styles.icon, styles.iconPrimary)} />}
+        title="Market Closed"
+        description={
+          <>
+            Trading is currently unavailable.
+            <br />
+            Please come back during market hours.
+          </>
+        }
+      />
     );
   }
 

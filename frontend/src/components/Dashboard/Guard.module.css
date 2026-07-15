@@ -1,4 +1,4 @@
-.guardCard {
+.card {
   display: flex;
   height: 100%;
   min-height: 300px;
@@ -14,10 +14,10 @@
   height: 2rem;
   width: 2rem;
   color: color-mix(in srgb, var(--secondary) 50%, transparent);
+}
 
-  &[data-variant='primary'] {
-    color: var(--primary);
-  }
+.iconPrimary {
+  color: var(--primary);
 }
 
 .title {
