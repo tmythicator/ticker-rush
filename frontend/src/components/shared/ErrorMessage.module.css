@@ -1,17 +1,17 @@
 .errorMessage {
   border-radius: var(--radius);
-  border: 1px solid color-mix(in srgb, var(--destructive) 20%, transparent);
-  background-color: color-mix(in srgb, var(--destructive) 10%, transparent);
+  border: 1px solid var(--destructive-border-subtle);
+  background-color: var(--destructive-bg-subtle);
   font-weight: 500;
   color: var(--destructive);
 
   &[data-variant='sm'] {
-    padding: 0.75rem;
-    font-size: 0.875rem;
+    padding: var(--space-sm);
+    font-size: var(--text-sm);
   }
 
   &[data-variant='xs'] {
-    padding: 0.5rem;
-    font-size: 0.75rem;
+    padding: var(--space-xs);
+    font-size: var(--text-xs);
   }
 }

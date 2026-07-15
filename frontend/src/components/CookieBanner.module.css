@@ -6,18 +6,14 @@
   align-items: center;
   justify-content: center;
   background-color: color-mix(in srgb, var(--background) 80%, transparent);
-  padding: 1rem;
+  padding: var(--space-md);
   backdrop-filter: blur(8px);
   animation: fadeIn 0.2s ease-out;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .card {
@@ -25,22 +21,22 @@
   max-width: 32rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--space-lg);
   border-radius: var(--radius);
   border: 2px solid var(--border);
   background-color: var(--card);
-  padding: 1.5rem;
+  padding: var(--space-lg);
   box-shadow: var(--shadow-brutalist);
 }
 
 .textGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 .title {
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
   font-weight: 700;
   letter-spacing: -0.025em;
   color: var(--foreground);
@@ -60,7 +56,7 @@
 
   @media (min-width: 640px) {
     width: auto;
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding-left: var(--space-xl);
+    padding-right: var(--space-xl);
   }
 }

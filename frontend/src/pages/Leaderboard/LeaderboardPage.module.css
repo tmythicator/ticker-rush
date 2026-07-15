@@ -13,7 +13,7 @@
   width: 100%;
   max-width: 80rem;
   margin: 0 auto;
-  padding: 2.5rem 1rem;
+  padding: 2.5rem var(--space-md);
 }
 
 .card {

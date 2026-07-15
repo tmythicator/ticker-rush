@@ -1,18 +1,18 @@
 .headerWrapper {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .badge {
   display: inline-flex;
   width: fit-content;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
   border-radius: 9999px;
   background-color: color-mix(in srgb, var(--primary) 10%, transparent);
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
+  padding: var(--space-xxs) var(--space-sm);
+  font-size: var(--text-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -20,14 +20,14 @@
 }
 
 .badge svg {
-  height: 0.875rem;
-  width: 0.875rem;
+  height: var(--text-sm);
+  width: var(--text-sm);
 }
 
 .textGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 .title {
@@ -36,7 +36,7 @@
   letter-spacing: -0.025em;
 
   @media (max-width: 640px) {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
   }
 }
 

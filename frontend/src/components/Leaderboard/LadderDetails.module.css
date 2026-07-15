@@ -1,22 +1,22 @@
 .container {
   border-bottom: 1px solid var(--border);
-  padding: 2rem;
+  padding: var(--space-xl);
 
   @media (max-width: 640px) {
-    padding: 1rem;
+    padding: var(--space-md);
   }
 }
 
 .innerLayout {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-xl);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 2rem;
+  gap: var(--space-xl);
 
   @media (max-width: 640px) {
-    margin-bottom: 1rem;
-    gap: 1rem;
+    margin-bottom: var(--space-md);
+    gap: var(--space-md);
   }
 }
 

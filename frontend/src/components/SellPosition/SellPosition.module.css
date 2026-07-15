@@ -1,11 +1,11 @@
 .modalBody {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .text {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   color: var(--muted-foreground);
 }
 
@@ -16,17 +16,17 @@
 .detailsBox {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-xs);
   border-radius: var(--radius);
   border: 1px solid var(--border);
-  background-color: color-mix(in srgb, var(--muted) 50%, transparent);
-  padding: 1rem;
+  background-color: var(--muted-bg-subtle);
+  padding: var(--space-md);
 }
 
 .row {
   display: flex;
   justify-content: space-between;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 .rowLabel {
@@ -53,8 +53,8 @@
   display: flex;
   justify-content: space-between;
   border-top: 1px solid var(--border);
-  padding-top: 0.5rem;
-  font-size: 0.875rem;
+  padding-top: var(--space-xs);
+  font-size: var(--text-sm);
 }
 
 .totalLabel {

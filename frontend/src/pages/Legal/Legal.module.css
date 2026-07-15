@@ -2,37 +2,37 @@
   width: 100%;
   max-width: 48rem;
   margin: 0 auto;
-  padding: 2rem 1rem 6rem 1rem;
+  padding: var(--space-xl) var(--space-md) var(--space-2xl) var(--space-md);
   color: var(--foreground);
 }
 
 .title {
-  margin-bottom: 1.5rem;
-  font-size: 1.875rem;
+  margin-bottom: var(--space-lg);
+  font-size: var(--text-3xl);
   font-weight: 700;
   color: var(--primary);
 }
 
 .section {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-xl);
 }
 
 .sectionHeader {
-  margin-bottom: 0.5rem;
-  font-size: 1.25rem;
+  margin-bottom: var(--space-xs);
+  font-size: var(--text-xl);
   font-weight: 600;
   color: color-mix(in srgb, var(--foreground) 90%, transparent);
 }
 
 .subHeader {
-  margin-bottom: 0.5rem;
-  font-size: 1.125rem;
+  margin-bottom: var(--space-xs);
+  font-size: var(--text-lg);
   font-weight: 500;
   color: color-mix(in srgb, var(--foreground) 80%, transparent);
 }
 
 .text {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
   color: var(--muted-foreground);
 
   & strong {
@@ -42,13 +42,13 @@
 }
 
 .list {
-  margin-bottom: 1rem;
-  margin-left: 1rem;
+  margin-bottom: var(--space-md);
+  margin-left: var(--space-md);
   list-style-position: inside;
   list-style-type: disc;
   color: var(--muted-foreground);
 
   & li {
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--space-xxs);
   }
 }
