@@ -13,13 +13,6 @@ export const ChartSymbolIndicator = ({ quote, isLoading, isError }: ChartSymbolI
   const isClosed = quote?.is_closed;
   const priceColorStatus = usePriceColor(price);
 
-  const priceColorClass =
-    priceColorStatus === 'up'
-      ? styles.priceUp
-      : priceColorStatus === 'down'
-        ? styles.priceDown
-        : styles.priceNeutral;
-
   return (
     <div className={styles.indicator}>
       {isLoading ? (
@@ -28,7 +21,7 @@ export const ChartSymbolIndicator = ({ quote, isLoading, isError }: ChartSymbolI
         <span className={styles.offlineTag}>OFFLINE</span>
       ) : (
         <>
-          <span className={`${styles.price} ${priceColorClass}`}>
+          <span className={styles.price} data-trend={priceColorStatus}>
             {price ? `$${price.toFixed(2)}` : '—'}
           </span>
           {isClosed ? (

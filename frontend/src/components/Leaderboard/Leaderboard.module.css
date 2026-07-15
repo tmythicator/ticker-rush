@@ -101,35 +101,35 @@
 
 .headerCell {
   padding: 1rem 1.5rem;
-}
 
-.headerCellCenter {
-  text-align: center;
-  width: 6rem;
-  padding-inline: 2rem;
-}
+  &[data-align="center"] {
+    text-align: center;
+    width: 6rem;
+    padding-inline: 2rem;
+  }
 
-.headerCellRight {
-  text-align: right;
-  padding-inline: 2rem;
+  &[data-align="right"] {
+    text-align: right;
+    padding-inline: 2rem;
+  }
 }
 
 .cell {
   padding: 1rem 1.5rem;
   vertical-align: middle;
-}
 
-.cellCenter {
-  text-align: center;
-  font-weight: 700;
-}
+  &[data-align="center"] {
+    text-align: center;
+    font-weight: 700;
+  }
 
-.cellRight {
-  text-align: right;
-  font-weight: 700;
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  color: var(--success);
+  &[data-align="right"] {
+    text-align: right;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--success);
+  }
 }
 
 .rankContainer {
@@ -141,18 +141,18 @@
 .medalIcon {
   height: 1.25rem;
   width: 1.25rem;
-}
 
-.gold {
-  color: var(--color-gold);
-}
+  &[data-medal="gold"] {
+    color: var(--color-gold);
+  }
 
-.silver {
-  color: var(--color-silver);
-}
+  &[data-medal="silver"] {
+    color: var(--color-silver);
+  }
 
-.bronze {
-  color: var(--color-bronze);
+  &[data-medal="bronze"] {
+    color: var(--color-bronze);
+  }
 }
 
 .userLink {

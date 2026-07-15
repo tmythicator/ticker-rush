@@ -4,9 +4,9 @@ export const LeaderboardHeader = () => {
   return (
     <thead className={styles.thead}>
       <tr>
-        <th className={`${styles.headerCell} ${styles.headerCellCenter}`}>Rank</th>
+        <th className={styles.headerCell} data-align="center">Rank</th>
         <th className={styles.headerCell}>Trader</th>
-        <th className={`${styles.headerCell} ${styles.headerCellRight}`}>Net Worth (USD)</th>
+        <th className={styles.headerCell} data-align="right">Net Worth (USD)</th>
       </tr>
     </thead>
   );

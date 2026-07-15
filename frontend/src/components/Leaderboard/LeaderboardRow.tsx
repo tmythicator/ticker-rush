@@ -10,11 +10,11 @@ interface LeaderboardRowProps {
 export const LeaderboardRow = ({ entry }: LeaderboardRowProps) => {
   return (
     <tr>
-      <td className={`${styles.cell} ${styles.cellCenter}`}>
+      <td className={styles.cell} data-align="center">
         <div className={styles.rankContainer}>
-          {entry.rank === 1 && <IconMedal className={`${styles.medalIcon} ${styles.gold}`} />}
-          {entry.rank === 2 && <IconMedal className={`${styles.medalIcon} ${styles.silver}`} />}
-          {entry.rank === 3 && <IconMedal className={`${styles.medalIcon} ${styles.bronze}`} />}
+          {entry.rank === 1 && <IconMedal className={styles.medalIcon} data-medal="gold" />}
+          {entry.rank === 2 && <IconMedal className={styles.medalIcon} data-medal="silver" />}
+          {entry.rank === 3 && <IconMedal className={styles.medalIcon} data-medal="bronze" />}
           {entry.rank > 3 && entry.rank}
         </div>
       </td>
@@ -31,7 +31,7 @@ export const LeaderboardRow = ({ entry }: LeaderboardRowProps) => {
         )}
       </td>
 
-      <td className={`${styles.cell} ${styles.cellRight}`}>
+      <td className={styles.cell} data-align="right">
         $
         {entry.score?.toLocaleString(undefined, {
           minimumFractionDigits: 2,

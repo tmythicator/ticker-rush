@@ -84,18 +84,15 @@
   font-weight: 700;
   line-height: 1;
   transition: color 0.3s;
-}
-
-.priceNeutral {
   color: var(--foreground);
-}
 
-.priceUp {
-  color: var(--up-trend);
-}
+  &[data-trend="up"] {
+    color: var(--up-trend);
+  }
 
-.priceDown {
-  color: var(--down-trend);
+  &[data-trend="down"] {
+    color: var(--down-trend);
+  }
 }
 
 .statusLabel {

@@ -21,14 +21,14 @@
   letter-spacing: 0.05em;
   color: var(--muted-foreground);
   border-bottom: 2px solid var(--border);
-}
 
-.headerCellRight {
-  text-align: right;
-}
+  &[data-align="right"] {
+    text-align: right;
+  }
 
-.headerCellCenter {
-  text-align: center;
+  &[data-align="center"] {
+    text-align: center;
+  }
 }
 
 .row {
@@ -44,16 +44,16 @@
   padding: 1rem 1.5rem;
   font-size: 0.875rem;
   vertical-align: middle;
-}
 
-.cellRight {
-  text-align: right;
-  font-family: var(--font-mono);
-  font-weight: 700;
-}
+  &[data-align="right"] {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
 
-.cellCenter {
-  text-align: center;
+  &[data-align="center"] {
+    text-align: center;
+  }
 }
 
 .symbolName {

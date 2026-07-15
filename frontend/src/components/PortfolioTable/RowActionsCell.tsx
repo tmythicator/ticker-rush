@@ -22,7 +22,7 @@ export const RowActionsCell = ({
   const buttonTitle = !isTradable ? 'Not Tradable' : isMarketClosed ? 'Market Closed' : undefined;
 
   return (
-    <td className={`${styles.cell} ${styles.cellCenter}`}>
+    <td className={styles.cell} data-align="center">
       <div className={styles.actionsContainer}>
         <Button
           data-testid="sell-all-button"
