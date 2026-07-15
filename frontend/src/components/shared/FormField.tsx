@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Label } from '@/components/shared/Label';
 import styles from './FormField.module.css';
+import clsx from 'clsx';
 
 export interface FormFieldProps extends React.HTMLAttributes<HTMLDivElement> {
   label?: string;
@@ -18,10 +19,8 @@ export const FormField = ({
   ref,
   ...props
 }: FormFieldProps) => {
-  const combinedClassName = className ? `${styles.formField} ${className}` : styles.formField;
-
   return (
-    <div ref={ref} className={combinedClassName} {...props}>
+    <div ref={ref} className={clsx(styles.formField, className)} {...props}>
       {label && <Label htmlFor={htmlFor}>{label}</Label>}
       {children}
       {error && (

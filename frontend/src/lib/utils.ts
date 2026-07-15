@@ -1,4 +1,4 @@
-import { type PortfolioItem } from '@/types';
+import { type PortfolioItem, type TickerSource } from '@/types';
 
 /**
  * Calculates the total invested capital from a user's portfolio.
@@ -49,4 +49,19 @@ export const calculateMaxBuyQuantity = (
 export const formatCurrencyWithSign = (value: number): string => {
   const sign = value >= 0 ? '+' : '-';
   return `${sign}$${Math.abs(value).toFixed(2)}`;
+};
+
+/**
+ * Returns configuration for a source badge based on the ticker source.
+ * @param source The ticker source.
+ * @returns The source badge configuration.
+ */
+export const getSourceBadgeConfig = (source: TickerSource) => {
+  console.log(source);
+  const isCG = source === 'CoinGecko' || source === 'CG';
+  return {
+    variant: isCG ? 'CoinGecko' : 'Finnhub',
+    label: isCG ? 'CG' : 'FH',
+    title: isCG ? 'Source: CoinGecko' : 'Source: Finnhub',
+  } as const;
 };

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styles from './ErrorMessage.module.css';
+import clsx from 'clsx';
 
 export interface ErrorMessageProps extends React.HTMLAttributes<HTMLDivElement> {
   message?: string;
@@ -24,7 +25,7 @@ export const ErrorMessage = ({
     <div
       role="alert"
       data-testid="error-message"
-      className={`${styles.errorMessage} ${className || ''}`}
+      className={clsx(styles.errorMessage, className)}
       data-variant={variant}
       {...props}
     >
