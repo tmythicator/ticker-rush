@@ -1,11 +1,16 @@
 import { createContext, useContext } from 'react';
 
-export const ModalContext = createContext<{ onClose: () => void } | null>(null);
+interface ModalContextType {
+  onClose: () => void;
+  labelId?: string;
+}
 
-export const useModalContext = () => {
+export const ModalContext = createContext<ModalContextType | null>(null);
+
+export const useModalContext = () : Partial<ModalContextType> => {
   const context = useContext(ModalContext);
   if (!context) {
-    throw new Error('Modal compound components must be used within <Modal />');
+    return {};
   }
   return context;
 };
