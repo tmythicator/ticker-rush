@@ -3,6 +3,7 @@ import { Input } from '@/components/shared/Input';
 import { Label } from '@/components/shared/Label';
 import { PercentageSelector } from './PercentageSelector';
 import styles from './TradePanel.module.css';
+import { useId } from 'react';
 
 interface QuantityFieldProps {
   quantity: string;
@@ -21,24 +22,28 @@ export const QuantityField = ({
   disabled,
   positionQuantity = 0,
 }: QuantityFieldProps) => {
+  const inputId = useId();
   const showControls = buyingPower !== undefined && price !== undefined && price > 0;
 
   return (
     <div>
-      <Label className={styles.labelRow}>
-        <span>Quantity</span>
+      <div className={styles.labelRow}>
+        <Label htmlFor={inputId}>Quantity</Label>
         {positionQuantity > 0 && (
           <Button
             onClick={() => setQuantity(positionQuantity.toString())}
             variant="link"
+            type="button"
             className={styles.sellAllButton}
+            aria-label={`Sell all shares of current position ${positionQuantity}`}
           >
             Sell All ({positionQuantity})
           </Button>
         )}
-      </Label>
+      </div>
       <div className={styles.quantityInputContainer}>
         <Input
+          id={inputId}
           type="number"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
