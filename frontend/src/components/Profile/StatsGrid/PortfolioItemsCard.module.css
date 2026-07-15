@@ -3,6 +3,10 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 1.5rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 }
 
 .headerGroup {
@@ -16,6 +20,10 @@
   background-color: color-mix(in srgb, var(--primary) 10%, transparent);
   padding: 0.5rem;
   color: var(--primary);
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .iconWrapper svg {
@@ -37,10 +45,19 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--foreground);
+
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+    font-family: var(--font-mono);
+  }
 }
 
 .description {
   margin-top: 1rem;
   font-size: 0.75rem;
   color: var(--muted-foreground);
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 }

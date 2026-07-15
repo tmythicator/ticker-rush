@@ -8,6 +8,10 @@
     color-mix(in srgb, var(--primary) 5%, transparent)
   );
   padding: 1.5rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 }
 
 .card:hover .iconWrapper {
@@ -21,6 +25,10 @@
   padding: 1rem;
   opacity: 0.1;
   transition: opacity 0.2s ease-in-out;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .iconWrapper svg {
@@ -45,6 +53,10 @@
   font-weight: 700;
   letter-spacing: -0.025em;
   color: var(--foreground);
+
+  @media (max-width: 768px) {
+    font-size: 1.75rem;
+  }
 }
 
 .detailsWrapper {
@@ -64,6 +76,11 @@
   font-weight: 500;
   color: var(--muted-foreground);
   backdrop-filter: blur(4px);
+
+  @media (max-width: 768px) {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.6875rem;
+  }
 }
 
 .detailBadge span {

@@ -3,6 +3,10 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 1.5rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 }
 
 .headerGroup {
@@ -14,6 +18,10 @@
 .iconWrapper {
   border-radius: var(--radius-sm);
   padding: 0.5rem;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .iconWrapper[data-trend='up'] {
@@ -44,6 +52,11 @@
   margin-top: 0.125rem;
   font-size: 1.5rem;
   font-weight: 700;
+
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+    font-family: var(--font-mono);
+  }
 }
 
 .value[data-trend='up'] {
@@ -58,4 +71,8 @@
   margin-top: 1rem;
   font-size: 0.75rem;
   color: var(--muted-foreground);
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
