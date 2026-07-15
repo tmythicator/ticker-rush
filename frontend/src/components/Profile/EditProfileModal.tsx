@@ -35,9 +35,7 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
 
           <ModalBody className={styles.formBody}>
             <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>
-                Personal Information
-              </h3>
+              <h3 className={styles.sectionTitle}>Personal Information</h3>
               <div className={styles.nameRow}>
                 <FormInput
                   label="First Name"
@@ -59,9 +57,7 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
             </div>
 
             <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>
-                Public Profile
-              </h3>
+              <h3 className={styles.sectionTitle}>Public Profile</h3>
               <FormInput
                 label="Website"
                 id="website"

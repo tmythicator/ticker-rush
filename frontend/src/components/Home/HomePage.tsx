@@ -27,13 +27,8 @@ export const HomePage = () => {
               <span>Compete in Monthly Ladders.</span>
             </h1>
             <p className={styles.description}>
-              Experience the thrill of real-time trading{' '}
-              <strong>risk-free</strong>.
-              Compete in{' '}
-              <strong>
-                monthly ladders
-              </strong>{' '}
-              and prove your skills to the world.
+              Experience the thrill of real-time trading <strong>risk-free</strong>. Compete in{' '}
+              <strong>monthly ladders</strong> and prove your skills to the world.
             </p>
           </div>
           <div className={styles.btnGroup}>

@@ -105,11 +105,11 @@
   letter-spacing: 0.05em;
 }
 
-.statusLabel[data-status="closed"] {
+.statusLabel[data-status='closed'] {
   color: var(--warning);
 }
 
-.statusLabel[data-status="live"] {
+.statusLabel[data-status='live'] {
   color: color-mix(in srgb, var(--foreground) 60%, transparent);
 }
 
@@ -172,10 +172,11 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
-    opacity: .5;
+    opacity: 0.5;
   }
 }

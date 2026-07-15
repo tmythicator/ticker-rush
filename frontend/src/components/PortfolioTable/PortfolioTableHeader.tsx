@@ -13,7 +13,9 @@ export const PortfolioTableHeader = ({ isReadOnly }: PortfolioTableHeaderProps) 
       <th className={`${styles.headerCell} ${styles.headerCellRight}`}>Current Price</th>
       <th className={`${styles.headerCell} ${styles.headerCellRight}`}>Market Value</th>
       <th className={`${styles.headerCell} ${styles.headerCellRight}`}>P&L</th>
-      {!isReadOnly && <th className={`${styles.headerCell} ${styles.headerCellCenter}`}>Actions</th>}
+      {!isReadOnly && (
+        <th className={`${styles.headerCell} ${styles.headerCellCenter}`}>Actions</th>
+      )}
     </tr>
   </thead>
 );

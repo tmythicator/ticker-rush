@@ -3,10 +3,7 @@ import styles from './Footer.module.css';
 
 export const Footer = () => {
   return (
-    <footer
-      data-testid="app-footer"
-      className={styles.footer}
-    >
+    <footer data-testid="app-footer" className={styles.footer}>
       <div className={styles.container}>
         <div className={styles.copyright}>
           &copy; {new Date().getFullYear()} Ticker Rush. All rights reserved.

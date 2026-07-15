@@ -2,7 +2,11 @@
   position: relative;
   overflow: hidden;
   border-color: color-mix(in srgb, var(--primary) 20%, transparent);
-  background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 10%, transparent), color-mix(in srgb, var(--primary) 5%, transparent));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--primary) 10%, transparent),
+    color-mix(in srgb, var(--primary) 5%, transparent)
+  );
   padding: 1.5rem;
 }
 

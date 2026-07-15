@@ -13,9 +13,7 @@ export const PortfolioItemsCard = ({ count }: PortfolioItemsCardProps) => (
         <IconBriefcase />
       </div>
       <div>
-        <span className={styles.label}>
-          Portfolio Items
-        </span>
+        <span className={styles.label}>Portfolio Items</span>
         <div className={styles.value}>{count}</div>
       </div>
     </div>

@@ -15,10 +15,7 @@ export const CookieBanner = () => {
   if (!isVisible) return null;
 
   return (
-    <div
-      data-testid="cookie-banner"
-      className={styles.overlay}
-    >
+    <div data-testid="cookie-banner" className={styles.overlay}>
       <div className={styles.card}>
         <div className={styles.textGroup}>
           <h2 className={styles.title}>Cookie Notice</h2>

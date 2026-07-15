@@ -3,9 +3,7 @@ import styles from './Legal.module.css';
 export const PrivacyPage = () => {
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>
-        Privacy Policy (Datenschutzerklärung)
-      </h1>
+      <h1 className={styles.title}>Privacy Policy (Datenschutzerklärung)</h1>
 
       <section className={styles.section}>
         <h2 className={styles.sectionHeader}>1. Overview</h2>
@@ -20,16 +18,14 @@ export const PrivacyPage = () => {
       <section className={styles.section}>
         <h2 className={styles.sectionHeader}>2. Hosting</h2>
         <p className={styles.text}>
-          We host the content of our website with the following provider: Google Cloud Platform (GCP).
-          The servers are located within the European Union (e.g., Frankfurt, Germany) to ensure
-          compliance with GDPR.
+          We host the content of our website with the following provider: Google Cloud Platform
+          (GCP). The servers are located within the European Union (e.g., Frankfurt, Germany) to
+          ensure compliance with GDPR.
         </p>
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionHeader}>
-          3. General Notes and Mandatory Information
-        </h2>
+        <h2 className={styles.sectionHeader}>3. General Notes and Mandatory Information</h2>
         <h3 className={styles.subHeader}>Data Protection</h3>
         <p className={styles.text}>
           The operators of these pages take the protection of your personal data very seriously. We
@@ -51,9 +47,7 @@ export const PrivacyPage = () => {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionHeader}>
-          4. Data Collection on this Website
-        </h2>
+        <h2 className={styles.sectionHeader}>4. Data Collection on this Website</h2>
         <h3 className={styles.subHeader}>Cookies</h3>
         <p className={styles.text}>
           Our website uses so-called "cookies". Cookies are small text files and do not cause any
@@ -79,9 +73,7 @@ export const PrivacyPage = () => {
           <li>Time of the server request</li>
           <li>IP address</li>
         </ul>
-        <p className={styles.text}>
-          These data are not combined with other data sources.
-        </p>
+        <p className={styles.text}>These data are not combined with other data sources.</p>
       </section>
 
       <section className={styles.section}>

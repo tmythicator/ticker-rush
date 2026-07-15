@@ -6,7 +6,5 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const Card = ({ className, ref, ...props }: CardProps) => {
-  return (
-    <div ref={ref} className={`${styles.card} ${className || ''}`} {...props} />
-  );
+  return <div ref={ref} className={`${styles.card} ${className || ''}`} {...props} />;
 };

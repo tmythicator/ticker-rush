@@ -24,10 +24,7 @@ export const PortfolioRow = ({
   const loadingIndicator = <span>...</span>;
 
   return (
-    <tr
-      data-testid={`portfolio-row-${symbol.toLowerCase()}`}
-      className={styles.row}
-    >
+    <tr data-testid={`portfolio-row-${symbol.toLowerCase()}`} className={styles.row}>
       <AssetInfoCell symbol={symbol} source={source} isTradable={isTradable} />
 
       <AssetFininfoCell variant="muted">{item.quantity}</AssetFininfoCell>

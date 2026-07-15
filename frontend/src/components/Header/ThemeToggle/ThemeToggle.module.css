@@ -43,13 +43,13 @@
     height: 1.125rem;
   }
 
-  &[data-active="true"] {
+  &[data-active='true'] {
     background-color: var(--primary);
     color: var(--primary-foreground);
     border: 2px solid var(--border);
   }
 
-  &[data-active="false"] {
+  &[data-active='false'] {
     color: var(--muted-foreground);
 
     &:hover {

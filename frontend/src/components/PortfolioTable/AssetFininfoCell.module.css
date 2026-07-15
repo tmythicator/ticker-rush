@@ -5,31 +5,31 @@
   font-size: 0.9375rem;
 }
 
-.cell[data-variant="default"] {
+.cell[data-variant='default'] {
   color: var(--foreground);
   font-weight: 500;
 }
 
-.cell[data-variant="muted"] {
+.cell[data-variant='muted'] {
   color: color-mix(in srgb, var(--foreground) 75%, transparent);
   font-weight: 500;
 }
 
-.cell[data-variant="medium"] {
+.cell[data-variant='medium'] {
   color: var(--foreground);
   font-weight: 600;
 }
 
-.cell[data-variant="bold"] {
+.cell[data-variant='bold'] {
   color: var(--foreground);
   font-weight: 700;
 }
 
 /* Trend Colors */
-.cell[data-trend="up"] {
+.cell[data-trend='up'] {
   color: var(--up-trend);
 }
 
-.cell[data-trend="down"] {
+.cell[data-trend='down'] {
   color: var(--down-trend);
 }

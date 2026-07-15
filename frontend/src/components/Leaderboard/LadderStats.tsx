@@ -15,9 +15,7 @@ export const LadderStats = ({ endTime, initialBalance }: LadderStatsProps) => {
           <IconCalendar className={styles.statsIcon} />
         </div>
         <div>
-          <div className={styles.statsLabel}>
-            Competition Ends
-          </div>
+          <div className={styles.statsLabel}>Competition Ends</div>
           <div className={styles.statsValue}>
             {endTime ? formatLocalTime(endTime.getTime() / 1000) : 'N/A'}
           </div>
@@ -29,12 +27,8 @@ export const LadderStats = ({ endTime, initialBalance }: LadderStatsProps) => {
           <IconWallet className={styles.statsIcon} />
         </div>
         <div>
-          <div className={styles.statsLabel}>
-            Starting Capital
-          </div>
-          <div className={styles.statsValue}>
-            ${initialBalance?.toLocaleString() ?? '0'}
-          </div>
+          <div className={styles.statsLabel}>Starting Capital</div>
+          <div className={styles.statsValue}>${initialBalance?.toLocaleString() ?? '0'}</div>
         </div>
       </div>
     </div>

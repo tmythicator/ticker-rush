@@ -25,11 +25,7 @@ export const MarketChart = ({
   useChart({ chartContainerRef, quote, symbol });
 
   if (!symbol) {
-    return (
-      <div className={styles.emptyState}>
-        No active ticker selected. Check configuration.
-      </div>
-    );
+    return <div className={styles.emptyState}>No active ticker selected. Check configuration.</div>;
   }
 
   return (

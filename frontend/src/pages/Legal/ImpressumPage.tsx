@@ -6,9 +6,7 @@ export const ImpressumPage = () => {
       <h1 className={styles.title}>Legal Notice (Impressum)</h1>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionHeader}>
-          Information according to § 5 TMG
-        </h2>
+        <h2 className={styles.sectionHeader}>Information according to § 5 TMG</h2>
         <p className={styles.text}>
           {import.meta.env.VITE_LEGAL_NAME || '[VITE_LEGAL_NAME]'}
           <br />
@@ -27,9 +25,7 @@ export const ImpressumPage = () => {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionHeader}>
-          Responsible for Content (V.i.S.d.P.)
-        </h2>
+        <h2 className={styles.sectionHeader}>Responsible for Content (V.i.S.d.P.)</h2>
         <p className={styles.text}>
           Responsible for content according to § 55 paragraph 2 RStV:
           <br />

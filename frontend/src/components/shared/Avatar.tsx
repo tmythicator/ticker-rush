@@ -9,12 +9,7 @@ export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
   ({ initials, username, className, ...props }, ref) => {
     return (
-      <div
-        ref={ref}
-        className={`${styles.avatar} ${className || ''}`}
-        title={username}
-        {...props}
-      >
+      <div ref={ref} className={`${styles.avatar} ${className || ''}`} title={username} {...props}>
         {initials}
       </div>
     );

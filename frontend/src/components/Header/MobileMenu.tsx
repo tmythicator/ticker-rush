@@ -11,19 +11,11 @@ interface MobileMenuProps {
   getLinkStyle: (isActive: boolean) => string;
 }
 
-export const MobileMenu = ({
-  isOpen,
-  onClose,
-  onLogout,
-  getLinkStyle,
-}: MobileMenuProps) => {
+export const MobileMenu = ({ isOpen, onClose, onLogout, getLinkStyle }: MobileMenuProps) => {
   if (!isOpen) return null;
 
   return (
-    <div
-      data-testid="mobile-menu"
-      className={styles.mobileOverlay}
-    >
+    <div data-testid="mobile-menu" className={styles.mobileOverlay}>
       <div className={styles.mobilePanel}>
         <Navigation
           getLinkStyle={getLinkStyle}
@@ -31,11 +23,7 @@ export const MobileMenu = ({
           className={styles.mobileNav}
         />
         <div className={styles.mobileFooter}>
-          <Button
-            onClick={onLogout}
-            variant="ghostDestructive"
-            className={styles.mobileLogoutBtn}
-          >
+          <Button onClick={onLogout} variant="ghostDestructive" className={styles.mobileLogoutBtn}>
             <IconLogOut />
             Logout
           </Button>

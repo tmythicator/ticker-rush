@@ -15,10 +15,7 @@ export const MarketStatusGuard = ({ user, quote, children }: MarketStatusGuardPr
 
   if (!user.is_participating) {
     return (
-      <Card
-        data-testid="participation-required-guard"
-        className={styles.guardCard}
-      >
+      <Card data-testid="participation-required-guard" className={styles.guardCard}>
         <IconMoon className={styles.icon} />
         <h3 className={styles.title}>Participation Required</h3>
         <p className={styles.description}>
@@ -30,10 +27,7 @@ export const MarketStatusGuard = ({ user, quote, children }: MarketStatusGuardPr
 
   if (quote?.is_closed) {
     return (
-      <Card
-        data-testid="market-closed-guard"
-        className={styles.guardCard}
-      >
+      <Card data-testid="market-closed-guard" className={styles.guardCard}>
         <IconMoon className={`${styles.icon} ${styles.iconPrimary}`} />
         <h3 className={styles.title}>Market Closed</h3>
         <p className={styles.description}>
@@ -47,10 +41,7 @@ export const MarketStatusGuard = ({ user, quote, children }: MarketStatusGuardPr
 
   if (!quote) {
     return (
-      <Card
-        data-testid="loading-market-guard"
-        className={styles.guardCard}
-      >
+      <Card data-testid="loading-market-guard" className={styles.guardCard}>
         <div className={styles.spinner} />
         <h3 className={styles.title}>Loading Market Data</h3>
         <p className={styles.description}>Fetching the latest quotes...</p>

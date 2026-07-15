@@ -6,12 +6,7 @@ export interface SourceBadgeProps extends React.ComponentProps<'span'> {
   ref?: React.Ref<HTMLSpanElement>;
 }
 
-export const SourceBadge = ({
-  source,
-  className,
-  ref,
-  ...props
-}: SourceBadgeProps) => {
+export const SourceBadge = ({ source, className, ref, ...props }: SourceBadgeProps) => {
   const isCoinGecko = source === 'CoinGecko' || source === 'CG';
   const label = isCoinGecko ? 'Source: CoinGecko' : 'Source: Finnhub';
   const displayLabel = isCoinGecko ? 'CG' : 'FH';

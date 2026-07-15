@@ -17,8 +17,8 @@ export const ChartSymbolIndicator = ({ quote, isLoading, isError }: ChartSymbolI
     priceColorStatus === 'up'
       ? styles.priceUp
       : priceColorStatus === 'down'
-      ? styles.priceDown
-      : styles.priceNeutral;
+        ? styles.priceDown
+        : styles.priceNeutral;
 
   return (
     <div className={styles.indicator}>
@@ -28,9 +28,7 @@ export const ChartSymbolIndicator = ({ quote, isLoading, isError }: ChartSymbolI
         <span className={styles.offlineTag}>OFFLINE</span>
       ) : (
         <>
-          <span
-            className={`${styles.price} ${priceColorClass}`}
-          >
+          <span className={`${styles.price} ${priceColorClass}`}>
             {price ? `$${price.toFixed(2)}` : '—'}
           </span>
           {isClosed ? (

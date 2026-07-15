@@ -11,9 +11,7 @@ interface StatCardProps {
 export const StatCard = ({ label, value, trend, icon: Icon }: StatCardProps) => (
   <div className={styles.card}>
     <div>
-      <span className={styles.label}>
-        {label}
-      </span>
+      <span className={styles.label}>{label}</span>
       <div className={styles.value}>{value}</div>
       {trend && <div className={styles.trend}>{trend}</div>}
     </div>

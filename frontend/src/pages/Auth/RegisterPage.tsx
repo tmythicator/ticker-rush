@@ -71,7 +71,9 @@ export const RegisterPage = () => {
         </p>
       }
     >
-      {backendError && <ErrorMessage className={styles.errorMessage} message={backendError.message} />}
+      {backendError && (
+        <ErrorMessage className={styles.errorMessage} message={backendError.message} />
+      )}
       <form
         onSubmit={handleSubmit((data) => registerUser(data))}
         className={styles.form}
@@ -117,11 +119,7 @@ export const RegisterPage = () => {
 
         <FormField error={errors.agbAccepted?.message}>
           <div className={styles.checkboxContainer}>
-            <Checkbox
-              id="agbAccepted"
-              {...register('agbAccepted')}
-              data-testid="agb-checkbox"
-            />
+            <Checkbox id="agbAccepted" {...register('agbAccepted')} data-testid="agb-checkbox" />
             <Label htmlFor="agbAccepted" className={styles.checkboxLabel}>
               I accept the{' '}
               <Link to="/agb" className={styles.link}>

@@ -33,33 +33,35 @@
   background-color: var(--card);
   padding: 1.5rem;
   text-align: left;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
   outline: none;
   transition: all 0.2s ease-out;
   animation: modalScale 0.2s ease-out;
 }
 
-.card[data-size="sm"] {
+.card[data-size='sm'] {
   max-width: 24rem;
 }
 
-.card[data-size="md"] {
+.card[data-size='md'] {
   max-width: 28rem;
 }
 
-.card[data-size="lg"] {
+.card[data-size='lg'] {
   max-width: 32rem;
 }
 
-.card[data-size="xl"] {
+.card[data-size='xl'] {
   max-width: 36rem;
 }
 
-.card[data-size="2xl"] {
+.card[data-size='2xl'] {
   max-width: 42rem;
 }
 
-.card[data-size="full"] {
+.card[data-size='full'] {
   max-width: 100%;
   margin: 1rem;
   height: calc(100vh - 2rem);

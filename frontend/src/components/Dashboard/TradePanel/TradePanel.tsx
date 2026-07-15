@@ -18,11 +18,7 @@ export const TradePanel = ({ quote, onTradeSuccess }: TradePanelProps) => {
   });
 
   if (!symbol) {
-    return (
-      <Card className={styles.emptyState}>
-        No active ticker selected.
-      </Card>
-    );
+    return <Card className={styles.emptyState}>No active ticker selected.</Card>;
   }
 
   return (

@@ -57,7 +57,9 @@ export const LoginPage = () => {
         </p>
       }
     >
-      {backendError && <ErrorMessage className={styles.errorMessage} message={backendError.message} />}
+      {backendError && (
+        <ErrorMessage className={styles.errorMessage} message={backendError.message} />
+      )}
       <form onSubmit={handleSubmit((data) => loginUser(data))} className={styles.form} noValidate>
         <FormInput
           label="Username"

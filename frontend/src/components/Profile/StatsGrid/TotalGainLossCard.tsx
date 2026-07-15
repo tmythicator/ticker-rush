@@ -18,17 +18,13 @@ export const TotalGainLossCard = ({ totalPnL }: TotalGainLossCardProps) => {
           <IconTrending />
         </div>
         <div>
-          <span className={styles.label}>
-            Total Gain/Loss
-          </span>
+          <span className={styles.label}>Total Gain/Loss</span>
           <div className={styles.value} data-trend={trend}>
             {formatCurrencyWithSign(totalPnL)}
           </div>
         </div>
       </div>
-      <p className={styles.description}>
-        Real-time P&L based on current market prices.
-      </p>
+      <p className={styles.description}>Real-time P&L based on current market prices.</p>
     </Card>
   );
 };

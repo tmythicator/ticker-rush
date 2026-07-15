@@ -6,7 +6,5 @@ interface ModalFooterProps {
 }
 
 export const ModalFooter = ({ children, className }: ModalFooterProps) => {
-  return (
-    <div className={`${styles.footer} ${className || ''}`}>{children}</div>
-  );
+  return <div className={`${styles.footer} ${className || ''}`}>{children}</div>;
 };

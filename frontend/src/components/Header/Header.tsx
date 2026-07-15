@@ -32,10 +32,7 @@ export const Header = () => {
 
   return (
     <>
-      <header
-        data-testid="app-header"
-        className={styles.header}
-      >
+      <header data-testid="app-header" className={styles.header}>
         <div className={styles.leftCol}>
           <Logo />
           {isAuthenticated && (

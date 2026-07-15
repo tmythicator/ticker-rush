@@ -16,12 +16,12 @@
   padding: 0.5rem;
 }
 
-.iconWrapper[data-trend="up"] {
+.iconWrapper[data-trend='up'] {
   background-color: color-mix(in srgb, var(--up-trend) 10%, transparent);
   color: var(--up-trend);
 }
 
-.iconWrapper[data-trend="down"] {
+.iconWrapper[data-trend='down'] {
   background-color: color-mix(in srgb, var(--down-trend) 10%, transparent);
   color: var(--down-trend);
 }
@@ -46,11 +46,11 @@
   font-weight: 700;
 }
 
-.value[data-trend="up"] {
+.value[data-trend='up'] {
   color: var(--up-trend);
 }
 
-.value[data-trend="down"] {
+.value[data-trend='down'] {
   color: var(--down-trend);
 }
 

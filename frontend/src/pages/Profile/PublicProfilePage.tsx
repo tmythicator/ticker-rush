@@ -21,10 +21,7 @@ export const PublicProfilePage = () => {
 
   if (error || !user) {
     return (
-      <div
-        data-testid="profile-unavailable"
-        className={styles.errorWrapper}
-      >
+      <div data-testid="profile-unavailable" className={styles.errorWrapper}>
         <IconLock className={styles.lockIcon} />
         <h1 className={styles.errorTitle}>Profile Unavailable</h1>
         <p className={styles.errorDescription}>This profile is private or does not exist.</p>
@@ -39,10 +36,7 @@ export const PublicProfilePage = () => {
 
       <div className={styles.container}>
         <div className={styles.headerGroup}>
-          <h1
-            data-testid="profile-name"
-            className={styles.title}
-          >
+          <h1 data-testid="profile-name" className={styles.title}>
             {user.first_name} {user.last_name}
           </h1>
           <div className={styles.metaGroup}>

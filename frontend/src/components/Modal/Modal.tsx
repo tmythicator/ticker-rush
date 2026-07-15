@@ -30,16 +30,8 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
 
   return createPortal(
     <ModalContext.Provider value={{ onClose }}>
-      <div
-        className={styles.modalContainer}
-        role="dialog"
-        aria-modal="true"
-      >
-        <div
-          className={styles.modalOverlay}
-          onClick={onClose}
-          aria-hidden="true"
-        />
+      <div className={styles.modalContainer} role="dialog" aria-modal="true">
+        <div className={styles.modalOverlay} onClick={onClose} aria-hidden="true" />
         {children}
       </div>
     </ModalContext.Provider>,

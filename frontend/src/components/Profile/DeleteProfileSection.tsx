@@ -46,9 +46,7 @@ export const DeleteProfileSection = ({ onSuccess }: DeleteProfileSectionProps) =
           </div>
           <div className={styles.textGroup}>
             <h3 className={styles.title}>Danger Zone</h3>
-            <p className={styles.description}>
-              Permanently delete and anonymize your account.
-            </p>
+            <p className={styles.description}>Permanently delete and anonymize your account.</p>
           </div>
           <div className={styles.btnWrapper}>
             <Button
@@ -77,16 +75,11 @@ export const DeleteProfileSection = ({ onSuccess }: DeleteProfileSectionProps) =
 
       {/* Custom Confirmation Modal */}
       <Modal isOpen={isConfirmOpen} onClose={() => setIsConfirmOpen(false)}>
-        <ModalCard
-          size="sm"
-          className={styles.modalCard}
-        >
+        <ModalCard size="sm" className={styles.modalCard}>
           <ModalHeader className={styles.modalHeader}>
             <div className={styles.modalHeaderRow}>
               <IconTrash />
-              <ModalTitle className={styles.modalTitle}>
-                Confirm Deletion
-              </ModalTitle>
+              <ModalTitle className={styles.modalTitle}>Confirm Deletion</ModalTitle>
             </div>
             <ModalCloseButton />
           </ModalHeader>

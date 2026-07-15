@@ -34,14 +34,12 @@ export const ChartSymbolPicker = ({ symbol, onSymbolChange }: ChartSymbolPickerP
           className={styles.select}
         >
           {tickers.length === 0 ? (
-            <option value="" className={styles.option}>No assets available</option>
+            <option value="" className={styles.option}>
+              No assets available
+            </option>
           ) : (
             tickers.map((t) => (
-              <option
-                key={t.symbol}
-                value={t.symbol}
-                className={styles.option}
-              >
+              <option key={t.symbol} value={t.symbol} className={styles.option}>
                 {t.symbol.toUpperCase()}
               </option>
             ))

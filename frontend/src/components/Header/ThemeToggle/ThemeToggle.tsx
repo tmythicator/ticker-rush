@@ -18,10 +18,7 @@ export function ThemeToggle() {
     return (
       <div className={styles.toggleContainer}>
         {THEME_OPTIONS.map(({ value, icon: Icon }) => (
-          <div
-            key={value}
-            className={styles.togglePlaceholder}
-          >
+          <div key={value} className={styles.togglePlaceholder}>
             <Icon />
           </div>
         ))}

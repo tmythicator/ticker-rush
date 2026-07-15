@@ -212,12 +212,12 @@
   background-color: var(--primary);
   color: var(--primary-foreground);
   box-shadow: var(--shadow-brutalist-sm);
-  
+
   &:hover {
     transform: translate(2px, 2px);
     box-shadow: none;
   }
-  
+
   &:active {
     transform: translate(4px, 4px);
   }
@@ -227,7 +227,7 @@
   border-color: transparent;
   background-color: transparent;
   color: var(--muted-foreground);
-  
+
   &:hover {
     background-color: var(--accent);
     color: var(--accent-foreground);

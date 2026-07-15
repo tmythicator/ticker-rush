@@ -13,12 +13,8 @@ export const NetWorthCard = ({ totalNetWorth, cash, assets }: NetWorthCardProps)
     <div className={styles.iconWrapper}>
       <IconWallet />
     </div>
-    <span className={styles.label}>
-      Total Net Worth
-    </span>
-    <div className={styles.value}>
-      ${totalNetWorth.toFixed(2)}
-    </div>
+    <span className={styles.label}>Total Net Worth</span>
+    <div className={styles.value}>${totalNetWorth.toFixed(2)}</div>
     <div className={styles.detailsWrapper}>
       <span className={styles.detailBadge}>
         Cash: <span>${cash.toFixed(2)}</span>

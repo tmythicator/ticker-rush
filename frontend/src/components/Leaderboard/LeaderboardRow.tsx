@@ -20,10 +20,7 @@ export const LeaderboardRow = ({ entry }: LeaderboardRowProps) => {
       </td>
       <td className={styles.cell}>
         {entry.user?.is_public ? (
-          <Link
-            to={`/users/${entry.user?.username}`}
-            className={styles.userLink}
-          >
+          <Link to={`/users/${entry.user?.username}`} className={styles.userLink}>
             {entry.user?.username}
           </Link>
         ) : (

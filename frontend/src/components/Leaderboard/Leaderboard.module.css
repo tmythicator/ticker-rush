@@ -263,11 +263,11 @@
   justify-content: center;
 }
 
-.statsIconWrapper[data-type="time"] {
+.statsIconWrapper[data-type='time'] {
   color: var(--color-blue);
 }
 
-.statsIconWrapper[data-type="capital"] {
+.statsIconWrapper[data-type='capital'] {
   color: var(--success);
 }
 

@@ -11,9 +11,7 @@ interface SymbolFieldProps {
 
 export const SymbolField = ({ symbol, source }: SymbolFieldProps) => (
   <div>
-    <Label className={styles.label}>
-      Symbol
-    </Label>
+    <Label className={styles.label}>Symbol</Label>
     <div className={styles.inputWrapper}>
       {source && <SourceBadge source={source} />}
       <Input

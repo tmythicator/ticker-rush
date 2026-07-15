@@ -6,7 +6,5 @@ interface ModalHeaderProps {
 }
 
 export const ModalHeader = ({ children, className }: ModalHeaderProps) => {
-  return (
-    <div className={`${styles.header} ${className || ''}`}>{children}</div>
-  );
+  return <div className={`${styles.header} ${className || ''}`}>{children}</div>;
 };

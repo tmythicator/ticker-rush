@@ -27,30 +27,30 @@
     opacity: 0.5;
   }
 
-  &[type="number"]::-webkit-outer-spin-button,
-  &[type="number"]::-webkit-inner-spin-button {
+  &[type='number']::-webkit-outer-spin-button,
+  &[type='number']::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
 
-  &[type="number"] {
+  &[type='number'] {
     -moz-appearance: textfield;
     appearance: textfield;
   }
 
   /* Variants */
-  &[data-variant="default"] {
+  &[data-variant='default'] {
     border-color: var(--input);
   }
 
-  &[data-variant="error"] {
+  &[data-variant='error'] {
     border-color: var(--destructive);
     &:focus-visible {
       outline-color: var(--destructive);
     }
   }
 
-  &[data-variant="unstyled"] {
+  &[data-variant='unstyled'] {
     border: none;
     background-color: transparent;
     padding: 0;
@@ -66,23 +66,23 @@
   }
 
   /* Sizes */
-  &[data-size="default"] {
+  &[data-size='default'] {
     height: 2.75rem;
   }
 
-  &[data-size="sm"] {
+  &[data-size='sm'] {
     height: 2.25rem;
     padding: 0 0.625rem;
     font-size: 0.75rem;
   }
 
-  &[data-size="lg"] {
+  &[data-size='lg'] {
     height: 3rem;
     padding: 0 1rem;
     font-size: 1rem;
   }
 
-  &[data-size="unstyled"] {
+  &[data-size='unstyled'] {
     height: auto;
     padding: 0;
   }
