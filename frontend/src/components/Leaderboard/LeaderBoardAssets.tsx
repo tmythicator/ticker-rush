@@ -18,8 +18,8 @@ export const LeaderBoardAssets = ({ assets }: LeaderBoardAssetsProps) => {
       <div className={styles.assetsGrid}>
         {assets.map((t) => (
           <div key={t.symbol} className={styles.assetItem}>
-            <span className={styles.assetSymbol}>{t.symbol}</span>
-            <SourceBadge source={t.source as TickerSource} />
+            <span className={styles.assetSymbol}>{t.symbol.toUpperCase()}</span>
+            <SourceBadge source={t.source as TickerSource} className={styles.assetSourceBadge} />
           </div>
         ))}
       </div>

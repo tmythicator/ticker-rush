@@ -29,6 +29,11 @@
   &[data-align='center'] {
     text-align: center;
   }
+
+  @media (max-width: 640px) {
+    padding: 0.5rem 0.5rem;
+    font-size: 10px;
+  }
 }
 
 .row {
@@ -53,6 +58,11 @@
 
   &[data-align='center'] {
     text-align: center;
+  }
+
+  @media (max-width: 640px) {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.75rem;
   }
 }
 

@@ -34,10 +34,19 @@
   font-size: 2.25rem;
   font-weight: 900;
   letter-spacing: -0.025em;
+
+  @media (max-width: 640px) {
+    font-size: 1.5rem;
+  }
 }
 
 .description {
   max-width: 36rem;
   line-height: 1.625;
   color: var(--muted-foreground);
+
+  @media (max-width: 640px) {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
 }
