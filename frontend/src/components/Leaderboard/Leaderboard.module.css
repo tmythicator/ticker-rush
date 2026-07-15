@@ -62,7 +62,7 @@
 
 /* Table styles */
 .tableWrapper {
-  overflow: hidden;
+  overflow-x: auto;
   border-radius: var(--radius);
   border: 2px solid var(--border);
   background-color: color-mix(in srgb, var(--card) 50%, transparent);
