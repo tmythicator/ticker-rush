@@ -1,26 +1,30 @@
 import { type TickerSource } from '@/types';
 import styles from './SourceBadge.module.css';
+import { cva, type VariantProps } from 'class-variance-authority';
+import React from 'react';
+import { getSourceBadgeConfig } from '@/lib/utils';
 
-export interface SourceBadgeProps extends React.ComponentProps<'span'> {
+const badgeVariants = cva(styles.badge, {
+  variants: {
+    variant: {
+      CoinGecko: styles.variantCoinGecko,
+      Finnhub: styles.variantFinnhub,
+    },
+  },
+});
+
+export interface SourceBadgeProps
+  extends React.ComponentProps<'span'>, VariantProps<typeof badgeVariants> {
   source: TickerSource;
-  ref?: React.Ref<HTMLSpanElement>;
 }
 
-export const SourceBadge = ({ source, className, ref, ...props }: SourceBadgeProps) => {
-  const isCoinGecko = source === 'CoinGecko' || source === 'CG';
-  const label = isCoinGecko ? 'Source: CoinGecko' : 'Source: Finnhub';
-  const displayLabel = isCoinGecko ? 'CG' : 'FH';
-  const sourceName = isCoinGecko ? 'CoinGecko' : 'Finnhub';
-
-  return (
-    <span
-      ref={ref}
-      className={`${styles.badge} ${className || ''}`}
-      data-source={sourceName}
-      title={label}
-      {...props}
-    >
-      {displayLabel}
-    </span>
-  );
-};
+export const SourceBadge = React.forwardRef<HTMLSpanElement, SourceBadgeProps>(
+  ({ source, className, ...props }, ref) => {
+    const { variant, label, title } = getSourceBadgeConfig(source);
+    return (
+      <span ref={ref} className={badgeVariants({ variant, className })} title={title} {...props}>
+        {label}
+      </span>
+    );
+  },
+);

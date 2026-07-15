@@ -50,9 +50,8 @@ describe('ThemeToggle', () => {
 
     const darkButton = screen.getByTestId('theme-toggle-dark');
     const lightButton = screen.getByTestId('theme-toggle-light');
-
-    expect(darkButton).toHaveAttribute('data-active', 'true');
-    expect(lightButton).toHaveAttribute('data-active', 'false');
+    expect(darkButton).toHaveAttribute('aria-pressed', 'true');
+    expect(lightButton).toHaveAttribute('aria-pressed', 'false');
   });
 
   it('calls setTheme with selected theme on click', async () => {

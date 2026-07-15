@@ -1,18 +1,19 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { ErrorMessage } from './ErrorMessage';
+import styles from './ErrorMessage.module.css';
 
 describe('ErrorMessage', () => {
   it('renders message string correctly', () => {
-    render(<ErrorMessage message="Something went wrong" />);
-    const alert = screen.getByRole('alert');
+    render(<ErrorMessage data-testid="error" message="Something went wrong" />);
+    const alert = screen.getByTestId('error');
     expect(alert).toBeInTheDocument();
     expect(alert.textContent).toBe('Something went wrong');
   });
 
   it('renders children correctly', () => {
-    render(<ErrorMessage>Children error message</ErrorMessage>);
-    const alert = screen.getByRole('alert');
+    render(<ErrorMessage data-testid="error">Children error message</ErrorMessage>);
+    const alert = screen.getByTestId('error');
     expect(alert).toBeInTheDocument();
     expect(alert.textContent).toBe('Children error message');
   });
@@ -23,13 +24,13 @@ describe('ErrorMessage', () => {
   });
 
   it('applies variant classes correctly', () => {
-    const { rerender } = render(<ErrorMessage message="Error" variant="sm" />);
-    let alert = screen.getByRole('alert');
-    expect(alert).toHaveAttribute('data-variant', 'sm');
+    const { rerender } = render(<ErrorMessage message="Error" variant="sm" data-testid="error" />);
+    let alert = screen.getByTestId('error');
+    expect(alert.className).toContain(styles.sizeSm);
 
-    rerender(<ErrorMessage message="Error" variant="xs" />);
-    alert = screen.getByRole('alert');
-    expect(alert).toHaveAttribute('data-variant', 'xs');
+    rerender(<ErrorMessage message="Error" variant="xs" data-testid="error" />);
+    alert = screen.getByTestId('error');
+    expect(alert.className).toContain(styles.sizeXs);
   });
 
   it('applies custom className and forwards native div properties', () => {

@@ -19,11 +19,6 @@
   align-items: center;
   justify-content: center;
   color: var(--muted-foreground);
-
-  & svg {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
 }
 
 .toggleButton {
@@ -38,22 +33,17 @@
   border-radius: calc(var(--radius) - 2px);
   cursor: pointer;
 
-  & svg {
-    width: 1.125rem;
-    height: 1.125rem;
-  }
-
-  &[data-active='true'] {
+  &.active {
     background-color: var(--primary);
     color: var(--primary-foreground);
     border: 2px solid var(--border);
   }
 
-  &[data-active='false'] {
+  &.inactive {
     color: var(--muted-foreground);
+  }
 
-    &:hover {
-      color: var(--foreground);
-    }
+  &.inactive:hover {
+    color: var(--foreground);
   }
 }

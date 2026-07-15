@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { Button } from './Button';
+import styles from './Button.module.css';
 
 describe('Button', () => {
   it('renders children correctly', () => {
@@ -19,7 +20,7 @@ describe('Button', () => {
       </Button>,
     );
     let button = screen.getByTestId('test-button');
-    expect(button).toHaveAttribute('data-variant', 'outline');
+    expect(button).toHaveClass(styles.variantOutline);
 
     rerender(
       <Button data-testid="test-button" variant="destructive">
@@ -27,7 +28,7 @@ describe('Button', () => {
       </Button>,
     );
     button = screen.getByTestId('test-button');
-    expect(button).toHaveAttribute('data-variant', 'destructive');
+    expect(button).toHaveClass(styles.variantDestructive);
   });
 
   it('applies custom className and native attributes', () => {
@@ -39,7 +40,7 @@ describe('Button', () => {
     const button = screen.getByTestId('test-button');
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute('type', 'submit');
-    expect(button.className).toContain('custom-class');
+    expect(button).toHaveClass('custom-class');
   });
 
   it('triggers onClick handler when clicked', async () => {

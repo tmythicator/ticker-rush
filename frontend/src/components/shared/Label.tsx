@@ -1,13 +1,25 @@
+import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import styles from './Label.module.css';
 
-export interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
-  variant?: 'default' | 'muted' | 'error';
-  ref?: React.Ref<HTMLLabelElement>;
-}
+const labelVariants = cva(styles.label, {
+  variants: {
+    variant: {
+      default: styles.variantDefault,
+      muted: styles.variantMuted,
+      error: styles.variantError,
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+});
 
-export const Label = ({ className, variant = 'default', ref, ...props }: LabelProps) => {
-  const combinedClassName = className ? `${styles.label} ${className}` : styles.label;
+export interface LabelProps
+  extends React.LabelHTMLAttributes<HTMLLabelElement>, VariantProps<typeof labelVariants> {}
 
-  return <label ref={ref} className={combinedClassName} data-variant={variant} {...props} />;
-};
+export const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
+  ({ className, variant, ...props }, ref) => {
+    return <label ref={ref} className={labelVariants({ variant, className })} {...props} />;
+  },
+);

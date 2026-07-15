@@ -4,14 +4,14 @@
   background-color: var(--destructive-bg-subtle);
   font-weight: 500;
   color: var(--destructive);
+}
 
-  &[data-variant='sm'] {
-    padding: var(--space-sm);
-    font-size: var(--text-sm);
-  }
+.sizeSm {
+  padding: var(--space-sm);
+  font-size: var(--text-sm);
+}
 
-  &[data-variant='xs'] {
-    padding: var(--space-xs);
-    font-size: var(--text-xs);
-  }
+.sizeXs {
+  padding: var(--space-xs);
+  font-size: var(--text-xs);
 }

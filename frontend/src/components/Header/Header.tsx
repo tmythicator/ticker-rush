@@ -1,6 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/shared/Button';
-import { Avatar } from '@/components/shared';
 import { IconLogOut, IconMenu, IconX } from '@icons/CustomIcons';
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -12,6 +11,7 @@ import { Navigation } from './Navigation';
 import { UserBalance } from './UserBalance';
 import { AuthButtons } from './AuthButtons';
 import { MobileMenu } from './MobileMenu';
+import { UserAvatar } from './UserAvatar';
 
 export const Header = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -42,9 +42,8 @@ export const Header = () => {
           {isAuthenticated && user ? (
             <>
               <UserBalance balance={user.balance} />
-
               <NavLink to="/profile" className={styles.avatarLink}>
-                <Avatar initials={user.first_name[0]} username={user.username} />
+                <UserAvatar user={user} />
               </NavLink>
               <Button
                 data-testid="logout-button"

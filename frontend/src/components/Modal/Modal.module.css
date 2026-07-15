@@ -38,28 +38,22 @@
   transition: var(--transition-normal);
   animation: modalScale 0.2s ease-out;
 }
-
-.card[data-size='sm'] {
+.sizeSm {
   max-width: 24rem;
 }
-
-.card[data-size='md'] {
+.sizeMd {
   max-width: 28rem;
 }
-
-.card[data-size='lg'] {
+.sizeLg {
   max-width: 32rem;
 }
-
-.card[data-size='xl'] {
+.sizeXl {
   max-width: 36rem;
 }
-
-.card[data-size='2xl'] {
+.size2Xl {
   max-width: 42rem;
 }
-
-.card[data-size='full'] {
+.sizeFull {
   max-width: 100%;
   margin: var(--space-md);
   height: calc(100vh - 2rem);

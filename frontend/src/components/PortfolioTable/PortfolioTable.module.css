@@ -22,27 +22,10 @@
   color: var(--muted-foreground);
   border-bottom: 2px solid var(--border);
 
-  &[data-align='right'] {
-    text-align: right;
-  }
-
-  &[data-align='center'] {
-    text-align: center;
-  }
-
   @media (max-width: 640px) {
     padding: var(--space-xs) var(--space-xs);
     font-size: 10px;
   }
-}
-
-.row {
-  border-bottom: 1px solid var(--border);
-  transition: var(--transition-normal);
-}
-
-.row:hover {
-  background-color: var(--muted-bg-subtle);
 }
 
 .cell {
@@ -50,19 +33,29 @@
   font-size: var(--text-sm);
   vertical-align: middle;
 
-  &[data-align='right'] {
-    text-align: right;
-    font-family: var(--font-mono);
-    font-weight: 700;
-  }
-
-  &[data-align='center'] {
-    text-align: center;
-  }
-
   @media (max-width: 640px) {
     padding: var(--space-xs) var(--space-xs);
     font-size: var(--text-xs);
+  }
+}
+.alignLeft {
+  text-align: left;
+}
+
+.alignRight {
+  text-align: right;
+}
+
+.alignCenter {
+  text-align: center;
+}
+
+.row {
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition-normal);
+
+  &:hover {
+    background-color: var(--muted-bg-subtle);
   }
 }
 

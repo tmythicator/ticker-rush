@@ -4,6 +4,7 @@ import { HomeChart } from './HomeChart';
 import { useAuth } from '@/hooks/useAuth';
 import buttonStyles from '@/components/shared/Button.module.css';
 import styles from './HomePage.module.css';
+import clsx from 'clsx';
 
 export const HomePage = () => {
   const { user, isLoading } = useAuth();
@@ -34,17 +35,21 @@ export const HomePage = () => {
           <div className={styles.btnGroup}>
             <Link
               to="/register"
-              className={`${buttonStyles.button} ${styles.btnItem}`}
-              data-variant="default"
-              data-size="lg"
+              className={clsx(
+                buttonStyles.button,
+                buttonStyles.variantDefault,
+                buttonStyles.sizeLg,
+              )}
             >
               Get Started <IconArrowRight className={styles.arrowIcon} />
             </Link>
             <Link
               to="/leaderboard"
-              className={`${buttonStyles.button} ${styles.btnItem}`}
-              data-variant="outline"
-              data-size="lg"
+              className={clsx(
+                buttonStyles.button,
+                buttonStyles.variantOutline,
+                buttonStyles.sizeLg,
+              )}
             >
               View Leaderboard
             </Link>

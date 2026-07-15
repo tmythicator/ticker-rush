@@ -2,6 +2,7 @@ import { IconArrowRight, IconTrash } from '@/components/icons/CustomIcons';
 import { Button } from '@/components/shared/Button';
 import type { PortfolioItem } from '@/types';
 import styles from './PortfolioTable.module.css';
+import { cva } from 'class-variance-authority';
 
 interface RowActionsCellProps {
   item: PortfolioItem;
@@ -21,8 +22,21 @@ export const RowActionsCell = ({
   const isActionDisabled = isMarketClosed || !isTradable;
   const buttonTitle = !isTradable ? 'Not Tradable' : isMarketClosed ? 'Market Closed' : undefined;
 
+  const cellVariants = cva(styles.cell, {
+    variants: {
+      align: {
+        left: '',
+        center: styles.alignCenter,
+        right: styles.alignRight,
+      },
+    },
+    defaultVariants: {
+      align: 'center',
+    },
+  });
+
   return (
-    <td className={styles.cell} data-align="center">
+    <td className={cellVariants()}>
       <div className={styles.actionsContainer}>
         <Button
           data-testid="sell-all-button"

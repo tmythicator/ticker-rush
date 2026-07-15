@@ -1,6 +1,7 @@
 import { Button } from '@/components/shared/Button';
 import React from 'react';
 import styles from './ThemeToggle.module.css';
+import clsx from 'clsx';
 
 interface ThemeToggleButtonProps {
   active: boolean;
@@ -23,9 +24,9 @@ export const ThemeToggleButton = ({
       variant="unstyled"
       size="unstyled"
       onClick={onClick}
-      className={styles.toggleButton}
-      data-active={active}
+      className={clsx(styles.toggleButton, active ? styles.active : styles.inactive)}
       aria-label={label}
+      aria-pressed={active}
     >
       <Icon />
     </Button>

@@ -1,6 +1,6 @@
 import { IconCalendar, IconWallet } from '@/components/icons/CustomIcons';
 import { formatLocalTime } from '@/lib/utils';
-import styles from './Leaderboard.module.css';
+import styles from './LadderStats.module.css';
 
 interface LadderStatsProps {
   endTime?: Date;

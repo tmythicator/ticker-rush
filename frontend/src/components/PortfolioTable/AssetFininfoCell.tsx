@@ -1,26 +1,46 @@
 import * as React from 'react';
 import styles from './AssetFininfoCell.module.css';
+import { cva, type VariantProps } from 'class-variance-authority';
+import clsx from 'clsx';
 
-export interface AssetFininfoCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
-  variant?: 'default' | 'muted' | 'medium' | 'bold';
-  trend?: 'up' | 'down' | 'neutral';
-  ref?: React.Ref<HTMLTableCellElement>;
-}
+const cellVariants = cva(styles.cell, {
+  variants: {
+    variant: {
+      default: styles.variantDefault,
+      muted: styles.variantMuted,
+      medium: styles.variantMedium,
+      bold: styles.variantBold,
+    },
+    align: {
+      center: styles.alignCenter,
+      right: styles.alignRight,
+    },
+    trend: {
+      up: styles.trendUp,
+      down: styles.trendDown,
+      neutral: '',
+    },
+  },
+  defaultVariants: {
+    variant: 'default',
+    align: 'center',
+    trend: 'neutral',
+  },
+});
 
-export const AssetFininfoCell = ({
-  className,
-  variant = 'default',
-  trend,
-  ref,
-  ...props
-}: AssetFininfoCellProps) => {
-  return (
-    <td
-      ref={ref}
-      className={`${styles.cell} ${className || ''}`}
-      data-variant={variant}
-      data-trend={trend}
-      {...props}
-    />
-  );
-};
+export interface AssetFininfoCellProps
+  extends
+    Omit<React.TdHTMLAttributes<HTMLTableCellElement>, 'align'>,
+    VariantProps<typeof cellVariants> {}
+
+export const AssetFininfoCell = React.forwardRef<HTMLTableCellElement, AssetFininfoCellProps>(
+  ({ className, variant, trend, align, ...props }, ref) => {
+    return (
+      <td
+        ref={ref}
+        className={clsx(cellVariants({ variant, trend, align }), className)}
+        {...props}
+      />
+    );
+  },
+);

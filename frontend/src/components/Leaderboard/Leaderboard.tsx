@@ -1,6 +1,6 @@
 import { IconRefresh, IconTrophy } from '@/components/icons/CustomIcons';
 import { useLeaderboardQuery } from '@/hooks/useLeaderboardQuery';
-import { LeaderboardTable } from './LeaderboardTable';
+import { LeaderboardTable } from './LeaderboardTable/LeaderboardTable';
 import styles from './Leaderboard.module.css';
 
 export function Leaderboard() {

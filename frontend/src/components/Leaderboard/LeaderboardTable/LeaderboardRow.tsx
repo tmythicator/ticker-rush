@@ -1,23 +1,30 @@
 import { Link } from 'react-router-dom';
 import { IconLock, IconMedal } from '@/components/icons/CustomIcons';
 import type { LeaderboardEntry } from '@/types';
-import styles from './Leaderboard.module.css';
+import styles from './LeaderboardTable.module.css';
+import clsx from 'clsx';
 
 interface LeaderboardRowProps {
   entry: LeaderboardEntry;
 }
 
+const MEDAL_CLASSES: Record<number, string> = {
+  1: styles.medalGold,
+  2: styles.medalSilver,
+  3: styles.medalBronze,
+};
+
 export const LeaderboardRow = ({ entry }: LeaderboardRowProps) => {
+  const medalClass = MEDAL_CLASSES[entry.rank];
+
   return (
-    <tr>
-      <td className={styles.cell} data-align="center">
+    <tr className={styles.row}>
+      <td className={styles.cellRank}>
         <div className={styles.rankContainer}>
-          {entry.rank === 1 && <IconMedal className={styles.medalIcon} data-medal="gold" />}
-          {entry.rank === 2 && <IconMedal className={styles.medalIcon} data-medal="silver" />}
-          {entry.rank === 3 && <IconMedal className={styles.medalIcon} data-medal="bronze" />}
-          {entry.rank > 3 && entry.rank}
+          {medalClass ? <IconMedal className={clsx(styles.medalIcon, medalClass)} /> : entry.rank}
         </div>
       </td>
+
       <td className={styles.cell}>
         {entry.user?.is_public ? (
           <Link to={`/users/${entry.user?.username}`} className={styles.userLink}>
@@ -31,7 +38,7 @@ export const LeaderboardRow = ({ entry }: LeaderboardRowProps) => {
         )}
       </td>
 
-      <td className={styles.cell} data-align="right">
+      <td className={clsx(styles.cell, styles.cellNetWorth)}>
         $
         {entry.score?.toLocaleString(undefined, {
           minimumFractionDigits: 2,

@@ -1,12 +1,12 @@
 import { SourceBadge } from '@/components/shared/SourceBadge';
 import type { TickerInfo, TickerSource } from '@/types';
-import styles from './Leaderboard.module.css';
+import styles from './LadderAssets.module.css';
 
-interface LeaderBoardAssetsProps {
+interface LadderAssetsProps {
   assets: TickerInfo[];
 }
 
-export const LeaderBoardAssets = ({ assets }: LeaderBoardAssetsProps) => {
+export const LadderAssets = ({ assets }: LadderAssetsProps) => {
   if (!assets || assets.length === 0) return null;
 
   return (
