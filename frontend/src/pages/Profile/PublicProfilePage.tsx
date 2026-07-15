@@ -31,11 +31,11 @@ export const PublicProfilePage = () => {
 
   return (
     <div className={styles.pageWrapper}>
-      <div className={styles.ambientOrbPrimary} />
-      <div className={styles.ambientOrbSecondary} />
+      <div className={styles.ambientOrbPrimary} aria-hidden="true" />
+      <div className={styles.ambientOrbSecondary} aria-hidden="true" />
 
-      <div className={styles.container}>
-        <div className={styles.headerGroup}>
+      <article className={styles.container}>
+        <header className={styles.headerGroup}>
           <h1 data-testid="profile-name" className={styles.title}>
             {user.first_name} {user.last_name}
           </h1>
@@ -57,17 +57,17 @@ export const PublicProfilePage = () => {
               </div>
             )}
           </div>
-        </div>
+        </header>
 
         <StatsGrid {...user} />
 
-        <div className={styles.tableGroup}>
+        <section className={styles.tableGroup} aria-label="Portfolio list">
           <h2 className={styles.sectionTitle}>Portfolio</h2>
           <Card className={styles.tableContainer}>
             <PortfolioTable items={Object.values(user.portfolio || {})} isReadOnly />
           </Card>
-        </div>
-      </div>
+        </section>
+      </article>
     </div>
   );
 };
