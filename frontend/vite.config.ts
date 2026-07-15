@@ -1,6 +1,7 @@
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import { visualizer } from "rollup-plugin-visualizer";
 
 /// <reference types="vitest" />
 import { promises as fs } from 'fs';
@@ -68,6 +69,10 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
+      visualizer({
+        emitFile: true,
+        filename: 'stats.html',
+      }),
       react(),
       {
         name: 'generate-seo-files',
