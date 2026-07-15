@@ -5,31 +5,30 @@
   font-size: 0.9375rem;
 }
 
-.cell[data-variant='default'] {
+.variantDefault {
   color: var(--foreground);
   font-weight: 500;
 }
 
-.cell[data-variant='muted'] {
+.variantMuted {
   color: color-mix(in srgb, var(--foreground) 75%, transparent);
   font-weight: 500;
 }
 
-.cell[data-variant='medium'] {
+.variantMedium {
   color: var(--foreground);
   font-weight: 600;
 }
 
-.cell[data-variant='bold'] {
+.variantBold {
   color: var(--foreground);
   font-weight: 700;
 }
 
-/* Trend Colors */
-.cell[data-trend='up'] {
+.trendUp {
   color: var(--up-trend);
 }
 
-.cell[data-trend='down'] {
+.trendDown {
   color: var(--down-trend);
 }

@@ -1,17 +1,29 @@
 import * as React from 'react';
 import styles from './ErrorMessage.module.css';
-import clsx from 'clsx';
+import { cva, type VariantProps } from 'class-variance-authority';
 
-export interface ErrorMessageProps extends React.HTMLAttributes<HTMLDivElement> {
+const errorVariants = cva(styles.errorMessage, {
+  variants: {
+    variant: {
+      sm: styles.sizeSm,
+      xs: styles.sizeXs,
+    },
+  },
+  defaultVariants: {
+    variant: 'sm',
+  },
+});
+
+export interface ErrorMessageProps
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof errorVariants> {
   message?: string;
-  variant?: 'sm' | 'xs';
 }
 
 export const ErrorMessage = ({
   className,
   message,
   children,
-  variant = 'sm',
+  variant,
   ...props
 }: ErrorMessageProps) => {
   let content = message || children;
@@ -25,8 +37,7 @@ export const ErrorMessage = ({
     <div
       role="alert"
       data-testid="error-message"
-      className={clsx(styles.errorMessage, className)}
-      data-variant={variant}
+      className={errorVariants({ variant, className })}
       {...props}
     >
       {content}
