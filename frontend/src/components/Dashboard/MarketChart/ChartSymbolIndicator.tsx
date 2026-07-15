@@ -1,5 +1,6 @@
 import { usePriceColor } from '@/hooks/usePriceColor';
 import { type Quote } from '@/types';
+import styles from './MarketChart.module.css';
 
 interface ChartSymbolIndicatorProps {
   quote: Quote | null;
@@ -10,26 +11,34 @@ interface ChartSymbolIndicatorProps {
 export const ChartSymbolIndicator = ({ quote, isLoading, isError }: ChartSymbolIndicatorProps) => {
   const price = quote?.price;
   const isClosed = quote?.is_closed;
-  const priceColor = usePriceColor(price);
+  const priceColorStatus = usePriceColor(price);
+
+  const priceColorClass =
+    priceColorStatus === 'up'
+      ? styles.priceUp
+      : priceColorStatus === 'down'
+      ? styles.priceDown
+      : styles.priceNeutral;
+
   return (
-    <div className="flex min-w-[80px] flex-col items-end px-2">
+    <div className={styles.indicator}>
       {isLoading ? (
-        <div className="h-5 w-16 animate-pulse rounded bg-muted"></div>
+        <div className={styles.pulseLoader}></div>
       ) : isError ? (
-        <span className="text-xs font-bold text-destructive">OFFLINE</span>
+        <span className={styles.offlineTag}>OFFLINE</span>
       ) : (
         <>
           <span
-            className={`font-mono text-lg font-bold leading-none ${priceColor} transition-colors duration-300`}
+            className={`${styles.price} ${priceColorClass}`}
           >
             {price ? `$${price.toFixed(2)}` : '—'}
           </span>
           {isClosed ? (
-            <span className="text-[10px] font-bold uppercase tracking-wider text-yellow-500">
+            <span className={styles.statusLabel} data-status="closed">
               Market Closed
             </span>
           ) : (
-            <span className="text-[10px] font-bold uppercase tracking-wider text-foreground/60">
+            <span className={styles.statusLabel} data-status="live">
               Live
             </span>
           )}

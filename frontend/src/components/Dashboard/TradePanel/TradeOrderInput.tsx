@@ -3,6 +3,7 @@ import { TradeButtons } from './TradeButtons';
 import { SymbolField } from './SymbolField';
 import { QuantityField } from './QuantityField';
 import { ErrorMessage } from '@/components/shared/ErrorMessage';
+import styles from './TradePanel.module.css';
 
 export interface TradeOrderAsset {
   symbol: string;
@@ -29,9 +30,11 @@ export const TradeOrderInput = ({ asset, form, onTrade }: TradeOrderInputProps) 
   const { symbol, source, price, positionQuantity, buyingPower } = asset;
   const { quantity, setQuantity, error, disabled } = form;
 
+  const containerClass = `${styles.formContainer} ${disabled ? styles.disabled : ''}`;
+
   return (
-    <div className={`flex-1 space-y-5 ${disabled ? 'pointer-events-none opacity-50' : ''}`}>
-      {error && <ErrorMessage variant="xs" className="mb-2" message={error} />}
+    <div className={containerClass}>
+      {error && <ErrorMessage variant="xs" message={error} />}
 
       <SymbolField symbol={symbol} source={source} />
 

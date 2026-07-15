@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import styles from './Modal.module.css';
 
 interface ModalBodyProps {
   children: React.ReactNode;
@@ -6,5 +6,7 @@ interface ModalBodyProps {
 }
 
 export const ModalBody = ({ children, className }: ModalBodyProps) => {
-  return <div className={cn('mt-2', className)}>{children}</div>;
+  return (
+    <div className={`${styles.body} ${className || ''}`}>{children}</div>
+  );
 };

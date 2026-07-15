@@ -21,8 +21,8 @@ export const usePortfolioRowState = (item: PortfolioItem) => {
     };
   }, [config, item.stock_symbol, quote?.source, quote?.is_closed]);
 
-  const { marketValue, pnl, pnlColorClass } = useMemo(() => {
-    if (!quote) return { marketValue: null, pnl: null, pnlColorClass: 'text-muted-foreground' };
+  const { marketValue, pnl, pnlStatus } = useMemo(() => {
+    if (!quote) return { marketValue: null, pnl: null, pnlStatus: 'neutral' };
 
     const currentMarketValue = quote.price * item.quantity;
     const currentPnl = (quote.price - item.average_price) * item.quantity;
@@ -30,7 +30,7 @@ export const usePortfolioRowState = (item: PortfolioItem) => {
     return {
       marketValue: `$${currentMarketValue.toFixed(2)}`,
       pnl: formatCurrencyWithSign(currentPnl),
-      pnlColorClass: currentPnl >= 0 ? 'text-green-500' : 'text-red-500',
+      pnlStatus: currentPnl >= 0 ? 'positive' : 'negative',
     };
   }, [quote, item.quantity, item.average_price]);
 
@@ -42,6 +42,6 @@ export const usePortfolioRowState = (item: PortfolioItem) => {
     quote,
     marketValue,
     pnl,
-    pnlColorClass,
+    pnlStatus,
   };
 };

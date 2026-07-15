@@ -2,6 +2,7 @@ import { IconChevronDown } from '@/components/icons/CustomIcons';
 import { SourceBadge } from '@/components/shared/SourceBadge';
 import { useTickers } from '@/hooks/useTickers';
 import { isTradeSymbol, type TickerSource, type TradeSymbol } from '@/types';
+import styles from './MarketChart.module.css';
 
 interface ChartSymbolPickerProps {
   symbol: TradeSymbol | null;
@@ -23,30 +24,30 @@ export const ChartSymbolPicker = ({ symbol, onSymbolChange }: ChartSymbolPickerP
   const source = (tickerInfo?.source ?? 'Finnhub') as TickerSource;
 
   return (
-    <div className="group/select relative">
-      <div className="flex items-center gap-2">
+    <div className={styles.pickerWrapper}>
+      <div className={styles.pickerContainer}>
         {symbol && <SourceBadge source={source} />}
         <select
           value={symbol || ''}
           onChange={handleSymbolChange}
           disabled={tickers.length === 0}
-          className="cursor-pointer appearance-none bg-transparent py-1.5 pl-1 pr-6 text-lg font-bold tracking-tight text-foreground transition-colors hover:text-primary focus:outline-none disabled:cursor-not-allowed disabled:text-muted-foreground"
+          className={styles.select}
         >
           {tickers.length === 0 ? (
-            <option value="">No assets available</option>
+            <option value="" className={styles.option}>No assets available</option>
           ) : (
             tickers.map((t) => (
               <option
                 key={t.symbol}
                 value={t.symbol}
-                className="bg-popover text-popover-foreground"
+                className={styles.option}
               >
                 {t.symbol.toUpperCase()}
               </option>
             ))
           )}
         </select>
-        <IconChevronDown className="pointer-events-none absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-hover/select:text-primary" />
+        <IconChevronDown className={styles.chevron} />
       </div>
     </div>
   );

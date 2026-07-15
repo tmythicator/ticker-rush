@@ -1,6 +1,7 @@
 import { type User } from '@/types';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { StatCard } from './StatCard';
+import styles from './DashboardStats.module.css';
 
 interface DashboardStatsProps {
   user: User | null;
@@ -10,9 +11,9 @@ export const DashboardStats = ({ user }: DashboardStatsProps) => {
   const stats = useDashboardStats(user);
 
   return (
-    <div className="no-scrollbar flex snap-x gap-4 overflow-x-auto pb-4 sm:grid sm:grid-cols-3 sm:pb-0 lg:gap-6">
+    <div className={styles.container}>
       {stats.map((stat, i) => (
-        <div key={i} className="min-w-[240px] snap-center sm:min-w-0">
+        <div key={i} className={styles.itemWrapper}>
           <StatCard {...stat} />
         </div>
       ))}

@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import styles from './Modal.module.css';
 
 interface ModalFooterProps {
   children: React.ReactNode;
@@ -7,8 +7,6 @@ interface ModalFooterProps {
 
 export const ModalFooter = ({ children, className }: ModalFooterProps) => {
   return (
-    <div className={cn('mt-6 flex gap-3 border-t border-border/50 pt-4', className)}>
-      {children}
-    </div>
+    <div className={`${styles.footer} ${className || ''}`}>{children}</div>
   );
 };

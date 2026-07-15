@@ -1,0 +1,137 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: color-mix(in srgb, var(--background) 80%, transparent);
+  backdrop-filter: blur(4px);
+  transition: opacity 0.2s;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modalContainer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  .modalContainer {
+    padding: 1.5rem;
+  }
+}
+
+.card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background-color: var(--card);
+  padding: 1.5rem;
+  text-align: left;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  outline: none;
+  transition: all 0.2s ease-out;
+  animation: modalScale 0.2s ease-out;
+}
+
+.card[data-size="sm"] {
+  max-width: 24rem;
+}
+
+.card[data-size="md"] {
+  max-width: 28rem;
+}
+
+.card[data-size="lg"] {
+  max-width: 32rem;
+}
+
+.card[data-size="xl"] {
+  max-width: 36rem;
+}
+
+.card[data-size="2xl"] {
+  max-width: 42rem;
+}
+
+.card[data-size="full"] {
+  max-width: 100%;
+  margin: 1rem;
+  height: calc(100vh - 2rem);
+}
+
+.header {
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.5rem;
+  color: var(--foreground);
+}
+
+.closeButton {
+  height: 2rem;
+  width: 2rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+}
+
+.closeIcon {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.body {
+  margin-top: 0.5rem;
+}
+
+.footer {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  padding-top: 1rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

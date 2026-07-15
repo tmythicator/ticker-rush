@@ -1,5 +1,6 @@
 import { Button } from '@/components/shared/Button';
 import { calculateMaxBuyQuantity } from '@/lib/utils';
+import styles from './TradePanel.module.css';
 
 interface PercentageSelectorProps {
   buyingPower: number;
@@ -19,7 +20,7 @@ export const PercentageSelector = ({
   if (!buyingPower || !price || price <= 0) return null;
 
   return (
-    <div className="mt-2.5 flex gap-1.5">
+    <div className={styles.percentageSelectorContainer}>
       {PERCENTAGE_PRESETS.map((pct) => (
         <Button
           key={pct}
@@ -27,11 +28,20 @@ export const PercentageSelector = ({
           disabled={disabled}
           variant="secondary"
           size="sm"
-          className="h-7 flex-1 rounded-md border border-border/40 bg-muted/40 text-[10px] font-bold tracking-wider transition-all duration-200 hover:border-primary/30 hover:bg-primary/10 hover:text-primary active:scale-95"
+          className={styles.percentageButton}
         >
           {`${pct * 100}%`}
         </Button>
       ))}
+      <Button
+        onClick={() => onSelect(calculateMaxBuyQuantity(buyingPower, price, 1.0))}
+        disabled={disabled}
+        variant="secondary"
+        size="sm"
+        className={styles.percentageButton}
+      >
+        MAX
+      </Button>
     </div>
   );
 };

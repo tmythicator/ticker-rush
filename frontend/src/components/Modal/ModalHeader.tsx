@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import styles from './Modal.module.css';
 
 interface ModalHeaderProps {
   children: React.ReactNode;
@@ -7,6 +7,6 @@ interface ModalHeaderProps {
 
 export const ModalHeader = ({ children, className }: ModalHeaderProps) => {
   return (
-    <div className={cn('mb-5 flex items-center justify-between gap-4', className)}>{children}</div>
+    <div className={`${styles.header} ${className || ''}`}>{children}</div>
   );
 };

@@ -1,0 +1,267 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  height: 4rem;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--border);
+  background-color: var(--background);
+  padding: 0 1rem;
+
+  @media (min-width: 1024px) {
+    padding: 0 2rem;
+  }
+}
+
+.leftCol {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rightCol {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  @media (min-width: 768px) {
+    gap: 1rem;
+  }
+}
+
+.desktopNav {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+
+  @media (min-width: 768px) {
+    display: flex;
+  }
+}
+
+.desktopOnly {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: flex;
+  }
+}
+
+.smShow {
+  display: none;
+
+  @media (min-width: 640px) {
+    display: block;
+  }
+}
+
+.mdHide {
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s ease-in-out;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.logoIcon {
+  border-radius: var(--radius);
+  background-color: var(--primary);
+  padding: 0.375rem;
+  box-shadow: var(--shadow-brutalist-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  & svg {
+    color: var(--primary-foreground);
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.logoText {
+  display: none;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--foreground);
+
+  @media (min-width: 640px) {
+    display: block;
+  }
+}
+
+/* UserBalance */
+.balance {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 2px solid var(--border);
+  background-color: var(--muted);
+  padding: 0.375rem 0.75rem;
+  color: var(--muted-foreground);
+
+  & svg {
+    height: 1rem;
+    width: 1rem;
+    color: var(--muted-foreground);
+  }
+}
+
+.balanceText {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+
+  @media (min-width: 640px) {
+    font-size: 0.875rem;
+  }
+}
+
+/* AuthButtons */
+.authButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* MobileMenu */
+.mobileOverlay {
+  position: fixed;
+  inset: 0;
+  top: 4rem;
+  z-index: 40;
+  background-color: color-mix(in srgb, var(--background) 80%, transparent);
+  backdrop-filter: blur(8px);
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.mobilePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border-bottom: 2px solid var(--border);
+  background-color: var(--background);
+  padding: 1rem;
+  box-shadow: var(--shadow-brutalist);
+}
+
+.mobileFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 2px solid var(--border);
+  padding-top: 1rem;
+}
+
+.themeSelector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.themeLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+
+/* Navigation Links */
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: 2px solid var(--border);
+  transition: all 0.1s ease-in-out;
+  height: 2.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  box-sizing: border-box;
+
+  & svg {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+}
+
+.navLinkActive {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: var(--shadow-brutalist-sm);
+  
+  &:hover {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+  
+  &:active {
+    transform: translate(4px, 4px);
+  }
+}
+
+.navLinkInactive {
+  border-color: transparent;
+  background-color: transparent;
+  color: var(--muted-foreground);
+  
+  &:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+    border-color: var(--border);
+  }
+}
+
+.logoutIcon {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.menuToggleIcon {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.blockLink {
+  display: block;
+}
+
+.mobileNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobileLogoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  & svg {
+    height: 1rem;
+    width: 1rem;
+  }
+}

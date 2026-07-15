@@ -1,0 +1,59 @@
+.toggleContainer {
+  position: relative;
+  display: flex;
+  height: 2.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.25rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--muted);
+  padding: 0.125rem;
+  box-shadow: var(--shadow-brutalist-sm);
+}
+
+.togglePlaceholder {
+  display: flex;
+  height: 100%;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+
+  & svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+}
+
+.toggleButton {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  height: 100%;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+  border-radius: calc(var(--radius) - 2px);
+  cursor: pointer;
+
+  & svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  &[data-active="true"] {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border: 2px solid var(--border);
+  }
+
+  &[data-active="false"] {
+    color: var(--muted-foreground);
+
+    &:hover {
+      color: var(--foreground);
+    }
+  }
+}

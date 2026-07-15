@@ -1,0 +1,54 @@
+.card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  background-color: var(--card);
+  padding: 1rem;
+  box-shadow: var(--shadow-brutalist-sm);
+  transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-foreground);
+}
+
+.value {
+  margin-top: 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.trend {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--success);
+}
+
+.iconWrapper {
+  border-radius: var(--radius);
+  background-color: var(--muted);
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border);
+}
+
+.icon {
+  height: 1.25rem;
+  width: 1.25rem;
+  color: var(--muted-foreground);
+}

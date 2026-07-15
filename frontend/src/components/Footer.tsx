@@ -1,30 +1,31 @@
 import { Link } from 'react-router-dom';
+import styles from './Footer.module.css';
 
 export const Footer = () => {
   return (
     <footer
       data-testid="app-footer"
-      className="mt-auto w-full border-t border-border bg-background py-6"
+      className={styles.footer}
     >
-      <div className="container mx-auto flex flex-col items-center justify-between px-4 text-sm text-muted-foreground md:flex-row">
-        <div className="mb-4 md:mb-0">
+      <div className={styles.container}>
+        <div className={styles.copyright}>
           &copy; {new Date().getFullYear()} Ticker Rush. All rights reserved.
         </div>
-        <div className="flex space-x-6">
-          <Link to="/impressum" className="transition-colors hover:text-primary">
+        <div className={styles.links}>
+          <Link to="/impressum" className={styles.linkItem}>
             Impressum
           </Link>
-          <Link to="/agb" className="transition-colors hover:text-primary">
+          <Link to="/agb" className={styles.linkItem}>
             Terms (AGB)
           </Link>
-          <Link to="/privacy" className="transition-colors hover:text-primary">
+          <Link to="/privacy" className={styles.linkItem}>
             Privacy Policy
           </Link>
           <a
             href="/api/swagger"
             target="_blank"
             rel="noopener noreferrer"
-            className="transition-colors hover:text-primary"
+            className={styles.linkItem}
           >
             API Docs
           </a>

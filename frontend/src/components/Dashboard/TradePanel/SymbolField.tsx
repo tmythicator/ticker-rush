@@ -2,6 +2,7 @@ import { SourceBadge } from '@/components/shared/SourceBadge';
 import { Input } from '@/components/shared/Input';
 import { Label } from '@/components/shared/Label';
 import type { TickerSource } from '@/types';
+import styles from './TradePanel.module.css';
 
 interface SymbolFieldProps {
   symbol: string;
@@ -10,10 +11,10 @@ interface SymbolFieldProps {
 
 export const SymbolField = ({ symbol, source }: SymbolFieldProps) => (
   <div>
-    <Label className="mb-2 block text-xs uppercase tracking-wider text-muted-foreground">
+    <Label className={styles.label}>
       Symbol
     </Label>
-    <div className="flex w-full items-center gap-3 rounded-lg border border-border bg-muted px-3 py-3 opacity-70">
+    <div className={styles.inputWrapper}>
       {source && <SourceBadge source={source} />}
       <Input
         type="text"
@@ -21,7 +22,7 @@ export const SymbolField = ({ symbol, source }: SymbolFieldProps) => (
         disabled
         variant="unstyled"
         size="unstyled"
-        className="flex-1 cursor-default font-mono text-sm font-bold text-muted-foreground"
+        className={styles.inputDisabledText}
       />
     </div>
   </div>

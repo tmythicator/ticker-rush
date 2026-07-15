@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { ModalContext } from './ModalContext';
+import styles from './Modal.module.css';
 
 interface ModalProps {
   isOpen: boolean;
@@ -30,12 +31,12 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
   return createPortal(
     <ModalContext.Provider value={{ onClose }}>
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+        className={styles.modalContainer}
         role="dialog"
         aria-modal="true"
       >
         <div
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity duration-200 animate-in fade-in"
+          className={styles.modalOverlay}
           onClick={onClose}
           aria-hidden="true"
         />

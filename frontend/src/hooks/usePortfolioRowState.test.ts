@@ -46,7 +46,7 @@ describe('usePortfolioRowState', () => {
     expect(result.current.isMarketClosed).toBe(false);
     expect(result.current.marketValue).toBe('$1600.00');
     expect(result.current.pnl).toBe('+$100.00');
-    expect(result.current.pnlColorClass).toBe('text-green-500');
+    expect(result.current.pnlStatus).toBe('positive');
   });
 
   it('computes isTradable as false if symbol is not in allowed tickers list', () => {
@@ -116,6 +116,6 @@ describe('usePortfolioRowState', () => {
     expect(result.current.isTradable).toBe(true);
     expect(result.current.marketValue).toBeNull();
     expect(result.current.pnl).toBeNull();
-    expect(result.current.pnlColorClass).toBe('text-muted-foreground');
+    expect(result.current.pnlStatus).toBe('neutral');
   });
 });

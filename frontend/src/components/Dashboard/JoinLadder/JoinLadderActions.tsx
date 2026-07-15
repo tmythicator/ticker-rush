@@ -1,4 +1,5 @@
 import { Button } from '@/components/shared/Button';
+import styles from './JoinLadderActions.module.css';
 
 interface JoinLadderActionsProps {
   isConfirming: boolean;
@@ -15,22 +16,24 @@ export const JoinLadderActions = ({
 }: JoinLadderActionsProps) => {
   if (!isConfirming) {
     return (
-      <Button onClick={() => setIsConfirming(true)} size="lg" className="w-full md:w-auto">
-        Get Started
-      </Button>
+      <div className={styles.container}>
+        <Button onClick={() => setIsConfirming(true)} size="lg">
+          Get Started
+        </Button>
+      </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <Button disabled={isPending} onClick={onJoin} size="lg" className="w-full md:w-auto">
+    <div className={styles.container}>
+      <Button disabled={isPending} onClick={onJoin} size="lg">
         {isPending ? 'Joining...' : 'Confirm Entry'}
       </Button>
       <Button
         disabled={isPending}
         onClick={() => setIsConfirming(false)}
         variant="ghost"
-        className="h-auto py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground"
+        className={styles.cancelButton}
       >
         Cancel
       </Button>

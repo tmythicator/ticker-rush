@@ -5,6 +5,35 @@ const extractColorFromCssVar = (varName: string, fallback: string, alpha?: numbe
   const value = getComputedStyle(root).getPropertyValue(varName).trim();
 
   if (!value) return fallback;
+
+  // Check if it already has hsl/hsla wrapper
+  const hslMatch = value.match(/^(hsl|hsla)\(([^)]+)\)$/i);
+  if (hslMatch) {
+    const inner = hslMatch[2].trim();
+    if (alpha !== undefined) {
+      if (inner.includes(',')) {
+        return `hsla(${inner}, ${alpha})`;
+      } else {
+        return `hsl(${inner} / ${alpha})`;
+      }
+    }
+    return value;
+  }
+
+  // Check if it already has rgb/rgba wrapper
+  const rgbMatch = value.match(/^(rgb|rgba)\(([^)]+)\)$/i);
+  if (rgbMatch) {
+    const inner = rgbMatch[2].trim();
+    if (alpha !== undefined) {
+      if (inner.includes(',')) {
+        return `rgba(${inner}, ${alpha})`;
+      } else {
+        return `rgb(${inner} / ${alpha})`;
+      }
+    }
+    return value;
+  }
+
   // Handle HSL format (H S L)
   if (value.includes(' ')) {
     return alpha !== undefined ? `hsl(${value} / ${alpha})` : `hsl(${value})`;

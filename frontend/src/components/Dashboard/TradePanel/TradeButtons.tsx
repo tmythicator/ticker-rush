@@ -1,5 +1,6 @@
 import { TradeAction } from '@/types';
 import { TradeButton } from './TradeButton';
+import styles from './TradePanel.module.css';
 
 interface TradeButtonsProps {
   handleTrade: (side: TradeAction) => void;
@@ -8,7 +9,7 @@ interface TradeButtonsProps {
 
 export const TradeButtons = ({ handleTrade, disabled }: TradeButtonsProps) => {
   return (
-    <div className="grid grid-cols-2 gap-3 pt-2">
+    <div className={styles.gridButtons}>
       <TradeButton
         type={TradeAction.BUY}
         onClick={() => handleTrade(TradeAction.BUY)}

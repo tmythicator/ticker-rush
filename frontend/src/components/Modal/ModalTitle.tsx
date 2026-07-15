@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import styles from './Modal.module.css';
 
 interface ModalTitleProps {
   children: React.ReactNode;
@@ -7,7 +7,7 @@ interface ModalTitleProps {
 
 export const ModalTitle = ({ children, className }: ModalTitleProps) => {
   return (
-    <h3 id="modal-title" className={cn('text-lg font-bold leading-6 text-foreground', className)}>
+    <h3 id="modal-title" className={`${styles.title} ${className || ''}`}>
       {children}
     </h3>
   );

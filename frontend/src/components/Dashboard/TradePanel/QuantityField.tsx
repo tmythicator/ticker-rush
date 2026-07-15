@@ -1,8 +1,8 @@
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
 import { Label } from '@/components/shared/Label';
-import { MaxButton } from './MaxButton';
 import { PercentageSelector } from './PercentageSelector';
+import styles from './TradePanel.module.css';
 
 interface QuantityFieldProps {
   quantity: string;
@@ -25,19 +25,19 @@ export const QuantityField = ({
 
   return (
     <div>
-      <Label className="mb-2 block flex items-center justify-between text-xs uppercase tracking-wider text-muted-foreground">
+      <Label className={styles.labelRow}>
         <span>Quantity</span>
         {positionQuantity > 0 && (
           <Button
             onClick={() => setQuantity(positionQuantity.toString())}
             variant="link"
-            className="h-auto p-0 text-xs font-bold text-blue-500 hover:text-blue-600"
+            className={styles.sellAllButton}
           >
             Sell All ({positionQuantity})
           </Button>
         )}
       </Label>
-      <div className="relative">
+      <div className={styles.quantityInputContainer}>
         <Input
           type="number"
           value={quantity}
@@ -46,18 +46,8 @@ export const QuantityField = ({
           min="0"
           step="any"
           disabled={disabled}
-          className="font-mono text-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className={styles.quantityInput}
         />
-        {showControls && (
-          <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center">
-            <MaxButton
-              buyingPower={buyingPower}
-              price={price}
-              onSelect={setQuantity}
-              disabled={disabled}
-            />
-          </div>
-        )}
       </div>
       {showControls && (
         <PercentageSelector

@@ -1,0 +1,156 @@
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+  background-color: color-mix(in srgb, var(--card) 30%, transparent);
+  padding: 1.5rem;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease-in-out;
+}
+
+.card:hover {
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.glow {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: -1rem;
+  height: 6rem;
+  width: 6rem;
+  border-radius: 9999px;
+  background-color: color-mix(in srgb, var(--primary) 5%, transparent);
+  filter: blur(16px);
+  transition: background-color 0.5s ease-in-out;
+}
+
+.card:hover .glow {
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.contentWrapper {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .contentWrapper {
+    flex-direction: row;
+  }
+}
+
+.iconContainer {
+  display: flex;
+  height: 4rem;
+  width: 4rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+  transition: transform 0.3s ease-in-out;
+}
+
+.card:hover .iconContainer {
+  transform: scale(1.1);
+}
+
+.iconContainer svg {
+  height: 2rem;
+  width: 2rem;
+}
+
+.textGroup {
+  flex-grow: 1;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .textGroup {
+    text-align: left;
+  }
+}
+
+.title {
+  margin-bottom: 0.25rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.description {
+  max-width: 28rem;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.actionWrapper {
+  margin-top: 1rem;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .actionWrapper {
+    margin-top: 0;
+    width: auto;
+  }
+}
+
+.noticeContainer {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+}
+
+.noticeIconWrapper {
+  margin-top: 0.25rem;
+}
+
+.noticeIcon {
+  height: 1rem;
+  width: 1rem;
+  color: var(--secondary);
+}
+
+.noticeTextGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.noticeImportant {
+  font-style: italic;
+  color: var(--muted-foreground);
+}
+
+.noticeImportantLabel {
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+.privacyGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: color-mix(in srgb, var(--primary) 80%, transparent);
+}
+
+.privacyDot {
+  height: 0.25rem;
+  width: 0.25rem;
+  border-radius: 9999px;
+  background-color: var(--primary);
+}

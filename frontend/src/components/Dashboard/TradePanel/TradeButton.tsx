@@ -1,5 +1,6 @@
 import { Button } from '@/components/shared/Button';
 import { TradeAction } from '@/types';
+import styles from './TradePanel.module.css';
 
 export interface TradeButtonProps {
   type: TradeAction;
@@ -16,7 +17,7 @@ export const TradeButton = ({ type, onClick, disabled }: TradeButtonProps) => {
       disabled={disabled}
       variant={isBuy ? 'success' : 'destructive'}
       size="lg"
-      className="w-full"
+      className={styles.tradeBtn}
     >
       {isBuy ? 'Buy' : 'Sell'}
     </Button>

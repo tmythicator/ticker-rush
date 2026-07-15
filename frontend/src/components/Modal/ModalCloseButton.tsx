@@ -1,7 +1,7 @@
 import { IconX } from '@/components/icons/CustomIcons';
 import { Button } from '@/components/shared/Button';
 import { useModalContext } from './ModalContext';
-import { cn } from '@/lib/utils';
+import styles from './Modal.module.css';
 
 interface ModalCloseButtonProps {
   className?: string;
@@ -15,10 +15,10 @@ export const ModalCloseButton = ({ className }: ModalCloseButtonProps) => {
       onClick={onClose}
       variant="ghost"
       size="icon"
-      className={cn('h-8 w-8 shrink-0 rounded-full', className)}
+      className={`${styles.closeButton} ${className || ''}`}
     >
-      <IconX className="h-5 w-5" />
-      <span className="sr-only">Close</span>
+      <IconX className={styles.closeIcon} />
+      <span className={styles.srOnly}>Close</span>
     </Button>
   );
 };
