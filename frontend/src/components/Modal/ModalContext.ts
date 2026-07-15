@@ -7,7 +7,7 @@ interface ModalContextType {
 
 export const ModalContext = createContext<ModalContextType | null>(null);
 
-export const useModalContext = () : Partial<ModalContextType> => {
+export const useModalContext = (): Partial<ModalContextType> => {
   const context = useContext(ModalContext);
   if (!context) {
     return {};

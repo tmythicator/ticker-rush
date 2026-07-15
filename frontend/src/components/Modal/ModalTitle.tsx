@@ -11,7 +11,7 @@ interface ModalTitleProps {
 export const ModalTitle = ({ children, className, id }: ModalTitleProps) => {
   const context = useModalContext();
   const elementId = id || context?.labelId || '';
-  
+
   return (
     <h3 id={elementId} className={clsx(styles.title, className)}>
       {children}
