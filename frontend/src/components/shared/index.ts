@@ -5,6 +5,6 @@ export { Input, type InputProps } from './Input';
 export { Label, type LabelProps } from './Label';
 export { SourceBadge, type SourceBadgeProps } from './SourceBadge';
 export { Checkbox, type CheckboxProps } from './Checkbox';
-export { Avatar, type AvatarProps } from './Avatar';
+export { BaseAvatar, type BaseAvatarProps } from './BaseAvatar';
 export { FormInput, type FormInputProps } from './FormInput';
 export { ErrorMessage, type ErrorMessageProps } from './ErrorMessage';
