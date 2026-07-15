@@ -4,35 +4,35 @@
   width: 100%;
 }
 
-.textOverlay {
+.chartLegend {
   pointer-events: none;
   position: absolute;
-  left: 1.5rem;
-  top: 1.5rem;
+  left: var(--space-lg);
+  top: var(--space-lg);
   z-index: 20;
 }
 
 .titleRow {
   display: flex;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 .title {
-  font-size: 1.875rem;
+  font-size: var(--text-3xl);
   font-weight: 900;
   letter-spacing: -0.025em;
   color: var(--foreground);
 }
 
 .symbol {
-  font-size: 1.125rem;
+  font-size: var(--text-lg);
   font-weight: 500;
   color: var(--muted-foreground);
 }
 
 .price {
-  margin-top: 0.5rem;
+  margin-top: var(--space-xs);
   background: linear-gradient(to right, var(--color-green), var(--color-cyan));
   -webkit-background-clip: text;
   background-clip: text;

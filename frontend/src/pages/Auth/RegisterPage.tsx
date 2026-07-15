@@ -88,7 +88,7 @@ export const RegisterPage = () => {
           data-testid="username-input"
         />
 
-        <div className={styles.grid2Col}>
+        <div className={styles.nameFieldsGrid}>
           <FormInput
             label="First Name"
             id="firstName"

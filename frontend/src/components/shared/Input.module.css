@@ -4,11 +4,11 @@
   border-radius: var(--radius);
   border: 2px solid var(--input);
   background-color: var(--background);
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-sm);
   font-weight: 500;
   box-shadow: var(--shadow-brutalist-sm);
-  transition: all 0.1s ease-in-out;
+  transition: var(--transition-fast);
   outline: none;
 
   &::placeholder {
@@ -72,14 +72,14 @@
 
   &[data-size='sm'] {
     height: 2.25rem;
-    padding: 0 0.625rem;
-    font-size: 0.75rem;
+    padding: 0 var(--space-sm);
+    font-size: var(--text-xs);
   }
 
   &[data-size='lg'] {
     height: 3rem;
-    padding: 0 1rem;
-    font-size: 1rem;
+    padding: 0 var(--space-md);
+    font-size: var(--text-base);
   }
 
   &[data-size='unstyled'] {

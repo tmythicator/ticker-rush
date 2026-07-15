@@ -4,9 +4,9 @@
   border-radius: var(--radius);
   border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
   background-color: color-mix(in srgb, var(--card) 30%, transparent);
-  padding: 1.5rem;
+  padding: var(--space-lg);
   backdrop-filter: blur(8px);
-  transition: all 0.3s ease-in-out;
+  transition: var(--transition-normal);
 }
 
 .card:hover {
@@ -31,13 +31,13 @@
   background-color: color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
-.contentWrapper {
+.joinCardBody {
   position: relative;
   z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: var(--space-lg);
 }
 
 @media (min-width: 768px) {
@@ -46,7 +46,7 @@
   }
 }
 
-.iconContainer {
+.joinIcon {
   display: flex;
   height: 4rem;
   width: 4rem;
@@ -59,11 +59,11 @@
   transition: transform 0.3s ease-in-out;
 }
 
-.card:hover .iconContainer {
+.card:hover .joinIcon {
   transform: scale(1.1);
 }
 
-.iconContainer svg {
+.joinIcon svg {
   height: 2rem;
   width: 2rem;
 }
@@ -80,20 +80,20 @@
 }
 
 .title {
-  margin-bottom: 0.25rem;
-  font-size: 1.25rem;
+  margin-bottom: var(--space-xxs);
+  font-size: var(--text-xl);
   font-weight: 700;
   color: var(--foreground);
 }
 
 .description {
   max-width: 28rem;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   color: var(--muted-foreground);
 }
 
 .actionWrapper {
-  margin-top: 1rem;
+  margin-top: var(--space-md);
   width: 100%;
   flex-shrink: 0;
 }
@@ -106,16 +106,16 @@
 }
 
 .noticeContainer {
-  margin-top: 1.5rem;
+  margin-top: var(--space-lg);
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: var(--space-md);
   border-top: 1px solid var(--border);
-  padding-top: 1.5rem;
+  padding-top: var(--space-lg);
 }
 
 .noticeIconWrapper {
-  margin-top: 0.25rem;
+  margin-top: var(--space-xxs);
 }
 
 .noticeIcon {
@@ -127,8 +127,8 @@
 .noticeTextGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  font-size: 0.75rem;
+  gap: var(--space-xs);
+  font-size: var(--text-xs);
 }
 
 .noticeImportant {
@@ -141,16 +141,16 @@
   color: var(--secondary);
 }
 
-.privacyGroup {
+.privacyBadge {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
   color: color-mix(in srgb, var(--primary) 80%, transparent);
 }
 
-.privacyDot {
-  height: 0.25rem;
-  width: 0.25rem;
+.privacyBadgeDot {
+  height: var(--space-xxs);
+  width: var(--space-xxs);
   border-radius: 9999px;
   background-color: var(--primary);
 }

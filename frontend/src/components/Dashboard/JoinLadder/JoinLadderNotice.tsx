@@ -13,8 +13,8 @@ export const JoinLadderNotice = () => {
           participation in this ladder cycle is permanent and cannot be undone. This ensures the
           integrity of the leaderboard and fair competition.
         </p>
-        <div className={styles.privacyGroup}>
-          <div className={styles.privacyDot} />
+        <div className={styles.privacyBadge}>
+          <div className={styles.privacyBadgeDot} />
           <p>Privacy concern? You can always toggle your profile to Private in the settings.</p>
         </div>
       </div>

@@ -11,7 +11,7 @@ interface LadderDetailsProps {
 export const LadderDetails = ({ ladder }: LadderDetailsProps) => {
   return (
     <div className={styles.container}>
-      <div className={styles.innerLayout}>
+      <div className={styles.ladderMetaRow}>
         <LadderHeader name={ladder.name} type={ladder.type} />
         <LadderStats endTime={ladder.end_time} initialBalance={ladder.initial_balance} />
       </div>

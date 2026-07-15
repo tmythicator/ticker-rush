@@ -5,12 +5,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: var(--space-lg);
   text-align: center;
 }
 
 .icon {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
   height: 2rem;
   width: 2rem;
   color: color-mix(in srgb, var(--secondary) 50%, transparent);
@@ -21,18 +21,18 @@
 }
 
 .title {
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
   font-weight: 700;
   color: var(--foreground);
 }
 
 .description {
-  margin-top: 0.5rem;
+  margin-top: var(--space-xs);
   color: var(--muted-foreground);
 }
 
 .spinner {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
   height: 2rem;
   width: 2rem;
   animation: spin 1s linear infinite;

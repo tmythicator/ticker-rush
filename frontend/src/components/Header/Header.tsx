@@ -29,12 +29,12 @@ export const Header = () => {
   return (
     <>
       <header data-testid="app-header" className={styles.header}>
-        <div className={styles.leftCol}>
+        <div className={styles.navStart}>
           <Logo />
           {isAuthenticated && <Navigation className={styles.desktopNav} />}
         </div>
 
-        <div className={styles.rightCol}>
+        <div className={styles.navEnd}>
           <div className={styles.smShow}>
             <ThemeToggle />
           </div>
@@ -43,7 +43,7 @@ export const Header = () => {
             <>
               <UserBalance balance={user.balance} />
 
-              <NavLink to="/profile" className={styles.blockLink}>
+              <NavLink to="/profile" className={styles.avatarLink}>
                 <Avatar initials={user.first_name[0]} username={user.username} />
               </NavLink>
               <Button

@@ -38,6 +38,35 @@
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
     monospace;
+
+  /* Spacing Scale */
+  --space-xxs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  /* Typography Scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+
+  /* Transitions */
+  --transition-fast: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-destructive: 0 10px 15px -3px color-mix(in srgb, var(--destructive) 20%, transparent);
 }
 
 /* Light / Default Theme */
@@ -87,6 +116,16 @@
 
   --shadow-brutalist: 5px 5px 0px 0px var(--border);
   --shadow-brutalist-sm: 3px 3px 0px 0px var(--border);
+
+  /* Semantic state backgrounds and borders */
+  --destructive-bg-subtle: color-mix(in srgb, var(--destructive) 5%, transparent);
+  --destructive-border-subtle: color-mix(in srgb, var(--destructive) 20%, transparent);
+  --warning-bg-subtle: color-mix(in srgb, var(--warning) 10%, transparent);
+  --warning-border-subtle: color-mix(in srgb, var(--warning) 20%, transparent);
+  --success-bg-subtle: color-mix(in srgb, var(--success) 10%, transparent);
+  --success-border-subtle: color-mix(in srgb, var(--success) 20%, transparent);
+  --muted-bg-subtle: color-mix(in srgb, var(--muted) 30%, transparent);
+  --border-subtle: color-mix(in srgb, var(--border) 40%, transparent);
 }
 
 /* Dark Theme */
