@@ -1,13 +1,12 @@
-import { cn } from '@/lib/utils';
+import * as React from 'react';
+import styles from './Card.module.css';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   ref?: React.Ref<HTMLDivElement>;
 }
 
-export const Card = ({ className, ref, ...props }: CardProps) => (
-  <div
-    ref={ref}
-    className={cn('rounded-lg border bg-card text-card-foreground shadow-sm', className)}
-    {...props}
-  />
-);
+export const Card = ({ className, ref, ...props }: CardProps) => {
+  return (
+    <div ref={ref} className={`${styles.card} ${className || ''}`} {...props} />
+  );
+};

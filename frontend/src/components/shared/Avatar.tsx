@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
+import styles from './Avatar.module.css';
 
 export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   initials: string;
@@ -11,10 +11,7 @@ export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
     return (
       <div
         ref={ref}
-        className={cn(
-          'flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-background bg-gradient-to-br from-blue-500 to-indigo-600 text-xs font-bold text-white shadow-sm transition-opacity hover:opacity-90',
-          className,
-        )}
+        className={`${styles.avatar} ${className || ''}`}
         title={username}
         {...props}
       >

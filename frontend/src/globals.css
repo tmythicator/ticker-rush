@@ -1,0 +1,161 @@
+/* Primitives & Semantic Tokens */
+:root {
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* HSL base tones */
+  --color-cyan: hsl(190 100% 50%);
+  --color-magenta: hsl(300 100% 50%);
+  --color-red: hsl(0 84.2% 60.2%);
+  --color-dark-red: hsl(0 62.8% 30.6%);
+  --color-green: hsl(142 70.6% 45.3%);
+  --color-dark-green: hsl(142.1 72% 20%);
+  --color-orange: hsl(24.6 95% 53.1%);
+  --color-light-orange: hsl(24.4 94.6% 61.2%);
+  --color-blue: hsl(217.2 91.2% 59.8%);
+  --color-light-blue: hsl(217 91.3% 67.8%);
+  --color-yellow: hsl(45.4 93.3% 47.1%);
+  --color-dark-yellow: hsl(45.4 93.3% 30%);
+  --color-indigo: hsl(238.7 83.5% 58.4%);
+
+  /* Medal colors */
+  --color-gold: #eab308;
+  --color-silver: #94a3b8;
+  --color-bronze: #b45309;
+
+  --color-gray-50: hsl(210 40% 98%);
+  --color-gray-100: hsl(210 40% 96.1%);
+  --color-gray-200: hsl(214.3 31.8% 91.4%);
+  --color-gray-500: hsl(215.4 16.3% 46.9%);
+  --color-gray-800: hsl(217.2 32.6% 25%);
+  --color-gray-900: hsl(217.2 32.6% 17.5%);
+  --color-gray-950: hsl(222.2 84% 4.9%);
+
+  --radius: 0.5rem;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Light / Default Theme */
+:root {
+  --background: var(--color-white);
+  --foreground: var(--color-black);
+
+  --border: var(--color-gray-200);
+  --input: var(--color-gray-200);
+  --ring: var(--color-cyan);
+
+  --primary: var(--color-cyan);
+  --primary-foreground: var(--color-black);
+  --secondary: var(--color-magenta);
+  --secondary-foreground: var(--color-white);
+  --accent: var(--color-cyan);
+  --accent-foreground: var(--color-black);
+  --destructive: var(--color-red);
+  --destructive-foreground: var(--color-gray-50);
+
+  --card: var(--color-white);
+  --card-foreground: var(--color-black);
+  --popover: var(--color-white);
+  --popover-foreground: var(--color-black);
+
+  --muted: var(--color-gray-100);
+  --muted-foreground: var(--color-gray-500);
+
+  --success: var(--color-green);
+  --success-hover: hsl(142.1 70.6% 29.2%);
+  --success-foreground: var(--color-white);
+  --warning: var(--color-yellow);
+  --warning-foreground: var(--color-black);
+
+  --up-trend: var(--color-green);
+  --down-trend: var(--color-red);
+
+  /* Brand colors */
+  --brand-coingecko: var(--color-orange);
+  --brand-coingecko-hover: var(--color-light-orange);
+  --brand-finnhub: var(--color-blue);
+  --brand-finnhub-hover: var(--color-light-blue);
+
+  /* Avatar start/end */
+  --avatar-start: var(--color-blue);
+  --avatar-end: var(--color-indigo);
+
+  --shadow-brutalist: 5px 5px 0px 0px var(--border);
+  --shadow-brutalist-sm: 3px 3px 0px 0px var(--border);
+}
+
+/* Dark Theme */
+.dark {
+  --background: var(--color-gray-950);
+  --foreground: var(--color-gray-50);
+
+  --border: var(--color-gray-800);
+  --input: var(--color-gray-800);
+  --ring: var(--color-cyan);
+
+  --primary: var(--color-cyan);
+  --primary-foreground: hsl(222.2 47.4% 11.2%);
+  --secondary: var(--color-magenta);
+  --secondary-foreground: var(--color-gray-50);
+  --accent: var(--color-cyan);
+  --accent-foreground: hsl(222.2 47.4% 11.2%);
+  --destructive: var(--color-dark-red);
+  --destructive-foreground: var(--color-gray-50);
+
+  --card: var(--color-gray-950);
+  --card-foreground: var(--color-gray-50);
+  --popover: var(--color-gray-950);
+  --popover-foreground: var(--color-gray-50);
+
+  --muted: var(--color-gray-900);
+  --muted-foreground: hsl(215 20.2% 65.1%);
+
+  --success: var(--color-dark-green);
+  --success-hover: hsl(142.1 72% 15%);
+  --success-foreground: var(--color-gray-50);
+  --warning: var(--color-dark-yellow);
+  --warning-foreground: var(--color-gray-50);
+
+  --up-trend: var(--color-green);
+  --down-trend: var(--color-red);
+
+  /* Brand colors */
+  --brand-coingecko: var(--color-orange);
+  --brand-coingecko-hover: var(--color-light-orange);
+  --brand-finnhub: var(--color-blue);
+  --brand-finnhub-hover: var(--color-light-blue);
+
+  /* Avatar start/end */
+  --avatar-start: var(--color-blue);
+  --avatar-end: var(--color-indigo);
+
+  --shadow-brutalist: 5px 5px 0px 0px var(--border);
+  --shadow-brutalist-sm: 3px 3px 0px 0px var(--border);
+}
+
+/* Pure CSS resets and base styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+input, button, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}

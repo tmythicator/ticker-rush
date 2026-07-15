@@ -25,13 +25,11 @@ describe('ErrorMessage', () => {
   it('applies variant classes correctly', () => {
     const { rerender } = render(<ErrorMessage message="Error" variant="sm" />);
     let alert = screen.getByRole('alert');
-    expect(alert.className).toContain('p-3');
-    expect(alert.className).toContain('text-sm');
+    expect(alert).toHaveAttribute('data-variant', 'sm');
 
     rerender(<ErrorMessage message="Error" variant="xs" />);
     alert = screen.getByRole('alert');
-    expect(alert.className).toContain('p-2');
-    expect(alert.className).toContain('text-xs');
+    expect(alert).toHaveAttribute('data-variant', 'xs');
   });
 
   it('applies custom className and forwards native div properties', () => {

@@ -1,0 +1,20 @@
+.avatar {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 2px solid var(--background);
+  background: linear-gradient(135deg, var(--avatar-start), var(--avatar-end));
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-white);
+  box-shadow: var(--shadow-brutalist-sm);
+  transition: opacity 0.2s ease-in-out;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}

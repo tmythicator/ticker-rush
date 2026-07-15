@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Label } from '@/components/shared/Label';
-import { cn } from '@/lib/utils';
+import styles from './FormField.module.css';
 
 export interface FormFieldProps extends React.HTMLAttributes<HTMLDivElement> {
   label?: string;
@@ -18,12 +18,14 @@ export const FormField = ({
   ref,
   ...props
 }: FormFieldProps) => {
+  const combinedClassName = className ? `${styles.formField} ${className}` : styles.formField;
+
   return (
-    <div ref={ref} className={cn('space-y-2', className)} {...props}>
+    <div ref={ref} className={combinedClassName} {...props}>
       {label && <Label htmlFor={htmlFor}>{label}</Label>}
       {children}
       {error && (
-        <p data-testid="field-error" className="text-xs text-destructive">
+        <p data-testid="field-error" className={styles.error}>
           {error}
         </p>
       )}

@@ -1,18 +1,28 @@
 import * as React from 'react';
-import { type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
-import { inputVariants } from './inputVariants';
+import styles from './Input.module.css';
 
-export interface InputProps
-  extends Omit<React.ComponentProps<'input'>, 'size'>, VariantProps<typeof inputVariants> {
+export interface InputProps extends Omit<React.ComponentProps<'input'>, 'size'> {
+  variant?: 'default' | 'error' | 'unstyled';
+  size?: 'default' | 'sm' | 'lg' | 'unstyled';
   ref?: React.Ref<HTMLInputElement>;
 }
 
-export const Input = ({ className, type, variant, size, ref, ...props }: InputProps) => {
+export const Input = ({
+  className,
+  type,
+  variant = 'default',
+  size = 'default',
+  ref,
+  ...props
+}: InputProps) => {
+  const combinedClassName = className ? `${styles.input} ${className}` : styles.input;
+
   return (
     <input
       type={type}
-      className={cn(inputVariants({ variant, size, className }))}
+      className={combinedClassName}
+      data-variant={variant}
+      data-size={size}
       ref={ref}
       {...props}
     />

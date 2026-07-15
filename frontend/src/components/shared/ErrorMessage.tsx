@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import styles from './ErrorMessage.module.css';
 
 export interface ErrorMessageProps extends React.HTMLAttributes<HTMLDivElement> {
   message?: string;
@@ -24,11 +24,8 @@ export const ErrorMessage = ({
     <div
       role="alert"
       data-testid="error-message"
-      className={cn(
-        'rounded-lg border border-destructive/20 bg-destructive/10 font-medium text-destructive',
-        variant === 'sm' ? 'p-3 text-sm' : 'p-2 text-xs',
-        className,
-      )}
+      className={`${styles.errorMessage} ${className || ''}`}
+      data-variant={variant}
       {...props}
     >
       {content}

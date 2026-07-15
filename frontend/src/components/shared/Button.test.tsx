@@ -19,7 +19,7 @@ describe('Button', () => {
       </Button>,
     );
     let button = screen.getByTestId('test-button');
-    expect(button.className).toContain('bg-background');
+    expect(button).toHaveAttribute('data-variant', 'outline');
 
     rerender(
       <Button data-testid="test-button" variant="destructive">
@@ -27,7 +27,7 @@ describe('Button', () => {
       </Button>,
     );
     button = screen.getByTestId('test-button');
-    expect(button.className).toContain('bg-destructive');
+    expect(button).toHaveAttribute('data-variant', 'destructive');
   });
 
   it('applies custom className and native attributes', () => {

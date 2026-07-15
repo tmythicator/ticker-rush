@@ -1,15 +1,35 @@
 import * as React from 'react';
-import { type VariantProps } from 'class-variance-authority';
-import { buttonVariants } from './buttonVariants';
-import { cn } from '@/lib/utils';
+import styles from './Button.module.css';
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?:
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link'
+    | 'success'
+    | 'ghostDestructive'
+    | 'unstyled';
+  size?: 'default' | 'sm' | 'lg' | 'icon' | 'unstyled';
   ref?: React.Ref<HTMLButtonElement>;
 }
 
-export const Button = ({ className, variant, size, ref, ...props }: ButtonProps) => {
+export const Button = ({
+  className,
+  variant = 'default',
+  size = 'default',
+  ref,
+  ...props
+}: ButtonProps) => {
   return (
-    <button className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+    <button
+      className={`${styles.button} ${className || ''}`}
+      data-variant={variant}
+      data-size={size}
+      ref={ref}
+      {...props}
+    />
   );
 };

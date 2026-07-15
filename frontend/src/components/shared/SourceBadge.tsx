@@ -1,25 +1,27 @@
 import { type TickerSource } from '@/types';
-import { cn } from '@/lib/utils';
+import styles from './SourceBadge.module.css';
 
 export interface SourceBadgeProps extends React.ComponentProps<'span'> {
   source: TickerSource;
   ref?: React.Ref<HTMLSpanElement>;
 }
 
-export const SourceBadge = ({ source, className, ref, ...props }: SourceBadgeProps) => {
+export const SourceBadge = ({
+  source,
+  className,
+  ref,
+  ...props
+}: SourceBadgeProps) => {
   const isCoinGecko = source === 'CoinGecko' || source === 'CG';
   const label = isCoinGecko ? 'Source: CoinGecko' : 'Source: Finnhub';
   const displayLabel = isCoinGecko ? 'CG' : 'FH';
-  const colors = isCoinGecko ? 'bg-orange-500/20 text-orange-400' : 'bg-blue-500/20 text-blue-400';
+  const sourceName = isCoinGecko ? 'CoinGecko' : 'Finnhub';
 
   return (
     <span
       ref={ref}
-      className={cn(
-        'cursor-help rounded px-1.5 py-0.5 text-xs font-bold transition-colors',
-        colors,
-        className,
-      )}
+      className={`${styles.badge} ${className || ''}`}
+      data-source={sourceName}
       title={label}
       {...props}
     >
