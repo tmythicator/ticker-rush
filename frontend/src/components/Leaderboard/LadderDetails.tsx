@@ -1,6 +1,6 @@
 import { LadderHeader } from './LadderHeader';
 import { LadderStats } from './LadderStats';
-import { LeaderBoardAssets } from './LeaderBoardAssets';
+import { LadderAssets } from './LadderAssets';
 import type { Ladder } from '@/types';
 import styles from './LadderDetails.module.css';
 
@@ -15,7 +15,7 @@ export const LadderDetails = ({ ladder }: LadderDetailsProps) => {
         <LadderHeader name={ladder.name} type={ladder.type} />
         <LadderStats endTime={ladder.end_time} initialBalance={ladder.initial_balance} />
       </div>
-      <LeaderBoardAssets assets={ladder.allowed_tickers} />
+      <LadderAssets assets={ladder.allowed_tickers} />
     </div>
   );
 };

@@ -1,0 +1,141 @@
+.wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  background-color: color-mix(in srgb, var(--card) 50%, transparent);
+  box-shadow: var(--shadow-brutalist-sm);
+}
+
+.root {
+  width: 100%;
+  text-align: left;
+  font-size: var(--text-sm);
+  border-collapse: collapse;
+}
+
+.cellRank {
+  width: 5rem;
+  padding: var(--space-md) var(--space-lg);
+  vertical-align: middle;
+  text-align: center;
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    padding: var(--space-xs);
+  }
+}
+
+.head {
+  background-color: var(--muted);
+  border-bottom: 2px solid var(--border);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted-foreground);
+
+  @media (max-width: 640px) {
+    font-size: 8px;
+    letter-spacing: 0.05em;
+  }
+}
+
+.row {
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition-normal);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: var(--muted-bg-subtle);
+  }
+}
+
+.headerCell {
+  padding: var(--space-md) var(--space-lg);
+
+  @media (max-width: 640px) {
+    padding: var(--space-xs);
+  }
+}
+
+.cell {
+  padding: var(--space-md) var(--space-lg);
+  vertical-align: middle;
+
+  @media (max-width: 640px) {
+    padding: var(--space-xs);
+  }
+}
+
+.cellAlignRight {
+  text-align: right;
+}
+
+.cellAlignCenter {
+  text-align: center;
+}
+
+.cellNetWorth {
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--success);
+}
+
+.rankContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.medalIcon {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.medalGold {
+  color: var(--color-gold);
+}
+
+.medalSilver {
+  color: var(--color-silver);
+}
+
+.medalBronze {
+  color: var(--color-bronze);
+}
+
+.userLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  transition: var(--transition-normal);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.userLink:hover {
+  color: var(--primary);
+}
+
+.classifiedContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-style: italic;
+  color: color-mix(in srgb, var(--muted-foreground) 60%, transparent);
+}
+
+.lockIcon {
+  height: 0.75rem;
+  width: 0.75rem;
+}
+
+.cellEmpty {
+  padding: var(--space-xl) var(--space-lg);
+  text-align: center;
+  color: var(--muted-foreground);
+}
