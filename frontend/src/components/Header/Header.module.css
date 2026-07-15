@@ -215,7 +215,7 @@
     border-color: var(--border);
   }
 
-  &:global(.active) {
+  &.active {
     background-color: var(--primary);
     color: var(--primary-foreground);
     border-color: var(--border);

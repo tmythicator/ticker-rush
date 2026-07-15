@@ -11,7 +11,9 @@ export const Navigation = ({ onItemClick, className }: NavigationProps) => (
   <nav className={className}>
     <NavLink
       to="/leaderboard"
-      className={styles.navLink}
+      className={({ isActive }) =>
+        isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+      }
       onClick={onItemClick}
     >
       <IconTrophy />
@@ -19,7 +21,9 @@ export const Navigation = ({ onItemClick, className }: NavigationProps) => (
     </NavLink>
     <NavLink
       to="/profile"
-      className={styles.navLink}
+      className={({ isActive }) =>
+        isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+      }
       onClick={onItemClick}
     >
       <IconUser />
@@ -27,7 +31,9 @@ export const Navigation = ({ onItemClick, className }: NavigationProps) => (
     </NavLink>
     <NavLink
       to="/trade"
-      className={styles.navLink}
+      className={({ isActive }) =>
+        isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+      }
       onClick={onItemClick}
     >
       <IconBarChart />
