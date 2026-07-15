@@ -6,9 +6,11 @@ import {
   TradePanel,
 } from '@/components/Dashboard';
 import { PortfolioHoldings } from '@/components/PortfolioTable';
+import { Card } from '@/components/shared/Card';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuotesSSE } from '@/hooks/useQuotesSSE';
 import { useTradeSymbol } from '@/hooks/useTradeSymbol';
+import styles from './DashboardPage.module.css';
 
 export const DashboardPage = () => {
   const { symbol, setSymbol } = useTradeSymbol();
@@ -16,17 +18,17 @@ export const DashboardPage = () => {
   const { quote, error: isQuoteError } = useQuotesSSE(symbol);
 
   return (
-    <div className="mx-auto grid w-full max-w-[1800px] grid-cols-1 gap-6 p-4 pb-6 lg:grid-cols-12 lg:p-6">
-      <div className="flex flex-col gap-6 lg:col-span-9">
+    <div className={styles.dashboardLayout}>
+      <div className={styles.mainSection}>
         <DashboardStats user={user} />
 
         {!user?.is_participating && (
-          <div className="duration-500 animate-in fade-in slide-in-from-top-4">
+          <div className={styles.joinBanner}>
             <JoinLadderButton />
           </div>
         )}
 
-        <div className="relative h-[500px] overflow-hidden rounded-lg border border-border bg-card p-1 shadow-sm">
+        <Card className={styles.chartCardWrapper}>
           <MarketChart
             key={symbol}
             symbol={symbol}
@@ -35,9 +37,9 @@ export const DashboardPage = () => {
             isLoading={!quote}
             isError={!!isQuoteError}
           />
-        </div>
+        </Card>
 
-        <div className="lg:hidden" id="trade-panel-mobile">
+        <div className={styles.mobileTradePanel} id="trade-panel-mobile">
           <MarketStatusGuard user={user} quote={quote}>
             <TradePanel quote={quote} />
           </MarketStatusGuard>
@@ -46,7 +48,7 @@ export const DashboardPage = () => {
         <PortfolioHoldings portfolio={user?.portfolio ?? {}} />
       </div>
 
-      <div className="hidden h-full flex-col gap-4 lg:col-span-3 lg:flex" id="trade-panel-desktop">
+      <div className={styles.desktopTradePanel} id="trade-panel-desktop">
         <MarketStatusGuard user={user} quote={quote}>
           <TradePanel quote={quote} />
         </MarketStatusGuard>

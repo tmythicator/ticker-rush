@@ -23,24 +23,27 @@ import { Header } from './components/Header';
 import { HomePage } from './components/Home/HomePage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
-import { AgbPage } from './pages/AgbPage';
-import { DashboardPage } from './pages/DashboardPage';
-import { ImpressumPage } from './pages/ImpressumPage';
-import { LeaderboardPage } from './pages/LeaderboardPage';
-import { LoginPage } from './pages/LoginPage';
-import { PrivacyPage } from './pages/PrivacyPage';
-import { ProfilePage } from './pages/ProfilePage';
-import { PublicProfilePage } from './pages/PublicProfilePage';
-import { RegisterPage } from './pages/RegisterPage';
+import {
+  AgbPage,
+  DashboardPage,
+  ImpressumPage,
+  LeaderboardPage,
+  LoginPage,
+  PrivacyPage,
+  ProfilePage,
+  PublicProfilePage,
+  RegisterPage,
+} from './pages';
+import styles from './App.module.css';
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="flex min-h-[100dvh] flex-col bg-background font-sans text-foreground">
+        <div className={styles.appContainer}>
           <Header />
 
-          <main className="flex flex-1 flex-col">
+          <main className={styles.mainContent}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<LoginPage />} />

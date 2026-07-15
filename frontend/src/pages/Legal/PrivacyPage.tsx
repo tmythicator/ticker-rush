@@ -1,39 +1,43 @@
+import styles from './Legal.module.css';
+
 export const PrivacyPage = () => {
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-8 pb-24 text-foreground">
-      <h1 className="mb-6 text-3xl font-bold text-primary">
+    <div className={styles.container}>
+      <h1 className={styles.title}>
         Privacy Policy (Datenschutzerklärung)
       </h1>
 
-      <section className="mb-8">
-        <h2 className="mb-2 text-xl font-semibold text-foreground/90">1. Overview</h2>
-        <h3 className="mb-2 text-lg font-medium text-foreground/80">General Information</h3>
-        <p className="mb-4 text-muted-foreground">
+      <section className={styles.section}>
+        <h2 className={styles.sectionHeader}>1. Overview</h2>
+        <h3 className={styles.subHeader}>General Information</h3>
+        <p className={styles.text}>
           The following notes provide a simple overview of what happens to your personal data when
           you visit this website. Personal data is any data with which you can be personally
           identified.
         </p>
       </section>
 
-      <section className="mb-8">
-        <h2 className="mb-2 text-xl font-semibold text-foreground/90">2. Hosting</h2>
-        We host the content of our website with the following provider: Google Cloud Platform (GCP).
-        The servers are located within the European Union (e.g., Frankfurt, Germany) to ensure
-        compliance with GDPR.
+      <section className={styles.section}>
+        <h2 className={styles.sectionHeader}>2. Hosting</h2>
+        <p className={styles.text}>
+          We host the content of our website with the following provider: Google Cloud Platform (GCP).
+          The servers are located within the European Union (e.g., Frankfurt, Germany) to ensure
+          compliance with GDPR.
+        </p>
       </section>
 
-      <section className="mb-8">
-        <h2 className="mb-2 text-xl font-semibold text-foreground/90">
+      <section className={styles.section}>
+        <h2 className={styles.sectionHeader}>
           3. General Notes and Mandatory Information
         </h2>
-        <h3 className="mb-2 text-lg font-medium text-foreground/80">Data Protection</h3>
-        <p className="mb-4 text-muted-foreground">
+        <h3 className={styles.subHeader}>Data Protection</h3>
+        <p className={styles.text}>
           The operators of these pages take the protection of your personal data very seriously. We
           treat your personal data confidentially and in accordance with the statutory data
           protection regulations and this data protection declaration.
         </p>
-        <h3 className="mb-2 text-lg font-medium text-foreground/80">Responsible Body</h3>
-        <p className="mb-4 text-muted-foreground">
+        <h3 className={styles.subHeader}>Responsible Body</h3>
+        <p className={styles.text}>
           The responsible body for data processing on this website is:
           <br />
           <br />
@@ -46,28 +50,28 @@ export const PrivacyPage = () => {
         </p>
       </section>
 
-      <section className="mb-8">
-        <h2 className="mb-2 text-xl font-semibold text-foreground/90">
+      <section className={styles.section}>
+        <h2 className={styles.sectionHeader}>
           4. Data Collection on this Website
         </h2>
-        <h3 className="mb-2 text-lg font-medium text-foreground/80">Cookies</h3>
-        <p className="mb-4 text-muted-foreground">
+        <h3 className={styles.subHeader}>Cookies</h3>
+        <p className={styles.text}>
           Our website uses so-called "cookies". Cookies are small text files and do not cause any
           damage to your terminal device. They are stored either temporarily for the duration of a
           session (session cookies) or permanently (permanent cookies) on your terminal device.
         </p>
-        <p className="mb-4 text-muted-foreground">
+        <p className={styles.text}>
           <strong>Technically Necessary Cookies (Auth Tokens):</strong> We use cookies that are
           technically necessary for the operation and security of the website (e.g. for
           authentication in the login area using HttpOnly Cookies). These do not require consent.
         </p>
 
-        <h3 className="mb-2 text-lg font-medium text-foreground/80">Server Log Files</h3>
-        <p className="mb-4 text-muted-foreground">
+        <h3 className={styles.subHeader}>Server Log Files</h3>
+        <p className={styles.text}>
           The provider of the pages automatically collects and stores information in so-called
           server log files, which your browser automatically transmits to us. These are:
         </p>
-        <ul className="mb-4 ml-4 list-inside list-disc text-muted-foreground">
+        <ul className={styles.list}>
           <li>Browser type and browser version</li>
           <li>Operating system used</li>
           <li>Referrer URL</li>
@@ -75,26 +79,26 @@ export const PrivacyPage = () => {
           <li>Time of the server request</li>
           <li>IP address</li>
         </ul>
-        <p className="text-muted-foreground">
+        <p className={styles.text}>
           These data are not combined with other data sources.
         </p>
       </section>
 
-      <section className="mb-8">
-        <h2 className="mb-2 text-xl font-semibold text-foreground/90">5. User Account</h2>
-        <p className="mb-4 text-muted-foreground">
+      <section className={styles.section}>
+        <h2 className={styles.sectionHeader}>5. User Account</h2>
+        <p className={styles.text}>
           To use functions such as the leaderboard and trading, you must register. We use the data
           entered for the purpose of using the respective offer or service. Registration and usage
           of the platform require explicit acceptance of our General Terms and Conditions (AGB) and
           this Privacy Policy.
         </p>
-        <p className="mb-4 text-muted-foreground">
+        <p className={styles.text}>
           <strong>Leaderboards & Public Profiles:</strong> By default, all registered user accounts
           are completely private. While your account might technically rank on our leaderboards
           based on your trading performance, other users cannot view or navigate to your personal
           profile.
         </p>
-        <p className="mb-4 text-muted-foreground">
+        <p className={styles.text}>
           As an option, you can explicitly choose to make your profile public in your account
           settings. If you opt-in to a public profile, other users can view your trading portfolio.
           Additionally, you optionally have the ability to link a personal website or social network

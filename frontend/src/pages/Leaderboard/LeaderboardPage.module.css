@@ -1,0 +1,39 @@
+.loaderWrapper {
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  display: flex;
+  height: 16rem;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 0;
+}
+
+.container {
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem;
+}
+
+.card {
+  overflow: hidden;
+  box-shadow: var(--shadow-brutalist);
+}
+
+.leaderboardSection {
+  background-color: color-mix(in srgb, var(--background) 20%, transparent);
+}
+
+.spinner {
+  height: 2rem;
+  width: 2rem;
+  animation: spin 1s linear infinite;
+  color: var(--primary);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

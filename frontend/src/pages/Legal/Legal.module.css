@@ -1,0 +1,54 @@
+.container {
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 6rem 1rem;
+  color: var(--foreground);
+}
+
+.title {
+  margin-bottom: 1.5rem;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.sectionHeader {
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--foreground) 90%, transparent);
+}
+
+.subHeader {
+  margin-bottom: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--foreground) 80%, transparent);
+}
+
+.text {
+  margin-bottom: 1rem;
+  color: var(--muted-foreground);
+
+  & strong {
+    font-weight: 600;
+    color: color-mix(in srgb, var(--foreground) 90%, transparent);
+  }
+}
+
+.list {
+  margin-bottom: 1rem;
+  margin-left: 1rem;
+  list-style-position: inside;
+  list-style-type: disc;
+  color: var(--muted-foreground);
+
+  & li {
+    margin-bottom: 0.25rem;
+  }
+}

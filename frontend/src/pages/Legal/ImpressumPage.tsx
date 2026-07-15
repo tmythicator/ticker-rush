@@ -1,13 +1,15 @@
+import styles from './Legal.module.css';
+
 export const ImpressumPage = () => {
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-8 pb-24 text-foreground">
-      <h1 className="mb-6 text-3xl font-bold text-primary">Legal Notice (Impressum)</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Legal Notice (Impressum)</h1>
 
-      <section className="mb-8">
-        <h2 className="mb-2 text-xl font-semibold text-foreground/90">
+      <section className={styles.section}>
+        <h2 className={styles.sectionHeader}>
           Information according to § 5 TMG
         </h2>
-        <p className="text-muted-foreground">
+        <p className={styles.text}>
           {import.meta.env.VITE_LEGAL_NAME || '[VITE_LEGAL_NAME]'}
           <br />
           {import.meta.env.VITE_LEGAL_ADDRESS || '[VITE_LEGAL_ADDRESS]'},{' '}
@@ -17,18 +19,18 @@ export const ImpressumPage = () => {
         </p>
       </section>
 
-      <section className="mb-8">
-        <h2 className="mb-2 text-xl font-semibold text-foreground/90">Contact</h2>
-        <p className="text-muted-foreground">
+      <section className={styles.section}>
+        <h2 className={styles.sectionHeader}>Contact</h2>
+        <p className={styles.text}>
           E-Mail: {import.meta.env.VITE_LEGAL_EMAIL || '[VITE_LEGAL_EMAIL]'}
         </p>
       </section>
 
-      <section className="mb-8">
-        <h2 className="mb-2 text-xl font-semibold text-foreground/90">
+      <section className={styles.section}>
+        <h2 className={styles.sectionHeader}>
           Responsible for Content (V.i.S.d.P.)
         </h2>
-        <p className="text-muted-foreground">
+        <p className={styles.text}>
           Responsible for content according to § 55 paragraph 2 RStV:
           <br />
           {import.meta.env.VITE_LEGAL_NAME || '[VITE_LEGAL_NAME]'}
@@ -40,18 +42,18 @@ export const ImpressumPage = () => {
         </p>
       </section>
 
-      <section className="mb-8">
-        <h2 className="mb-2 text-xl font-semibold text-foreground/90">Notice</h2>
-        <p className="text-muted-foreground">
+      <section className={styles.section}>
+        <h2 className={styles.sectionHeader}>Notice</h2>
+        <p className={styles.text}>
           This is a private project for demonstration and educational purposes (Dies ist ein
           privates Projekt zu Demonstrations- und Bildungszwecken). No commercial purpose is pursued
           (Es wird kein wirtschaftlicher Zweck verfolgt).
         </p>
       </section>
 
-      <section className="mb-8">
-        <h2 className="mb-2 text-xl font-semibold text-foreground/90">EU Dispute Resolution</h2>
-        <p className="text-muted-foreground">
+      <section className={styles.section}>
+        <h2 className={styles.sectionHeader}>EU Dispute Resolution</h2>
+        <p className={styles.text}>
           As this is a private offer and no economic business transaction takes place, we are not
           willing or obliged to participate in dispute resolution proceedings before a consumer
           arbitration board. The EU Online Dispute Resolution (ODR) platform has been discontinued.

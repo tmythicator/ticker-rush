@@ -1,28 +1,30 @@
 import { Leaderboard } from '@/components/Leaderboard';
 import { LadderDetails } from '@/components/Leaderboard/LadderDetails';
 import { IconRefresh } from '@/components/icons/CustomIcons';
+import { Card } from '@/components/shared/Card';
 import { useActiveLadderQuery } from '@/hooks/useActiveLadderQuery';
+import styles from './LeaderboardPage.module.css';
 
 export const LeaderboardPage = () => {
   const { data: ladder, isLoading } = useActiveLadderQuery();
 
   if (isLoading) {
     return (
-      <div className="container mx-auto flex h-64 items-center justify-center py-10">
-        <IconRefresh className="h-8 w-8 animate-spin text-primary" />
+      <div className={styles.loaderWrapper}>
+        <IconRefresh className={styles.spinner} />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-10">
-      <div className="overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
+    <div className={styles.container}>
+      <Card className={styles.card}>
         {ladder && <LadderDetails ladder={ladder} />}
 
-        <div className="bg-background/20">
+        <div className={styles.leaderboardSection}>
           <Leaderboard />
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

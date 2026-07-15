@@ -1,0 +1,9 @@
+export { DashboardPage } from './Dashboard/DashboardPage';
+export { LeaderboardPage } from './Leaderboard/LeaderboardPage';
+export { ProfilePage } from './Profile/ProfilePage';
+export { PublicProfilePage } from './Profile/PublicProfilePage';
+export { LoginPage } from './Auth/LoginPage';
+export { RegisterPage } from './Auth/RegisterPage';
+export { AgbPage } from './Legal/AgbPage';
+export { ImpressumPage } from './Legal/ImpressumPage';
+export { PrivacyPage } from './Legal/PrivacyPage';

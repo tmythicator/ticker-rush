@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { PublicProfilePage } from '@/pages/PublicProfilePage';
+import { PublicProfilePage } from './PublicProfilePage';
 import { getPublicProfile } from '@/lib/api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { mockUserParticipating as mockUser } from '@/test/mocks';

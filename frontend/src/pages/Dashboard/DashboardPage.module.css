@@ -1,0 +1,75 @@
+.dashboardLayout {
+  margin-inline: auto;
+  display: grid;
+  width: 100%;
+  max-width: 1800px;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 1rem;
+  padding-bottom: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .dashboardLayout {
+    grid-template-columns: repeat(12, 1fr);
+    padding: 1.5rem;
+  }
+}
+
+.mainSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .mainSection {
+    grid-column: span 9;
+  }
+}
+
+.joinBanner {
+  animation: slideInFromTop 0.5s ease-out;
+}
+
+.chartCardWrapper {
+  position: relative;
+  height: 500px;
+  overflow: hidden;
+  padding: 0.25rem;
+}
+
+.mobileTradePanel {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .mobileTradePanel {
+    display: none;
+  }
+}
+
+.desktopTradePanel {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .desktopTradePanel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 1rem;
+    grid-column: span 3;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
