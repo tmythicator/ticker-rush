@@ -25,6 +25,11 @@
   flex-direction: column;
   gap: 1.5rem;
   padding: 1rem;
+
+  @media (max-width: 640px) {
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
 }
 
 @media (min-width: 640px) {
@@ -38,18 +43,31 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+
+  @media (max-width: 640px) {
+    margin-bottom: 0.5rem;
+  }
 }
 
 .trophyIcon {
   height: 2rem;
   width: 2rem;
   color: var(--warning);
+
+  @media (max-width: 640px) {
+    height: 1.5rem;
+    width: 1.5rem;
+  }
 }
 
 .title {
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.025em;
+
+  @media (max-width: 640px) {
+    font-size: 1.25rem;
+  }
 }
 
 .footer {
