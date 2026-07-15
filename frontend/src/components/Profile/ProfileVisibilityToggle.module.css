@@ -1,16 +1,16 @@
 .container {
-  background-color: color-mix(in srgb, var(--muted) 30%, transparent);
-  padding: 1rem;
+  background-color: var(--muted-bg-subtle);
+  padding: var(--space-md);
   border-radius: var(--radius);
-  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  border: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+  transition: var(--transition-normal);
 
   @media (max-width: 640px) {
-    padding: 0.75rem;
+    padding: var(--space-sm);
   }
 }
 
@@ -19,8 +19,8 @@
 }
 
 .badge {
-  font-size: 0.75rem;
-  padding: 0.125rem 0.5rem;
+  font-size: var(--text-xs);
+  padding: var(--space-xxs) var(--space-xs);
   border-radius: 9999px;
   background-color: color-mix(in srgb, var(--primary) 10%, transparent);
   color: var(--primary);
@@ -30,13 +30,13 @@
 .textGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-xxs);
 }
 
 .titleRow {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
 }
 
 .title {
@@ -45,10 +45,10 @@
 }
 
 .description {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--muted-foreground);
 
   @media (max-width: 640px) {
-    font-size: 0.6875rem;
+    font-size: var(--text-xs);
   }
 }
