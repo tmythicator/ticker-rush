@@ -28,158 +28,156 @@
     height: 1rem;
     flex-shrink: 0;
   }
+}
 
-  /* Variants */
-  &[data-variant='default'] {
-    background-color: var(--primary);
-    color: var(--primary-foreground);
-    box-shadow: var(--shadow-brutalist-sm);
+.variantDefault {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: var(--shadow-brutalist-sm);
 
-    &:hover {
-      transform: translate(2px, 2px);
-      box-shadow: none;
-    }
-
-    &:active {
-      transform: translate(4px, 4px);
-    }
-  }
-
-  &[data-variant='destructive'] {
-    background-color: var(--destructive);
-    color: var(--destructive-foreground);
-    box-shadow: var(--shadow-brutalist-sm);
-
-    &:hover {
-      transform: translate(2px, 2px);
-      box-shadow: none;
-    }
-
-    &:active {
-      transform: translate(4px, 4px);
-    }
-  }
-
-  &[data-variant='outline'] {
-    background-color: var(--background);
-    color: var(--foreground);
-    box-shadow: var(--shadow-brutalist-sm);
-
-    &:hover {
-      background-color: var(--muted);
-      transform: translate(2px, 2px);
-      box-shadow: none;
-    }
-
-    &:active {
-      transform: translate(4px, 4px);
-    }
-  }
-
-  &[data-variant='secondary'] {
-    background-color: var(--muted);
-    color: var(--foreground);
-    box-shadow: var(--shadow-brutalist-sm);
-
-    &:hover {
-      transform: translate(2px, 2px);
-      box-shadow: none;
-    }
-
-    &:active {
-      transform: translate(4px, 4px);
-    }
-  }
-
-  &[data-variant='ghost'] {
-    border-color: transparent;
-    background-color: transparent;
-
-    &:hover {
-      background-color: var(--muted);
-    }
-  }
-
-  &[data-variant='link'] {
-    border-color: transparent;
-    background-color: transparent;
-    color: var(--primary);
-
-    &:hover {
-      text-decoration: underline;
-      text-underline-offset: 4px;
-    }
-  }
-
-  &[data-variant='success'] {
-    background-color: var(--success);
-    color: var(--success-foreground);
-    box-shadow: var(--shadow-brutalist-sm);
-
-    &:hover {
-      background-color: var(--success-hover);
-      transform: translate(2px, 2px);
-      box-shadow: none;
-    }
-
-    &:active {
-      transform: translate(4px, 4px);
-    }
-  }
-
-  &[data-variant='ghostDestructive'] {
-    border-color: transparent;
-    background-color: transparent;
-    color: var(--destructive);
-
-    &:hover {
-      background-color: var(--destructive-bg-subtle);
-    }
-  }
-
-  &[data-variant='unstyled'] {
-    border-color: transparent;
-    background-color: transparent;
-    padding: 0;
+  &:hover {
+    transform: translate(2px, 2px);
     box-shadow: none;
-    border-radius: 0;
-
-    &:hover,
-    &:active {
-      transform: none;
-      box-shadow: none;
-    }
-    &:focus-visible {
-      outline: none;
-    }
   }
 
-  /* Sizes */
-  &[data-size='default'] {
-    height: 2.5rem;
-    padding: var(--space-xs) var(--space-md);
+  &:active {
+    transform: translate(4px, 4px);
+  }
+}
+
+.variantUnstyled {
+  border-color: transparent;
+  background-color: transparent;
+  padding: 0;
+  box-shadow: none;
+  border-radius: 0;
+
+  &:hover,
+  &:active {
+    transform: none;
+    box-shadow: none;
+  }
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.variantDestructive {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+  box-shadow: var(--shadow-brutalist-sm);
+
+  &:hover {
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
 
-  &[data-size='sm'] {
-    height: 2.25rem;
-    padding: 0 var(--space-md);
+  &:active {
+    transform: translate(4px, 4px);
+  }
+}
+
+.variantOutline {
+  background-color: var(--background);
+  color: var(--foreground);
+  box-shadow: var(--shadow-brutalist-sm);
+
+  &:hover {
+    background-color: var(--muted);
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
 
-  &[data-size='lg'] {
-    height: 3rem;
-    padding: 0 var(--space-xl);
-    font-size: var(--text-base);
+  &:active {
+    transform: translate(4px, 4px);
+  }
+}
+
+.variantSecondary {
+  background-color: var(--muted);
+  color: var(--foreground);
+  box-shadow: var(--shadow-brutalist-sm);
+
+  &:hover {
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
 
-  &[data-size='icon'] {
-    height: 2.5rem;
-    width: 2.5rem;
-    padding: 0;
+  &:active {
+    transform: translate(4px, 4px);
+  }
+}
+
+.variantGhost {
+  border-color: transparent;
+  background-color: transparent;
+
+  &:hover {
+    background-color: var(--muted);
+  }
+}
+
+.variantGhostDestructive {
+  border-color: transparent;
+  background-color: transparent;
+  color: var(--destructive);
+
+  &:hover {
+    background-color: var(--destructive-bg-subtle);
+  }
+}
+
+.variantLink {
+  border-color: transparent;
+  background-color: transparent;
+  color: var(--primary);
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+.variantSuccess {
+  background-color: var(--success);
+  color: var(--success-foreground);
+  box-shadow: var(--shadow-brutalist-sm);
+
+  &:hover {
+    background-color: var(--success-hover);
+    transform: translate(2px, 2px);
+    box-shadow: none;
   }
 
-  &[data-size='unstyled'] {
-    height: auto;
-    width: auto;
-    padding: 0;
+  &:active {
+    transform: translate(4px, 4px);
   }
+}
+
+.sizeDefault {
+  height: 2.5rem;
+  padding: var(--space-xs) var(--space-md);
+}
+
+.sizeSm {
+  height: 2.25rem;
+  padding: 0 var(--space-md);
+}
+
+.sizeLg {
+  height: 3rem;
+  padding: 0 var(--space-xl);
+  font-size: var(--text-base);
+}
+
+.sizeIcon {
+  height: 2.5rem;
+  width: 2.5rem;
+  padding: 0;
+}
+
+.sizeUnstyled {
+  height: auto;
+  width: auto;
+  padding: 0;
 }
