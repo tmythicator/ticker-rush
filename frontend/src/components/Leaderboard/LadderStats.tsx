@@ -1,5 +1,6 @@
 import { IconCalendar, IconWallet } from '@/components/icons/CustomIcons';
 import { formatLocalTime } from '@/lib/utils';
+import styles from './Leaderboard.module.css';
 
 interface LadderStatsProps {
   endTime?: Date;
@@ -8,30 +9,30 @@ interface LadderStatsProps {
 
 export const LadderStats = ({ endTime, initialBalance }: LadderStatsProps) => {
   return (
-    <div className="flex flex-wrap gap-4">
-      <div className="flex items-center gap-4 rounded-xl border border-border bg-muted/30 p-4">
-        <div className="text-blue-500">
-          <IconCalendar className="h-6 w-6" />
+    <div className={styles.statsContainer}>
+      <div className={styles.statsCard}>
+        <div className={styles.statsIconWrapper} data-type="time">
+          <IconCalendar className={styles.statsIcon} />
         </div>
         <div>
-          <div className="mb-0.5 text-[10px] font-black uppercase tracking-tighter text-muted-foreground">
+          <div className={styles.statsLabel}>
             Competition Ends
           </div>
-          <div className="text-base font-bold tabular-nums">
+          <div className={styles.statsValue}>
             {endTime ? formatLocalTime(endTime.getTime() / 1000) : 'N/A'}
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 rounded-xl border border-border bg-muted/30 p-4">
-        <div className="text-emerald-500">
-          <IconWallet className="h-6 w-6" />
+      <div className={styles.statsCard}>
+        <div className={styles.statsIconWrapper} data-type="capital">
+          <IconWallet className={styles.statsIcon} />
         </div>
         <div>
-          <div className="mb-0.5 text-[10px] font-black uppercase tracking-tighter text-muted-foreground">
+          <div className={styles.statsLabel}>
             Starting Capital
           </div>
-          <div className="text-base font-bold tabular-nums">
+          <div className={styles.statsValue}>
             ${initialBalance?.toLocaleString() ?? '0'}
           </div>
         </div>

@@ -27,7 +27,7 @@ describe('PortfolioTable', () => {
           quote: { price: 160.0 },
           marketValue: '$1600.00',
           pnl: '+$100.00',
-          pnlColorClass: 'text-green-500',
+          pnlStatus: 'positive',
         } as unknown as ReturnType<typeof usePortfolioRowState>;
       }
       return {
@@ -38,7 +38,7 @@ describe('PortfolioTable', () => {
         quote: { price: 310.0 },
         marketValue: '$1550.00',
         pnl: '+$50.00',
-        pnlColorClass: 'text-green-500',
+        pnlStatus: 'positive',
       } as unknown as ReturnType<typeof usePortfolioRowState>;
     });
 
@@ -72,7 +72,7 @@ describe('PortfolioTable', () => {
       quote: { price: 160.0 },
       marketValue: '$1600.00',
       pnl: '+$100.00',
-      pnlColorClass: 'text-green-500',
+      pnlStatus: 'positive',
     } as unknown as ReturnType<typeof usePortfolioRowState>);
 
     render(
@@ -106,7 +106,7 @@ describe('PortfolioTable', () => {
       quote: { price: 310.0 },
       marketValue: '$1550.00',
       pnl: '+$50.00',
-      pnlColorClass: 'text-green-500',
+      pnlStatus: 'positive',
     } as unknown as ReturnType<typeof usePortfolioRowState>);
 
     render(<PortfolioTable items={[mockPortfolioItemMSFT]} />);
@@ -128,7 +128,7 @@ describe('PortfolioTable', () => {
       quote: { price: 160.0 },
       marketValue: '$1600.00',
       pnl: '+$100.00',
-      pnlColorClass: 'text-green-500',
+      pnlStatus: 'positive',
     } as unknown as ReturnType<typeof usePortfolioRowState>);
 
     render(<PortfolioTable items={[mockPortfolioItemAAPL]} />);

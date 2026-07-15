@@ -1,5 +1,6 @@
 import { ModalBody } from '@/components/Modal';
 import { ErrorMessage } from '@/components/shared/ErrorMessage';
+import styles from './SellPosition.module.css';
 
 interface SellPositionBodyProps {
   displaySymbol: string;
@@ -19,35 +20,35 @@ export const SellPositionBody = ({
   isPriceError,
 }: SellPositionBodyProps) => {
   return (
-    <ModalBody className="space-y-4">
-      <p className="text-sm text-muted-foreground">
+    <ModalBody className={styles.modalBody}>
+      <p className={styles.text}>
         Are you sure you want to sell your entire position of{' '}
-        <strong className="text-foreground">{displaySymbol}</strong>?
+        <strong className={styles.strongText}>{displaySymbol}</strong>?
       </p>
 
-      <div className="space-y-2 rounded-lg border border-border bg-muted/50 p-4">
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Quantity</span>
-          <span className="font-mono font-bold text-foreground">{quantity}</span>
+      <div className={styles.detailsBox}>
+        <div className={styles.row}>
+          <span className={styles.rowLabel}>Quantity</span>
+          <span className={styles.rowValue}>{quantity}</span>
         </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Current Price</span>
+        <div className={styles.row}>
+          <span className={styles.rowLabel}>Current Price</span>
           {isPriceLoading ? (
-            <span className="animate-pulse text-muted-foreground">Loading...</span>
+            <span className={styles.pulseLoading}>Loading...</span>
           ) : isPriceError ? (
-            <span className="font-bold text-destructive">Unavailable</span>
+            <span className={styles.unavailable}>Unavailable</span>
           ) : (
-            <span className="font-mono font-bold text-foreground">${price.toFixed(2)}</span>
+            <span className={styles.rowValue}>${price.toFixed(2)}</span>
           )}
         </div>
-        <div className="flex justify-between border-t border-border pt-2 text-sm">
-          <span className="font-bold text-foreground">Total Value</span>
+        <div className={styles.totalRow}>
+          <span className={styles.totalLabel}>Total Value</span>
           {isPriceLoading ? (
-            <span className="animate-pulse text-muted-foreground">Loading...</span>
+            <span className={styles.pulseLoading}>Loading...</span>
           ) : isPriceError ? (
-            <span className="font-bold text-destructive">Unavailable</span>
+            <span className={styles.unavailable}>Unavailable</span>
           ) : (
-            <span className="font-mono font-bold text-foreground">${totalValue.toFixed(2)}</span>
+            <span className={styles.rowValue}>${totalValue.toFixed(2)}</span>
           )}
         </div>
       </div>

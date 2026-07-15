@@ -1,6 +1,7 @@
 import { IconArrowRight, IconTrash } from '@/components/icons/CustomIcons';
 import { Button } from '@/components/shared/Button';
 import type { PortfolioItem } from '@/types';
+import styles from './PortfolioTable.module.css';
 
 interface RowActionsCellProps {
   item: PortfolioItem;
@@ -21,18 +22,18 @@ export const RowActionsCell = ({
   const buttonTitle = !isTradable ? 'Not Tradable' : isMarketClosed ? 'Market Closed' : undefined;
 
   return (
-    <td className="px-6 py-4 text-right">
-      <div className="flex items-center justify-end gap-2">
+    <td className={`${styles.cell} ${styles.cellCenter}`}>
+      <div className={styles.actionsContainer}>
         <Button
           data-testid="sell-all-button"
           variant="destructive"
           size="sm"
           onClick={() => onSellClick(item)}
           title={buttonTitle || 'Sell All'}
-          className="h-8 px-3 text-xs"
+          className={styles.actionBtn}
           disabled={isActionDisabled}
         >
-          <IconTrash className="mr-1 h-3 w-3" />
+          <IconTrash className={styles.actionIconLeft} />
           Sell All
         </Button>
         <Button
@@ -40,12 +41,12 @@ export const RowActionsCell = ({
           variant="default"
           size="sm"
           onClick={() => onTradeClick(item.stock_symbol)}
-          className="h-8 px-3 text-xs"
+          className={styles.actionBtn}
           disabled={isActionDisabled}
           title={buttonTitle || 'Trade'}
         >
           Trade
-          <IconArrowRight className="ml-1 h-3 w-3" />
+          <IconArrowRight className={styles.actionIconRight} />
         </Button>
       </div>
     </td>

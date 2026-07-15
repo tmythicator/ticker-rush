@@ -1,0 +1,62 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: color-mix(in srgb, var(--background) 80%, transparent);
+  padding: 1rem;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.card {
+  width: 100%;
+  max-width: 32rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  background-color: var(--card);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-brutalist);
+}
+
+.textGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--foreground);
+}
+
+.description {
+  color: var(--muted-foreground);
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.button {
+  width: 100%;
+
+  @media (min-width: 640px) {
+    width: auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}

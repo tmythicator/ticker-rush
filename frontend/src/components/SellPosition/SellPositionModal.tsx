@@ -9,6 +9,7 @@ import {
 import { Button } from '@/components/shared/Button';
 import { useSellPositionModal } from '@/hooks/useSellPositionModal';
 import { SellPositionBody } from './SellPositionBody';
+import styles from './SellPosition.module.css';
 
 interface SellPositionModalProps {
   isOpen: boolean;
@@ -53,14 +54,14 @@ export const SellPositionModal = ({
         />
 
         <ModalFooter>
-          <Button onClick={onClose} variant="outline" className="flex-1">
+          <Button onClick={onClose} variant="outline" className={styles.footerButton}>
             Cancel
           </Button>
           <Button
             onClick={handleSellAll}
             disabled={isTradeLoading || isPriceLoading || isPriceError}
             variant="destructive"
-            className="flex-1"
+            className={styles.footerButton}
           >
             {isTradeLoading ? 'Selling...' : 'Confirm Sell All'}
           </Button>

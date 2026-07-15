@@ -13,6 +13,7 @@ import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { useEditProfile } from './useEditProfile';
 import { ProfileVisibilityToggle } from './ProfileVisibilityToggle';
 import { DeleteProfileSection } from './DeleteProfileSection';
+import styles from './EditProfileModal.module.css';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -32,12 +33,12 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
             <ModalCloseButton />
           </ModalHeader>
 
-          <ModalBody className="space-y-6">
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          <ModalBody className={styles.formBody}>
+            <div className={styles.section}>
+              <h3 className={styles.sectionTitle}>
                 Personal Information
               </h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className={styles.nameRow}>
                 <FormInput
                   label="First Name"
                   id="firstName"
@@ -57,8 +58,8 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className={styles.section}>
+              <h3 className={styles.sectionTitle}>
                 Public Profile
               </h3>
               <FormInput
@@ -91,7 +92,7 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
               type="button"
               variant="secondary"
               onClick={onClose}
-              className="flex-1"
+              className={styles.footerButton}
               data-testid="edit-profile-cancel"
             >
               Cancel
@@ -99,7 +100,7 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
             <Button
               type="submit"
               disabled={isPending}
-              className="flex-1"
+              className={styles.footerButton}
               data-testid="edit-profile-submit"
             >
               {isPending ? 'Saving...' : 'Save Changes'}

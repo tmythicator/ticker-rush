@@ -4,6 +4,7 @@ import { usePortfolioTable } from '@/hooks/usePortfolioTable';
 import { PortfolioTable } from './PortfolioTable';
 import { SellPositionModal } from '@/components/SellPosition';
 import type { PortfolioItem } from '@/types';
+import styles from './PortfolioTable.module.css';
 
 interface PortfolioHoldingsProps {
   portfolio: Record<string, PortfolioItem>;
@@ -15,10 +16,10 @@ export const PortfolioHoldings = ({ portfolio, isReadOnly = false }: PortfolioHo
     usePortfolioTable(portfolio);
 
   return (
-    <Card className="overflow-hidden">
-      <div className="flex items-center justify-between border-b border-border px-6 py-5">
-        <h3 className="flex items-center gap-2 text-lg font-bold text-foreground">
-          <IconBriefcase className="h-5 w-5 text-muted-foreground" />
+    <Card className={styles.holdingsCard}>
+      <div className={styles.holdingsHeaderWrapper}>
+        <h3 className={styles.holdingsTitle}>
+          <IconBriefcase className={styles.holdingsIcon} />
           Current Holdings
         </h3>
       </div>

@@ -1,0 +1,76 @@
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.text {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.strongText {
+  color: var(--foreground);
+}
+
+.detailsBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--muted) 50%, transparent);
+  padding: 1rem;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+}
+
+.rowLabel {
+  color: var(--muted-foreground);
+}
+
+.rowValue {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.pulseLoading {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  color: var(--muted-foreground);
+}
+
+.unavailable {
+  font-weight: 700;
+  color: var(--destructive);
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.totalLabel {
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.footerButton {
+  flex: 1;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}

@@ -3,6 +3,7 @@ import { INITIAL_BALANCE } from '@/lib/constants';
 import { calculateInvestedCapital } from '@/lib/utils';
 import { type PortfolioItem } from '@/types';
 import { NetWorthCard, PortfolioItemsCard, TotalGainLossCard } from './StatsGrid/index';
+import styles from './StatsGrid.module.css';
 
 interface StatsGridProps {
   balance: number;
@@ -24,7 +25,7 @@ export const StatsGrid = ({ balance, portfolio = {} }: StatsGridProps) => {
   const totalPnL = totalNetWorth - INITIAL_BALANCE;
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+    <div className={styles.statsContainer}>
       <NetWorthCard totalNetWorth={totalNetWorth} cash={balance} assets={investedCapital} />
       <PortfolioItemsCard count={portfolioItems.length} />
       <TotalGainLossCard totalPnL={totalPnL} />

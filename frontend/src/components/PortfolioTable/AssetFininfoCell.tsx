@@ -1,15 +1,26 @@
 import * as React from 'react';
-import { type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
-import { assetFininfoCellVariants } from './assetFininfoCellVariants';
+import styles from './AssetFininfoCell.module.css';
 
-export interface AssetFininfoCellProps
-  extends
-    React.TdHTMLAttributes<HTMLTableCellElement>,
-    VariantProps<typeof assetFininfoCellVariants> {
+export interface AssetFininfoCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  variant?: 'default' | 'muted' | 'medium' | 'bold';
+  trend?: 'up' | 'down' | 'neutral';
   ref?: React.Ref<HTMLTableCellElement>;
 }
 
-export const AssetFininfoCell = ({ className, variant, ref, ...props }: AssetFininfoCellProps) => (
-  <td ref={ref} className={cn(assetFininfoCellVariants({ variant, className }))} {...props} />
-);
+export const AssetFininfoCell = ({
+  className,
+  variant = 'default',
+  trend,
+  ref,
+  ...props
+}: AssetFininfoCellProps) => {
+  return (
+    <td
+      ref={ref}
+      className={`${styles.cell} ${className || ''}`}
+      data-variant={variant}
+      data-trend={trend}
+      {...props}
+    />
+  );
+};

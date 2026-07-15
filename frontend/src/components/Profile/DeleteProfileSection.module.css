@@ -1,0 +1,168 @@
+.sectionWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+}
+
+.dangerBox {
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in srgb, var(--destructive) 20%, transparent);
+  background-color: color-mix(in srgb, var(--destructive) 5%, transparent);
+  padding: 1rem;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.dangerBox:hover {
+  border-color: color-mix(in srgb, var(--destructive) 30%, transparent);
+}
+
+@media (min-width: 640px) {
+  .dangerBox {
+    padding: 1.25rem;
+  }
+}
+
+.dangerRow {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .dangerRow {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.iconWrapper {
+  align-self: flex-start;
+  border-radius: var(--radius-sm);
+  background-color: color-mix(in srgb, var(--destructive) 10%, transparent);
+  padding: 0.5rem;
+  color: var(--destructive);
+}
+
+.iconWrapper svg {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .iconWrapper {
+    align-self: center;
+  }
+}
+
+.textGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--destructive);
+}
+
+.description {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.btnWrapper {
+  align-self: flex-end;
+}
+
+@media (min-width: 640px) {
+  .btnWrapper {
+    align-self: center;
+  }
+}
+
+.deleteButton {
+  white-space: nowrap;
+  transition: transform 0.1s ease-in-out;
+}
+
+.deleteButton:active {
+  transform: scale(0.95);
+}
+
+.errorContainer {
+  margin-top: 0.5rem;
+}
+
+.modalCard {
+  border: 1px solid color-mix(in srgb, var(--destructive) 30%, transparent) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.modalHeaderRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--destructive);
+}
+
+.modalHeaderRow svg {
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+.modalTitle {
+  font-size: 1.125rem !important;
+  font-weight: 700 !important;
+  color: var(--destructive) !important;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modalText {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.625;
+  color: var(--foreground);
+}
+
+.warningBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in srgb, var(--warning) 20%, transparent);
+  background-color: color-mix(in srgb, var(--warning) 10%, transparent);
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--warning);
+}
+
+.warningTitle {
+  display: block;
+  font-weight: 600;
+}
+
+.modalFooter {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.footerButton {
+  flex: 1;
+  justify-content: center;
+}
+
+.confirmDeleteButton {
+  flex: 1;
+  justify-content: center;
+  box-shadow: 0 10px 15px -3px color-mix(in srgb, var(--destructive) 20%, transparent);
+}

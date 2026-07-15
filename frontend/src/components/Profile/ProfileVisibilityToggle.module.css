@@ -1,0 +1,46 @@
+.container {
+  background-color: color-mix(in srgb, var(--muted) 30%, transparent);
+  padding: 1rem;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.container:hover {
+  background-color: color-mix(in srgb, var(--muted) 50%, transparent);
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.textGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.title {
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.description {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}

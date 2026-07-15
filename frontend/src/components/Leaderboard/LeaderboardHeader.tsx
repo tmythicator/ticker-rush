@@ -1,10 +1,12 @@
+import styles from './Leaderboard.module.css';
+
 export const LeaderboardHeader = () => {
   return (
-    <thead className="border-b border-border bg-muted text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+    <thead className={styles.thead}>
       <tr>
-        <th className="w-24 px-8 py-4 text-center">Rank</th>
-        <th className="px-6 py-4">Trader</th>
-        <th className="px-8 py-4 text-right">Net Worth (USD)</th>
+        <th className={`${styles.headerCell} ${styles.headerCellCenter}`}>Rank</th>
+        <th className={styles.headerCell}>Trader</th>
+        <th className={`${styles.headerCell} ${styles.headerCellRight}`}>Net Worth (USD)</th>
       </tr>
     </thead>
   );

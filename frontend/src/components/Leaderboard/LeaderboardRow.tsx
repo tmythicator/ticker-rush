@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { IconLock, IconMedal } from '@/components/icons/CustomIcons';
 import type { LeaderboardEntry } from '@/types';
+import styles from './Leaderboard.module.css';
 
 interface LeaderboardRowProps {
   entry: LeaderboardEntry;
@@ -8,32 +9,32 @@ interface LeaderboardRowProps {
 
 export const LeaderboardRow = ({ entry }: LeaderboardRowProps) => {
   return (
-    <tr className="transition-colors hover:bg-muted/50">
-      <td className="px-6 py-4 text-center font-bold">
-        <div className="flex items-center justify-center">
-          {entry.rank === 1 && <IconMedal className="h-5 w-5 text-yellow-500" />}
-          {entry.rank === 2 && <IconMedal className="h-5 w-5 text-slate-400" />}
-          {entry.rank === 3 && <IconMedal className="h-5 w-5 text-amber-700" />}
+    <tr>
+      <td className={`${styles.cell} ${styles.cellCenter}`}>
+        <div className={styles.rankContainer}>
+          {entry.rank === 1 && <IconMedal className={`${styles.medalIcon} ${styles.gold}`} />}
+          {entry.rank === 2 && <IconMedal className={`${styles.medalIcon} ${styles.silver}`} />}
+          {entry.rank === 3 && <IconMedal className={`${styles.medalIcon} ${styles.bronze}`} />}
           {entry.rank > 3 && entry.rank}
         </div>
       </td>
-      <td className="px-6 py-4 font-bold">
+      <td className={styles.cell}>
         {entry.user?.is_public ? (
           <Link
             to={`/users/${entry.user?.username}`}
-            className="flex items-center gap-2 transition-colors hover:text-primary"
+            className={styles.userLink}
           >
             {entry.user?.username}
           </Link>
         ) : (
-          <div className="flex items-center gap-2 italic text-muted-foreground/60">
+          <div className={styles.classifiedContainer}>
             <span>Classified</span>
-            <IconLock className="h-3 w-3" />
+            <IconLock className={styles.lockIcon} />
           </div>
         )}
       </td>
 
-      <td className="px-6 py-4 text-right font-bold tabular-nums text-emerald-500">
+      <td className={`${styles.cell} ${styles.cellRight}`}>
         $
         {entry.score?.toLocaleString(undefined, {
           minimumFractionDigits: 2,

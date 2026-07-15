@@ -2,6 +2,7 @@ import type { PortfolioItem } from '@/types';
 import { PortfolioRow } from './PortfolioRow';
 import { PortfolioTableHeader } from './PortfolioTableHeader';
 import { TableEmptyState } from './TableEmptyState';
+import styles from './PortfolioTable.module.css';
 
 interface PortfolioTableProps {
   items: PortfolioItem[];
@@ -19,10 +20,10 @@ export const PortfolioTable = ({
   const isEmpty = items.length === 0;
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left" data-testid="portfolio-table">
+    <div className={styles.responsiveWrapper}>
+      <table className={styles.table} data-testid="portfolio-table">
         <PortfolioTableHeader isReadOnly={isReadOnly} />
-        <tbody className="divide-y divide-border">
+        <tbody>
           {items.map((item) => (
             <PortfolioRow
               key={item.stock_symbol}

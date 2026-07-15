@@ -3,6 +3,7 @@ import { AssetInfoCell } from '@/components/PortfolioTable/AssetInfoCell';
 import { RowActionsCell } from '@/components/PortfolioTable/RowActionsCell';
 import { AssetFininfoCell } from '@/components/PortfolioTable/AssetFininfoCell';
 import { usePortfolioRowState } from '@/hooks/usePortfolioRowState';
+import styles from './PortfolioTable.module.css';
 
 interface PortfolioRowProps {
   item: PortfolioItem;
@@ -17,15 +18,15 @@ export const PortfolioRow = ({
   onTradeClick,
   isReadOnly = false,
 }: PortfolioRowProps) => {
-  const { symbol, source, isMarketClosed, isTradable, quote, marketValue, pnl, pnlColorClass } =
+  const { symbol, source, isMarketClosed, isTradable, quote, marketValue, pnl, pnlStatus } =
     usePortfolioRowState(item);
 
-  const loadingIndicator = <span className="animate-pulse">...</span>;
+  const loadingIndicator = <span>...</span>;
 
   return (
     <tr
       data-testid={`portfolio-row-${symbol.toLowerCase()}`}
-      className="transition-colors hover:bg-muted/50"
+      className={styles.row}
     >
       <AssetInfoCell symbol={symbol} source={source} isTradable={isTradable} />
 
@@ -39,7 +40,10 @@ export const PortfolioRow = ({
 
       <AssetFininfoCell variant="bold">{marketValue ?? loadingIndicator}</AssetFininfoCell>
 
-      <AssetFininfoCell variant="bold" className={pnlColorClass}>
+      <AssetFininfoCell
+        variant="bold"
+        trend={pnlStatus === 'positive' ? 'up' : pnlStatus === 'negative' ? 'down' : 'neutral'}
+      >
         {pnl ?? loadingIndicator}
       </AssetFininfoCell>
 

@@ -1,7 +1,7 @@
 import { IconTrending } from '@icons/CustomIcons';
 import { Card } from '@/components/shared/Card';
 import { formatCurrencyWithSign } from '@/lib/utils';
-import { cn } from '@/lib/utils';
+import styles from './TotalGainLossCard.module.css';
 
 interface TotalGainLossCardProps {
   totalPnL: number;
@@ -9,33 +9,24 @@ interface TotalGainLossCardProps {
 
 export const TotalGainLossCard = ({ totalPnL }: TotalGainLossCardProps) => {
   const isPnLPositive = totalPnL >= 0;
+  const trend = isPnLPositive ? 'up' : 'down';
 
   return (
-    <Card className="flex flex-col justify-between p-6">
-      <div className="flex items-center gap-3">
-        <div
-          className={cn(
-            'rounded-xl p-2',
-            isPnLPositive ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500',
-          )}
-        >
-          <IconTrending className="h-5 w-5" />
+    <Card className={styles.card}>
+      <div className={styles.headerGroup}>
+        <div className={styles.iconWrapper} data-trend={trend}>
+          <IconTrending />
         </div>
         <div>
-          <span className="block text-xs font-bold uppercase tracking-wider text-muted-foreground">
+          <span className={styles.label}>
             Total Gain/Loss
           </span>
-          <div
-            className={cn(
-              'mt-0.5 text-2xl font-bold',
-              isPnLPositive ? 'text-green-500' : 'text-red-500',
-            )}
-          >
+          <div className={styles.value} data-trend={trend}>
             {formatCurrencyWithSign(totalPnL)}
           </div>
         </div>
       </div>
-      <p className="mt-4 text-xs text-muted-foreground">
+      <p className={styles.description}>
         Real-time P&L based on current market prices.
       </p>
     </Card>
