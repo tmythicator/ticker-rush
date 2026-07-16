@@ -14,6 +14,7 @@ import { useEditProfile } from './useEditProfile';
 import { ProfileVisibilityToggle } from './ProfileVisibilityToggle';
 import { DeleteProfileSection } from './DeleteProfileSection';
 import styles from './EditProfileModal.module.css';
+import { useId } from 'react';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -24,18 +25,23 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
   const { register, onSubmit, setValue, isPublic, errors, isPending, isError, error } =
     useEditProfile(onClose);
 
+  const personalInfoTitleId = useId();
+  const publicProfileTitleId = useId();
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalCard size="md">
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} noValidate>
           <ModalHeader>
             <ModalTitle>Edit Profile</ModalTitle>
             <ModalCloseButton />
           </ModalHeader>
 
           <ModalBody className={styles.formBody}>
-            <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>Personal Information</h3>
+            <section className={styles.section} aria-labelledby={personalInfoTitleId}>
+              <h3 id={personalInfoTitleId} className={styles.sectionTitle}>
+                Personal Information
+              </h3>
               <div className={styles.nameRow}>
                 <FormInput
                   label="First Name"
@@ -54,10 +60,12 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
                   data-testid="last-name-input"
                 />
               </div>
-            </div>
+            </section>
 
-            <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>Public Profile</h3>
+            <section className={styles.section} aria-labelledby={publicProfileTitleId}>
+              <h3 id={publicProfileTitleId} className={styles.sectionTitle}>
+                Public Profile
+              </h3>
               <FormInput
                 label="Website"
                 id="website"
@@ -72,7 +80,7 @@ export const EditProfileModal = ({ isOpen, onClose }: EditProfileModalProps) => 
                 onToggle={() => setValue('isPublic', !isPublic, { shouldDirty: true })}
                 checkboxProps={register('isPublic')}
               />
-            </div>
+            </section>
 
             <DeleteProfileSection onSuccess={onClose} />
 

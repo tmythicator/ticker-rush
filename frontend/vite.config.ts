@@ -9,6 +9,7 @@ import { generateSitemapAndRobots } from './config/seo';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
+  const isProd = mode === 'production';
   const rootEnv = loadEnv(mode, path.resolve(__dirname, '../'), '');
   const appEnv = loadEnv(mode, process.cwd(), '');
   const exchangePort = parseInt(rootEnv.SERVER_PORT) || 8081;
@@ -22,7 +23,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     esbuild: {
-      drop: mode === 'production' ? ['console', 'debugger'] : [],
+      drop: isProd ? ['console', 'debugger'] : [],
     },
     define: {
       'import.meta.env.VITE_API_URL': JSON.stringify('/api'),
@@ -30,7 +31,6 @@ export default defineConfig(({ mode }) => {
     server: {
       port: clientPort,
       host: true,
-      // Forward requests to backend (avoid CORS hell)
       proxy: {
         '/api': {
           target: `http://localhost:${exchangePort}`,
@@ -45,6 +45,7 @@ export default defineConfig(({ mode }) => {
       setupFiles: './src/test/setup.ts',
     },
     build: {
+      sourcemap: isProd ? 'hidden' : true,
       rollupOptions: {
         output: {
           manualChunks(id) {
@@ -69,10 +70,9 @@ export default defineConfig(({ mode }) => {
       },
     },
     css: {
+      devSourcemap: true,
       modules: {
-        localsConvention: 'camelCaseOnly',
-        generateScopedName:
-          mode === 'development' ? '[name]__[local]--[hash:base64:5]' : '[hash:base64:5]',
+        generateScopedName: isProd ? '_[hash:base64:5]' : '[name]__[local]___[hash:base64:5]',
       },
     },
     plugins: [

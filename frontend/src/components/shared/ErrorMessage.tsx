@@ -36,6 +36,8 @@ export const ErrorMessage = ({
   return (
     <div
       role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
       data-testid="error-message"
       className={errorVariants({ variant, className })}
       {...props}

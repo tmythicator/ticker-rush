@@ -25,10 +25,18 @@ export const StatsGrid = ({ balance, portfolio = {} }: StatsGridProps) => {
   const totalPnL = totalNetWorth - INITIAL_BALANCE;
 
   return (
-    <div className={styles.statsContainer}>
-      <NetWorthCard totalNetWorth={totalNetWorth} cash={balance} assets={investedCapital} />
-      <PortfolioItemsCard count={portfolioItems.length} />
-      <TotalGainLossCard totalPnL={totalPnL} />
-    </div>
+    <section aria-label="Financial Summary" className={styles.statsSection}>
+      <ul className={styles.statsContainer}>
+        <li className={styles.statItem}>
+          <NetWorthCard totalNetWorth={totalNetWorth} cash={balance} assets={investedCapital} />
+        </li>
+        <li className={styles.statItem}>
+          <PortfolioItemsCard count={portfolioItems.length} />
+        </li>
+        <li className={styles.statItem}>
+          <TotalGainLossCard totalPnL={totalPnL} />
+        </li>
+      </ul>
+    </section>
   );
 };

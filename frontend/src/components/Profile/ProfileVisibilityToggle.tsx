@@ -24,7 +24,7 @@ export const ProfileVisibilityToggle = ({
           When public, your portfolio allocation is visible on the leaderboard.
         </p>
       </div>
-      <Checkbox {...checkboxProps} data-testid="visibility-checkbox" />
+      <Checkbox {...checkboxProps} checked={isPublic} data-testid="visibility-checkbox" />
     </div>
   );
 };
