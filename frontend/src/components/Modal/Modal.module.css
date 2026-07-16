@@ -1,7 +1,7 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background-color: color-mix(in srgb, var(--background) 80%, transparent);
+  background-color: var(--overlay);
   backdrop-filter: blur(4px);
   transition: var(--transition-normal);
   animation: fadeIn 0.2s ease-out;
