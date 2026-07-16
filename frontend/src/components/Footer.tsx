@@ -8,7 +8,7 @@ export const Footer = () => {
         <div className={styles.copyright}>
           &copy; {new Date().getFullYear()} Ticker Rush. All rights reserved.
         </div>
-        <div className={styles.links}>
+        <nav className={styles.links} aria-label="Footer navigation">
           <Link to="/impressum" className={styles.linkItem}>
             Impressum
           </Link>
@@ -23,10 +23,11 @@ export const Footer = () => {
             target="_blank"
             rel="noopener noreferrer"
             className={styles.linkItem}
+            aria-label="API Documentation (opens in a new tab)"
           >
             API Docs
           </a>
-        </div>
+        </nav>
       </div>
     </footer>
   );

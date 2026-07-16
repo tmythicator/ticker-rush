@@ -15,10 +15,10 @@ export const CookieBanner = () => {
   if (!isVisible) return null;
 
   return (
-    <div data-testid="cookie-banner" className={styles.overlay}>
+    <aside data-testid="cookie-banner" className={styles.overlay} role="status" aria-live="polite">
       <div className={styles.card}>
         <div className={styles.textGroup}>
-          <h2 className={styles.title}>Cookie Notice</h2>
+          <h3 className={styles.title}>Cookie Notice</h3>
           <p className={styles.description}>
             We use essential cookies for authentication and store game data (Redis/Postgres) to
             provide the service. You must agree to this usage to continue using the application.
@@ -35,6 +35,6 @@ export const CookieBanner = () => {
           </Button>
         </div>
       </div>
-    </div>
+    </aside>
   );
 };
