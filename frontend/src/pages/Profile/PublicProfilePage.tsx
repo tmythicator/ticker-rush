@@ -1,10 +1,8 @@
 import { useParams } from 'react-router-dom';
-import { PortfolioTable } from '@/components/PortfolioTable';
-import { StatsGrid } from '@/components/Profile/StatsGrid';
 import { IconLock, IconRefresh } from '@/components/icons/CustomIcons';
-import { Card } from '@/components/shared/Card';
 import { usePublicProfileQuery } from '@/hooks/usePublicProfileQuery';
 import styles from './PublicProfilePage.module.css';
+import { ProfileView } from '@/components/Profile/ProfileView';
 
 export const PublicProfilePage = () => {
   const { username } = useParams<{ username: string }>();
@@ -29,45 +27,5 @@ export const PublicProfilePage = () => {
     );
   }
 
-  return (
-    <div className={styles.pageWrapper}>
-      <div className={styles.ambientOrbPrimary} aria-hidden="true" />
-      <div className={styles.ambientOrbSecondary} aria-hidden="true" />
-
-      <article className={styles.container}>
-        <header className={styles.headerGroup}>
-          <h1 data-testid="profile-name" className={styles.title}>
-            {user.first_name} {user.last_name}
-          </h1>
-          <div className={styles.metaGroup}>
-            <span data-testid="profile-username" className={styles.username}>
-              @{user.username}
-            </span>
-            {user.website && (
-              <div className={styles.websiteGroup}>
-                <span className={styles.websiteLabel}>Website:</span>
-                <a
-                  href={user.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.websiteLink}
-                >
-                  {user.website}
-                </a>
-              </div>
-            )}
-          </div>
-        </header>
-
-        <StatsGrid {...user} />
-
-        <section className={styles.tableGroup} aria-label="Portfolio list">
-          <h2 className={styles.sectionTitle}>Portfolio</h2>
-          <Card className={styles.tableContainer}>
-            <PortfolioTable items={Object.values(user.portfolio || {})} isReadOnly />
-          </Card>
-        </section>
-      </article>
-    </div>
-  );
+  return <ProfileView user={user} />;
 };

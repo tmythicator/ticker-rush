@@ -1,4 +1,4 @@
-import { type PortfolioItem, type TickerSource } from '@/types';
+import { type PortfolioItem, type PublicProfile, type TickerSource, type User } from '@/types';
 
 /**
  * Calculates the total invested capital from a user's portfolio.
@@ -57,11 +57,24 @@ export const formatCurrencyWithSign = (value: number): string => {
  * @returns The source badge configuration.
  */
 export const getSourceBadgeConfig = (source: TickerSource) => {
-  console.log(source);
   const isCG = source === 'CoinGecko' || source === 'CG';
   return {
     variant: isCG ? 'CoinGecko' : 'Finnhub',
     label: isCG ? 'CG' : 'FH',
     title: isCG ? 'Source: CoinGecko' : 'Source: Finnhub',
   } as const;
+};
+
+/**
+ * Checks if the user object is a public profile.
+ */
+export const isPublicProfile = (user: PublicProfile | User): user is PublicProfile => {
+  return !isOwnUser(user);
+};
+
+/**
+ * Checks if the user object is the current user.
+ */
+export const isOwnUser = (user: PublicProfile | User): user is User => {
+  return 'is_participating' in user;
 };

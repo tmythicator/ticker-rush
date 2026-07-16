@@ -1,7 +1,6 @@
-import { PortfolioHoldings } from '@/components/PortfolioTable';
-import { ProfileHeader, StatsGrid } from '@/components/Profile';
 import { useAuth } from '@/hooks/useAuth';
 import styles from './ProfilePage.module.css';
+import { ProfileView } from '@/components/Profile/ProfileView';
 
 export const ProfilePage = () => {
   const { user } = useAuth();
@@ -10,11 +9,5 @@ export const ProfilePage = () => {
     return <div className={styles.loading}>Loading profile...</div>;
   }
 
-  return (
-    <div className={styles.profileWrapper}>
-      <ProfileHeader />
-      <StatsGrid {...user} />
-      <PortfolioHoldings portfolio={user.portfolio ?? {}} />
-    </div>
-  );
+  return <ProfileView user={user} />;
 };

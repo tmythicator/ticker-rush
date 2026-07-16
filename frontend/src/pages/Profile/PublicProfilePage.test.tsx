@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PublicProfilePage } from './PublicProfilePage';
 import { getPublicProfile } from '@/lib/api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { mockUserParticipating as mockUser } from '@/test/mocks';
+import { mockPublicProfile } from '@/test/mocks';
 
 vi.mock('@/lib/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/api')>()),
@@ -28,20 +28,32 @@ describe('PublicProfilePage', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('renders public profile correctly', async () => {
-    (getPublicProfile as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockUser);
+    vi.mocked(getPublicProfile).mockResolvedValue(mockPublicProfile);
     renderPage();
 
     await waitFor(() => {
       expect(screen.getByTestId('profile-name')).toHaveTextContent(
-        mockUser.first_name + ' ' + mockUser.last_name,
+        `${mockPublicProfile.first_name} ${mockPublicProfile.last_name}`.trim(),
       );
-      expect(screen.getByTestId('profile-username')).toHaveTextContent('@' + mockUser.username);
+
+      expect(screen.getByTestId('profile-username')).toHaveTextContent(
+        `@${mockPublicProfile.username}`,
+      );
+
+      if (mockPublicProfile.website) {
+        const link = screen.getByRole('link', {
+          name: new RegExp(`Visit website: ${mockPublicProfile.website}`, 'i'),
+        });
+        expect(link).toHaveAttribute('href', mockPublicProfile.website);
+        expect(link).toHaveAttribute('target', '_blank');
+      }
+
       expect(screen.getByTestId('portfolio-row-aapl')).toBeInTheDocument();
     });
   });
 
   it('renders error for private/missing profile', async () => {
-    (getPublicProfile as unknown as ReturnType<typeof vi.fn>).mockRejectedValue({
+    vi.mocked(getPublicProfile).mockRejectedValue({
       response: { status: 404 },
     });
     renderPage();

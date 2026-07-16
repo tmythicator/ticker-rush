@@ -1,4 +1,4 @@
-import type { User, Quote, PortfolioItem } from '@/types';
+import type { User, Quote, PortfolioItem, PublicProfile } from '@/types';
 
 export const mockUserParticipating: User = {
   username: 'testuser',
@@ -14,6 +14,18 @@ export const mockUserParticipating: User = {
   is_admin: false,
   is_banned: false,
   created_at: new Date('2026-06-01T00:00:00Z'),
+};
+
+export const mockPublicProfile: PublicProfile = {
+  username: 'some_other_user',
+  first_name: 'John',
+  last_name: 'Doe',
+  website: 'https://johndoe.com',
+  balance: 2500,
+  portfolio: {
+    AAPL: { stock_symbol: 'AAPL', quantity: 5, average_price: 145.0 },
+  },
+  is_public: true,
 };
 
 export const mockUserNotParticipating: User = {
