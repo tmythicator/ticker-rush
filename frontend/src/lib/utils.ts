@@ -57,7 +57,6 @@ export const formatCurrencyWithSign = (value: number): string => {
  * @returns The source badge configuration.
  */
 export const getSourceBadgeConfig = (source: TickerSource) => {
-  console.log(source);
   const isCG = source === 'CoinGecko' || source === 'CG';
   return {
     variant: isCG ? 'CoinGecko' : 'Finnhub',

@@ -40,9 +40,6 @@ export const LoginPage = () => {
       login(user);
       navigate('/');
     },
-    onError: (error) => {
-      console.log(error.message);
-    },
   });
 
   return (
