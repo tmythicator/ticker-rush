@@ -137,14 +137,16 @@
   --avatar-start: var(--color-blue);
   --avatar-end: var(--color-indigo);
 
+  --warning-bg: #2d1f03;
+  --warning-text: #fbbf24;
+  --warning-border: #f59e0b33;
+
   --shadow-brutalist: 5px 5px 0px 0px var(--border);
   --shadow-brutalist-sm: 3px 3px 0px 0px var(--border);
 
   /* Semantic state backgrounds and borders */
   --destructive-bg-subtle: color-mix(in srgb, var(--destructive) 5%, transparent);
   --destructive-border-subtle: color-mix(in srgb, var(--destructive) 20%, transparent);
-  --warning-bg-subtle: color-mix(in srgb, var(--warning) 10%, transparent);
-  --warning-border-subtle: color-mix(in srgb, var(--warning) 20%, transparent);
   --success-bg-subtle: color-mix(in srgb, var(--success) 10%, transparent);
   --success-border-subtle: color-mix(in srgb, var(--success) 20%, transparent);
   --muted-bg-subtle: color-mix(in srgb, var(--muted) 30%, transparent);
@@ -206,6 +208,10 @@
   /* Avatar start/end */
   --avatar-start: var(--color-blue);
   --avatar-end: var(--color-indigo);
+
+  --warning-bg: #fdf7e6;
+  --warning-text: #b45309;
+  --warning-border: #f59e0b33;
 
   --shadow-brutalist: 5px 5px 0px 0px var(--border);
   --shadow-brutalist-sm: 3px 3px 0px 0px var(--border);

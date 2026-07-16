@@ -49,7 +49,7 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
   if (!isOpen) return null;
 
   return createPortal(
-    <ModalContext.Provider value={{ onClose }}>
+    <ModalContext.Provider value={{ onClose, labelId: modalLabelId }}>
       <div
         ref={modalRef}
         className={styles.modalContainer}

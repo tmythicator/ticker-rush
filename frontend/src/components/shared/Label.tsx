@@ -1,4 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
+import clsx from 'clsx';
 import * as React from 'react';
 import styles from './Label.module.css';
 
@@ -8,6 +9,7 @@ const labelVariants = cva(styles.label, {
       default: styles.variantDefault,
       muted: styles.variantMuted,
       error: styles.variantError,
+      plain: styles.variantPlain,
     },
   },
   defaultVariants: {
@@ -19,7 +21,14 @@ export interface LabelProps
   extends React.LabelHTMLAttributes<HTMLLabelElement>, VariantProps<typeof labelVariants> {}
 
 export const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
-  ({ className, variant, ...props }, ref) => {
-    return <label ref={ref} className={labelVariants({ variant, className })} {...props} />;
+  ({ className, variant, htmlFor, ...props }, ref) => {
+    return (
+      <label
+        ref={ref}
+        htmlFor={htmlFor}
+        className={clsx(labelVariants({ variant }), className)}
+        {...props}
+      />
+    );
   },
 );

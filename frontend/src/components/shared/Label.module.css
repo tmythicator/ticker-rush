@@ -16,3 +16,8 @@
 .variantError {
   color: var(--destructive);
 }
+
+.variantPlain {
+  font-weight: inherit;
+  color: inherit;
+}
