@@ -23,36 +23,44 @@ export const DashboardPage = () => {
         <DashboardStats user={user} />
 
         {!user?.is_participating && (
-          <div className={styles.joinBanner}>
+          <aside className={styles.joinBanner} aria-label="Join Leaderboard">
             <JoinLadderButton />
-          </div>
+          </aside>
         )}
 
-        <Card className={styles.chartCardWrapper}>
-          <MarketChart
-            key={symbol}
-            symbol={symbol}
-            onSymbolChange={setSymbol}
-            quote={quote}
-            isLoading={!quote}
-            isError={!!isQuoteError}
-          />
-        </Card>
+        <section className={styles.chartSection} aria-label="Market Chart">
+          <Card className={styles.chartCardWrapper}>
+            <MarketChart
+              key={symbol}
+              symbol={symbol}
+              onSymbolChange={setSymbol}
+              quote={quote}
+              isLoading={!quote}
+              isError={!!isQuoteError}
+            />
+          </Card>
+        </section>
 
-        <div className={styles.mobileTradePanel} id="trade-panel-mobile">
+        <section
+          id="trade-panel-mobile"
+          className={styles.mobileTradePanel}
+          aria-label="Trade Panel"
+        >
           <MarketStatusGuard user={user} quote={quote}>
             <TradePanel quote={quote} />
           </MarketStatusGuard>
-        </div>
+        </section>
 
-        <PortfolioHoldings portfolio={user?.portfolio ?? {}} />
+        <section className={styles.portfolioSection} aria-label="Your Portfolio Holdings">
+          <PortfolioHoldings portfolio={user?.portfolio ?? {}} />
+        </section>
       </div>
 
-      <div className={styles.desktopTradePanel} id="trade-panel-desktop">
+      <aside id="trade-panel-desktop" className={styles.desktopTradePanel} aria-label="Trade Panel">
         <MarketStatusGuard user={user} quote={quote}>
           <TradePanel quote={quote} />
         </MarketStatusGuard>
-      </div>
+      </aside>
     </div>
   );
 };
