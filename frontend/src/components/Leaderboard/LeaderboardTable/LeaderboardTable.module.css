@@ -126,7 +126,7 @@
   align-items: center;
   gap: var(--space-xs);
   font-style: italic;
-  color: color-mix(in srgb, var(--muted-foreground) 60%, transparent);
+  color: var(--muted-foreground);
 }
 
 .lockIcon {

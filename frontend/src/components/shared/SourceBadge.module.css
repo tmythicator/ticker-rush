@@ -8,11 +8,11 @@
 }
 
 .variantCoinGecko {
-  background-color: color-mix(in srgb, var(--brand-coingecko) 20%, transparent);
-  color: var(--brand-coingecko-hover);
+  background-color: var(--brand-coingecko-bg);
+  color: var(--brand-coingecko-fg);
 }
 
 .variantFinnhub {
-  background-color: color-mix(in srgb, var(--brand-finnhub) 20%, transparent);
-  color: var(--brand-finnhub-hover);
+  background-color: var(--brand-finnhub-bg);
+  color: var(--brand-finnhub-fg);
 }
