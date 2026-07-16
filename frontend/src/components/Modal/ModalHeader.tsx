@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import styles from './Modal.module.css';
 
 interface ModalHeaderProps {
@@ -6,5 +7,5 @@ interface ModalHeaderProps {
 }
 
 export const ModalHeader = ({ children, className }: ModalHeaderProps) => {
-  return <div className={`${styles.header} ${className || ''}`}>{children}</div>;
+  return <div className={clsx(styles.header, className)}>{children}</div>;
 };
