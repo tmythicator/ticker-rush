@@ -8,8 +8,8 @@ interface LadderAssetsProps {
 }
 
 export const LadderAssets = ({ assets }: LadderAssetsProps) => {
-  if (!assets || assets.length === 0) return null;
   const headingId = useId();
+  if (!assets || assets.length === 0) return null;
   return (
     <section className={styles.assetsSection} aria-labelledby={headingId}>
       <div className={styles.assetsHeader}>
