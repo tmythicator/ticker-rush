@@ -19,7 +19,14 @@ export interface LabelProps
   extends React.LabelHTMLAttributes<HTMLLabelElement>, VariantProps<typeof labelVariants> {}
 
 export const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
-  ({ className, variant, ...props }, ref) => {
-    return <label ref={ref} className={labelVariants({ variant, className })} {...props} />;
+  ({ className, variant, htmlFor, ...props }, ref) => {
+    return (
+      <label
+        ref={ref}
+        htmlFor={htmlFor}
+        className={labelVariants({ variant, className })}
+        {...props}
+      />
+    );
   },
 );
