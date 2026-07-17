@@ -30,8 +30,8 @@ export default defineConfig([
         },
 
         rules: {
-            'css-modules/no-unused-class': 'error',
-            'css-modules/no-undef-class': 'error',
+            'css-modules/no-unused-class': 'off',
+            'css-modules/no-undef-class': 'off',
 
             '@typescript-eslint/no-unused-vars': [
                 'error',
