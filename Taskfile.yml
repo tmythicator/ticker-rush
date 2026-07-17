@@ -244,6 +244,7 @@ tasks:
     dir: frontend
     cmds:
       - pnpm format
+      - pnpm fix-style
 
   frontend:build:
     desc: Build frontend
