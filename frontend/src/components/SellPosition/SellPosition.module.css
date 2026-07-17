@@ -5,8 +5,8 @@
 }
 
 .text {
-  font-size: var(--text-sm);
   color: var(--muted-foreground);
+  font-size: var(--text-sm);
 }
 
 .strongText {
@@ -14,19 +14,19 @@
 }
 
 .detailsBox {
+  background-color: var(--muted-bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background-color: var(--muted-bg-subtle);
   padding: var(--space-md);
 }
 
 .row {
   display: flex;
-  justify-content: space-between;
   font-size: var(--text-sm);
+  justify-content: space-between;
 }
 
 .rowLabel {
@@ -34,9 +34,9 @@
 }
 
 .rowValue {
+  color: var(--foreground);
   font-family: var(--font-mono);
   font-weight: 700;
-  color: var(--foreground);
 }
 
 .pulseLoading {
@@ -45,21 +45,21 @@
 }
 
 .unavailable {
-  font-weight: 700;
   color: var(--destructive);
+  font-weight: 700;
 }
 
 .totalRow {
-  display: flex;
-  justify-content: space-between;
   border-top: 1px solid var(--border);
-  padding-top: var(--space-xs);
+  display: flex;
   font-size: var(--text-sm);
+  justify-content: space-between;
+  padding-top: var(--space-xs);
 }
 
 .totalLabel {
-  font-weight: 700;
   color: var(--foreground);
+  font-weight: 700;
 }
 
 .footerButton {
@@ -71,6 +71,7 @@
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }

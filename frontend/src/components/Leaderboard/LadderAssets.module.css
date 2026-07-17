@@ -1,26 +1,26 @@
 .assetsSection {
-  margin-top: var(--space-xl);
   border-top: 1px solid var(--border-subtle);
+  margin-top: var(--space-xl);
   padding-top: var(--space-lg);
 }
 
 .assetsHeader {
-  margin-bottom: var(--space-sm);
-  display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  color: var(--muted-foreground);
+  display: flex;
   font-size: 10px;
   font-weight: 900;
-  text-transform: uppercase;
+  gap: var(--space-xs);
   letter-spacing: 0.1em;
-  color: var(--muted-foreground);
+  margin-bottom: var(--space-sm);
+  text-transform: uppercase;
 }
 
 .assetsHeaderDot {
+  background-color: var(--primary);
+  border-radius: 9999px;
   height: 0.375rem;
   width: 0.375rem;
-  border-radius: 9999px;
-  background-color: var(--primary);
 }
 
 .assetsGrid {
@@ -30,20 +30,20 @@
 }
 
 .assetItem {
-  display: flex;
   align-items: center;
-  gap: var(--space-xs);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
   background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  gap: var(--space-xs);
   padding: var(--space-xxs) var(--space-sm);
   transition: var(--transition-normal);
 
-  @media (max-width: 640px) {
-    padding: var(--space-xxs) var(--space-xs);
-    border-width: 1px;
+  @media (width <= 640px) {
     border-color: color-mix(in srgb, var(--border) 60%, transparent);
+    border-width: 1px;
     gap: 0;
+    padding: var(--space-xxs) var(--space-xs);
   }
 }
 
@@ -56,13 +56,13 @@
   font-weight: 700;
   letter-spacing: -0.025em;
 
-  @media (max-width: 640px) {
+  @media (width <= 640px) {
     font-size: var(--text-xs);
   }
 }
 
 .assetSourceBadge {
-  @media (max-width: 640px) {
+  @media (width <= 640px) {
     display: none;
   }
 }

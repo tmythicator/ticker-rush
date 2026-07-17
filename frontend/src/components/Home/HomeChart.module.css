@@ -1,53 +1,53 @@
 .wrapper {
-  position: relative;
   height: 400px;
+  position: relative;
   width: 100%;
 }
 
 .chartLegend {
+  left: var(--space-lg);
   pointer-events: none;
   position: absolute;
-  left: var(--space-lg);
   top: var(--space-lg);
   z-index: 20;
 }
 
 .titleRow {
-  display: flex;
   align-items: baseline;
+  display: flex;
   gap: var(--space-xs);
 }
 
 .title {
+  color: var(--foreground);
   font-size: var(--text-3xl);
   font-weight: 900;
   letter-spacing: -0.025em;
-  color: var(--foreground);
 }
 
 .symbol {
+  color: var(--muted-foreground);
   font-size: var(--text-lg);
   font-weight: 500;
-  color: var(--muted-foreground);
 }
 
 .price {
-  margin-top: var(--space-xs);
   background: linear-gradient(to right, var(--color-green), var(--color-cyan));
-  -webkit-background-clip: text;
   background-clip: text;
+  background-clip: text;
+  color: transparent;
   font-size: 3rem;
   font-weight: 700;
   letter-spacing: -0.05em;
-  color: transparent;
+  margin-top: var(--space-xs);
 }
 
 .overlayGradient {
+  background: linear-gradient(to top, var(--background), transparent, transparent);
+  inset: 0;
   pointer-events: none;
   position: absolute;
-  inset: 0;
   z-index: 10;
-  background: linear-gradient(to top, var(--background), transparent, transparent);
 }
 
 .chartContainer {

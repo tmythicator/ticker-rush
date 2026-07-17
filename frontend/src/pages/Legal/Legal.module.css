@@ -1,16 +1,16 @@
 .container {
-  width: 100%;
-  max-width: 48rem;
-  margin: 0 auto;
-  padding: var(--space-xl) var(--space-md) var(--space-2xl) var(--space-md);
   color: var(--foreground);
+  margin: 0 auto;
+  max-width: 48rem;
+  padding: var(--space-xl) var(--space-md) var(--space-2xl) var(--space-md);
+  width: 100%;
 }
 
 .title {
-  margin-bottom: var(--space-lg);
+  color: var(--primary);
   font-size: var(--text-3xl);
   font-weight: 700;
-  color: var(--primary);
+  margin-bottom: var(--space-lg);
 }
 
 .section {
@@ -18,35 +18,35 @@
 }
 
 .sectionHeader {
-  margin-bottom: var(--space-xs);
+  color: color-mix(in srgb, var(--foreground) 90%, transparent);
   font-size: var(--text-xl);
   font-weight: 600;
-  color: color-mix(in srgb, var(--foreground) 90%, transparent);
+  margin-bottom: var(--space-xs);
 }
 
 .subHeader {
-  margin-bottom: var(--space-xs);
+  color: color-mix(in srgb, var(--foreground) 80%, transparent);
   font-size: var(--text-lg);
   font-weight: 500;
-  color: color-mix(in srgb, var(--foreground) 80%, transparent);
+  margin-bottom: var(--space-xs);
 }
 
 .text {
-  margin-bottom: var(--space-md);
   color: var(--muted-foreground);
+  margin-bottom: var(--space-md);
 
   & strong {
-    font-weight: 600;
     color: color-mix(in srgb, var(--foreground) 90%, transparent);
+    font-weight: 600;
   }
 }
 
 .list {
-  margin-bottom: var(--space-md);
-  margin-left: var(--space-md);
+  color: var(--muted-foreground);
   list-style-position: inside;
   list-style-type: disc;
-  color: var(--muted-foreground);
+  margin-bottom: var(--space-md);
+  margin-left: var(--space-md);
 
   & li {
     margin-bottom: var(--space-xxs);

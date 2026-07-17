@@ -1,66 +1,66 @@
 .header {
+  align-items: flex-start;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  align-items: flex-start;
   justify-content: space-between;
   width: 100%;
 
-  @media (min-width: 640px) {
-    flex-direction: row;
+  @media (width >= 640px) {
     align-items: center;
+    flex-direction: row;
     gap: var(--space-lg);
   }
 
   & .titleGroup {
     display: flex;
+    flex: 1;
     flex-direction: column;
     gap: var(--space-xs);
-    flex: 1;
   }
 
   & .title {
+    color: var(--foreground);
     font-size: var(--text-2xl);
     font-weight: 700;
-    line-height: 1.2;
-    color: var(--foreground);
     letter-spacing: -0.02em;
+    line-height: 1.2;
 
-    @media (min-width: 768px) {
+    @media (width >= 768px) {
       font-size: var(--text-3xl);
     }
   }
 
   & .description {
-    font-size: var(--text-sm);
     color: var(--muted-foreground);
+    font-size: var(--text-sm);
     margin: 0;
   }
 
   & .addressBlock {
     display: flex;
     flex-direction: column;
-    gap: var(--space-xxs);
     font-style: normal;
+    gap: var(--space-xxs);
   }
 
   & .username {
-    font-size: var(--text-sm);
-    font-family: var(--font-mono, monospace);
     color: var(--muted-foreground);
+    font-family: var(--font-mono, monospace);
+    font-size: var(--text-sm);
     font-weight: 500;
   }
 
   & .websiteGroup {
-    display: flex;
     align-items: center;
-    gap: var(--space-xs);
+    display: flex;
     font-size: var(--text-sm);
+    gap: var(--space-xs);
     margin-top: var(--space-xxs);
 
     & .websiteLabel {
-      font-weight: 600;
       color: color-mix(in srgb, var(--foreground) 80%, transparent);
+      font-weight: 600;
     }
 
     & .websiteLink {
@@ -69,15 +69,15 @@
       transition: var(--transition-normal);
 
       &:hover {
-        text-decoration: underline;
         color: color-mix(in srgb, var(--primary) 90%, transparent);
+        text-decoration: underline;
       }
     }
   }
 
   & .icon {
+    flex-shrink: 0;
     height: 1rem;
     width: 1rem;
-    flex-shrink: 0;
   }
 }

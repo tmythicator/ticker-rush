@@ -1,24 +1,24 @@
 .loaderWrapper {
-  width: 100%;
-  max-width: 80rem;
-  margin: 0 auto;
+  align-items: center;
   display: flex;
   height: 16rem;
-  align-items: center;
   justify-content: center;
+  margin: 0 auto;
+  max-width: 80rem;
   padding: 2.5rem 0;
+  width: 100%;
 }
 
 .container {
-  width: 100%;
-  max-width: 80rem;
   margin: 0 auto;
+  max-width: 80rem;
   padding: 2.5rem var(--space-md);
+  width: 100%;
 }
 
 .card {
-  overflow: hidden;
   box-shadow: var(--shadow-brutalist);
+  overflow: hidden;
 }
 
 .leaderboardSection {
@@ -26,10 +26,10 @@
 }
 
 .spinner {
-  height: 2rem;
-  width: 2rem;
   animation: spin 1s linear infinite;
   color: var(--primary);
+  height: 2rem;
+  width: 2rem;
 }
 
 @keyframes spin {

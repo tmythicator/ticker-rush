@@ -5,104 +5,104 @@
 }
 
 .heroSection {
-  position: relative;
+  align-items: center;
   display: flex;
   flex: 1;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding-top: var(--space-2xl);
   padding-bottom: 5rem;
+  padding-top: var(--space-2xl);
+  position: relative;
 }
 
 .container {
-  position: relative;
-  z-index: 20;
+  align-items: center;
   display: flex;
   flex-direction: column;
-  align-items: center;
   padding: 0 var(--space-md);
+  position: relative;
   text-align: center;
+  z-index: 20;
 
-  @media (min-width: 768px) {
+  @media (width >= 768px) {
     padding: 0 var(--space-lg);
   }
 }
 
 .textGroup {
-  max-width: 48rem;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  max-width: 48rem;
 }
 
 .title {
+  color: var(--foreground);
   font-size: 2.25rem;
   font-weight: 900;
   letter-spacing: -0.05em;
-  color: var(--foreground);
   line-height: 1.1;
 
   & span {
     color: var(--primary);
   }
 
-  @media (min-width: 640px) {
+  @media (width >= 640px) {
     font-size: 3rem;
   }
 
-  @media (min-width: 768px) {
+  @media (width >= 768px) {
     font-size: 3.75rem;
   }
 }
 
 .description {
+  color: var(--muted-foreground);
   margin: 0 auto;
   max-width: 43.75rem;
-  color: var(--muted-foreground);
 
   & strong {
-    font-weight: 600;
     color: var(--foreground);
+    font-weight: 600;
   }
 
-  @media (min-width: 768px) {
+  @media (width >= 768px) {
     font-size: var(--text-xl);
   }
 }
 
 .btnGroup {
-  margin-top: var(--space-xl);
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
+  margin-top: var(--space-xl);
 
-  @media (min-width: 400px) {
+  @media (width >= 400px) {
     flex-direction: row;
   }
 }
 
 .btnItem {
+  align-items: center;
+  display: inline-flex;
+  font-size: var(--text-base);
+  gap: var(--space-xs);
   height: 3rem;
+  justify-content: center;
   padding-left: var(--space-xl);
   padding-right: var(--space-xl);
-  font-size: var(--text-base);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xs);
 }
 
 .chartWrapper {
-  position: relative;
-  z-index: 10;
   margin: var(--space-2xl) auto 0 auto;
-  width: 100%;
   max-width: 72rem;
-  padding: 0 var(--space-md);
   opacity: 0.8;
+  padding: 0 var(--space-md);
+  position: relative;
   transition: opacity 0.7s ease-in-out;
+  width: 100%;
+  z-index: 10;
 
   &:hover {
     opacity: 1;
@@ -110,16 +110,16 @@
 }
 
 .chartCard {
-  overflow: hidden;
-  border-radius: var(--radius);
-  border: 2px solid var(--border);
-  background-color: color-mix(in srgb, var(--card) 30%, transparent);
-  box-shadow: var(--shadow-brutalist);
   backdrop-filter: blur(8px);
+  background-color: color-mix(in srgb, var(--card) 30%, transparent);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-brutalist);
+  overflow: hidden;
 }
 
 .arrowIcon {
-  margin-left: var(--space-xs);
   height: 1rem;
+  margin-left: var(--space-xs);
   width: 1rem;
 }

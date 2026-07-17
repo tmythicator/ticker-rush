@@ -1,14 +1,14 @@
 .dashboardLayout {
-  margin-inline: auto;
   display: grid;
-  width: 100%;
-  max-width: 1800px;
-  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-lg);
+  grid-template-columns: minmax(0, 1fr);
+  margin-inline: auto;
+  max-width: 1800px;
   padding: var(--space-md);
   padding-bottom: var(--space-lg);
+  width: 100%;
 
-  @media (min-width: 1024px) {
+  @media (width >= 1024px) {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     padding: var(--space-lg);
   }
@@ -19,7 +19,7 @@
   flex-direction: column;
   gap: var(--space-lg);
 
-  @media (min-width: 1024px) {
+  @media (width >= 1024px) {
     grid-column: span 9;
   }
 }
@@ -30,20 +30,20 @@
   width: 100%;
 
   & > .chartCardWrapper {
-    width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
+    height: 100%;
+    width: 100%;
   }
 }
 
 .chartCardWrapper {
-  position: relative;
   height: 500px;
   overflow: hidden;
   padding: var(--space-xxs);
+  position: relative;
 
-  @media (max-width: 640px) {
+  @media (width <= 640px) {
     height: 300px;
   }
 }
@@ -51,10 +51,10 @@
 .portfolioSection {
   display: flex;
   flex-direction: column;
-  width: 100%;
   margin-top: var(--space-lg);
+  width: 100%;
 
-  @media (max-width: 767px) {
+  @media (width <= 767px) {
     margin-top: var(--space-xs);
   }
 }
@@ -62,7 +62,7 @@
 .mobileTradePanel {
   display: block;
 
-  @media (min-width: 1024px) {
+  @media (width >= 1024px) {
     display: none;
   }
 }
@@ -70,12 +70,12 @@
 .desktopTradePanel {
   display: none;
 
-  @media (min-width: 1024px) {
+  @media (width >= 1024px) {
     display: flex;
     flex-direction: column;
-    height: 100%;
     gap: var(--space-md);
     grid-column: span 3;
+    height: 100%;
   }
 }
 
@@ -88,6 +88,7 @@
     opacity: 0;
     transform: translateY(-1rem);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

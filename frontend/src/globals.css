@@ -1,54 +1,50 @@
 /* Primitives & Semantic Tokens */
 :root {
-  --color-white: #ffffff;
-  --color-black: #000000;
+  --color-white: #fff;
+  --color-black: #000;
 
   /* HSL base tones */
-  --color-cyan: hsl(190 100% 50%);
-  --color-magenta: hsl(300 100% 50%);
-  --color-red: hsl(0 84.2% 60.2%);
-  --color-red-light: hsl(0 74% 42%);
-  --color-dark-red: hsl(0 62.8% 30.6%);
-
-  --color-green-hover-dark: hsl(142.1 72% 15%);
-  --color-green-dark: hsl(142.1 72% 20%);
-  --color-green-hover-light: hsl(142.1 70.6% 25%);
-  --color-green-light: hsl(142 75% 28%);
-  --color-green: hsl(142 70.6% 45.3%);
-
-  --color-orange: hsl(24.6 95% 53.1%);
-  --color-light-orange: hsl(24.4 94.6% 61.2%);
-  --color-blue: hsl(217.2 91.2% 59.8%);
-  --color-light-blue: hsl(217 91.3% 67.8%);
-  --color-yellow: hsl(45.4 93.3% 47.1%);
-  --color-dark-yellow: hsl(45.4 93.3% 30%);
-  --color-indigo: hsl(238.7 83.5% 58.4%);
+  --color-cyan: hsl(190deg 100% 50%);
+  --color-magenta: hsl(300deg 100% 50%);
+  --color-red: hsl(0deg 84.2% 60.2%);
+  --color-red-light: hsl(0deg 74% 42%);
+  --color-dark-red: hsl(0deg 62.8% 30.6%);
+  --color-green-hover-dark: hsl(142.1deg 72% 15%);
+  --color-green-dark: hsl(142.1deg 72% 20%);
+  --color-green-hover-light: hsl(142.1deg 70.6% 25%);
+  --color-green-light: hsl(142deg 75% 28%);
+  --color-green: hsl(142deg 70.6% 45.3%);
+  --color-orange: hsl(24.6deg 95% 53.1%);
+  --color-light-orange: hsl(24.4deg 94.6% 61.2%);
+  --color-blue: hsl(217.2deg 91.2% 59.8%);
+  --color-light-blue: hsl(217deg 91.3% 67.8%);
+  --color-yellow: hsl(45.4deg 93.3% 47.1%);
+  --color-dark-yellow: hsl(45.4deg 93.3% 30%);
+  --color-indigo: hsl(238.7deg 83.5% 58.4%);
 
   /* Badge colors */
-  --color-bronze-dark: hsl(24 95% 22%);
-  --color-bronze-light: hsl(24 95% 95%);
-  --color-indigo-light: hsl(238.7 83.5% 95%);
+  --color-bronze-dark: hsl(24deg 95% 22%);
+  --color-bronze-light: hsl(24deg 95% 95%);
+  --color-indigo-light: hsl(238.7deg 83.5% 95%);
 
   /* Medal colors */
   --color-gold: #eab308;
   --color-silver: #94a3b8;
   --color-bronze: #b45309;
-
-  --color-gray-50: hsl(210 40% 98%);
-  --color-gray-100: hsl(210 40% 96.1%);
-  --color-gray-200: hsl(214.3 31.8% 91.4%);
-  --color-gray-400: hsl(215 20.2% 65.1%);
-  --color-gray-500: hsl(215.4 16.3% 46.9%);
-  --color-gray-800: hsl(217.2 32.6% 25%);
-  --color-gray-900: hsl(217.2 32.6% 17.5%);
-  --color-gray-950: hsl(222.2 84% 4.9%);
-
+  --color-gray-50: hsl(210deg 40% 98%);
+  --color-gray-100: hsl(210deg 40% 96.1%);
+  --color-gray-200: hsl(214.3deg 31.8% 91.4%);
+  --color-gray-400: hsl(215deg 20.2% 65.1%);
+  --color-gray-500: hsl(215.4deg 16.3% 46.9%);
+  --color-gray-800: hsl(217.2deg 32.6% 25%);
+  --color-gray-900: hsl(217.2deg 32.6% 17.5%);
+  --color-gray-950: hsl(222.2deg 84% 4.9%);
   --radius: 0.5rem;
   --font-sans:
-    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+    'Inter', -apple-system, blinkmacsystemfont, 'Segoe UI', roboto, oxygen, ubuntu, cantarell,
     'Open Sans', 'Helvetica Neue', sans-serif;
   --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    ui-monospace, sfmono-regular, menlo, monaco, consolas, 'Liberation Mono', 'Courier New',
     monospace;
 
   /* Spacing Scale */
@@ -74,51 +70,42 @@
   --transition-normal: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 5%);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -1px rgb(0 0 0 / 6%);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -2px rgb(0 0 0 / 5%);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 10%), 0 10px 10px -5px rgb(0 0 0 / 4%);
   --shadow-destructive: 0 10px 15px -3px color-mix(in srgb, var(--destructive) 20%, transparent);
 }
 
 :root {
   color-scheme: dark;
+
   --overlay: color-mix(in srgb, var(--color-gray-950) 80%, transparent);
   --background: var(--color-gray-950);
   --foreground: var(--color-gray-50);
-
   --border: var(--color-gray-800);
   --input: var(--color-gray-800);
-
   --ring: var(--color-cyan);
   --primary: var(--color-cyan);
   --primary-foreground: var(--color-gray-950);
-
   --secondary: var(--color-magenta);
   --secondary-foreground: var(--color-gray-50);
-
   --accent: var(--color-cyan);
   --accent-foreground: var(--color-gray-950);
-
   --destructive: var(--color-dark-red);
   --destructive-foreground: var(--color-gray-50);
   --destructive-text: var(--color-red);
-
   --card: var(--color-gray-950);
   --card-foreground: var(--color-gray-50);
   --popover: var(--color-gray-950);
   --popover-foreground: var(--color-gray-50);
-
   --muted: var(--color-gray-900);
   --muted-foreground: var(--color-gray-400);
-
   --success: var(--color-dark-green);
   --success-hover: var(--color-green-hover-dark);
   --success-foreground: var(--color-gray-50);
-
   --warning: var(--color-dark-yellow);
   --warning-foreground: var(--color-gray-50);
-
   --up-trend: var(--color-green);
   --down-trend: var(--color-red);
 
@@ -127,7 +114,6 @@
   --brand-coingecko-hover: var(--color-light-orange);
   --brand-coingecko-bg: color-mix(in srgb, var(--brand-coingecko) 20%, transparent);
   --brand-coingecko-fg: var(--brand-coingecko-hover);
-
   --brand-finnhub: var(--color-blue);
   --brand-finnhub-hover: var(--color-light-blue);
   --brand-finnhub-bg: color-mix(in srgb, var(--brand-finnhub) 20%, transparent);
@@ -136,11 +122,9 @@
   /* Avatar start/end */
   --avatar-start: var(--color-blue);
   --avatar-end: var(--color-indigo);
-
   --warning-bg: #2d1f03;
   --warning-text: #fbbf24;
   --warning-border: #f59e0b33;
-
   --shadow-brutalist: 5px 5px 0px 0px var(--border);
   --shadow-brutalist-sm: 3px 3px 0px 0px var(--border);
 
@@ -155,42 +139,33 @@
 
 .light {
   color-scheme: light;
+
   --overlay: color-mix(in srgb, var(--color-gray-950) 40%, transparent);
   --background: var(--color-gray-50);
   --foreground: var(--color-gray-900);
-
   --border: var(--color-gray-200);
   --input: var(--color-gray-200);
-
   --ring: var(--color-indigo);
   --primary: var(--color-indigo);
   --primary-foreground: var(--color-white);
-
   --secondary: var(--color-magenta);
   --secondary-foreground: var(--color-white);
-
   --accent: var(--color-cyan);
   --accent-foreground: var(--color-black);
-
   --destructive: var(--color-red-light);
   --destructive-foreground: var(--color-gray-50);
   --destructive-text: var(--color-red-light);
-
   --card: var(--color-white);
   --card-foreground: var(--color-gray-900);
   --popover: var(--color-white);
   --popover-foreground: var(--color-gray-900);
-
   --muted: var(--color-gray-100);
   --muted-foreground: var(--color-gray-800);
-
   --success: var(--color-green-light);
   --success-hover: var(--color-green-hover-light);
   --success-foreground: var(--color-white);
-
   --warning: var(--color-yellow);
   --warning-foreground: var(--color-black);
-
   --up-trend: var(--color-green-light);
   --down-trend: var(--color-red-light);
 
@@ -199,7 +174,6 @@
   --brand-coingecko-hover: var(--color-light-orange);
   --brand-coingecko-bg: var(--color-bronze-light);
   --brand-coingecko-fg: var(--color-bronze-dark);
-
   --brand-finnhub: var(--color-blue);
   --brand-finnhub-hover: var(--color-light-blue);
   --brand-finnhub-bg: var(--color-indigo-light);
@@ -208,11 +182,9 @@
   /* Avatar start/end */
   --avatar-start: var(--color-blue);
   --avatar-end: var(--color-indigo);
-
   --warning-bg: #fdf7e6;
   --warning-text: #b45309;
   --warning-border: #f59e0b33;
-
   --shadow-brutalist: 5px 5px 0px 0px var(--border);
   --shadow-brutalist-sm: 3px 3px 0px 0px var(--border);
 }
@@ -243,8 +215,8 @@ video,
 canvas,
 svg {
   display: block;
-  max-width: 100%;
   height: auto;
+  max-width: 100%;
 }
 
 /* Typography balancing for clean headers */
@@ -282,13 +254,13 @@ select {
 }
 
 .sr-only {
-  position: absolute;
-  width: 1px;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
   height: 1px;
-  padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  padding: 0;
+  position: absolute;
   white-space: nowrap;
-  border: 0;
+  width: 1px;
 }

@@ -1,16 +1,16 @@
 .container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-xs);
+  grid-template-columns: repeat(3, 1fr);
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
   .container {
     gap: var(--space-md);
   }
 }
 
-@media (min-width: 1024px) {
+@media (width >= 1024px) {
   .container {
     gap: var(--space-lg);
   }

@@ -1,24 +1,21 @@
 .avatar {
-  display: flex;
-  height: 2.25rem;
-  width: 2.25rem;
-  cursor: pointer;
   align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  border: 2px solid var(--background);
   background: linear-gradient(135deg, var(--avatar-start), var(--avatar-end));
-
+  border: 2px solid var(--background);
+  border-radius: 9999px;
+  box-shadow: var(--shadow-brutalist-sm);
+  color: var(--color-white);
+  cursor: pointer;
+  display: flex;
   font-size: var(--text-sm);
   font-weight: 700;
-  color: var(--color-white);
-
+  height: 2.25rem;
+  justify-content: center;
+  letter-spacing: -0.025em;
   line-height: 1;
   text-transform: uppercase;
-  letter-spacing: -0.025em;
-
-  box-shadow: var(--shadow-brutalist-sm);
   transition: var(--transition-normal);
+  width: 2.25rem;
 
   &:hover {
     opacity: 0.9;

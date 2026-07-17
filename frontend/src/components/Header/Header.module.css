@@ -1,50 +1,50 @@
 .header {
+  align-items: center;
+  background-color: var(--background);
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  height: 4rem;
+  justify-content: space-between;
+  padding: 0 var(--space-md);
   position: sticky;
   top: 0;
   z-index: 50;
-  display: flex;
-  height: 4rem;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 2px solid var(--border);
-  background-color: var(--background);
-  padding: 0 var(--space-md);
 
-  @media (min-width: 1024px) {
+  @media (width >= 1024px) {
     padding: 0 var(--space-xl);
   }
 }
 
 .userMenu {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: var(--space-sm);
 }
 
 .navStart {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: var(--space-md);
 }
 
 .navEnd {
-  display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  display: flex;
   font-size: var(--text-sm);
   font-weight: 500;
+  gap: var(--space-sm);
 
-  @media (min-width: 768px) {
+  @media (width >= 768px) {
     gap: var(--space-md);
   }
 }
 
 .desktopNav {
-  display: none;
   align-items: center;
+  display: none;
   gap: var(--space-xxs);
 
-  @media (min-width: 768px) {
+  @media (width >= 768px) {
     display: flex;
   }
 }
@@ -52,7 +52,7 @@
 .desktopOnly {
   display: none;
 
-  @media (min-width: 768px) {
+  @media (width >= 768px) {
     display: flex;
   }
 }
@@ -60,21 +60,21 @@
 .smShow {
   display: none;
 
-  @media (min-width: 640px) {
+  @media (width >= 640px) {
     display: block;
   }
 }
 
 .mdHide {
-  @media (min-width: 768px) {
+  @media (width >= 768px) {
     display: none;
   }
 }
 
 /* Logo */
 .logo {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: var(--space-xs);
   transition: var(--transition-normal);
 
@@ -84,48 +84,48 @@
 }
 
 .logoIcon {
-  border-radius: var(--radius);
+  align-items: center;
   background-color: var(--primary);
-  padding: 0.375rem;
+  border-radius: var(--radius);
   box-shadow: var(--shadow-brutalist-sm);
   display: flex;
-  align-items: center;
   justify-content: center;
+  padding: 0.375rem;
 
   & svg {
     color: var(--primary-foreground);
-    width: 1.25rem;
     height: 1.25rem;
+    width: 1.25rem;
   }
 }
 
 .logoText {
+  color: var(--foreground);
   display: none;
   font-size: var(--text-lg);
   font-weight: 700;
   letter-spacing: -0.025em;
-  color: var(--foreground);
 
-  @media (min-width: 640px) {
+  @media (width >= 640px) {
     display: block;
   }
 }
 
 /* UserBalance */
 .balance {
-  display: flex;
   align-items: center;
-  gap: var(--space-xs);
-  border-radius: 9999px;
-  border: 2px solid var(--border);
   background-color: var(--muted);
-  padding: 0.375rem var(--space-sm);
+  border: 2px solid var(--border);
+  border-radius: 9999px;
   color: var(--muted-foreground);
+  display: flex;
+  gap: var(--space-xs);
+  padding: 0.375rem var(--space-sm);
 
   & svg {
+    color: var(--muted-foreground);
     height: 1rem;
     width: 1rem;
-    color: var(--muted-foreground);
   }
 }
 
@@ -134,7 +134,7 @@
   font-size: var(--text-xs);
   font-variant-numeric: tabular-nums;
 
-  @media (min-width: 640px) {
+  @media (width >= 640px) {
     font-size: var(--text-sm);
   }
 }
@@ -147,92 +147,92 @@
 
 /* MobileMenu */
 .mobileOverlay {
-  position: fixed;
+  backdrop-filter: blur(8px);
+  background-color: color-mix(in srgb, var(--background) 80%, transparent);
   inset: 0;
+  position: fixed;
   top: 4rem;
   z-index: 40;
-  background-color: color-mix(in srgb, var(--background) 80%, transparent);
-  backdrop-filter: blur(8px);
 
-  @media (min-width: 768px) {
+  @media (width >= 768px) {
     display: none;
   }
 }
 
 .mobilePanel {
+  background-color: var(--background);
+  border-bottom: 2px solid var(--border);
+  box-shadow: var(--shadow-brutalist);
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  border-bottom: 2px solid var(--border);
-  background-color: var(--background);
   padding: var(--space-md);
-  box-shadow: var(--shadow-brutalist);
 }
 
 .mobileFooter {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
   border-top: 2px solid var(--border);
+  display: flex;
+  gap: var(--space-md);
+  justify-content: space-between;
   padding-top: var(--space-md);
 }
 
 .themeSelector {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: var(--space-xs);
 }
 
 .themeLabel {
+  color: var(--muted-foreground);
   font-size: var(--text-sm);
   font-weight: 500;
-  color: var(--muted-foreground);
 }
 
 /* Navigation Links */
 .navLink {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-xs);
-  white-space: nowrap;
+  background-color: transparent;
+  border: 2px solid transparent;
   border-radius: var(--radius);
+  box-sizing: border-box;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  display: inline-flex;
   font-size: var(--text-sm);
   font-weight: 700;
-  border: 2px solid transparent;
-  background-color: transparent;
-  color: var(--muted-foreground);
-  transition: var(--transition-fast);
+  gap: var(--space-xs);
   height: 2.5rem;
+  justify-content: center;
   padding: var(--space-xs) var(--space-md);
-  cursor: pointer;
-  box-sizing: border-box;
+  transition: var(--transition-fast);
+  white-space: nowrap;
 
   & svg {
-    width: 1rem;
-    height: 1rem;
     flex-shrink: 0;
+    height: 1rem;
+    width: 1rem;
   }
 
   &:hover {
     background-color: var(--accent);
-    color: var(--accent-foreground);
     border-color: var(--border);
+    color: var(--accent-foreground);
   }
 
   &.active {
     background-color: var(--primary);
-    color: var(--primary-foreground);
     border-color: var(--border);
     box-shadow: var(--shadow-brutalist-sm);
+    color: var(--primary-foreground);
 
     &:hover {
-      transform: translate(2px, 2px);
-      box-shadow: none;
       background-color: var(--primary);
-      color: var(--primary-foreground);
       border-color: var(--border);
+      box-shadow: none;
+      color: var(--primary-foreground);
+      transform: translate(2px, 2px);
     }
 
     &:active {
@@ -262,8 +262,8 @@
 }
 
 .mobileLogoutBtn {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: var(--space-xs);
 
   & svg {

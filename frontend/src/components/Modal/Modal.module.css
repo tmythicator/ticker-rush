@@ -1,84 +1,90 @@
 .modalOverlay {
-  position: fixed;
-  inset: 0;
-  background-color: var(--overlay);
-  backdrop-filter: blur(4px);
-  transition: var(--transition-normal);
   animation: fadeIn 0.2s ease-out;
+  backdrop-filter: blur(4px);
+  background-color: var(--overlay);
+  inset: 0;
+  position: fixed;
+  transition: var(--transition-normal);
 }
 
 .modalContainer {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: flex;
   align-items: center;
+  display: flex;
+  inset: 0;
   justify-content: center;
   padding: var(--space-md);
+  position: fixed;
+  z-index: 50;
 }
 
-@media (min-width: 640px) {
+@media (width >= 640px) {
   .modalContainer {
     padding: var(--space-lg);
   }
 }
 
 .card {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  overflow: hidden;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
+  animation: modalScale 0.2s ease-out;
   background-color: var(--card);
-  padding: var(--space-lg);
-  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   box-shadow: var(--shadow-xl);
   outline: none;
+  overflow: hidden;
+  padding: var(--space-lg);
+  position: relative;
+  text-align: left;
   transition: var(--transition-normal);
-  animation: modalScale 0.2s ease-out;
+  width: 100%;
+  z-index: 10;
 }
+
 .sizeSm {
   max-width: 24rem;
 }
+
 .sizeMd {
   max-width: 28rem;
 }
+
 .sizeLg {
   max-width: 32rem;
 }
+
 .sizeXl {
   max-width: 36rem;
 }
+
 .size2Xl {
   max-width: 42rem;
 }
+
 .sizeFull {
-  max-width: 100%;
-  margin: var(--space-md);
   height: calc(100vh - 2rem);
+  margin: var(--space-md);
+  max-width: 100%;
 }
 
 .header {
-  margin-bottom: 1.25rem;
-  display: flex;
   align-items: center;
-  justify-content: space-between;
+  display: flex;
   gap: var(--space-md);
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
 }
 
 .title {
+  color: var(--foreground);
   font-size: var(--text-lg);
   font-weight: 700;
   line-height: 1.5rem;
-  color: var(--foreground);
 }
 
 .closeButton {
+  border-radius: 9999px;
+  flex-shrink: 0;
   height: 2rem;
   width: 2rem;
-  flex-shrink: 0;
-  border-radius: 9999px;
 }
 
 .closeIcon {
@@ -87,15 +93,15 @@
 }
 
 .srOnly {
-  position: absolute;
-  width: 1px;
+  border-width: 0;
+  clip: rect(0, 0, 0, 0);
   height: 1px;
-  padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  padding: 0;
+  position: absolute;
   white-space: nowrap;
-  border-width: 0;
+  width: 1px;
 }
 
 .body {
@@ -103,10 +109,10 @@
 }
 
 .footer {
-  margin-top: var(--space-lg);
+  border-top: 1px solid var(--border-subtle);
   display: flex;
   gap: var(--space-sm);
-  border-top: 1px solid var(--border-subtle);
+  margin-top: var(--space-lg);
   padding-top: var(--space-md);
 }
 
@@ -114,6 +120,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -124,6 +131,7 @@
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);

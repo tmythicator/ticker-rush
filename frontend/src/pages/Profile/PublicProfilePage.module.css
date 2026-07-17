@@ -1,36 +1,36 @@
 .loaderWrapper {
-  display: flex;
-  min-height: 60vh;
   align-items: center;
+  display: flex;
   justify-content: center;
+  min-height: 60vh;
 }
 
 .loaderIcon {
-  height: 2rem;
-  width: 2rem;
   animation: spin 1s linear infinite;
   color: var(--primary);
+  height: 2rem;
+  width: 2rem;
 }
 
 .errorWrapper {
-  display: flex;
-  min-height: 60vh;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-md);
+  justify-content: center;
+  min-height: 60vh;
 }
 
 .lockIcon {
+  color: var(--primary);
   height: 2rem;
   width: 2rem;
-  color: var(--primary);
 }
 
 .errorTitle {
+  color: var(--foreground);
   font-size: var(--text-2xl);
   font-weight: 700;
-  color: var(--foreground);
 }
 
 .errorDescription {
