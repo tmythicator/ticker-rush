@@ -8,5 +8,6 @@ export default {
     'order/properties-alphabetical-order': true,
     'block-no-empty': true,
     'selector-class-pattern': null,
+    'keyframes-name-pattern': null,
   },
 };
