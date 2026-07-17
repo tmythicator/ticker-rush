@@ -34,7 +34,6 @@
 .price {
   background: linear-gradient(to right, var(--color-green), var(--color-cyan));
   background-clip: text;
-  background-clip: text;
   color: transparent;
   font-size: 3rem;
   font-weight: 700;

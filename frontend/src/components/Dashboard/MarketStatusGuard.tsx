@@ -11,8 +11,12 @@ interface MarketStatusGuardProps {
   children: ReactNode;
 }
 
-export const MarketStatusGuard = ({ isParticipating, isMarketClosed, isLoadingQuotes, children }: MarketStatusGuardProps) => {
-
+export const MarketStatusGuard = ({
+  isParticipating,
+  isMarketClosed,
+  isLoadingQuotes,
+  children,
+}: MarketStatusGuardProps) => {
   if (!isParticipating) {
     return (
       <GuardState

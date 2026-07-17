@@ -9,54 +9,61 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-    {
-        ignores: ['dist', 'src/lib/proto', 'vite.config.ts', 'eslint.config.js', 'stylelint.config.js'],
+  {
+    ignores: ['dist', 'src/lib/proto', 'vite.config.ts', 'eslint.config.js', 'stylelint.config.js'],
+  },
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+      jsxA11y.flatConfigs.recommended,
+    ],
+    plugins: {
+      'css-modules': cssModules,
     },
-    {
-        files: ['**/*.{ts,tsx}'],
-        extends: [
-            js.configs.recommended,
-            ...tseslint.configs.recommended,
-            reactHooks.configs.flat.recommended,
-            reactRefresh.configs.vite,
-            jsxA11y.flatConfigs.recommended,
-        ],
-        plugins: {
-            'css-modules': cssModules,
-        },
-        languageOptions: {
-            ecmaVersion: 2020,
-            globals: globals.browser,
-        },
-
-        rules: {
-            'css-modules/no-unused-class': 'off',
-            'css-modules/no-undef-class': 'off',
-
-            '@typescript-eslint/no-unused-vars': [
-                'error',
-                {
-                    argsIgnorePattern: '^_',
-                    varsIgnorePattern: '^_',
-                },
-            ],
-
-            '@typescript-eslint/consistent-type-imports': [
-                'error',
-                {
-                    prefer: 'type-imports',
-                },
-            ],
-
-            complexity: ['error', { max: 10 }],
-            'no-debugger': 'error',
-        },
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
     },
-    {
-        files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', 'src/test/**/*'],
-        rules: {
-            'complexity': 'off',
+
+    rules: {
+      'css-modules/no-unused-class': 'off',
+      'css-modules/no-undef-class': 'off',
+
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
         },
+      ],
+
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+        },
+      ],
+
+      complexity: ['error', { max: 10 }],
+      'no-debugger': 'error',
     },
-    eslintConfigPrettier,
+  },
+  {
+    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', 'src/test/**/*'],
+    rules: {
+      complexity: 'off',
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+          disallowTypeAnnotations: false,
+        },
+      ],
+    },
+  },
+  eslintConfigPrettier,
 ]);

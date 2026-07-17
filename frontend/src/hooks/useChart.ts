@@ -1,4 +1,4 @@
-import { getChartColors } from '@/lib/chartUtils';
+import { formatTime, getChartColors } from '@/lib/chartUtils';
 import { type Quote, type TradeSymbol } from '@/types';
 import {
   AreaSeries,
@@ -31,22 +31,7 @@ export const useChart = ({ chartContainerRef, quote, symbol, options }: UseChart
     if (!chartRef.current) return;
     const colors = getChartColors();
 
-    chartRef.current.applyOptions({
-      layout: {
-        background: options?.layout?.background || { type: ColorType.Solid, color: colors.bgColor },
-        textColor: options?.layout?.textColor || colors.textColor,
-      },
-      grid: {
-        horzLines: { color: options?.grid?.horzLines?.color || colors.borderColor },
-        vertLines: { color: options?.grid?.vertLines?.color || colors.borderColor },
-      },
-      timeScale: {
-        borderColor: options?.timeScale?.borderColor || colors.borderColor,
-      },
-      rightPriceScale: {
-        borderColor: options?.rightPriceScale?.borderColor || colors.borderColor,
-      },
-    });
+    chartRef.current.applyOptions(getThemeOverrides(colors, options));
 
     if (seriesRef.current) {
       seriesRef.current.applyOptions({
@@ -61,20 +46,12 @@ export const useChart = ({ chartContainerRef, quote, symbol, options }: UseChart
 
   // Initialize Chart
   useLayoutEffect(() => {
-    if (!chartContainerRef.current) return;
+    const container = chartContainerRef.current;
+    if (!container) return;
 
     const colors = getChartColors();
-    const chart = createChart(chartContainerRef.current, {
-      localization: {
-        timeFormatter: (timestamp: number) => {
-          return new Date(timestamp * 1000).toLocaleTimeString(undefined, {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-          });
-        },
-      },
+    const chart = createChart(container, {
+      localization: { timeFormatter: formatTime },
       ...options,
       layout: {
         background: { type: ColorType.Solid, color: colors.bgColor },
@@ -87,43 +64,14 @@ export const useChart = ({ chartContainerRef, quote, symbol, options }: UseChart
         horzLines: { color: colors.borderColor },
         ...options?.grid,
       },
-      width: chartContainerRef.current.clientWidth,
+      width: container.clientWidth,
       height: 500,
       autoSize: false,
       timeScale: {
         timeVisible: true,
         secondsVisible: true,
         borderColor: colors.borderColor,
-        tickMarkFormatter: (time: number, tickMarkType: TickMarkType, locale: string) => {
-          const date = new Date(time * 1000);
-          switch (tickMarkType) {
-            case TickMarkType.Year:
-              return date.getFullYear().toString();
-            case TickMarkType.Month:
-              return date.toLocaleString(locale, { month: 'short' });
-            case TickMarkType.DayOfMonth:
-              return date.getDate().toString();
-            case TickMarkType.Time:
-              return date.toLocaleTimeString(locale, {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-              });
-            case TickMarkType.TimeWithSeconds:
-              return date.toLocaleTimeString(locale, {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false,
-              });
-            default:
-              return date.toLocaleTimeString(locale, {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-              });
-          }
-        },
+        tickMarkFormatter: formatTickMark,
         ...options?.timeScale,
       },
       rightPriceScale: {
@@ -159,17 +107,16 @@ export const useChart = ({ chartContainerRef, quote, symbol, options }: UseChart
 
   // Update Data
   useEffect(() => {
-    if (quote && seriesRef.current && symbol) {
-      try {
-        if (!quote.timestamp) return;
-        const parsedTime = Math.floor(quote.timestamp.getTime() / 1000) as UTCTimestamp;
-        seriesRef.current.update({
-          time: parsedTime,
-          value: quote.price,
-        });
-      } catch (e) {
-        console.warn('Chart update skipped due to timestamp mismatch:', e);
-      }
+    if (!quote?.timestamp || !seriesRef.current || !symbol) return;
+
+    try {
+      const parsedTime = Math.floor(quote.timestamp.getTime() / 1000) as UTCTimestamp;
+      seriesRef.current.update({
+        time: parsedTime,
+        value: quote.price,
+      });
+    } catch (e) {
+      console.warn('Chart update skipped due to timestamp mismatch:', e);
     }
   }, [quote, symbol]);
 
@@ -178,3 +125,44 @@ export const useChart = ({ chartContainerRef, quote, symbol, options }: UseChart
     seriesRef,
   };
 };
+
+const formatTickMark = (time: number, tickType: TickMarkType, locale: string): string => {
+  const date = new Date(time * 1000);
+  const timeOpts: Intl.DateTimeFormatOptions = {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  };
+
+  const formatters: Record<number, () => string> = {
+    [TickMarkType.Year]: () => date.getFullYear().toString(),
+    [TickMarkType.Month]: () => date.toLocaleString(locale, { month: 'short' }),
+    [TickMarkType.DayOfMonth]: () => date.getDate().toString(),
+    [TickMarkType.Time]: () => date.toLocaleTimeString(locale, timeOpts),
+    [TickMarkType.TimeWithSeconds]: () =>
+      date.toLocaleTimeString(locale, { ...timeOpts, second: '2-digit' }),
+  };
+
+  return formatters[tickType]?.() ?? date.toLocaleTimeString(locale, timeOpts);
+};
+
+const getThemeOverrides = (
+  colors: ReturnType<typeof getChartColors>,
+  options?: DeepPartial<ChartOptions>,
+  // eslint-disable-next-line complexity
+) => ({
+  layout: {
+    background: options?.layout?.background ?? { type: ColorType.Solid, color: colors.bgColor },
+    textColor: options?.layout?.textColor ?? colors.textColor,
+  },
+  grid: {
+    horzLines: { color: options?.grid?.horzLines?.color ?? colors.borderColor },
+    vertLines: { color: options?.grid?.vertLines?.color ?? colors.borderColor },
+  },
+  timeScale: {
+    borderColor: options?.timeScale?.borderColor ?? colors.borderColor,
+  },
+  rightPriceScale: {
+    borderColor: options?.rightPriceScale?.borderColor ?? colors.borderColor,
+  },
+});

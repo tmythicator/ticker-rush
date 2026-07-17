@@ -7,31 +7,18 @@ const extractColorFromCssVar = (varName: string, fallback: string, alpha?: numbe
   if (!value) return fallback;
 
   // Check if it already has hsl/hsla wrapper
-  const hslMatch = value.match(/^(hsl|hsla)\(([^)]+)\)$/i);
-  if (hslMatch) {
-    const inner = hslMatch[2].trim();
-    if (alpha !== undefined) {
-      if (inner.includes(',')) {
-        return `hsla(${inner}, ${alpha})`;
-      } else {
-        return `hsl(${inner} / ${alpha})`;
-      }
-    }
-    return value;
-  }
+  const match = value.match(/^(hsl|hsla|rgb|rgba)\(([^)]+)\)$/i);
+  if (match) {
+    if (alpha === undefined) return value;
 
-  // Check if it already has rgb/rgba wrapper
-  const rgbMatch = value.match(/^(rgb|rgba)\(([^)]+)\)$/i);
-  if (rgbMatch) {
-    const inner = rgbMatch[2].trim();
-    if (alpha !== undefined) {
-      if (inner.includes(',')) {
-        return `rgba(${inner}, ${alpha})`;
-      } else {
-        return `rgb(${inner} / ${alpha})`;
-      }
-    }
-    return value;
+    // 'hsla' -> 'hsl', 'rgba' -> 'rgb'
+    const basePrefix = match[1].toLowerCase().replace('a', '');
+    const inner = match[2].trim();
+
+    // Format
+    return inner.includes(',')
+      ? `${basePrefix}a(${inner}, ${alpha})`
+      : `${basePrefix}(${inner} / ${alpha})`;
   }
 
   // Handle HSL format (H S L)
@@ -55,3 +42,16 @@ export const getChartColors = () => {
     areaLineColor: extractColorFromCssVar('--primary', '#26a69a'),
   };
 };
+
+/**
+ * Formats a timestamp to a time string.
+ * @param timestamp The timestamp to format.
+ * @returns The formatted time string.
+ */
+export const formatTime = (timestamp: number): string =>
+  new Date(timestamp * 1000).toLocaleTimeString(undefined, {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });

@@ -1,4 +1,4 @@
-import type { TradeAction} from '@/types';
+import type { TradeAction } from '@/types';
 import { type TickerSource } from '@/types';
 import { TradeButtons } from './TradeButtons';
 import { SymbolField } from './SymbolField';

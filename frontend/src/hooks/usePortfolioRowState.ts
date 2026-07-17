@@ -9,17 +9,8 @@ export const usePortfolioRowState = (item: PortfolioItem) => {
   const { data: quote } = useQuoteQuery(item.stock_symbol);
 
   const { symbol, source, isMarketClosed, isTradable } = useMemo(() => {
-    const tickers = config ?? [];
-    const tickerInfo = tickers.find(
-      (t) => t.symbol.toUpperCase() === item.stock_symbol.toUpperCase(),
-    );
-    return {
-      symbol: (tickerInfo?.symbol ?? item.stock_symbol).toUpperCase(),
-      source: (tickerInfo?.source ?? quote?.source ?? 'Finnhub') as TickerSource,
-      isMarketClosed: quote?.is_closed ?? false,
-      isTradable: config ? !!tickerInfo : true,
-    };
-  }, [config, item.stock_symbol, quote?.source, quote?.is_closed]);
+    return getRowMetadata(item.stock_symbol, config, quote);
+  }, [config, item.stock_symbol, quote]);
 
   const { marketValue, pnl, pnlStatus } = useMemo(() => {
     if (!quote) return { marketValue: null, pnl: null, pnlStatus: 'neutral' };
@@ -43,5 +34,21 @@ export const usePortfolioRowState = (item: PortfolioItem) => {
     marketValue,
     pnl,
     pnlStatus,
+  };
+};
+
+const getRowMetadata = (
+  itemSymbol: string,
+  config: ReturnType<typeof useTickers>['data'],
+  quote: ReturnType<typeof useQuoteQuery>['data'],
+  // eslint-disable-next-line complexity
+) => {
+  const tickerInfo = config?.find((t) => t.symbol.toUpperCase() === itemSymbol.toUpperCase());
+
+  return {
+    symbol: (tickerInfo?.symbol ?? itemSymbol).toUpperCase(),
+    source: (tickerInfo?.source ?? quote?.source ?? 'Finnhub') as TickerSource,
+    isMarketClosed: quote?.is_closed ?? false,
+    isTradable: config ? !!tickerInfo : true,
   };
 };
