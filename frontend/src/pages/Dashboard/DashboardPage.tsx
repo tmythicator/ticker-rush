@@ -46,7 +46,11 @@ export const DashboardPage = () => {
           className={styles.mobileTradePanel}
           aria-label="Trade Panel"
         >
-          <MarketStatusGuard user={user} quote={quote}>
+          <MarketStatusGuard
+            isParticipating={user?.is_participating}
+            isMarketClosed={quote?.is_closed}
+            isLoadingQuotes={!quote}
+          >
             <TradePanel quote={quote} />
           </MarketStatusGuard>
         </section>
@@ -57,7 +61,11 @@ export const DashboardPage = () => {
       </div>
 
       <aside id="trade-panel-desktop" className={styles.desktopTradePanel} aria-label="Trade Panel">
-        <MarketStatusGuard user={user} quote={quote}>
+        <MarketStatusGuard
+          isParticipating={user?.is_participating}
+          isMarketClosed={quote?.is_closed}
+          isLoadingQuotes={!quote}
+        >
           <TradePanel quote={quote} />
         </MarketStatusGuard>
       </aside>

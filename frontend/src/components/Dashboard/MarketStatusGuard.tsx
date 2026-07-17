@@ -1,20 +1,19 @@
 import { IconMoon } from '@/components/icons/CustomIcons';
-import type { Quote, User } from '@/types';
 import clsx from 'clsx';
 import type { ReactNode } from 'react';
 import { GuardState } from './GuardState';
 import styles from './Guard.module.css';
 
 interface MarketStatusGuardProps {
-  user: User | null;
-  quote: Quote | null;
+  isParticipating?: boolean;
+  isMarketClosed?: boolean;
+  isLoadingQuotes?: boolean;
   children: ReactNode;
 }
 
-export const MarketStatusGuard = ({ user, quote, children }: MarketStatusGuardProps) => {
-  if (!user) return null;
+export const MarketStatusGuard = ({ isParticipating, isMarketClosed, isLoadingQuotes, children }: MarketStatusGuardProps) => {
 
-  if (!user.is_participating) {
+  if (!isParticipating) {
     return (
       <GuardState
         testId="participation-required-guard"
@@ -25,7 +24,7 @@ export const MarketStatusGuard = ({ user, quote, children }: MarketStatusGuardPr
     );
   }
 
-  if (!quote) {
+  if (isLoadingQuotes) {
     return (
       <GuardState
         testId="loading-market-guard"
@@ -36,7 +35,7 @@ export const MarketStatusGuard = ({ user, quote, children }: MarketStatusGuardPr
     );
   }
 
-  if (quote.is_closed) {
+  if (isMarketClosed) {
     return (
       <GuardState
         testId="market-closed-guard"
