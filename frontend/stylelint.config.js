@@ -7,5 +7,6 @@ export default {
     'selector-max-id': 0,
     'order/properties-alphabetical-order': true,
     'block-no-empty': true,
+    'selector-class-pattern': null,
   },
 };

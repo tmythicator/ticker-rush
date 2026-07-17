@@ -1,5 +1,7 @@
-/* Primitives & Semantic Tokens */
 :root {
+  /* ==========================================
+   PRIMITIVES
+   =========================================== */
   --color-white: #fff;
   --color-black: #000;
 
@@ -75,9 +77,10 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -2px rgb(0 0 0 / 5%);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 10%), 0 10px 10px -5px rgb(0 0 0 / 4%);
   --shadow-destructive: 0 10px 15px -3px color-mix(in srgb, var(--destructive) 20%, transparent);
-}
 
-:root {
+  /* ==========================================
+   SEMANTIC TOKENS (Dark Theme Default)
+   =========================================== */
   color-scheme: dark;
 
   --overlay: color-mix(in srgb, var(--color-gray-950) 80%, transparent);
@@ -255,7 +258,7 @@ select {
 
 .sr-only {
   border: 0;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%); /* <-- Вот современная замена clip */
   height: 1px;
   margin: -1px;
   overflow: hidden;
