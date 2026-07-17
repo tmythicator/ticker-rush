@@ -14,10 +14,6 @@
   }
 }
 
-.card:hover .iconWrapper {
-  opacity: 0.2;
-}
-
 .iconWrapper {
   opacity: 0.1;
   padding: var(--space-md);
@@ -28,6 +24,10 @@
 
   @media (width <= 768px) {
     display: none;
+  }
+
+  .card:hover & {
+    opacity: 0.2;
   }
 }
 

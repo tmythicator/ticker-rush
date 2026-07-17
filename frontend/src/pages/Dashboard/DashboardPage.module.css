@@ -24,6 +24,17 @@
   }
 }
 
+.chartCardWrapper {
+  height: 500px;
+  overflow: hidden;
+  padding: var(--space-xxs);
+  position: relative;
+
+  @media (width <= 640px) {
+    height: 300px;
+  }
+}
+
 .chartSection {
   display: flex;
   flex-direction: column;
@@ -34,17 +45,6 @@
     flex-direction: column;
     height: 100%;
     width: 100%;
-  }
-}
-
-.chartCardWrapper {
-  height: 500px;
-  overflow: hidden;
-  padding: var(--space-xxs);
-  position: relative;
-
-  @media (width <= 640px) {
-    height: 300px;
   }
 }
 
