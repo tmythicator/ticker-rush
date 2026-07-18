@@ -12,7 +12,8 @@
   --color-red-light: hsl(0deg 74% 42%);
   --color-dark-red: hsl(0deg 62.8% 30.6%);
   --color-green-hover-dark: hsl(142.1deg 72% 15%);
-  --color-green-dark: hsl(142.1deg 72% 20%);
+  --color-green-dark: hsl(142deg 65% 28%);
+  --color-green-bright: hsl(142deg 80% 60%);
   --color-green-hover-light: hsl(142.1deg 70.6% 25%);
   --color-green-light: hsl(142deg 75% 28%);
   --color-green: hsl(142deg 70.6% 45.3%);
@@ -104,9 +105,10 @@
   --popover-foreground: var(--color-gray-50);
   --muted: var(--color-gray-900);
   --muted-foreground: var(--color-gray-400);
-  --success: var(--color-dark-green);
+  --success: var(--color-green-dark);
   --success-hover: var(--color-green-hover-dark);
   --success-foreground: var(--color-gray-50);
+  --success-text: var(--color-green-bright);
   --warning: var(--color-dark-yellow);
   --warning-foreground: var(--color-gray-50);
   --up-trend: var(--color-green);
@@ -167,6 +169,7 @@
   --success: var(--color-green-light);
   --success-hover: var(--color-green-hover-light);
   --success-foreground: var(--color-white);
+  --success-text: var(--color-green-dark);
   --warning: var(--color-yellow);
   --warning-foreground: var(--color-black);
   --up-trend: var(--color-green-light);

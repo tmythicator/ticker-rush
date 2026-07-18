@@ -79,7 +79,7 @@
 }
 
 .cellNetWorth {
-  color: var(--success);
+  color: var(--success-text);
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-weight: 700;

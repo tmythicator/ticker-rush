@@ -19,6 +19,7 @@ export const DashboardPage = () => {
 
   return (
     <div className={styles.dashboardLayout}>
+      <h1 className="sr-only">Trading Dashboard</h1>
       <div className={styles.mainSection}>
         <DashboardStats user={user} />
 

@@ -23,6 +23,13 @@
   width: 0.375rem;
 }
 
+.assetsTitle {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: 1;
+}
+
 .assetsGrid {
   display: flex;
   flex-wrap: wrap;
