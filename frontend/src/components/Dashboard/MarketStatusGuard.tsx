@@ -5,6 +5,7 @@ import { GuardState } from './GuardState';
 import styles from './Guard.module.css';
 
 interface MarketStatusGuardProps {
+  isUserLoaded?: boolean;
   isParticipating?: boolean;
   isMarketClosed?: boolean;
   isLoadingQuotes?: boolean;
@@ -12,11 +13,16 @@ interface MarketStatusGuardProps {
 }
 
 export const MarketStatusGuard = ({
+  isUserLoaded = true,
   isParticipating,
   isMarketClosed,
   isLoadingQuotes,
   children,
 }: MarketStatusGuardProps) => {
+  if (!isUserLoaded) {
+    return null;
+  }
+
   if (!isParticipating) {
     return (
       <GuardState

@@ -1,28 +1,27 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { MarketStatusGuard } from './MarketStatusGuard';
-import {
-  mockUserParticipating,
-  mockUserNotParticipating,
-  mockActiveQuote,
-  mockClosedQuote,
-} from '@/test/mocks';
 
 const mockRenderedContent = <div data-testid="market-status-guard-child">Test Rendered Child</div>;
 
 describe('MarketStatusGuard', () => {
-  it('renders nothing when user is null', () => {
+  it('renders null when user is not loaded', () => {
     const { container } = render(
-      <MarketStatusGuard user={null} quote={mockActiveQuote}>
+      <MarketStatusGuard
+        isUserLoaded={false}
+        isParticipating={false}
+        isLoadingQuotes={false}
+        isMarketClosed={false}
+      >
         {mockRenderedContent}
       </MarketStatusGuard>,
     );
     expect(container.firstChild).toBeNull();
   });
 
-  it('renders participation required notice when user is not participating', () => {
+  it('renders participation guard when user is not participating', () => {
     render(
-      <MarketStatusGuard user={mockUserNotParticipating} quote={mockActiveQuote}>
+      <MarketStatusGuard isParticipating={false} isLoadingQuotes={false} isMarketClosed={false}>
         {mockRenderedContent}
       </MarketStatusGuard>,
     );
@@ -33,9 +32,9 @@ describe('MarketStatusGuard', () => {
     expect(screen.queryByTestId('market-status-guard-child')).not.toBeInTheDocument();
   });
 
-  it('renders market closed notice when quote is closed', () => {
+  it('renders market closed guard when trading is offline', () => {
     render(
-      <MarketStatusGuard user={mockUserParticipating} quote={mockClosedQuote}>
+      <MarketStatusGuard isParticipating={true} isLoadingQuotes={false} isMarketClosed={true}>
         {mockRenderedContent}
       </MarketStatusGuard>,
     );
@@ -46,9 +45,9 @@ describe('MarketStatusGuard', () => {
     expect(screen.queryByTestId('market-status-guard-child')).not.toBeInTheDocument();
   });
 
-  it('renders loading indicator when quote is null (e.g. fetcher downtime)', () => {
+  it('renders loading state when quotes are fetching', () => {
     render(
-      <MarketStatusGuard user={mockUserParticipating} quote={null}>
+      <MarketStatusGuard isParticipating={true} isLoadingQuotes={true} isMarketClosed={false}>
         {mockRenderedContent}
       </MarketStatusGuard>,
     );
@@ -59,9 +58,9 @@ describe('MarketStatusGuard', () => {
     expect(screen.queryByTestId('market-status-guard-child')).not.toBeInTheDocument();
   });
 
-  it('renders children components when user is participating and market is open', () => {
+  it('renders children when all conditions are met', () => {
     render(
-      <MarketStatusGuard user={mockUserParticipating} quote={mockActiveQuote}>
+      <MarketStatusGuard isParticipating={true} isLoadingQuotes={false} isMarketClosed={false}>
         {mockRenderedContent}
       </MarketStatusGuard>,
     );
