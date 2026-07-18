@@ -18,10 +18,10 @@ export const PortfolioHoldings = ({ portfolio, isReadOnly = false }: PortfolioHo
   return (
     <Card className={styles.holdingsCard}>
       <div className={styles.holdingsHeaderWrapper}>
-        <h3 className={styles.holdingsTitle}>
+        <h2 className={styles.holdingsTitle}>
           <IconBriefcase className={styles.holdingsIcon} />
           Current Holdings
-        </h3>
+        </h2>
       </div>
 
       <PortfolioTable

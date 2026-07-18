@@ -24,10 +24,10 @@
 }
 
 .assetsTitle {
-  margin: 0;
   font-size: inherit;
   font-weight: inherit;
   line-height: 1;
+  margin: 0;
 }
 
 .assetsGrid {

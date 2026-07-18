@@ -23,7 +23,8 @@ export const SourceBadge = React.forwardRef<HTMLSpanElement, SourceBadgeProps>(
     const { variant, label, title } = getSourceBadgeConfig(source);
     return (
       <span ref={ref} className={badgeVariants({ variant, className })} title={title} {...props}>
-        {label}
+        <span className="srOnly">{title}</span>
+        <span aria-hidden="true">{label}</span>
       </span>
     );
   },

@@ -32,9 +32,10 @@ export const ChartSymbolPicker = ({ symbol, onSymbolChange }: ChartSymbolPickerP
           onChange={handleSymbolChange}
           disabled={tickers.length === 0}
           className={styles.select}
+          aria-label="Select trading asset"
         >
           {tickers.length === 0 ? (
-            <option value="" className={styles.option}>
+            <option value="" disabled className={styles.option}>
               No assets available
             </option>
           ) : (
@@ -45,7 +46,7 @@ export const ChartSymbolPicker = ({ symbol, onSymbolChange }: ChartSymbolPickerP
             ))
           )}
         </select>
-        <IconChevronDown className={styles.chevron} />
+        <IconChevronDown className={styles.chevron} aria-hidden="true" />
       </div>
     </div>
   );
