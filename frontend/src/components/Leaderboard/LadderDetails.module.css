@@ -2,27 +2,27 @@
   border-bottom: 1px solid var(--border);
   padding: var(--space-xl);
 
-  @media (max-width: 640px) {
+  @media (width <= 640px) {
     padding: var(--space-md);
   }
 }
 
 .ladderMetaRow {
-  margin-bottom: var(--space-xl);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   gap: var(--space-xl);
+  justify-content: space-between;
+  margin-bottom: var(--space-xl);
 
-  @media (max-width: 640px) {
-    margin-bottom: var(--space-md);
+  @media (width <= 640px) {
     gap: var(--space-md);
+    margin-bottom: var(--space-md);
   }
 }
 
-@media (min-width: 1024px) {
+@media (width >= 1024px) {
   .innerLayout {
-    flex-direction: row;
     align-items: center;
+    flex-direction: row;
   }
 }

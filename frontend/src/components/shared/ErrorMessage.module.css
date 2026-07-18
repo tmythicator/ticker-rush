@@ -1,17 +1,17 @@
 .errorMessage {
-  border-radius: var(--radius);
-  border: 1px solid var(--destructive-border-subtle);
   background-color: var(--destructive-bg-subtle);
-  font-weight: 500;
+  border: 1px solid var(--destructive-border-subtle);
+  border-radius: var(--radius);
   color: var(--destructive);
+  font-weight: 500;
 }
 
 .sizeSm {
-  padding: var(--space-sm);
   font-size: var(--text-sm);
+  padding: var(--space-sm);
 }
 
 .sizeXs {
-  padding: var(--space-xs);
   font-size: var(--text-xs);
+  padding: var(--space-xs);
 }

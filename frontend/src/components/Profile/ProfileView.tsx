@@ -24,7 +24,7 @@ export const ProfileView = ({ user }: ProfileViewProps) => {
         <ProfileHeader user={user} isOwnProfile={isOwnProfile} />
 
         <section aria-labelledby={statsHeadingId}>
-          <h2 id={statsHeadingId} className="sr-only">
+          <h2 id={statsHeadingId} className="srOnly">
             {isOwnProfile ? 'My Financial Stats' : `${user.first_name}'s Financial Stats`}
           </h2>
           <StatsGrid {...user} />

@@ -1,9 +1,9 @@
 .badge {
-  cursor: help;
   border-radius: var(--space-xxs);
-  padding: 0.125rem 0.375rem;
+  cursor: help;
   font-size: var(--text-xs);
   font-weight: 700;
+  padding: 0.125rem 0.375rem;
   transition: var(--transition-normal);
 }
 

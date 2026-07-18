@@ -14,7 +14,7 @@ export const AuthLayout = ({ title, subtitle, children, footer }: AuthLayoutProp
     <div className={styles.pageWrapper}>
       <Card className={styles.card}>
         <div className={styles.header}>
-          <h2 className={styles.title}>{title}</h2>
+          <h1 className={styles.title}>{title}</h1>
           {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
         </div>
         <div>{children}</div>

@@ -1,8 +1,8 @@
 .cell {
-  padding: var(--space-md) var(--space-lg);
   font-family: var(--font-mono);
   font-size: 1rem;
   font-weight: 700;
+  padding: var(--space-md) var(--space-lg);
   white-space: nowrap;
 }
 

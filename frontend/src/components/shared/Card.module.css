@@ -1,7 +1,7 @@
 .card {
-  border-radius: var(--radius);
-  border: 2px solid var(--border);
   background-color: var(--card);
-  color: var(--card-foreground);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
   box-shadow: var(--shadow-brutalist-sm);
+  color: var(--card-foreground);
 }

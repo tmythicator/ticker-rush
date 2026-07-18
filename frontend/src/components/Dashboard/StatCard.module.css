@@ -1,78 +1,78 @@
 .card {
-  display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  border-radius: var(--radius);
-  border: 2px solid var(--border);
   background-color: var(--card);
-  padding: var(--space-md);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
   box-shadow: var(--shadow-brutalist-sm);
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-md);
   transition: var(--transition-normal);
 
-  @media (max-width: 640px) {
-    padding: var(--space-xs) var(--space-xxs);
+  @media (width <= 640px) {
     align-items: center;
     border-width: 1px;
+    padding: var(--space-xs) var(--space-xxs);
   }
 }
 
 .card:hover {
-  transform: translate(2px, 2px);
   box-shadow: none;
+  transform: translate(2px, 2px);
 }
 
 .label {
+  color: var(--muted-foreground);
   font-size: var(--text-xs);
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--muted-foreground);
+  text-transform: uppercase;
 
-  @media (max-width: 640px) {
+  @media (width <= 640px) {
     font-size: 9px;
     letter-spacing: 0.02em;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
 .value {
-  margin-top: var(--space-xxs);
+  color: var(--foreground);
   font-size: var(--text-2xl);
   font-weight: 700;
-  color: var(--foreground);
+  margin-top: var(--space-xxs);
 
-  @media (max-width: 640px) {
-    margin-top: 0.125rem;
-    font-size: 0.8125rem;
+  @media (width <= 640px) {
     font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    margin-top: 0.125rem;
   }
 }
 
 .trend {
-  margin-top: var(--space-xxs);
+  color: var(--success);
   font-size: var(--text-xs);
   font-weight: 500;
-  color: var(--success);
+  margin-top: var(--space-xxs);
 }
 
 .iconWrapper {
-  border-radius: var(--radius);
-  background-color: var(--muted);
-  padding: var(--space-xs);
-  display: flex;
   align-items: center;
-  justify-content: center;
+  background-color: var(--muted);
   border: 2px solid var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  justify-content: center;
+  padding: var(--space-xs);
 
-  @media (max-width: 640px) {
+  @media (width <= 640px) {
     display: none;
   }
 }
 
 .icon {
+  color: var(--muted-foreground);
   height: 1.25rem;
   width: 1.25rem;
-  color: var(--muted-foreground);
 }

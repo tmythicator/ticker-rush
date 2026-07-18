@@ -1,7 +1,7 @@
 .label {
+  color: var(--foreground);
   font-size: var(--text-sm);
   font-weight: 700;
-  color: var(--foreground);
   line-height: 1;
 }
 
@@ -18,6 +18,6 @@
 }
 
 .variantPlain {
-  font-weight: inherit;
   color: inherit;
+  font-weight: inherit;
 }

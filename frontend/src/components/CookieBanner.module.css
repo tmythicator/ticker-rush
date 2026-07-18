@@ -1,36 +1,37 @@
 .overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: color-mix(in srgb, var(--background) 80%, transparent);
-  padding: var(--space-md);
-  backdrop-filter: blur(8px);
   animation: fadeIn 0.2s ease-out;
+  backdrop-filter: blur(8px);
+  background-color: color-mix(in srgb, var(--background) 80%, transparent);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: var(--space-md);
+  position: fixed;
+  z-index: 100;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
 }
 
 .card {
-  width: 100%;
-  max-width: 32rem;
+  background-color: var(--card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-brutalist);
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
-  border-radius: var(--radius);
-  border: 2px solid var(--border);
-  background-color: var(--card);
+  max-width: 32rem;
   padding: var(--space-lg);
-  box-shadow: var(--shadow-brutalist);
+  width: 100%;
 }
 
 .textGroup {
@@ -40,10 +41,10 @@
 }
 
 .title {
+  color: var(--foreground);
   font-size: var(--text-xl);
   font-weight: 700;
   letter-spacing: -0.025em;
-  color: var(--foreground);
 }
 
 .description {
@@ -58,9 +59,9 @@
 .button {
   width: 100%;
 
-  @media (min-width: 640px) {
-    width: auto;
+  @media (width >= 640px) {
     padding-left: var(--space-xl);
     padding-right: var(--space-xl);
+    width: auto;
   }
 }

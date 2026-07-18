@@ -4,24 +4,24 @@
   justify-content: space-between;
   padding: var(--space-lg);
 
-  @media (max-width: 768px) {
+  @media (width <= 768px) {
     padding: var(--space-md);
   }
 }
 
 .headerGroup {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: var(--space-sm);
 }
 
 .iconWrapper {
-  border-radius: var(--radius);
   background-color: color-mix(in srgb, var(--primary) 10%, transparent);
-  padding: var(--space-xs);
+  border-radius: var(--radius);
   color: var(--primary);
+  padding: var(--space-xs);
 
-  @media (max-width: 768px) {
+  @media (width <= 768px) {
     display: none;
   }
 }
@@ -32,32 +32,32 @@
 }
 
 .label {
+  color: var(--muted-foreground);
   display: block;
   font-size: var(--text-xs);
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--muted-foreground);
+  text-transform: uppercase;
 }
 
 .value {
-  margin-top: 0.125rem;
+  color: var(--foreground);
   font-size: var(--text-2xl);
   font-weight: 700;
-  color: var(--foreground);
+  margin-top: 0.125rem;
 
-  @media (max-width: 768px) {
-    font-size: var(--text-xl);
+  @media (width <= 768px) {
     font-family: var(--font-mono);
+    font-size: var(--text-xl);
   }
 }
 
 .description {
-  margin-top: var(--space-md);
-  font-size: var(--text-xs);
   color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  margin-top: var(--space-md);
 
-  @media (max-width: 768px) {
+  @media (width <= 768px) {
     display: none;
   }
 }

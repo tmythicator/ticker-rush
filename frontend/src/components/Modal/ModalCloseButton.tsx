@@ -19,7 +19,7 @@ export const ModalCloseButton = ({ className }: ModalCloseButtonProps) => {
       className={clsx(styles.closeButton, className)}
     >
       <IconX className={styles.closeIcon} />
-      <span className={styles.srOnly}>Close</span>
+      <span className="srOnly">Close</span>
     </Button>
   );
 };

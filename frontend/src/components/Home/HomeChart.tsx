@@ -66,15 +66,17 @@ export const HomeChart = ({ symbol }: { symbol: TradeSymbol }) => {
   });
 
   return (
-    <div className={styles.wrapper}>
+    <section className={styles.wrapper} aria-labelledby="chart-heading">
       <div className={styles.chartLegend}>
         <div className={styles.titleRow}>
-          <h3 className={styles.title}>Bitcoin</h3>
-          <span className={styles.symbol}>BTC</span>
+          <h2 id="chart-heading" className={styles.title}>
+            {symbol.toUpperCase()}
+          </h2>
         </div>
+
         {latestPrice !== null && latestPrice !== undefined && (
-          <div className={styles.price}>
-            $
+          <div className={styles.price} aria-live="polite" aria-atomic="true">
+            <span className="srOnly">Current price: </span>$
             {latestPrice.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -83,8 +85,13 @@ export const HomeChart = ({ symbol }: { symbol: TradeSymbol }) => {
         )}
       </div>
 
-      <div className={styles.overlayGradient} />
-      <div ref={chartContainerRef} className={styles.chartContainer} />
-    </div>
+      <div className={styles.overlayGradient} aria-hidden="true" />
+      <div
+        ref={chartContainerRef}
+        className={styles.chartContainer}
+        role="figure"
+        aria-label={`Interactive price chart for ${symbol}`}
+      />
+    </section>
   );
 };

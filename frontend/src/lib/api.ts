@@ -1,28 +1,34 @@
-import {
+import { ApiError, parseProblemDetails, type InvalidParam } from './errors';
+import type {
   CreateTradeRequest,
-  CreateTradeResponse,
   GetHistoryRequest,
-  GetHistoryResponse,
   GetQuoteRequest,
+} from './proto/exchange/v1/exchange';
+import {
+  CreateTradeResponse,
+  GetHistoryResponse,
   GetQuoteResponse,
   type Quote,
 } from './proto/exchange/v1/exchange';
-import { GetActiveLadderResponse, Ladder } from './proto/ladder/v1/ladder';
-import { GetLeaderboardRequest, GetLeaderboardResponse } from './proto/leaderboard/v1/leaderboard';
-import {
+import type { Ladder } from './proto/ladder/v1/ladder';
+import { GetActiveLadderResponse } from './proto/ladder/v1/ladder';
+import type { GetLeaderboardRequest } from './proto/leaderboard/v1/leaderboard';
+import { GetLeaderboardResponse } from './proto/leaderboard/v1/leaderboard';
+import type {
   CreateUserRequest,
+  GetPublicProfileRequest,
+  LoginRequest,
+  UpdateUserRequest,
+} from './proto/user/v1/user';
+import {
   CreateUserResponse,
   GetMeResponse,
-  GetPublicProfileRequest,
   GetPublicProfileResponse,
-  LoginRequest,
   LoginResponse,
-  UpdateUserRequest,
   UpdateUserResponse,
-  type User,
   type PublicProfile,
+  type User,
 } from './proto/user/v1/user';
-import { ApiError, type InvalidParam, parseProblemDetails } from './errors';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/v1`;
 

@@ -14,9 +14,9 @@ export const LadderAssets = ({ assets }: LadderAssetsProps) => {
     <section className={styles.assetsSection} aria-labelledby={headingId}>
       <div className={styles.assetsHeader}>
         <span className={styles.assetsHeaderDot} aria-hidden="true" />
-        <h4 id={headingId} className={styles.assetsTitle}>
+        <h2 id={headingId} className={styles.assetsTitle}>
           Tradable Assets
-        </h4>
+        </h2>
       </div>
 
       <div className={styles.assetsGrid}>

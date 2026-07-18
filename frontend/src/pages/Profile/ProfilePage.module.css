@@ -1,4 +1,4 @@
 .loading {
-  padding: var(--space-lg);
   color: var(--muted-foreground);
+  padding: var(--space-lg);
 }
